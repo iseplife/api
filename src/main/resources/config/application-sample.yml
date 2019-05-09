@@ -1,0 +1,52 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost/<database>?createDatabaseIfNotExist=true&useSSL=false
+    username: <username>
+    password: <password>
+  jpa:
+    hibernate:
+      ddl-auto: update
+  http:
+    multipart:
+      max-file-size: 2000MB
+      max-request-size: 2000MB
+
+
+server:
+  port: 8080
+security:
+  basic:
+    enabled: false
+
+storage:
+  url: "<storage-dir-path>"
+  club:
+    url: "/club"
+  event:
+    url: "/event"
+  image:
+    url: "/image"
+  student:
+    url: "/student"
+  video:
+    url: "/video"
+  gazette:
+    url: "/gazette"
+  document:
+    url: "/document"
+
+logging:
+  level:
+    com.iseplive.api: ERROR
+
+jwt:
+  secret: <secret>
+  refreshSecret: <refresh-secret>
+  tokenDuration: <token-duration> # 10 min
+  refreshTokenDuration: <refresh-token-duration> # 7 jours
+  issuer: IsepLive
+
+# auth to enable default admin user with default password
+auth:
+  password: <default-password>
+  enable: true
