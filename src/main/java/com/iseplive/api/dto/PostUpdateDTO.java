@@ -7,7 +7,7 @@ package com.iseplive.api.dto;
 public class PostUpdateDTO {
   private String title;
   private String content;
-  private Boolean isPrivate;
+  private Boolean isPrivate = true;
 
   public String getTitle() {
     return title;
