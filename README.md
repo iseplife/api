@@ -29,9 +29,6 @@ mvn package -Dspring.profiles.active=prod -DskipTests
 
 ```
 
-## Rules
-- Use IntelliJ IDEA.
-- Code needs to be written in english. (documentation included)
-- Document all your changes before MR.
-- Create a new branch for each issue
-- Create a new branch on issue's branch for each feature
+### Contribute to project
+
+Before contributing to the project be sure that you have read the [Contributor guidelines](CONTRIBUTING.md).
