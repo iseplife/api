@@ -32,6 +32,12 @@ public class ClubMember {
   @ManyToOne
   private Student student;
 
+  private String position;
+
+  @ManyToOne
+  private ClubMember parent;
+
+
   @ManyToOne
   private ClubMember parent;
 
