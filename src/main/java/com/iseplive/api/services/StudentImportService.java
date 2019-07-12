@@ -37,7 +37,7 @@ public class StudentImportService {
     ImportStudentResultView res = new ImportStudentResultView();
 
     // Map of studentID : Student
-    Map<String, Student> students = new HashMap<>();
+    Map<Long, Student> students = new HashMap<>();
     try {
       String line;
       InputStream is = csv.getInputStream();
@@ -54,13 +54,13 @@ public class StudentImportService {
         if (lineNum != 0 && cols.length == csvNumColumns) {
           String firstname = cols[0];
           String lastname = cols[1];
-          String studentId = cols[2];
+          Long studentId = Long.parseLong(cols[2]);
           Integer promo = Integer.parseInt(cols[3]);
 
           Student student = new Student();
-          student.setFirstname(firstname);
-          student.setLastname(lastname);
-          student.setStudentId(studentId);
+          student.setId(studentId);
+          student.setFirstName(firstname);
+          student.setLastName(lastname);
           student.setPromo(promo);
           student.setRoles(roles);
 
@@ -79,17 +79,17 @@ public class StudentImportService {
     return res;
   }
 
-  private ImportStudentResultView createStudents(List<MultipartFile> photos, Map<String, Student> students) {
+  private ImportStudentResultView createStudents(List<MultipartFile> photos, Map<Long, Student> students) {
     ImportStudentResultView res = new ImportStudentResultView();
     res.setPhotosSent(photos.size());
     res.setStudentsSent(students.size());
 
     List<Student> studentsToCreate = new ArrayList<>();
-    Map<String, MultipartFile> photosToAdd = new HashMap<>();
+    Map<Long, MultipartFile> photosToAdd = new HashMap<>();
 
     for (MultipartFile photo : photos) {
       String fullname = photo.getOriginalFilename();
-      String idIsep = fullname.split("\\.")[0];
+      Long idIsep = Long.parseLong(fullname.split("\\.")[0]);
       photosToAdd.put(idIsep, photo);
     }
 
@@ -101,8 +101,8 @@ public class StudentImportService {
         // add image if not present
         if (student.getPhotoUrl() == null || student.getPhotoUrlThumb() == null) {
           // check if photo can be added
-          if (photosToAdd.get(student.getStudentId()) != null) {
-            studentService.addProfileImage(student.getStudentId(), photosToAdd.get(student.getStudentId()));
+          if (photosToAdd.get(student.getId()) != null) {
+            studentService.addProfileImage(student.getId(), photosToAdd.get(student.getId()));
             res.incrPhotoAdded();
             res.incrStudentPhotoNotMatched();
           }
@@ -122,8 +122,8 @@ public class StudentImportService {
     studentRepository.save(studentsToCreate);
     // add photo to new students
     for (Student s : studentsToCreate) {
-      if (photosToAdd.get(s.getStudentId()) != null) {
-        studentService.addProfileImage(s.getStudentId(), photosToAdd.get(s.getStudentId()));
+      if (photosToAdd.get(s.getId()) != null) {
+        studentService.addProfileImage(s.getId(), photosToAdd.get(s.getId()));
         res.incrPhotoAdded();
       }
     }

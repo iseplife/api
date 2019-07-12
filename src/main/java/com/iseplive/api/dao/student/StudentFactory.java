@@ -20,21 +20,18 @@ public class StudentFactory {
     Student student = new Student();
     student.setBio(dto.getBio());
     student.setBirthDate(dto.getBirthDate());
-    student.setFirstname(dto.getFirstname());
-    student.setLastname(dto.getLastname());
-    student.setPhone(dto.getPhone());
+    student.setFirstName(dto.getFirstname());
+    student.setLastName(dto.getLastname());
+    student.setPhoneNumber(dto.getPhone());
     student.setPromo(dto.getPromo());
-    student.setAddress(dto.getAddress());
     student.setMail(dto.getMail());
-    student.setMailISEP(dto.getMailISEP());
     return student;
   }
 
   public void updateDtoToEntity(Student student, StudentUpdateDTO dto) {
     student.setBio(dto.getBio());
     student.setBirthDate(dto.getBirthDate());
-    student.setPhone(dto.getPhone());
-    student.setAddress(dto.getAddress());
+    student.setPhoneNumber(dto.getPhone());
     student.setMail(dto.getMail());
 
     student.setFacebook(dto.getFacebook());
@@ -44,16 +41,14 @@ public class StudentFactory {
   }
 
   public void updateAdminDtoToEntity(Student student, StudentUpdateAdminDTO dto) {
-    student.setFirstname(dto.getFirstname());
-    student.setLastname(dto.getLastname());
+    student.setFirstName(dto.getFirstname());
+    student.setLastName(dto.getLastname());
 
     student.setBio(dto.getBio());
     student.setBirthDate(dto.getBirthDate());
-    student.setPhone(dto.getPhone());
+    student.setPhoneNumber(dto.getPhone());
     student.setPromo(dto.getPromo());
-    student.setAddress(dto.getAddress());
     student.setMail(dto.getMail());
-    student.setMailISEP(dto.getMailISEP());
 
     student.setFacebook(dto.getFacebook());
     student.setTwitter(dto.getTwitter());
@@ -65,25 +60,23 @@ public class StudentFactory {
     StudentWithRoleView studentWithRoleView = new StudentWithRoleView();
 
     studentWithRoleView.setId(student.getId());
-    studentWithRoleView.setFirstname(student.getFirstname());
-    studentWithRoleView.setLastname(student.getLastname());
+    studentWithRoleView.setFirstname(student.getFirstName());
+    studentWithRoleView.setLastname(student.getLastName());
 
     studentWithRoleView.setBio(student.getBio());
     studentWithRoleView.setBirthDate(student.getBirthDate());
-    studentWithRoleView.setPhone(student.getPhone());
+    studentWithRoleView.setPhone(student.getPhoneNumber());
     studentWithRoleView.setPromo(student.getPromo());
-    studentWithRoleView.setAddress(student.getAddress());
     studentWithRoleView.setMail(student.getMail());
-    studentWithRoleView.setMailISEP(student.getMailISEP());
 
     studentWithRoleView.setFacebook(student.getFacebook());
     studentWithRoleView.setTwitter(student.getTwitter());
     studentWithRoleView.setSnapchat(student.getSnapchat());
     studentWithRoleView.setInstagram(student.getInstagram());
 
+    studentWithRoleView.setId(student.getId());
     studentWithRoleView.setPhotoUrl(student.getPhotoUrl());
     studentWithRoleView.setPhotoUrlThumb(student.getPhotoUrlThumb());
-    studentWithRoleView.setStudentId(student.getStudentId());
 
     studentWithRoleView.setArchived(student.isArchived());
 

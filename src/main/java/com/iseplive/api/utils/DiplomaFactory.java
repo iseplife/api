@@ -66,7 +66,7 @@ public class DiplomaFactory implements ImageObserver {
     // Draw name
     g.setFont(fontName);
     g.drawString(
-      String.format("%s %s", student.getFirstname(), student.getLastname()),
+      String.format("%s %s", student.getFirstName(), student.getLastName()),
       config.getName().getX(),
       config.getName().getY() + g.getFont().getSize()
     );

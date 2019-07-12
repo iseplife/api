@@ -50,7 +50,7 @@ public class AuthController {
 
     LDAPUserDTO user = ldapService.retrieveUser(authRequest.getUsername(), authRequest.getPassword());
     if (user != null) {
-      Student ldapStudent = studentService.getStudent(user.getEmployeeNumber());
+      Student ldapStudent = studentService.getStudent(Long.parseLong(user.getEmployeeNumber()));
       if (ldapStudent == null || ldapStudent.isArchived()) {
         throw new AuthException("User not found");
       }

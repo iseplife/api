@@ -51,5 +51,5 @@ public interface StudentRepository extends CrudRepository<Student, Long> {
   )
   Page<Student> searchStudent(String name, List<Integer> promo, Pageable pageable);
 
-  Student findFirstByStudentId(String studentId);
+  Student findFirstById(Long id);
 }

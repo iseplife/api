@@ -70,17 +70,13 @@ public class StudentService {
     throw new IllegalArgumentException("could not find the student with id: " + id);
   }
 
-  public Student getStudent(String studentId) {
-    return studentRepository.findFirstByStudentId(studentId);
-  }
-
   public Student createStudent(StudentDTO dto) {
     Student student = studentFactory.dtoToEntity(dto);
     return authorRepository.save(student);
   }
 
-  void addProfileImage(String studentId, MultipartFile image) {
-    Student student = studentRepository.findFirstByStudentId(studentId);
+  void addProfileImage(Long studentId, MultipartFile image) {
+    Student student = studentRepository.findOne(studentId);
     updateProfileImage(student, image);
     studentRepository.save(student);
   }
@@ -188,12 +184,12 @@ public class StudentService {
 
   private void updateProfileImage(Student student, MultipartFile image) {
     String path = imageUtils.resolvePath(studentImageStorage,
-      student.getStudentId(), false, student.getStudentId());
+      Long.toString(student.getId()), false, student.getId());
     imageUtils.removeIfExistJPEG(path);
     imageUtils.saveJPG(image, WIDTH_PROFILE_IMAGE, path);
 
     String pathThumb = imageUtils.resolvePath(studentImageStorage,
-      student.getStudentId(), true, student.getStudentId());
+      Long.toString(student.getId()), true, student.getId());
     imageUtils.removeIfExistJPEG(pathThumb);
     imageUtils.saveJPG(image, WIDTH_PROFILE_IMAGE_THUMB, pathThumb);
 
