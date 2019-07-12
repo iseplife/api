@@ -182,7 +182,7 @@ public class ClubService {
     Club club = getClub(id);
 
     club.setName(clubDTO.getName());
-    club.setCreation(clubDTO.getCreation());
+    club.setCreatedAt(clubDTO.getCreation());
     club.setDescription(clubDTO.getDescription());
     club.setWebsite(clubDTO.getWebsite());
 
