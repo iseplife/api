@@ -1,5 +1,6 @@
 package com.iseplive.api.dto.view;
 
+import com.iseplive.api.constants.ClubRoleEnum;
 import com.iseplive.api.entity.club.Club;
 import com.iseplive.api.entity.club.ClubRole;
 import com.iseplive.api.entity.user.Student;
@@ -10,14 +11,14 @@ import com.iseplive.api.entity.user.Student;
  */
 public class ClubMemberView {
   private Club club;
-  private ClubRole role;
+  private ClubRoleEnum role;
   private Student member;
 
-  public ClubRole getRole() {
+  public ClubRoleEnum getRole() {
     return role;
   }
 
-  public void setRole(ClubRole role) {
+  public void setRole(ClubRoleEnum role) {
     this.role = role;
   }
 

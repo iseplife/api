@@ -1,6 +1,7 @@
 package com.iseplive.api.controllers;
 
 import com.iseplive.api.conf.jwt.TokenPayload;
+import com.iseplive.api.constants.ClubRoleEnum;
 import com.iseplive.api.constants.Roles;
 import com.iseplive.api.dto.ClubDTO;
 import com.iseplive.api.dto.view.PostView;
@@ -64,9 +65,11 @@ public class ClubController {
   @PutMapping("/member/{member}/role/{role}")
   @RolesAllowed({Roles.STUDENT})
   public ClubMember updateMemberRole(@PathVariable Long member,
-                                     @PathVariable Long role,
+                                     @PathVariable String role,
                                      @AuthenticationPrincipal TokenPayload auth) {
-    return clubService.updateMemberRole(member, role, auth);
+    //TODO: Maybe try/catch this cast
+    ClubRoleEnum roleChecked = ClubRoleEnum.valueOf(role);
+    return clubService.updateMemberRole(member, roleChecked , auth);
   }
 
   @DeleteMapping("/member/{member}")

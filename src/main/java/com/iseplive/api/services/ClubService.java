@@ -1,6 +1,7 @@
 package com.iseplive.api.services;
 
 import com.iseplive.api.conf.jwt.TokenPayload;
+import com.iseplive.api.constants.ClubRoleEnum;
 import com.iseplive.api.constants.ClubRoles;
 import com.iseplive.api.constants.Roles;
 import com.iseplive.api.dao.club.ClubFactory;
@@ -73,12 +74,12 @@ public class ClubService {
 
     ClubMember clubMember = new ClubMember();
     clubMember.setMember(admin);
-    clubMember.setRole(getClubRole(ClubRoles.PRESIDENT));
+    clubMember.setRole(ClubRoleEnum.PRESIDENT);
     clubMember.setClub(club);
 
     club.setMembers(Collections.singletonList(clubMember));
     setClubLogo(club, logo);
-    return authorRepository.save(club);
+    return clubRepository.save(club);
   }
 
   public List<Club> searchClubs(String name) {
@@ -110,7 +111,7 @@ public class ClubService {
     ClubMember clubMember = new ClubMember();
     clubMember.setClub(getClub(clubId));
     clubMember.setMember(studentService.getStudent(studentId));
-    clubMember.setRole(getClubRole(ClubRoles.MEMBER));
+    clubMember.setRole(ClubRoleEnum.MEMBER);
 
     return clubMemberRepository.save(clubMember);
   }
@@ -192,14 +193,14 @@ public class ClubService {
     return clubRepository.save(club);
   }
 
-  public ClubMember updateMemberRole(Long member, Long role, TokenPayload payload) {
+  public ClubMember updateMemberRole(Long member, ClubRoleEnum role, TokenPayload payload) {
     ClubMember clubMember = getMember(member);
     if (!payload.getRoles().contains(Roles.ADMIN) && payload.getRoles().contains(Roles.CLUB_MANAGER)) {
       if (!payload.getClubsAdmin().contains(clubMember.getClub().getId())) {
         throw new AuthException("no rights to modify this club");
       }
     }
-    clubMember.setRole(getClubRole(role));
+    clubMember.setRole(role);
     return clubMemberRepository.save(clubMember);
   }
 
