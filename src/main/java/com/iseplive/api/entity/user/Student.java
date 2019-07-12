@@ -17,6 +17,7 @@ public class Student implements UserDetails {
   private Long id;
 
   private Integer promo;
+  private Date archivedAt = null;
 
   private String firstName;
   private String lastName;
@@ -117,6 +118,12 @@ public class Student implements UserDetails {
 
   public void setPhotoUrl(String photoUrl) {
     this.photoUrl = photoUrl;
+  }
+
+  public boolean isArchived() { return archivedAt != null; }
+
+  public void setArchivedAt(Date archivedAt) {
+    this.archivedAt = archivedAt;
   }
 
 

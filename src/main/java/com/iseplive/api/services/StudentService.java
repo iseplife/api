@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -72,7 +73,7 @@ public class StudentService {
 
   public Student createStudent(StudentDTO dto) {
     Student student = studentFactory.dtoToEntity(dto);
-    return authorRepository.save(student);
+    return studentRepository.save(student);
   }
 
   void addProfileImage(Long studentId, MultipartFile image) {
@@ -139,7 +140,7 @@ public class StudentService {
 
   public void toggleArchiveStudent(Long id) {
     Student student = getStudent(id);
-    student.setArchived(!student.isArchived());
+    student.setArchivedAt(new Date());
     studentRepository.save(student);
   }
 
