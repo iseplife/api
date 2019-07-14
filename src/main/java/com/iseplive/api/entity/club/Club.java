@@ -29,6 +29,7 @@ public class Club {
   private Date archivedAt = null;
   private Date createdAt;
 
+  @Enumerated(EnumType.STRING)
   private ClubTypesEnum type;
 
   private String facebook;

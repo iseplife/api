@@ -21,6 +21,7 @@ public class ClubMember {
   private Club club;
 
   // Determine the interactions allowed by the student
+  @Enumerated(EnumType.STRING)
   private ClubRoleEnum role;
 
   // Student's position in club, doesn't have any effect
