@@ -6,21 +6,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Set;
 
-/**
- * Created by Guillaume on 30/07/2017.
- * back
- */
+@Repository
 public interface StudentRepository extends CrudRepository<Student, Long> {
   Page<Student> findAll(Pageable pageable);
 
   @Query(
     "select s from Student s " +
       "join s.roles r " +
-      "where lower(concat(s.firstname, ' ', s.lastname)) " +
+      "where lower(concat(s.firstName, ' ', s.lastName)) " +
       "like %?1% and r in ?2 and s.promo in ?3 " +
       "and s.archived = false"
   )
@@ -29,7 +27,7 @@ public interface StudentRepository extends CrudRepository<Student, Long> {
   @Query(
     "select s from Student s " +
       "join s.roles r " +
-      "where lower(concat(s.firstname, ' ', s.lastname)) " +
+      "where lower(concat(s.firstName, ' ', s.lastName)) " +
       "like %?1% and r in ?2 " +
       "and s.archived = false"
   )
@@ -37,7 +35,7 @@ public interface StudentRepository extends CrudRepository<Student, Long> {
 
   @Query(
     "select s from Student s " +
-      "where lower(concat(s.firstname, ' ', s.lastname)) " +
+      "where lower(concat(s.firstName, ' ', s.lastName)) " +
       "like %?1% " +
       "and s.archived = false"
   )
@@ -45,11 +43,10 @@ public interface StudentRepository extends CrudRepository<Student, Long> {
 
   @Query(
     "select s from Student s " +
-      "where lower(concat(s.firstname, ' ', s.lastname)) " +
+      "where lower(concat(s.firstName, ' ', s.lastName)) " +
       "like %?1% and s.promo in ?2 " +
       "and s.archived = false"
   )
   Page<Student> searchStudent(String name, List<Integer> promo, Pageable pageable);
 
-  Student findFirstById(Long id);
 }

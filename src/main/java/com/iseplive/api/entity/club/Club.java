@@ -1,6 +1,7 @@
 package com.iseplive.api.entity.club;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.iseplive.api.constants.ClubRoleEnum;
 import com.iseplive.api.constants.ClubTypesEnum;
 import com.iseplive.api.entity.Post;
 import com.iseplive.api.entity.user.Student;
@@ -9,6 +10,7 @@ import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by Guillaume on 27/07/2017.
@@ -42,16 +44,8 @@ public class Club {
   private List<ClubMember> members;
 
   @JsonIgnore
-  @ManyToMany(fetch = FetchType.EAGER)
-  private Set<Student> admins;
-
-  @JsonIgnore
-  @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "linkedClub", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Post> posts;
-
-  @JsonIgnore
-  @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  private List<ClubRole> clubRoles;
 
   private String logoUrl;
 
@@ -75,11 +69,17 @@ public class Club {
     this.description = description;
   }
 
-  public Date getCreatedAt() { return createdAt; }
+  public Date getCreatedAt() {
+    return createdAt;
+  }
 
-  public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
+  public void setCreatedAt(Date createdAt) {
+    this.createdAt = createdAt;
+  }
 
-  public boolean isArchived() { return archivedAt != null; }
+  public boolean isArchived() {
+    return archivedAt != null;
+  }
 
   public void setArchivedAt(Date archivedAt) {
     this.archivedAt = archivedAt;
@@ -110,11 +110,11 @@ public class Club {
   }
 
   public Set<Student> getAdmins() {
-    return admins;
-  }
-
-  public void setAdmins(Set<Student> admins) {
-    this.admins = admins;
+    return this.members
+      .stream()
+      .filter(s -> s.getRole() == ClubRoleEnum.PUBLISHER || s.getRole() == ClubRoleEnum.PRESIDENT)
+      .map(ClubMember::getStudent)
+      .collect(Collectors.toSet());
   }
 
   public Boolean getAdmin() {
@@ -148,4 +148,8 @@ public class Club {
   public String getInstagram() { return instagram; }
 
   public void setInstagram(String instagram) { this.instagram = instagram; }
+
+  public ClubTypesEnum getType() { return type; }
+
+  public void setType(ClubTypesEnum type) { this.type = type; }
 }

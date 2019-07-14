@@ -26,8 +26,7 @@ public class ClubMember {
   private String position;
 
   @ManyToOne
-  private Student member;
-
+  private Student student;
 
   @ManyToOne
   private ClubMember parent;
@@ -40,13 +39,9 @@ public class ClubMember {
     this.id = id;
   }
 
-  public Student getMember() {
-    return member;
-  }
+  public Student getStudent() { return student; }
 
-  public void setMember(Student member) {
-    this.member = member;
-  }
+  public void setStudent(Student student) { this.student = student; }
 
   public ClubRoleEnum getRole() {
     return role;

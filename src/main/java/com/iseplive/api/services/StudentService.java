@@ -2,7 +2,6 @@ package com.iseplive.api.services;
 
 import com.google.common.collect.Sets;
 import com.iseplive.api.conf.jwt.TokenPayload;
-import com.iseplive.api.dao.post.AuthorRepository;
 import com.iseplive.api.dao.student.RoleRepository;
 import com.iseplive.api.dao.student.StudentFactory;
 import com.iseplive.api.dao.student.StudentRepository;
@@ -34,9 +33,6 @@ import java.util.stream.Collectors;
  */
 @Service
 public class StudentService {
-
-  @Autowired
-  AuthorRepository authorRepository;
 
   @Autowired
   StudentRepository studentRepository;

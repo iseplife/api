@@ -2,13 +2,11 @@ package com.iseplive.api.services;
 
 import com.iseplive.api.conf.jwt.TokenPayload;
 import com.iseplive.api.constants.ClubRoleEnum;
-import com.iseplive.api.constants.ClubRoles;
 import com.iseplive.api.constants.Roles;
 import com.iseplive.api.dao.club.ClubFactory;
 import com.iseplive.api.dao.club.ClubMemberRepository;
 import com.iseplive.api.dao.club.ClubRepository;
 import com.iseplive.api.dao.club.ClubRoleRepository;
-import com.iseplive.api.dao.post.AuthorRepository;
 import com.iseplive.api.dto.ClubDTO;
 import com.iseplive.api.dto.view.ClubMemberView;
 import com.iseplive.api.entity.club.Club;
@@ -34,9 +32,6 @@ import java.util.stream.Collectors;
  */
 @Service
 public class ClubService {
-
-  @Autowired
-  AuthorRepository authorRepository;
 
   @Autowired
   ClubRepository clubRepository;
@@ -70,10 +65,9 @@ public class ClubService {
     if (admin == null) {
       throw new IllegalArgumentException("this student id doesn't exist");
     }
-    club.setAdmins(Collections.singleton(admin));
 
     ClubMember clubMember = new ClubMember();
-    clubMember.setMember(admin);
+    clubMember.setStudent(admin);
     clubMember.setRole(ClubRoleEnum.PRESIDENT);
     clubMember.setClub(club);
 
@@ -102,15 +96,15 @@ public class ClubService {
   }
 
   public ClubMember addMember(Long clubId, Long studentId) {
-    clubMemberRepository.findByClubId(clubId).forEach(club -> {
-      if (club.getMember().getId().equals(studentId)) {
+    clubMemberRepository.findByClubId(clubId).forEach(member -> {
+      if (member.getStudent().getId().equals(studentId)) {
         throw new IllegalArgumentException("this student is already part of this club");
       }
     });
 
     ClubMember clubMember = new ClubMember();
     clubMember.setClub(getClub(clubId));
-    clubMember.setMember(studentService.getStudent(studentId));
+    clubMember.setStudent(studentService.getStudent(studentId));
     clubMember.setRole(ClubRoleEnum.MEMBER);
 
     return clubMemberRepository.save(clubMember);
@@ -137,7 +131,7 @@ public class ClubService {
    * @return a club list
    */
   List<Club> getClubAuthors(Student student) {
-    return clubRepository.findByAdminsContains(student);
+    return clubRepository.findByMemberRole(student, ClubRoleEnum.PUBLISHER);
   }
 
   public void deleteClub(Long id) {
@@ -158,15 +152,21 @@ public class ClubService {
 
   public Set<Student> getAdmins(Long clubId) {
     Club club = getClub(clubId);
-    return club.getAdmins();
+    return club.getMembers()
+    .stream()
+    .filter(s -> s.getRole() == ClubRoleEnum.PUBLISHER || s.getRole() == ClubRoleEnum.PRESIDENT)
+    .map(ClubMember::getStudent)
+    .collect(Collectors.toSet());
   }
 
   public void addAdmin(Long clubId, Long studId) {
-    Student student = studentService.getStudent(studId);
-    Club club = getClub(clubId);
-    club.getAdmins().add(student);
-    clubRepository.save(club);
+    ClubMember member = clubMemberRepository.findOneByStudentIdAndClubId(studId, clubId);
+    if(member == null) throw new IllegalArgumentException("the student needs to be part of the club to be an admin");
+
+    member.setRole(ClubRoleEnum.PRESIDENT);
+    clubRepository.save(member.getClub());
   }
+
 
   public void removeAdmin(Long clubId, Long studId) {
     Club club = getClub(clubId);
@@ -176,7 +176,7 @@ public class ClubService {
   }
 
   public List<Club> getAdminClubs(Student student) {
-    return clubRepository.findByAdminsContains(student);
+    return clubRepository.findByMemberRole(student, ClubRoleEnum.PRESIDENT);
   }
 
   public Club updateClub(Long id, ClubDTO clubDTO, MultipartFile logo) {
@@ -220,17 +220,17 @@ public class ClubService {
         throw new AuthException("no rights to modify this club");
       }
     }
-    club.getAdmins().remove(clubMember.getMember());
+    club.getAdmins().remove(clubMember.getStudent());
     club.getMembers().remove(clubMember);
     clubRepository.save(club);
   }
 
   public List<ClubMemberView> getStudentClubs(Long id) {
-    List<ClubMember> clubMembers = clubMemberRepository.findByMember_Id(id);
+    List<ClubMember> clubMembers = clubMemberRepository.findByStudentId(id);
     return clubMembers.stream().map(cm -> {
       ClubMemberView clubMemberView = new ClubMemberView();
       clubMemberView.setClub(cm.getClub());
-      clubMemberView.setMember(cm.getMember());
+      clubMemberView.setMember(cm.getStudent());
       clubMemberView.setRole(cm.getRole());
       return clubMemberView;
     }).collect(Collectors.toList());

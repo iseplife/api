@@ -40,7 +40,7 @@ public class Student implements UserDetails {
   private String photoUrl;
   private String photoUrlThumb;
 
-  @Column(length = 300) // TODO Pas boquant ??
+  @Column(length = 300) // TODO: Potential removal
   private String bio;
 
   @ManyToMany(fetch = FetchType.EAGER)
