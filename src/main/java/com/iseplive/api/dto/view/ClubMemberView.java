@@ -2,7 +2,6 @@ package com.iseplive.api.dto.view;
 
 import com.iseplive.api.constants.ClubRoleEnum;
 import com.iseplive.api.entity.club.Club;
-import com.iseplive.api.entity.club.ClubRole;
 import com.iseplive.api.entity.user.Student;
 
 /**

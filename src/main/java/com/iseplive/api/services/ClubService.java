@@ -6,12 +6,10 @@ import com.iseplive.api.constants.Roles;
 import com.iseplive.api.dao.club.ClubFactory;
 import com.iseplive.api.dao.club.ClubMemberRepository;
 import com.iseplive.api.dao.club.ClubRepository;
-import com.iseplive.api.dao.club.ClubRoleRepository;
 import com.iseplive.api.dto.ClubDTO;
 import com.iseplive.api.dto.view.ClubMemberView;
 import com.iseplive.api.entity.club.Club;
 import com.iseplive.api.entity.club.ClubMember;
-import com.iseplive.api.entity.club.ClubRole;
 import com.iseplive.api.entity.user.Student;
 import com.iseplive.api.exceptions.AuthException;
 import com.iseplive.api.exceptions.IllegalArgumentException;
@@ -35,9 +33,6 @@ public class ClubService {
 
   @Autowired
   ClubRepository clubRepository;
-
-  @Autowired
-  ClubRoleRepository clubRoleRepository;
 
   @Autowired
   ClubMemberRepository clubMemberRepository;
@@ -80,14 +75,6 @@ public class ClubService {
     return clubRepository.findAllByNameContainingIgnoringCase(name);
   }
 
-  private ClubRole getClubRole(String role) {
-    ClubRole clubRole = clubRoleRepository.findOneByName(role);
-    if (clubRole == null) {
-      throw new IllegalArgumentException("Could not find this role: "+role);
-    }
-    return clubRole;
-  }
-
   private void setClubLogo(Club club, MultipartFile file) {
     String path = imageUtils.resolvePath(clubLogoStorage, club.getName(), false);
     imageUtils.removeIfExistJPEG(path);
@@ -108,10 +95,6 @@ public class ClubService {
     clubMember.setRole(ClubRoleEnum.MEMBER);
 
     return clubMemberRepository.save(clubMember);
-  }
-
-  private ClubRole getClubRole(Long id) {
-    return clubRoleRepository.findOne(id);
   }
 
   public List<Club> getAll() {
@@ -140,14 +123,6 @@ public class ClubService {
 
   public List<ClubMember> getMembers(Long id) {
     return clubMemberRepository.findByClubId(id);
-  }
-
-  public ClubRole createRole(String role, Long clubId) {
-    Club club = getClub(clubId);
-    ClubRole clubRole = new ClubRole();
-    clubRole.setName(role);
-    clubRole.setClub(club);
-    return clubRoleRepository.save(clubRole);
   }
 
   public Set<Student> getAdmins(Long clubId) {
@@ -240,14 +215,4 @@ public class ClubService {
     return clubRepository.findByIsAdmin(true);
   }
 
-  public List<ClubRole> getClubRoles(Long id) {
-    return clubRoleRepository.findByClub_Id(id);
-  }
-
-  public void deleteClubRole(Long roleid) {
-    ClubRole role = clubRoleRepository.findOne(roleid);
-    if (role != null) {
-      clubRoleRepository.delete(role);
-    }
-  }
 }

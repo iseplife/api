@@ -7,7 +7,6 @@ import com.iseplive.api.dto.ClubDTO;
 import com.iseplive.api.dto.view.PostView;
 import com.iseplive.api.entity.club.Club;
 import com.iseplive.api.entity.club.ClubMember;
-import com.iseplive.api.entity.club.ClubRole;
 import com.iseplive.api.entity.user.Student;
 import com.iseplive.api.exceptions.AuthException;
 import com.iseplive.api.services.AuthService;
@@ -109,35 +108,7 @@ public class ClubController {
     }
     return false;
   }
-
-  @GetMapping("/{id}/role")
-  @RolesAllowed({Roles.STUDENT})
-  public List<ClubRole> getClubRoles(@PathVariable Long id) {
-    return clubService.getClubRoles(id);
-  }
-
-  @PostMapping("/{id}/role/{name}")
-  @RolesAllowed({Roles.STUDENT})
-  public ClubRole createRole(@PathVariable String name,
-                             @PathVariable Long id,
-                             @AuthenticationPrincipal TokenPayload auth) {
-    if (hasAdminAccess(auth, id)) {
-      throw new AuthException("no rights to modify this club");
-    }
-    return clubService.createRole(name, id);
-  }
-
-  @DeleteMapping("/{id}/role/{roleid}")
-  @RolesAllowed({Roles.STUDENT})
-  public void deleteClubRole(@PathVariable Long id,
-                             @PathVariable Long roleid,
-                             @AuthenticationPrincipal TokenPayload auth) {
-    if (hasAdminAccess(auth, id)) {
-      throw new AuthException("no rights to modify this club");
-    }
-    clubService.deleteClubRole(roleid);
-  }
-
+  
   @PutMapping("/{id}/member/{student}")
   @RolesAllowed({Roles.STUDENT})
   public ClubMember addMember(@PathVariable Long id,
