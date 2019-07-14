@@ -23,6 +23,7 @@ public class ClubMember {
   // Determine the interactions allowed by the student
   private ClubRoleEnum role;
 
+  // Student's position in club, doesn't have any effect
   private String position;
 
   @ManyToOne
@@ -43,31 +44,19 @@ public class ClubMember {
 
   public void setStudent(Student student) { this.student = student; }
 
-  public ClubRoleEnum getRole() {
-    return role;
-  }
+  public ClubRoleEnum getRole() { return role; }
 
-  public void setRole(ClubRoleEnum role) {
-    this.role = role;
-  }
+  public void setRole(ClubRoleEnum role) { this.role = role; }
 
-  public Club getClub() {
-    return club;
-  }
+  public Club getClub() { return club; }
 
-  public void setClub(Club club) {
-    this.club = club;
-  }
+  public void setClub(Club club) { this.club = club; }
 
   public ClubMember getParent() { return parent; }
 
   public void setParent(ClubMember parent) { this.parent = parent; }
 
-  public String getPosition() {
-    return position;
-  }
+  public String getPosition() { return position; }
 
-  public void setPosition(String position) {
-    this.position = position;
-  }
+  public void setPosition(String position) { this.position = position; }
 }
