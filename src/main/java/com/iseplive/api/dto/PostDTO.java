@@ -7,6 +7,7 @@ package com.iseplive.api.dto;
 public class PostDTO {
   private String title;
   private String content;
+  private Long linkedClubId;
   private Long authorId;
   private Boolean isPrivate;
 
@@ -41,4 +42,8 @@ public class PostDTO {
   public void setPrivate(Boolean aPrivate) {
     isPrivate = aPrivate;
   }
+
+  public Long getLinkedClubId() { return linkedClubId; }
+
+  public void setLinkedClubId(Long linkedClubId) { this.linkedClubId = linkedClubId; }
 }

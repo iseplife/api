@@ -6,6 +6,7 @@ import com.iseplive.api.constants.PublishStateEnum;
 import com.iseplive.api.constants.Roles;
 import com.iseplive.api.dao.media.MediaRepository;
 import com.iseplive.api.dao.post.*;
+import com.iseplive.api.dao.student.StudentRepository;
 import com.iseplive.api.dto.CommentDTO;
 import com.iseplive.api.dto.PostDTO;
 import com.iseplive.api.dto.PostUpdateDTO;
@@ -60,7 +61,7 @@ public class PostService {
   MediaRepository mediaRepository;
 
   @Autowired
-  AuthorRepository authorRepository;
+  StudentRepository studentRepository;
 
   @Autowired
   ClubService clubService;
@@ -108,17 +109,18 @@ public class PostService {
 
   public Post createPost(TokenPayload auth, PostDTO postDTO) {
     Post post = postFactory.dtoToEntity(postDTO);
-    post.setAuthor(authorRepository.findOne(postDTO.getAuthorId()));
+    post.setAuthor(studentRepository.findOne(postDTO.getAuthorId()));
 
     // if creator is a student but is has wrong author id on the post
-    if (post.getAuthor().getAuthorType().equals(AuthorTypes.STUDENT) && !auth.getId().equals(postDTO.getAuthorId())) {
+    if (post.getLinkedClub() == null && !auth.getId().equals(postDTO.getAuthorId())) {
       throw new AuthException("not allowed to create this post");
     }
 
     // if creator is not an ADMIN or POST_MANAGER
     if (!auth.getRoles().contains(Roles.ADMIN) && !auth.getRoles().contains(Roles.POST_MANAGER)) {
-      // if creator is not a club an is not part of the admins (able to post)
-      if (post.getAuthor().getAuthorType().equals(AuthorTypes.CLUB) && !auth.getClubsAdmin().contains(postDTO.getAuthorId())) {
+
+      // Check if user is able to post in club's name
+      if (post.getLinkedClub() != null && !auth.getClubsAdmin().contains(postDTO.getLinkedClubId())) {
         throw new AuthException("not allowed to create this post");
       }
     }
@@ -248,7 +250,7 @@ public class PostService {
     Post post = getPost(id);
     boolean canPinPost = auth.getRoles().contains(Roles.ADMIN);
     canPinPost |= auth.getRoles().contains(Roles.POST_MANAGER);
-    canPinPost |= post.getAuthor() instanceof Club;
+    canPinPost |= post.getLinkedClub() != null;
     if (canPinPost) {
       post.setPinned(pinned);
       postRepository.save(post);
@@ -258,10 +260,10 @@ public class PostService {
     throw new AuthException("you are not allowed to pin this post");
   }
 
-  public List<Author> getAuthors(TokenPayload auth) {
-    List<Author> authors = new ArrayList<>();
+  public List<Club> getAuthors(TokenPayload auth) {
+    List<Club> authors = new ArrayList<>();
     Student student = studentService.getStudent(auth.getId());
-    authors.add(student);
+
     if (auth.getRoles().contains(Roles.ADMIN)) {
       authors.addAll(clubService.getAll());
     } else {
@@ -305,7 +307,7 @@ public class PostService {
       throw new AuthException("you cannot update this post");
     }
     post.setTitle(update.getTitle());
-    post.setContent(update.getContent());
+    post.setDescription(update.getContent());
     post.setPrivate(update.getPrivate());
     return postRepository.save(post);
   }

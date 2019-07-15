@@ -10,6 +10,7 @@ import com.iseplive.api.dto.view.CommentView;
 import com.iseplive.api.dto.view.PostView;
 import com.iseplive.api.entity.Comment;
 import com.iseplive.api.entity.Post;
+import com.iseplive.api.entity.club.Club;
 import com.iseplive.api.entity.user.Author;
 import com.iseplive.api.entity.user.Student;
 import com.iseplive.api.services.AuthService;
@@ -68,7 +69,7 @@ public class PostController {
 
   @GetMapping("/authors")
   @RolesAllowed({Roles.ADMIN, Roles.POST_MANAGER, Roles.STUDENT})
-  public List<Author> getAuthors(@AuthenticationPrincipal TokenPayload auth) {
+  public List<Club> getAuthors(@AuthenticationPrincipal TokenPayload auth) {
     return postService.getAuthors(auth);
   }
 

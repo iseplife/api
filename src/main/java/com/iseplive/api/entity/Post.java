@@ -2,6 +2,7 @@ package com.iseplive.api.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplive.api.constants.PublishStateEnum;
+import com.iseplive.api.entity.club.Club;
 import com.iseplive.api.entity.media.Media;
 import com.iseplive.api.entity.user.Author;
 import com.iseplive.api.entity.user.Student;
@@ -20,18 +21,21 @@ public class Post {
   @GeneratedValue
   private Long id;
   private String title;
+  @Column(columnDefinition = "TEXT")
+  private String description;
+
+  private Date publicationDate;
   private Date creationDate;
   private Boolean isPrivate = false;
   private Boolean isPinned = false;
-
-  @Column(columnDefinition = "TEXT")
-  private String content;
 
   @OneToOne(cascade = CascadeType.ALL)
   private Media media;
 
   @ManyToOne
-  private Author author;
+  private Student author;
+  @ManyToOne
+  private Club linkedClub = null;
 
   @JsonIgnore
   @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
@@ -68,19 +72,19 @@ public class Post {
     this.creationDate = creationDate;
   }
 
-  public String getContent() {
-    return content;
+  public String getDescription() {
+    return description;
   }
 
-  public void setContent(String content) {
-    this.content = content;
+  public void setDescription(String description) {
+    this.description = description;
   }
 
-  public Author getAuthor() {
+  public Student getAuthor() {
     return author;
   }
 
-  public void setAuthor(Author author) {
+  public void setAuthor(Student author) {
     this.author = author;
   }
 
@@ -132,4 +136,19 @@ public class Post {
     isPinned = pinned;
   }
 
+  public Date getPublicationDate() {
+    return publicationDate;
+  }
+
+  public void setPublicationDate(Date publicationDate) {
+    this.publicationDate = publicationDate;
+  }
+
+  public Club getLinkedClub() {
+    return linkedClub;
+  }
+
+  public void setLinkedClub(Club linkedClub) {
+    this.linkedClub = linkedClub;
+  }
 }
