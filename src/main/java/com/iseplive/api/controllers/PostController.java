@@ -11,7 +11,6 @@ import com.iseplive.api.dto.view.PostView;
 import com.iseplive.api.entity.Comment;
 import com.iseplive.api.entity.Post;
 import com.iseplive.api.entity.club.Club;
-import com.iseplive.api.entity.user.Author;
 import com.iseplive.api.entity.user.Student;
 import com.iseplive.api.services.AuthService;
 import com.iseplive.api.services.PostService;

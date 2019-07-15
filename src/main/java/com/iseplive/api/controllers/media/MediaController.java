@@ -2,7 +2,8 @@ package com.iseplive.api.controllers.media;
 
 import com.iseplive.api.conf.jwt.TokenPayload;
 import com.iseplive.api.constants.Roles;
-import com.iseplive.api.entity.club.Club;
+import com.iseplive.api.entity.Image;
+import com.iseplive.api.entity.Matched;
 import com.iseplive.api.entity.media.*;
 import com.iseplive.api.exceptions.AuthException;
 import com.iseplive.api.services.AuthService;
@@ -85,10 +86,6 @@ public class MediaController {
     mediaService.untagStudentInImage(id, student, auth);
   }
 
-//  @PostMapping("/videoEmbed")
-//  public VideoEmbed addVideoEmbed(@RequestBody VideoEmbedDTO dto) {
-//    return mediaService.createVideoEmbed(dto);
-//  }
 
   @PostMapping("/gallery")
   @RolesAllowed({Roles.ADMIN, Roles.POST_MANAGER, Roles.STUDENT})
@@ -134,20 +131,6 @@ public class MediaController {
       }
     }
     mediaService.deleteImagesGallery(id, images);
-  }
-
-
-  @PostMapping("/gazette")
-  @RolesAllowed({Roles.ADMIN, Roles.POST_MANAGER, Roles.STUDENT})
-  public Gazette createGazette(@RequestParam("post") Long postId,
-                               @RequestParam("title") String title,
-                               @RequestParam("file") MultipartFile file,
-                               @AuthenticationPrincipal TokenPayload auth) {
-    Club club = clubService.getIsepLive();
-    if (!auth.getClubsAdmin().contains(club.getId())) {
-      throw new AuthException("you cannot create a gazette");
-    }
-    return mediaService.createGazette(postId, title, file);
   }
 
   @PostMapping("/document")

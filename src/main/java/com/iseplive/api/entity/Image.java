@@ -1,10 +1,10 @@
-package com.iseplive.api.entity.media;
+package com.iseplive.api.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.iseplive.api.constants.MediaType;
+import com.iseplive.api.entity.Matched;
+import com.iseplive.api.entity.media.Gallery;
 
 import javax.persistence.*;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -12,9 +12,10 @@ import java.util.List;
  * back
  */
 @Entity
-@DiscriminatorValue(MediaType.IMAGE)
-public class Image extends Media {
-
+public class Image {
+  @Id
+  @GeneratedValue
+  private Long id;
   private String thumbUrl;
   private String fullSizeUrl;
   private String originalUrl;
@@ -26,10 +27,9 @@ public class Image extends Media {
   @OneToMany(mappedBy = "image", cascade = CascadeType.ALL)
   private List<Matched> matched;
 
-  @Override
-  public void setCreation(Date creation) {
-    super.setCreation(creation);
-  }
+  public Long getId() { return id; }
+
+  public void setId(Long id) { this.id = id;}
 
   public List<Matched> getMatched() {
     return matched;

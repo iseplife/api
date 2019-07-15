@@ -1,6 +1,6 @@
 package com.iseplive.api.dto.view;
 
-import com.iseplive.api.entity.media.Image;
+import com.iseplive.api.entity.Image;
 import com.iseplive.api.entity.user.Student;
 
 /**

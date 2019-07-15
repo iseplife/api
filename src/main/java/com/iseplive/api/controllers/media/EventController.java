@@ -3,7 +3,7 @@ package com.iseplive.api.controllers.media;
 import com.iseplive.api.conf.jwt.TokenPayload;
 import com.iseplive.api.constants.Roles;
 import com.iseplive.api.dto.media.EventDTO;
-import com.iseplive.api.entity.media.Event;
+import com.iseplive.api.entity.Event;
 import com.iseplive.api.exceptions.AuthException;
 import com.iseplive.api.services.EventService;
 import com.iseplive.api.utils.JsonUtils;

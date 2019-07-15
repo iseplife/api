@@ -12,6 +12,7 @@ import com.iseplive.api.dto.PostUpdateDTO;
 import com.iseplive.api.dto.view.CommentView;
 import com.iseplive.api.dto.view.PostView;
 import com.iseplive.api.entity.Comment;
+import com.iseplive.api.entity.Event;
 import com.iseplive.api.entity.Post;
 import com.iseplive.api.entity.club.Club;
 import com.iseplive.api.entity.media.*;
@@ -152,11 +153,6 @@ public class PostService {
       gallery.getImages().forEach(img -> mediaService.deleteImageFile(img));
     }
 
-    if (post.getMedia() instanceof Image) {
-      Image image = (Image) post.getMedia();
-      mediaService.deleteImageFile(image);
-    }
-
     if (post.getMedia() instanceof Event) {
       Event event = (Event) post.getMedia();
       mediaUtils.removeIfExistPublic(event.getImageUrl());
@@ -165,11 +161,6 @@ public class PostService {
     if (post.getMedia() instanceof Document) {
       Document document = (Document) post.getMedia();
       mediaUtils.removeIfExistPublic(document.getPath());
-    }
-
-    if (post.getMedia() instanceof Gazette) {
-      Gazette gazette = (Gazette) post.getMedia();
-      mediaUtils.removeIfExistPublic(gazette.getUrl());
     }
 
     if (post.getMedia() instanceof Video) {
