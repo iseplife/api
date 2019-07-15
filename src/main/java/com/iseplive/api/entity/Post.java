@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplive.api.constants.PublishStateEnum;
 import com.iseplive.api.entity.club.Club;
 import com.iseplive.api.entity.media.Media;
-import com.iseplive.api.entity.user.Author;
 import com.iseplive.api.entity.user.Student;
 
 import javax.persistence.*;

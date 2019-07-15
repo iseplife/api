@@ -1,7 +1,6 @@
 package com.iseplive.api.services;
 
 import com.iseplive.api.conf.jwt.TokenPayload;
-import com.iseplive.api.constants.AuthorTypes;
 import com.iseplive.api.constants.PublishStateEnum;
 import com.iseplive.api.constants.Roles;
 import com.iseplive.api.dao.media.MediaRepository;
@@ -16,7 +15,6 @@ import com.iseplive.api.entity.Comment;
 import com.iseplive.api.entity.Post;
 import com.iseplive.api.entity.club.Club;
 import com.iseplive.api.entity.media.*;
-import com.iseplive.api.entity.user.Author;
 import com.iseplive.api.entity.user.Student;
 import com.iseplive.api.exceptions.AuthException;
 import com.iseplive.api.exceptions.IllegalArgumentException;
