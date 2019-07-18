@@ -24,7 +24,7 @@ public class Post {
   private String description;
 
   private Date publicationDate;
-  private Date creationDate;
+  private Date creationDate; //TODO: remove creation date ? Not useful anymore
   private Boolean isPrivate = false;
   private Boolean isPinned = false;
 
