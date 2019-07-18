@@ -18,15 +18,20 @@ import java.util.List;
 public interface ClubRepository extends CrudRepository<Club, Long> {
   List<Club> findAllByOrderByName();
 
-  @Query(
-    "select c from Club c " +
-      "join c.members m " +
-      "where m.student= :student " +
-      "and m.role = :role"
+  @Query("select c from Club c " +
+    "join c.members m " +
+    "where m.student = :student " +
+    "and m.role = :role"
   )
   List<Club> findByMemberRole(@Param("student") Student student, @Param("role") ClubRoleEnum role);
 
   List<Club> findAllByNameContainingIgnoringCase(String name);
+
+  @Query("select c from Club c " +
+    "join c.members m " +
+    "where m.student = :student " +
+    "or m.role = :role")
+  List<Club> findByAdminsContains(Student admin);
 
   Club findByIsAdmin(Boolean isAdmin);
 }
