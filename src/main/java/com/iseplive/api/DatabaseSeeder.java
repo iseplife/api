@@ -11,7 +11,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 @Service
 class DatabaseSeeder {
@@ -48,8 +51,19 @@ class DatabaseSeeder {
   }
 
   private void runSeedDatabase() {
-    // TODO
+    List<Role> roles = new ArrayList<>(
+      Arrays.asList(
+        new Role(Roles.STUDENT),
+        new Role(Roles.ADMIN),
+        new Role(Roles.POST_MANAGER),
+        new Role(Roles.USER_MANAGER),
+        new Role(Roles.CLUB_MANAGER),
+        new Role(Roles.EVENT_MANAGER)
+      ));
+    roleRepository.save(roles);
+
     Student student = new Student();
+    student.setId(1L);
     student.setFirstname("Default");
     student.setLastname("Admin");
     student.setBirthDate(new Date());
