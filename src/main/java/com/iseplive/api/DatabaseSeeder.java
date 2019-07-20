@@ -11,8 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -51,15 +51,18 @@ class DatabaseSeeder {
   }
 
   private void runSeedDatabase() {
-    List<Role> roles = new ArrayList<>(
-      Arrays.asList(
-        new Role(Roles.STUDENT),
-        new Role(Roles.ADMIN),
-        new Role(Roles.POST_MANAGER),
-        new Role(Roles.USER_MANAGER),
-        new Role(Roles.CLUB_MANAGER),
-        new Role(Roles.EVENT_MANAGER)
-      ));
+    List<Role> roles = new ArrayList<>();
+    List<Role> savedRoles = roleRepository.findAll();
+    for(Field f: Roles.class.getFields()) {
+        try {
+          Role role = new Role((String) f.get(Roles.class));
+          if(!savedRoles.contains(role)){
+            roles.add(role);
+          }
+        }catch (Exception e){
+          LOG.debug(e.getMessage());
+        }
+    }
     roleRepository.save(roles);
 
     Student student = new Student();
