@@ -6,9 +6,7 @@ package com.iseplive.api.constants;
  */
 public interface MediaType {
   String GALLERY = "gallery";
-  String GAZETTE = "gazette";
   String VIDEO = "video";
-  String STATUS = "status";
   String POLL = "poll";
   String EVENT = "event";
   String DOCUMENT = "document";
