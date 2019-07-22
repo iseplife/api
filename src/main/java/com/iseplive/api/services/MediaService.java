@@ -76,8 +76,7 @@ public class MediaService {
   @Value("${storage.video.url}")
   String videoDir;
 
-  @Value("${storage.gazette.url}")
-  String gazetteDir;
+
 
   @Value("${storage.document.url}")
   String documentDir;
@@ -96,7 +95,7 @@ public class MediaService {
    */
   public Page<Media> getAllGalleryGazetteVideoPublic(int page) {
     return mediaRepository.findAllByMediaTypeInAndPost_isPrivateAndPost_PublishStateOrderByCreationDesc(
-      Arrays.asList(MediaType.GALLERY, MediaType.GAZETTE, MediaType.VIDEO), false, PublishStateEnum.PUBLISHED, new PageRequest(page, ALL_MEDIA_PAGE_SIZE)
+      Arrays.asList(MediaType.GALLERY, MediaType.VIDEO), false, PublishStateEnum.PUBLISHED, new PageRequest(page, ALL_MEDIA_PAGE_SIZE)
     );
   }
 
@@ -107,7 +106,7 @@ public class MediaService {
   @Cacheable("media-list-published")
   public Page<Media>getAllGalleryGazetteVideoPublished(int page) {
     return mediaRepository.findAllByMediaTypeInAndPost_PublishStateOrderByCreationDesc(
-      Arrays.asList(MediaType.GALLERY, MediaType.GAZETTE, MediaType.VIDEO), PublishStateEnum.PUBLISHED, new PageRequest(page, ALL_MEDIA_PAGE_SIZE)
+      Arrays.asList(MediaType.GALLERY, MediaType.VIDEO), PublishStateEnum.PUBLISHED, new PageRequest(page, ALL_MEDIA_PAGE_SIZE)
     );
   }
 
@@ -119,7 +118,7 @@ public class MediaService {
   @Cacheable("media-list-all")
   public Page<Media> getAllGalleryGazetteVideo(int page) {
     return mediaRepository.findAllByMediaTypeInOrderByCreationDesc(
-      Arrays.asList(MediaType.GALLERY, MediaType.GAZETTE, MediaType.VIDEO), new PageRequest(page, ALL_MEDIA_PAGE_SIZE)
+      Arrays.asList(MediaType.GALLERY, MediaType.VIDEO), new PageRequest(page, ALL_MEDIA_PAGE_SIZE)
     );
   }
 
