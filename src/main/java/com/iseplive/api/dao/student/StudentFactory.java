@@ -41,8 +41,8 @@ public class StudentFactory {
   }
 
   public void updateAdminDtoToEntity(Student student, StudentUpdateAdminDTO dto) {
-    student.setFirstName(dto.getFirstname());
-    student.setLastName(dto.getLastname());
+    student.setFirstName(dto.getFirstName());
+    student.setLastName(dto.getLastName());
 
     student.setBio(dto.getBio());
     student.setBirthDate(dto.getBirthDate());
@@ -60,8 +60,8 @@ public class StudentFactory {
     StudentWithRoleView studentWithRoleView = new StudentWithRoleView();
 
     studentWithRoleView.setId(student.getId());
-    studentWithRoleView.setFirstname(student.getFirstName());
-    studentWithRoleView.setLastname(student.getLastName());
+    studentWithRoleView.setFirstName(student.getFirstName());
+    studentWithRoleView.setLastName(student.getLastName());
 
     studentWithRoleView.setBio(student.getBio());
     studentWithRoleView.setBirthDate(student.getBirthDate());

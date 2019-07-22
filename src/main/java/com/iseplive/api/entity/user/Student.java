@@ -23,12 +23,13 @@ public class Student implements UserDetails {
   private String lastName;
   private String mail;
   private Date birthDate;
+  @JsonIgnore
   private Boolean recognition;
 
   @Column(unique = true)
-  private String phone_id;
+  private String phoneId;
   @Column(unique = true)
-  private String phone_number;
+  private String phoneNumber;
 
   private String facebook;
   private String twitter;
@@ -85,19 +86,19 @@ public class Student implements UserDetails {
   }
 
   public String getPhoneNumber() {
-    return phone_number;
+    return phoneNumber;
   }
 
   public void setPhoneNumber(String phone_number) {
-    this.phone_number = phone_number;
+    this.phoneNumber = phone_number;
   }
 
   public String getPhoneId() {
-    return phone_id;
+    return phoneId;
   }
 
-  public void setPhoneId(String phone_id) {
-    this.phone_id = phone_id;
+  public void setPhoneId(String phoneId) {
+    this.phoneId = phoneId;
   }
 
   public Boolean getRecognition() { return recognition;  }
