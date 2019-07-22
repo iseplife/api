@@ -55,7 +55,7 @@ public class StudentImportService {
           String firstname = cols[0];
           String lastname = cols[1];
           Long studentId = Long.parseLong(cols[2]);
-          Integer promo = Integer.parseInt(cols[3]);
+          String promo = cols[3];
 
           Student student = new Student();
           student.setId(studentId);
