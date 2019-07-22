@@ -1,7 +1,6 @@
 package com.iseplive.api.entity.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.iseplive.api.constants.AuthorTypes;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -10,29 +9,27 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
-/**
- * Created by Guillaume on 27/07/2017.
- * back
- */
 @Entity
-@DiscriminatorValue(AuthorTypes.STUDENT)
-public class Student extends Author implements UserDetails {
+public class Student implements UserDetails {
 
-  private Integer promo;
+  @Id
+  @Column(unique = true)
+  private Long id;
 
-  private String firstname;
-  private String lastname;
+  private String promo;
+  private Date archivedAt = null;
 
+  private String firstName;
+  private String lastName;
+  private String mail;
   private Date birthDate;
-
-  private String phone;
-  private String address;
+  @JsonIgnore
+  private Boolean recognition;
 
   @Column(unique = true)
-  private String studentId;
-
-  private String mail;
-  private String mailISEP;
+  private String phoneId;
+  @Column(unique = true)
+  private String phoneNumber;
 
   private String facebook;
   private String twitter;
@@ -44,34 +41,40 @@ public class Student extends Author implements UserDetails {
   private String photoUrl;
   private String photoUrlThumb;
 
-  @Column(length = 300) // TODO Pas boquant ??
+  @Column(length = 300) // TODO: Potential removal
   private String bio;
 
   @ManyToMany(fetch = FetchType.EAGER)
   private Set<Role> roles;
 
-  public Integer getPromo() {
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public String getPromo() {
     return promo;
   }
 
-  public void setPromo(Integer promo) {
-    this.promo = promo;
+  public void setPromo(String promo) { this.promo = promo;  }
+
+  public String getFirstName() {
+    return firstName;
   }
 
-  public String getFirstname() {
-    return firstname;
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
   }
 
-  public void setFirstname(String firstname) {
-    this.firstname = firstname;
+  public String getLastName() {
+    return lastName;
   }
 
-  public String getLastname() {
-    return lastname;
-  }
-
-  public void setLastname(String lastname) {
-    this.lastname = lastname;
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
   }
 
   public Date getBirthDate() {
@@ -82,13 +85,25 @@ public class Student extends Author implements UserDetails {
     this.birthDate = birthDate;
   }
 
-  public String getPhone() {
-    return phone;
+  public String getPhoneNumber() {
+    return phoneNumber;
   }
 
-  public void setPhone(String phone) {
-    this.phone = phone;
+  public void setPhoneNumber(String phone_number) {
+    this.phoneNumber = phone_number;
   }
+
+  public String getPhoneId() {
+    return phoneId;
+  }
+
+  public void setPhoneId(String phoneId) {
+    this.phoneId = phoneId;
+  }
+
+  public Boolean getRecognition() { return recognition;  }
+
+  public void setRecognition(Boolean recognition) { this.recognition = recognition; }
 
   public String getBio() {
     return bio;
@@ -106,14 +121,12 @@ public class Student extends Author implements UserDetails {
     this.photoUrl = photoUrl;
   }
 
+  public boolean isArchived() { return archivedAt != null; }
 
-  public String getStudentId() {
-    return studentId;
+  public void setArchivedAt(Date archivedAt) {
+    this.archivedAt = archivedAt;
   }
 
-  public void setStudentId(String studentId) {
-    this.studentId = studentId;
-  }
 
   @Override
   @JsonIgnore
@@ -166,28 +179,12 @@ public class Student extends Author implements UserDetails {
     this.roles = roles;
   }
 
-  public String getAddress() {
-    return address;
-  }
-
-  public void setAddress(String address) {
-    this.address = address;
-  }
-
   public String getMail() {
     return mail;
   }
 
   public void setMail(String mail) {
     this.mail = mail;
-  }
-
-  public String getMailISEP() {
-    return mailISEP;
-  }
-
-  public void setMailISEP(String mailISEP) {
-    this.mailISEP = mailISEP;
   }
 
   public String getFacebook() {
@@ -237,4 +234,6 @@ public class Student extends Author implements UserDetails {
   public void setSnapchat(String snapchat) {
     this.snapchat = snapchat;
   }
+
+
 }

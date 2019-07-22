@@ -1,8 +1,11 @@
 package com.iseplive.api.dao.club;
 
+import com.iseplive.api.constants.ClubRoleEnum;
 import com.iseplive.api.entity.club.Club;
 import com.iseplive.api.entity.user.Student;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,8 +18,19 @@ import java.util.List;
 public interface ClubRepository extends CrudRepository<Club, Long> {
   List<Club> findAllByOrderByName();
 
+  @Query("select c from Club c " +
+    "join c.members m " +
+    "where m.student = :student " +
+    "and m.role = :role"
+  )
+  List<Club> findByMemberRole(@Param("student") Student student, @Param("role") ClubRoleEnum role);
+
   List<Club> findAllByNameContainingIgnoringCase(String name);
 
+  @Query("select c from Club c " +
+    "join c.members m " +
+    "where m.student = :student " +
+    "or m.role = :role")
   List<Club> findByAdminsContains(Student admin);
 
   Club findByIsAdmin(Boolean isAdmin);

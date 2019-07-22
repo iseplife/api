@@ -1,7 +1,7 @@
 package com.iseplive.api.dao.image;
 
-import com.iseplive.api.entity.media.Image;
-import com.iseplive.api.entity.media.Matched;
+import com.iseplive.api.entity.Image;
+import com.iseplive.api.entity.Matched;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;

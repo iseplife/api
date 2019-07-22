@@ -1,29 +1,41 @@
 package com.iseplive.api.entity.club;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.iseplive.api.constants.AuthorTypes;
+import com.iseplive.api.constants.ClubRoleEnum;
+import com.iseplive.api.constants.ClubTypesEnum;
 import com.iseplive.api.entity.Post;
-import com.iseplive.api.entity.user.Author;
 import com.iseplive.api.entity.user.Student;
 
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by Guillaume on 27/07/2017.
  * back
  */
 @Entity
-@DiscriminatorValue(AuthorTypes.CLUB)
-public class Club extends Author {
+public class Club {
+  @Id
+  @GeneratedValue
+  private Long id;
 
   private String name;
-
   @Column(length = 500)
   private String description;
-  private Date creation;
+
+  private Date archivedAt = null;
+  private Date createdAt;
+
+  @Enumerated(EnumType.STRING)
+  private ClubTypesEnum type;
+
+  private String facebook;
+  private String facebook_token;
+  private String snapchat;
+  private String instagram;
   private String website;
   // true if it is iseplive's club.
   private Boolean isAdmin;
@@ -33,18 +45,14 @@ public class Club extends Author {
   private List<ClubMember> members;
 
   @JsonIgnore
-  @ManyToMany(fetch = FetchType.EAGER)
-  private Set<Student> admins;
-
-  @JsonIgnore
-  @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "linkedClub", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Post> posts;
 
-  @JsonIgnore
-  @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  private List<ClubRole> clubRoles;
-
   private String logoUrl;
+
+  public Long getId() { return id; }
+
+  public void setId(Long id) { this.id = id; }
 
   public String getName() {
     return name;
@@ -62,12 +70,20 @@ public class Club extends Author {
     this.description = description;
   }
 
-  public Date getCreation() {
-    return creation;
+  public Date getCreatedAt() {
+    return createdAt;
   }
 
-  public void setCreation(Date creation) {
-    this.creation = creation;
+  public void setCreatedAt(Date createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public boolean isArchived() {
+    return archivedAt != null;
+  }
+
+  public void setArchivedAt(Date archivedAt) {
+    this.archivedAt = archivedAt;
   }
 
   public String getWebsite() {
@@ -94,14 +110,6 @@ public class Club extends Author {
     this.logoUrl = logoUrl;
   }
 
-  public Set<Student> getAdmins() {
-    return admins;
-  }
-
-  public void setAdmins(Set<Student> admins) {
-    this.admins = admins;
-  }
-
   public Boolean getAdmin() {
     return isAdmin;
   }
@@ -117,4 +125,24 @@ public class Club extends Author {
   public void setPosts(List<Post> posts) {
     this.posts = posts;
   }
+
+  public String getFacebook() { return facebook; }
+
+  public void setFacebook(String facebook) { this.facebook = facebook; }
+
+  public String getFacebook_token() { return facebook_token; }
+
+  public void setFacebook_token(String facebook_token) { this.facebook_token = facebook_token; }
+
+  public String getSnapchat() { return snapchat; }
+
+  public void setSnapchat(String snapchat) { this.snapchat = snapchat; }
+
+  public String getInstagram() { return instagram; }
+
+  public void setInstagram(String instagram) { this.instagram = instagram; }
+
+  public ClubTypesEnum getType() { return type; }
+
+  public void setType(ClubTypesEnum type) { this.type = type; }
 }

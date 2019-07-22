@@ -30,8 +30,6 @@ storage:
     url: "/student"
   video:
     url: "/video"
-  gazette:
-    url: "/gazette"
   document:
     url: "/document"
 

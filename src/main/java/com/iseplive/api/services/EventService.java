@@ -5,7 +5,7 @@ import com.iseplive.api.dao.event.EventFactory;
 import com.iseplive.api.dao.event.EventRepository;
 import com.iseplive.api.dto.media.EventDTO;
 import com.iseplive.api.entity.club.Club;
-import com.iseplive.api.entity.media.Event;
+import com.iseplive.api.entity.Event;
 import com.iseplive.api.exceptions.IllegalArgumentException;
 import com.iseplive.api.utils.MediaUtils;
 import org.springframework.beans.factory.annotation.Autowired;

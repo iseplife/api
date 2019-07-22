@@ -1,6 +1,6 @@
 package com.iseplive.api.dao.event;
 
-import com.iseplive.api.entity.media.Event;
+import com.iseplive.api.entity.Event;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class StudentWithRoleView extends StudentUpdateAdminDTO {
 
-  private String studentId;
+  private Long id;
 
   private String photoUrl;
   private String photoUrlThumb;
@@ -18,12 +18,12 @@ public class StudentWithRoleView extends StudentUpdateAdminDTO {
 
   private List<String> rolesValues;
 
-  public String getStudentId() {
-    return studentId;
+  public Long getId() {
+    return id;
   }
 
-  public void setStudentId(String studentId) {
-    this.studentId = studentId;
+  public void setId(Long id) {
+    this.id = id;
   }
 
 

@@ -1,6 +1,7 @@
 package com.iseplive.api.entity.club;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.iseplive.api.constants.ClubRoleEnum;
 import com.iseplive.api.entity.user.Student;
 
 import javax.persistence.*;
@@ -19,11 +20,18 @@ public class ClubMember {
   @ManyToOne
   private Club club;
 
-  @ManyToOne
-  private ClubRole role;
+  // Determine the interactions allowed by the student
+  @Enumerated(EnumType.STRING)
+  private ClubRoleEnum role;
+
+  // Student's position in club, doesn't have any effect
+  private String position;
 
   @ManyToOne
-  private Student member;
+  private Student student;
+
+  @ManyToOne
+  private ClubMember parent;
 
   public Long getId() {
     return id;
@@ -33,27 +41,23 @@ public class ClubMember {
     this.id = id;
   }
 
-  public Student getMember() {
-    return member;
-  }
+  public Student getStudent() { return student; }
 
-  public void setMember(Student member) {
-    this.member = member;
-  }
+  public void setStudent(Student student) { this.student = student; }
 
-  public ClubRole getRole() {
-    return role;
-  }
+  public ClubRoleEnum getRole() { return role; }
 
-  public void setRole(ClubRole role) {
-    this.role = role;
-  }
+  public void setRole(ClubRoleEnum role) { this.role = role; }
 
-  public Club getClub() {
-    return club;
-  }
+  public Club getClub() { return club; }
 
-  public void setClub(Club club) {
-    this.club = club;
-  }
+  public void setClub(Club club) { this.club = club; }
+
+  public ClubMember getParent() { return parent; }
+
+  public void setParent(ClubMember parent) { this.parent = parent; }
+
+  public String getPosition() { return position; }
+
+  public void setPosition(String position) { this.position = position; }
 }

@@ -1,7 +1,8 @@
 package com.iseplive.api.dto.view;
 
+import com.iseplive.api.entity.club.Club;
 import com.iseplive.api.entity.media.Media;
-import com.iseplive.api.entity.user.Author;
+import com.iseplive.api.entity.user.Student;
 
 import java.util.Date;
 
@@ -13,15 +14,17 @@ public class PostView {
   private Long id;
   private String title;
   private Date creationDate;
-  private String content;
+  private Date publicationDate;
+  private String description;
   private Media media;
-  private Author author;
+  private Student author;
+  private Club linkedClub;
   private Integer nbLikes;
   private Boolean isLiked;
   private Integer nbComments;
   private Boolean isPinned;
-  private Boolean hasWriteAccess;
   private Boolean isPrivate;
+  private Boolean hasWriteAccess;
 
   public Long getId() {
     return id;
@@ -47,27 +50,29 @@ public class PostView {
     this.creationDate = creationDate;
   }
 
-  public String getContent() {
-    return content;
+  public Date getPublicationDate() { return publicationDate; }
+
+  public void setPublicationDate(Date publicationDate) { this.publicationDate = publicationDate; }
+
+  public String getDescription() {
+    return description;
   }
 
-  public void setContent(String content) {
-    this.content = content;
+  public void setDescription(String description) {
+    this.description = description;
   }
 
   public Media getMedia() {
     return media;
   }
 
-  public void setMedia(Media media) {
-    this.media = media;
-  }
+  public void setMedia(Media media) { this.media = media; }
 
-  public Author getAuthor() {
+  public Student getAuthor() {
     return author;
   }
 
-  public void setAuthor(Author author) {
+  public void setAuthor(Student author) {
     this.author = author;
   }
 
@@ -114,4 +119,9 @@ public class PostView {
   public Boolean getPrivate() { return isPrivate;  }
 
   public void setPrivate(Boolean isPrivate) { this.isPrivate = isPrivate;  }
+
+  public Club getLinkedClub() { return linkedClub; }
+
+  public void setLinkedClub(Club linkedClub) { this.linkedClub = linkedClub; }
+
 }

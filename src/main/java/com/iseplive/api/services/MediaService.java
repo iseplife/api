@@ -6,11 +6,12 @@ import com.iseplive.api.constants.PublishStateEnum;
 import com.iseplive.api.constants.Roles;
 import com.iseplive.api.dao.image.ImageRepository;
 import com.iseplive.api.dao.image.MatchedRepository;
-import com.iseplive.api.dao.media.MediaFactory;
 import com.iseplive.api.dao.media.MediaRepository;
 import com.iseplive.api.dao.post.PostRepository;
 import com.iseplive.api.dto.TempFile;
 import com.iseplive.api.dto.view.MatchedView;
+import com.iseplive.api.entity.Image;
+import com.iseplive.api.entity.Matched;
 import com.iseplive.api.entity.Post;
 import com.iseplive.api.entity.media.*;
 import com.iseplive.api.entity.user.Student;
@@ -52,9 +53,6 @@ public class MediaService {
   MediaUtils mediaUtils;
 
   @Autowired
-  MediaFactory mediaFactory;
-
-  @Autowired
   MediaRepository mediaRepository;
 
   @Autowired
@@ -78,8 +76,7 @@ public class MediaService {
   @Value("${storage.video.url}")
   String videoDir;
 
-  @Value("${storage.gazette.url}")
-  String gazetteDir;
+
 
   @Value("${storage.document.url}")
   String documentDir;
@@ -97,9 +94,8 @@ public class MediaService {
    * @return
    */
   public Page<Media> getAllGalleryGazetteVideoPublic(int page) {
-    return mediaRepository.findAllByMediaTypeInAndPost_Author_AuthorTypeAndPost_isPrivateAndPost_PublishStateOrderByCreationDesc(
-      Arrays.asList(MediaType.GALLERY, MediaType.GAZETTE, MediaType.VIDEO),
-      "club", false, PublishStateEnum.PUBLISHED, new PageRequest(page, ALL_MEDIA_PAGE_SIZE)
+    return mediaRepository.findAllByMediaTypeInAndPost_isPrivateAndPost_PublishStateOrderByCreationDesc(
+      Arrays.asList(MediaType.GALLERY, MediaType.VIDEO), false, PublishStateEnum.PUBLISHED, new PageRequest(page, ALL_MEDIA_PAGE_SIZE)
     );
   }
 
@@ -109,9 +105,8 @@ public class MediaService {
    */
   @Cacheable("media-list-published")
   public Page<Media>getAllGalleryGazetteVideoPublished(int page) {
-    return mediaRepository.findAllByMediaTypeInAndPost_Author_AuthorTypeAndPost_PublishStateOrderByCreationDesc(
-      Arrays.asList(MediaType.GALLERY, MediaType.GAZETTE, MediaType.VIDEO),
-      "club", PublishStateEnum.PUBLISHED, new PageRequest(page, ALL_MEDIA_PAGE_SIZE)
+    return mediaRepository.findAllByMediaTypeInAndPost_PublishStateOrderByCreationDesc(
+      Arrays.asList(MediaType.GALLERY, MediaType.VIDEO), PublishStateEnum.PUBLISHED, new PageRequest(page, ALL_MEDIA_PAGE_SIZE)
     );
   }
 
@@ -122,37 +117,9 @@ public class MediaService {
    */
   @Cacheable("media-list-all")
   public Page<Media> getAllGalleryGazetteVideo(int page) {
-    return mediaRepository.findAllByMediaTypeInAndPost_Author_AuthorTypeOrderByCreationDesc(
-      Arrays.asList(MediaType.GALLERY, MediaType.GAZETTE, MediaType.VIDEO),
-      "club", new PageRequest(page, ALL_MEDIA_PAGE_SIZE)
+    return mediaRepository.findAllByMediaTypeInOrderByCreationDesc(
+      Arrays.asList(MediaType.GALLERY, MediaType.VIDEO), new PageRequest(page, ALL_MEDIA_PAGE_SIZE)
     );
-  }
-
-  /**
-   * Create a new Gazette
-   * @param postId
-   * @param title
-   * @param file
-   * @return
-   */
-  public Gazette createGazette(Long postId, String title, MultipartFile file) {
-    String random = mediaUtils.randomName();
-    String gazettePath = String.format(
-      "%s_%s.pdf",
-      mediaUtils.resolvePath(gazetteDir, random, false),
-      title
-    );
-
-    mediaUtils.saveFile(gazettePath, file);
-
-    Gazette gazette = new Gazette();
-    gazette.setCreation(new Date());
-    gazette.setTitle(title);
-    gazette.setUrl(mediaUtils.getPublicUrl(gazettePath));
-    gazette = mediaRepository.save(gazette);
-    postService.addMediaEmbed(postId, gazette.getId());
-    postService.setPublishState(postId, PublishStateEnum.PUBLISHED);
-    return gazette;
   }
 
   /**
@@ -269,7 +236,7 @@ public class MediaService {
    * @return
    */
   public Image addSingleImage(Long postId, MultipartFile file) {
-    Image image = mediaRepository.save(addImage(file, null));
+    Image image = imageRepository.save(addImage(file, null));
     postService.addMediaEmbed(postId, image.getId());
     postService.setPublishState(postId, PublishStateEnum.PUBLISHED);
     return image;
@@ -283,22 +250,21 @@ public class MediaService {
    */
   private Image addImage(MultipartFile file, Gallery gallery) {
     Image image = new Image();
-    image.setCreation(new Date());
     image.setGallery(gallery);
 
     String name = mediaUtils.randomName();
 
     String pathOriginal = String.format(
       "%s_%s",
-      mediaUtils.resolvePath(imageDir, name, false, image.getCreation()),
+      mediaUtils.resolvePath(imageDir, name, false, new Date()),
       file.getOriginalFilename().replaceAll(" ", "-")
     );
     File originalFile = mediaUtils.saveFile(pathOriginal, file);
 
-    String path = mediaUtils.resolvePath(imageDir, name, false, image.getCreation());
+    String path = mediaUtils.resolvePath(imageDir, name, false, new Date());
     mediaUtils.saveJPG(originalFile, file.getContentType(), WIDTH_IMAGE_SIZE, path);
 
-    String pathThumb = mediaUtils.resolvePath(imageDir, name, true, image.getCreation());
+    String pathThumb = mediaUtils.resolvePath(imageDir, name, true, new Date());
     mediaUtils.saveJPG(originalFile, file.getContentType(), WIDTH_IMAGE_SIZE_THUMB, pathThumb);
 
 
@@ -319,16 +285,15 @@ public class MediaService {
    */
   private Image addImage(File file, String contentType, Gallery gallery) {
     Image image = new Image();
-    image.setCreation(new Date());
     image.setGallery(gallery);
 
     String name = mediaUtils.randomName();
-    String path = mediaUtils.resolvePath(imageDir, name, false, image.getCreation());
-    String pathThumb = mediaUtils.resolvePath(imageDir, name, true, image.getCreation());
+    String path = mediaUtils.resolvePath(imageDir, name, false, new Date());
+    String pathThumb = mediaUtils.resolvePath(imageDir, name, true, new Date());
 
     String pathOriginal = String.format(
       "%s.%s",
-      mediaUtils.resolvePath(imageDir, "original-"+name, false, image.getCreation()),
+      mediaUtils.resolvePath(imageDir, "original-"+name, false, new Date()),
       contentType.equals("image/jpeg") ? "jpg": contentType.equals("image/png") ? "png":""
     );
 
@@ -470,7 +435,7 @@ public class MediaService {
 
     CompletableFuture.runAsync(() -> {
       tempFiles.forEach(file -> {
-        mediaRepository.save(addImage(file.getFile(), file.getContentType(), galleryRes));
+        imageRepository.save(addImage(file.getFile(), file.getContentType(), galleryRes));
         if (!file.getFile().delete()) {
           LOG.error("could not delete this temp file: {}", file.getFile().getName());
         }
@@ -531,6 +496,6 @@ public class MediaService {
   public void addImagesGallery(Gallery gallery, List<MultipartFile> files) {
     List<Image> images = new ArrayList<>();
     files.forEach(file -> images.add(addImage(file, gallery)));
-    mediaRepository.save(images);
+    imageRepository.save(images);
   }
 }

@@ -9,15 +9,14 @@ import java.util.List;
  */
 public class StudentUpdateAdminDTO {
   private Long id;
-  private String firstname;
-  private String lastname;
-  private Integer promo;
+  private String firstName;
+  private String lastName;
+  private String promo;
   private Date birthDate;
   private String phone;
   private String bio;
-  private String address;
   private String mail;
-  private String mailISEP;
+
   private String facebook;
   private String twitter;
   private String instagram;
@@ -33,27 +32,27 @@ public class StudentUpdateAdminDTO {
     this.id = id;
   }
 
-  public String getFirstname() {
-    return firstname;
+  public String getFirstName() {
+    return firstName;
   }
 
-  public void setFirstname(String firstname) {
-    this.firstname = firstname;
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
   }
 
-  public String getLastname() {
-    return lastname;
+  public String getLastName() {
+    return lastName;
   }
 
-  public void setLastname(String lastname) {
-    this.lastname = lastname;
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
   }
 
-  public Integer getPromo() {
+  public String getPromo() {
     return promo;
   }
 
-  public void setPromo(Integer promo) {
+  public void setPromo(String promo) {
     this.promo = promo;
   }
 
@@ -81,28 +80,12 @@ public class StudentUpdateAdminDTO {
     this.bio = bio;
   }
 
-  public String getAddress() {
-    return address;
-  }
-
-  public void setAddress(String address) {
-    this.address = address;
-  }
-
   public String getMail() {
     return mail;
   }
 
   public void setMail(String mail) {
     this.mail = mail;
-  }
-
-  public String getMailISEP() {
-    return mailISEP;
-  }
-
-  public void setMailISEP(String mailISEP) {
-    this.mailISEP = mailISEP;
   }
 
   public String getFacebook() {

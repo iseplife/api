@@ -1,7 +1,8 @@
-package com.iseplive.api.entity.media;
+package com.iseplive.api.entity;
 
 import com.iseplive.api.constants.MediaType;
 import com.iseplive.api.entity.club.Club;
+import com.iseplive.api.entity.media.Media;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;

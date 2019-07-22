@@ -8,7 +8,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iseplive.api.entity.club.Club;
-import com.iseplive.api.entity.user.Author;
 import com.iseplive.api.entity.user.Student;
 import com.iseplive.api.exceptions.IllegalArgumentException;
 import com.iseplive.api.services.ClubService;
@@ -145,7 +144,7 @@ public class JwtTokenUtil {
     List<Long> clubs = clubService.getAdminClubs(student)
       .stream()
       .sorted(Comparator.comparing(Club::getName))
-      .map(Author::getId)
+      .map(Club::getId)
       .collect(Collectors.toList());
 
     TokenPayload tokenPayload = new TokenPayload();

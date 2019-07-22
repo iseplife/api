@@ -1,4 +1,4 @@
-package com.iseplive.api.entity.media;
+package com.iseplive.api.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplive.api.entity.user.Student;

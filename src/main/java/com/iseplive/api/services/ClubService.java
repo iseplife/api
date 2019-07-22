@@ -1,18 +1,15 @@
 package com.iseplive.api.services;
 
 import com.iseplive.api.conf.jwt.TokenPayload;
-import com.iseplive.api.constants.ClubRoles;
+import com.iseplive.api.constants.ClubRoleEnum;
 import com.iseplive.api.constants.Roles;
 import com.iseplive.api.dao.club.ClubFactory;
 import com.iseplive.api.dao.club.ClubMemberRepository;
 import com.iseplive.api.dao.club.ClubRepository;
-import com.iseplive.api.dao.club.ClubRoleRepository;
-import com.iseplive.api.dao.post.AuthorRepository;
 import com.iseplive.api.dto.ClubDTO;
 import com.iseplive.api.dto.view.ClubMemberView;
 import com.iseplive.api.entity.club.Club;
 import com.iseplive.api.entity.club.ClubMember;
-import com.iseplive.api.entity.club.ClubRole;
 import com.iseplive.api.entity.user.Student;
 import com.iseplive.api.exceptions.AuthException;
 import com.iseplive.api.exceptions.IllegalArgumentException;
@@ -35,13 +32,7 @@ import java.util.stream.Collectors;
 public class ClubService {
 
   @Autowired
-  AuthorRepository authorRepository;
-
-  @Autowired
   ClubRepository clubRepository;
-
-  @Autowired
-  ClubRoleRepository clubRoleRepository;
 
   @Autowired
   ClubMemberRepository clubMemberRepository;
@@ -69,28 +60,19 @@ public class ClubService {
     if (admin == null) {
       throw new IllegalArgumentException("this student id doesn't exist");
     }
-    club.setAdmins(Collections.singleton(admin));
 
     ClubMember clubMember = new ClubMember();
-    clubMember.setMember(admin);
-    clubMember.setRole(getClubRole(ClubRoles.PRESIDENT));
+    clubMember.setStudent(admin);
+    clubMember.setRole(ClubRoleEnum.PRESIDENT);
     clubMember.setClub(club);
 
     club.setMembers(Collections.singletonList(clubMember));
     setClubLogo(club, logo);
-    return authorRepository.save(club);
+    return clubRepository.save(club);
   }
 
   public List<Club> searchClubs(String name) {
     return clubRepository.findAllByNameContainingIgnoringCase(name);
-  }
-
-  private ClubRole getClubRole(String role) {
-    ClubRole clubRole = clubRoleRepository.findOneByName(role);
-    if (clubRole == null) {
-      throw new IllegalArgumentException("Could not find this role: "+role);
-    }
-    return clubRole;
   }
 
   private void setClubLogo(Club club, MultipartFile file) {
@@ -101,22 +83,18 @@ public class ClubService {
   }
 
   public ClubMember addMember(Long clubId, Long studentId) {
-    clubMemberRepository.findByClubId(clubId).forEach(club -> {
-      if (club.getMember().getId().equals(studentId)) {
+    clubMemberRepository.findByClubId(clubId).forEach(member -> {
+      if (member.getStudent().getId().equals(studentId)) {
         throw new IllegalArgumentException("this student is already part of this club");
       }
     });
 
     ClubMember clubMember = new ClubMember();
     clubMember.setClub(getClub(clubId));
-    clubMember.setMember(studentService.getStudent(studentId));
-    clubMember.setRole(getClubRole(ClubRoles.MEMBER));
+    clubMember.setStudent(studentService.getStudent(studentId));
+    clubMember.setRole(ClubRoleEnum.MEMBER);
 
     return clubMemberRepository.save(clubMember);
-  }
-
-  private ClubRole getClubRole(Long id) {
-    return clubRoleRepository.findOne(id);
   }
 
   public List<Club> getAll() {
@@ -136,7 +114,7 @@ public class ClubService {
    * @return a club list
    */
   List<Club> getClubAuthors(Student student) {
-    return clubRepository.findByAdminsContains(student);
+    return clubRepository.findByMemberRole(student, ClubRoleEnum.PUBLISHER);
   }
 
   public void deleteClub(Long id) {
@@ -147,42 +125,48 @@ public class ClubService {
     return clubMemberRepository.findByClubId(id);
   }
 
-  public ClubRole createRole(String role, Long clubId) {
-    Club club = getClub(clubId);
-    ClubRole clubRole = new ClubRole();
-    clubRole.setName(role);
-    clubRole.setClub(club);
-    return clubRoleRepository.save(clubRole);
-  }
-
   public Set<Student> getAdmins(Long clubId) {
     Club club = getClub(clubId);
-    return club.getAdmins();
+    return club.getMembers()
+    .stream()
+    .filter(s -> s.getRole() == ClubRoleEnum.PUBLISHER || s.getRole() == ClubRoleEnum.PRESIDENT)
+    .map(ClubMember::getStudent)
+    .collect(Collectors.toSet());
+  }
+
+  public Set<Student> getAdmins(Club club){
+    return club.getMembers()
+      .stream()
+      .filter(s -> s.getRole() == ClubRoleEnum.PUBLISHER || s.getRole() == ClubRoleEnum.PRESIDENT)
+      .map(ClubMember::getStudent)
+      .collect(Collectors.toSet());
   }
 
   public void addAdmin(Long clubId, Long studId) {
-    Student student = studentService.getStudent(studId);
-    Club club = getClub(clubId);
-    club.getAdmins().add(student);
-    clubRepository.save(club);
+    ClubMember member = clubMemberRepository.findOneByStudentIdAndClubId(studId, clubId);
+    if(member == null) throw new IllegalArgumentException("the student needs to be part of the club to be an admin");
+
+    member.setRole(ClubRoleEnum.PRESIDENT);
+    clubRepository.save(member.getClub());
   }
 
+
   public void removeAdmin(Long clubId, Long studId) {
-    Club club = getClub(clubId);
-    Student student = studentService.getStudent(studId);
-    club.getAdmins().remove(student);
-    clubRepository.save(club);
+    ClubMember member = clubMemberRepository.findOneByStudentIdAndClubId(clubId, studId);
+    member.setRole(ClubRoleEnum.MEMBER);
+
+    clubMemberRepository.save(member);
   }
 
   public List<Club> getAdminClubs(Student student) {
-    return clubRepository.findByAdminsContains(student);
+    return clubRepository.findByMemberRole(student, ClubRoleEnum.PRESIDENT);
   }
 
   public Club updateClub(Long id, ClubDTO clubDTO, MultipartFile logo) {
     Club club = getClub(id);
 
     club.setName(clubDTO.getName());
-    club.setCreation(clubDTO.getCreation());
+    club.setCreatedAt(clubDTO.getCreation());
     club.setDescription(clubDTO.getDescription());
     club.setWebsite(clubDTO.getWebsite());
 
@@ -192,14 +176,14 @@ public class ClubService {
     return clubRepository.save(club);
   }
 
-  public ClubMember updateMemberRole(Long member, Long role, TokenPayload payload) {
+  public ClubMember updateMemberRole(Long member, ClubRoleEnum role, TokenPayload payload) {
     ClubMember clubMember = getMember(member);
     if (!payload.getRoles().contains(Roles.ADMIN) && payload.getRoles().contains(Roles.CLUB_MANAGER)) {
       if (!payload.getClubsAdmin().contains(clubMember.getClub().getId())) {
         throw new AuthException("no rights to modify this club");
       }
     }
-    clubMember.setRole(getClubRole(role));
+    clubMember.setRole(role);
     return clubMemberRepository.save(clubMember);
   }
 
@@ -219,17 +203,16 @@ public class ClubService {
         throw new AuthException("no rights to modify this club");
       }
     }
-    club.getAdmins().remove(clubMember.getMember());
-    club.getMembers().remove(clubMember);
+    clubMemberRepository.delete(clubMember);
     clubRepository.save(club);
   }
 
   public List<ClubMemberView> getStudentClubs(Long id) {
-    List<ClubMember> clubMembers = clubMemberRepository.findByMember_Id(id);
+    List<ClubMember> clubMembers = clubMemberRepository.findByStudentId(id);
     return clubMembers.stream().map(cm -> {
       ClubMemberView clubMemberView = new ClubMemberView();
       clubMemberView.setClub(cm.getClub());
-      clubMemberView.setMember(cm.getMember());
+      clubMemberView.setMember(cm.getStudent());
       clubMemberView.setRole(cm.getRole());
       return clubMemberView;
     }).collect(Collectors.toList());
@@ -239,14 +222,4 @@ public class ClubService {
     return clubRepository.findByIsAdmin(true);
   }
 
-  public List<ClubRole> getClubRoles(Long id) {
-    return clubRoleRepository.findByClub_Id(id);
-  }
-
-  public void deleteClubRole(Long roleid) {
-    ClubRole role = clubRoleRepository.findOne(roleid);
-    if (role != null) {
-      clubRoleRepository.delete(role);
-    }
-  }
 }

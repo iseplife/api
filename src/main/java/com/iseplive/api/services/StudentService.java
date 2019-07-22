@@ -2,7 +2,6 @@ package com.iseplive.api.services;
 
 import com.google.common.collect.Sets;
 import com.iseplive.api.conf.jwt.TokenPayload;
-import com.iseplive.api.dao.post.AuthorRepository;
 import com.iseplive.api.dao.student.RoleRepository;
 import com.iseplive.api.dao.student.StudentFactory;
 import com.iseplive.api.dao.student.StudentRepository;
@@ -23,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,9 +33,6 @@ import java.util.stream.Collectors;
  */
 @Service
 public class StudentService {
-
-  @Autowired
-  AuthorRepository authorRepository;
 
   @Autowired
   StudentRepository studentRepository;
@@ -70,17 +67,13 @@ public class StudentService {
     throw new IllegalArgumentException("could not find the student with id: " + id);
   }
 
-  public Student getStudent(String studentId) {
-    return studentRepository.findFirstByStudentId(studentId);
-  }
-
   public Student createStudent(StudentDTO dto) {
     Student student = studentFactory.dtoToEntity(dto);
-    return authorRepository.save(student);
+    return studentRepository.save(student);
   }
 
-  void addProfileImage(String studentId, MultipartFile image) {
-    Student student = studentRepository.findFirstByStudentId(studentId);
+  void addProfileImage(Long studentId, MultipartFile image) {
+    Student student = studentRepository.findOne(studentId);
     updateProfileImage(student, image);
     studentRepository.save(student);
   }
@@ -143,7 +136,7 @@ public class StudentService {
 
   public void toggleArchiveStudent(Long id) {
     Student student = getStudent(id);
-    student.setArchived(!student.isArchived());
+    student.setArchivedAt(new Date());
     studentRepository.save(student);
   }
 
@@ -188,12 +181,12 @@ public class StudentService {
 
   private void updateProfileImage(Student student, MultipartFile image) {
     String path = imageUtils.resolvePath(studentImageStorage,
-      student.getStudentId(), false, student.getStudentId());
+      Long.toString(student.getId()), false, student.getId());
     imageUtils.removeIfExistJPEG(path);
     imageUtils.saveJPG(image, WIDTH_PROFILE_IMAGE, path);
 
     String pathThumb = imageUtils.resolvePath(studentImageStorage,
-      student.getStudentId(), true, student.getStudentId());
+      Long.toString(student.getId()), true, student.getId());
     imageUtils.removeIfExistJPEG(pathThumb);
     imageUtils.saveJPG(image, WIDTH_PROFILE_IMAGE_THUMB, pathThumb);
 

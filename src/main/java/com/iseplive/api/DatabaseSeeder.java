@@ -67,8 +67,8 @@ class DatabaseSeeder {
 
     Student student = new Student();
     student.setId(1L);
-    student.setFirstname("Default");
-    student.setLastname("Admin");
+    student.setFirstName("Default");
+    student.setLastName("Admin");
     student.setBirthDate(new Date());
 
     Role roleStudent = roleRepository.findByRole(Roles.STUDENT);

@@ -48,15 +48,16 @@ public class MediaUtils {
     return resolvePath(pathGroupByDate(date, dir), name, thumb);
   }
 
-  public String resolvePath(String dir, String name, boolean thumb, String studentId) {
+  public String resolvePath(String dir, String name, boolean thumb, Long studentId) {
     return resolvePath(pathGroupByStudentId(studentId, dir), name, thumb);
   }
 
-  private String pathGroupByStudentId(String studentId, String dir) {
+  private String pathGroupByStudentId(Long studentId, String dir) {
+    String studentIdStr = Long.toString(studentId);
     return String.format(
       "%s/%s",
       dir,
-      studentId.substring(0, studentId.length() - 2)
+      studentIdStr.substring(0, studentIdStr.length() - 2)
     );
   }
 

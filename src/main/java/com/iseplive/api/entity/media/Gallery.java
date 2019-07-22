@@ -2,6 +2,7 @@ package com.iseplive.api.entity.media;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplive.api.constants.MediaType;
+import com.iseplive.api.entity.Image;
 
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;

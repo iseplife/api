@@ -14,7 +14,7 @@ public class ClubFactory {
     Club club = new Club();
     club.setName(dto.getName());
     club.setDescription(dto.getDescription());
-    club.setCreation(dto.getCreation());
+    club.setCreatedAt(dto.getCreation());
     club.setWebsite(dto.getWebsite());
     return club;
   }
