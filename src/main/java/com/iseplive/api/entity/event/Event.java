@@ -24,7 +24,7 @@ public class Event {
   private Date endsAt;
   private String location;
   private Coordinates coordinates;
-  private String ticket = null;
+  private String ticketUrl = null;
   private Float price = null;
 
   @Column(columnDefinition = "TEXT")
@@ -77,4 +77,16 @@ public class Event {
   public String getType() { return type; }
 
   public void setType(String type) { this.type = type; }
+
+  public Coordinates getCoordinates() { return coordinates; }
+
+  public void setCoordinates(Coordinates coordinates) { this.coordinates = coordinates; }
+
+  public String getTicketUrl() { return ticketUrl; }
+
+  public void setTicketUrl(String ticketUrl) { this.ticketUrl = ticketUrl; }
+
+  public Float getPrice() { return price; }
+
+  public void setPrice(Float price) { this.price = price; }
 }
