@@ -11,7 +11,7 @@ public class StudentUpdateAdminDTO {
   private Long id;
   private String firstname;
   private String lastname;
-  private Integer promo;
+  private String promo;
   private Date birthDate;
   private String phone;
   private String bio;
@@ -49,11 +49,11 @@ public class StudentUpdateAdminDTO {
     this.lastname = lastname;
   }
 
-  public Integer getPromo() {
+  public String getPromo() {
     return promo;
   }
 
-  public void setPromo(Integer promo) {
+  public void setPromo(String promo) {
     this.promo = promo;
   }
 

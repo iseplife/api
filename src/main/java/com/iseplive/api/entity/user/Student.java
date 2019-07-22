@@ -16,7 +16,7 @@ public class Student implements UserDetails {
   @Column(unique = true)
   private Long id;
 
-  private Integer promo;
+  private String promo;
   private Date archivedAt = null;
 
   private String firstName;
@@ -54,11 +54,11 @@ public class Student implements UserDetails {
     this.id = id;
   }
 
-  public Integer getPromo() {
+  public String getPromo() {
     return promo;
   }
 
-  public void setPromo(Integer promo) { this.promo = promo;  }
+  public void setPromo(String promo) { this.promo = promo;  }
 
   public String getFirstName() {
     return firstName;

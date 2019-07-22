@@ -7,7 +7,7 @@ import java.util.Date;
  * back
  */
 public class StudentDTO {
-  private Integer promo;
+  private String promo;
   private String firstname;
   private String lastname;
   private Date birthDate;
@@ -17,11 +17,11 @@ public class StudentDTO {
   private String mailISEP;
   private String address;
 
-  public Integer getPromo() {
+  public String getPromo() {
     return promo;
   }
 
-  public void setPromo(Integer promo) {
+  public void setPromo(String promo) {
     this.promo = promo;
   }
 
