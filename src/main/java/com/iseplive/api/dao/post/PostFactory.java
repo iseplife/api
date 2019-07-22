@@ -6,6 +6,7 @@ import com.iseplive.api.dto.view.PostView;
 import com.iseplive.api.entity.Post;
 import com.iseplive.api.entity.user.Student;
 import com.iseplive.api.services.AuthService;
+import com.iseplive.api.services.ClubService;
 import com.iseplive.api.services.PostService;
 import com.iseplive.api.services.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,9 @@ public class PostFactory {
 
   @Autowired
   StudentService studentService;
+
+  @Autowired
+  ClubService clubService;
 
   public Post dtoToEntity(PostDTO post) {
     Post p = new Post();
@@ -57,7 +61,7 @@ public class PostFactory {
       Student user = authService.getLoggedUser();
       postView.setPrivate(post.getPrivate());
       if (post.getLinkedClub() != null) {
-        boolean isAdmin = post.getLinkedClub().getAdmins().contains(user);
+        boolean isAdmin = clubService.getAdmins(post.getLinkedClub()).contains(user);
         postView.setHasWriteAccess(isAdmin);
       }else {
         postView.setHasWriteAccess(post.getAuthor().equals(user));

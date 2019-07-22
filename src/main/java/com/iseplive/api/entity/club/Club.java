@@ -110,14 +110,6 @@ public class Club {
     this.logoUrl = logoUrl;
   }
 
-  public Set<Student> getAdmins() {
-    return this.members
-      .stream()
-      .filter(s -> s.getRole() == ClubRoleEnum.PUBLISHER || s.getRole() == ClubRoleEnum.PRESIDENT)
-      .map(ClubMember::getStudent)
-      .collect(Collectors.toSet());
-  }
-
   public Boolean getAdmin() {
     return isAdmin;
   }

@@ -134,6 +134,14 @@ public class ClubService {
     .collect(Collectors.toSet());
   }
 
+  public Set<Student> getAdmins(Club club){
+    return club.getMembers()
+      .stream()
+      .filter(s -> s.getRole() == ClubRoleEnum.PUBLISHER || s.getRole() == ClubRoleEnum.PRESIDENT)
+      .map(ClubMember::getStudent)
+      .collect(Collectors.toSet());
+  }
+
   public void addAdmin(Long clubId, Long studId) {
     ClubMember member = clubMemberRepository.findOneByStudentIdAndClubId(studId, clubId);
     if(member == null) throw new IllegalArgumentException("the student needs to be part of the club to be an admin");
@@ -144,10 +152,10 @@ public class ClubService {
 
 
   public void removeAdmin(Long clubId, Long studId) {
-    Club club = getClub(clubId);
-    Student student = studentService.getStudent(studId);
-    club.getAdmins().remove(student);
-    clubRepository.save(club);
+    ClubMember member = clubMemberRepository.findOneByStudentIdAndClubId(clubId, studId);
+    member.setRole(ClubRoleEnum.MEMBER);
+
+    clubMemberRepository.save(member);
   }
 
   public List<Club> getAdminClubs(Student student) {
@@ -195,8 +203,7 @@ public class ClubService {
         throw new AuthException("no rights to modify this club");
       }
     }
-    club.getAdmins().remove(clubMember.getStudent());
-    club.getMembers().remove(clubMember);
+    clubMemberRepository.delete(clubMember);
     clubRepository.save(club);
   }
 
