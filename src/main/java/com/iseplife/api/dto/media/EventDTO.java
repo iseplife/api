@@ -9,9 +9,13 @@ import java.util.Date;
 public class EventDTO {
   private String title;
   private String location;
-  private Date date;
+  private Date startsAt;
+  private Date endsAt;
   private String description;
   private Long clubId;
+  private Long previousEditionId;
+  private String ticketUrl;
+  private Float price;
 
   public String getTitle() {
     return title;
@@ -29,13 +33,13 @@ public class EventDTO {
     this.location = location;
   }
 
-  public Date getDate() {
-    return date;
-  }
+  public Date getStartsAt() { return startsAt; }
 
-  public void setDate(Date date) {
-    this.date = date;
-  }
+  public void setStartsAt(Date startsAt) { this.startsAt = startsAt; }
+
+  public Date getEndsAt() { return endsAt; }
+
+  public void setEndsAt(Date endsAt) { this.endsAt = endsAt; }
 
   public String getDescription() {
     return description;
@@ -53,4 +57,15 @@ public class EventDTO {
     this.clubId = clubId;
   }
 
+  public Long getPreviousEditionId() {  return previousEditionId; }
+
+  public void setPreviousEditionId(Long previousEditionId) { this.previousEditionId = previousEditionId; }
+
+  public String getTicketUrl() { return ticketUrl; }
+
+  public void setTicketUrl(String ticketUrl) { this.ticketUrl = ticketUrl; }
+
+  public Float getPrice() { return price; }
+
+  public void setPrice(Float price) { this.price = price; }
 }

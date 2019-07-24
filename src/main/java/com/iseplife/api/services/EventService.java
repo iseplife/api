@@ -48,10 +48,17 @@ public class EventService {
   public Event createEvent(MultipartFile image, EventDTO dto) {
     Event event = eventFactory.dtoToEntity(dto);
     Club club = clubService.getClub(dto.getClubId());
+    //TODO: Possibly useless because when we check rights we check club's id
     if (club == null) {
       throw new IllegalArgumentException("Could not find a club with id: " + dto.getClubId());
     }
-    event.setClub(club);
+    Event event;
+    if(dto.getPreviousEditionId() != null){
+      Event previous = eventRepository.findOne(dto.getPreviousEditionId());
+      event = eventFactory.dtoToEntity(dto, previous);
+    }else {
+      event = eventFactory.dtoToEntity(dto);
+    }
 
     String eventPath = createImageEvent(image);
 
@@ -91,8 +98,11 @@ public class EventService {
     event.setTitle(eventDTO.getTitle());
     event.setDescription(eventDTO.getDescription());
     event.setLocation(eventDTO.getLocation());
-    event.setStartsAt(eventDTO.getDate());
-
+    event.setStartsAt(eventDTO.getStartsAt());
+    if(eventDTO.getPreviousEditionId() != null){
+      Event prev = eventRepository.findOne(eventDTO.getPreviousEditionId());
+      event.setPreviousEdition(prev);
+    }
     if (file != null) {
       String eventPath = createImageEvent(file);
       mediaUtils.removeIfExistPublic(event.getImageUrl());
