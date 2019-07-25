@@ -1,6 +1,6 @@
 package com.iseplive.api.dao.club;
 
-import com.iseplive.api.constants.ClubRoleEnum;
+import com.iseplive.api.constants.ClubRole;
 import com.iseplive.api.entity.club.Club;
 import com.iseplive.api.entity.user.Student;
 import org.springframework.data.jpa.repository.Query;

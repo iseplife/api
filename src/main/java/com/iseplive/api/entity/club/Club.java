@@ -1,16 +1,12 @@
 package com.iseplive.api.entity.club;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.iseplive.api.constants.ClubRoleEnum;
 import com.iseplive.api.constants.ClubTypesEnum;
 import com.iseplive.api.entity.Post;
-import com.iseplive.api.entity.user.Student;
 
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Created by Guillaume on 27/07/2017.

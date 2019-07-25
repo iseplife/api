@@ -1,7 +1,7 @@
 package com.iseplive.api.services;
 
 import com.iseplive.api.conf.jwt.TokenPayload;
-import com.iseplive.api.constants.ClubRoleEnum;
+import com.iseplive.api.constants.ClubRole;
 import com.iseplive.api.constants.Roles;
 import com.iseplive.api.dao.club.ClubFactory;
 import com.iseplive.api.dao.club.ClubMemberRepository;
@@ -63,7 +63,7 @@ public class ClubService {
 
     ClubMember clubMember = new ClubMember();
     clubMember.setStudent(admin);
-    clubMember.setRole(ClubRoleEnum.PRESIDENT);
+    clubMember.setRole(ClubRole.SUPER_ADMIN);
     clubMember.setClub(club);
 
     club.setMembers(Collections.singletonList(clubMember));
@@ -92,7 +92,7 @@ public class ClubService {
     ClubMember clubMember = new ClubMember();
     clubMember.setClub(getClub(clubId));
     clubMember.setStudent(studentService.getStudent(studentId));
-    clubMember.setRole(ClubRoleEnum.MEMBER);
+    clubMember.setRole(ClubRole.MEMBER);
 
     return clubMemberRepository.save(clubMember);
   }

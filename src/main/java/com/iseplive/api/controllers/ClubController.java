@@ -1,7 +1,7 @@
 package com.iseplive.api.controllers;
 
 import com.iseplive.api.conf.jwt.TokenPayload;
-import com.iseplive.api.constants.ClubRoleEnum;
+import com.iseplive.api.constants.ClubRole;
 import com.iseplive.api.constants.Roles;
 import com.iseplive.api.dto.ClubDTO;
 import com.iseplive.api.dto.view.PostView;
@@ -67,7 +67,7 @@ public class ClubController {
                                      @PathVariable String role,
                                      @AuthenticationPrincipal TokenPayload auth) {
     //TODO: Maybe try/catch this cast
-    ClubRoleEnum roleChecked = ClubRoleEnum.valueOf(role);
+    ClubRole roleChecked = ClubRole.valueOf(role);
     return clubService.updateMemberRole(member, roleChecked , auth);
   }
 
