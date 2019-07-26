@@ -1,9 +1,10 @@
-package com.iseplive.api.entity;
+package com.iseplive.api.entity.post;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplive.api.constants.PublishStateEnum;
 import com.iseplive.api.entity.club.Club;
 import com.iseplive.api.entity.media.Media;
+import com.iseplive.api.entity.post.Comment;
 import com.iseplive.api.entity.user.Student;
 
 import javax.persistence.*;
@@ -41,8 +42,8 @@ public class Post {
   private List<Comment> comments = new ArrayList<>();
 
   @JsonIgnore
-  @ManyToMany
-  private Set<Student> like = new HashSet<>();
+  @OneToMany
+  private List<Like> likes = new ArrayList<>();
 
   @Enumerated(EnumType.STRING)
   private PublishStateEnum publishState;
@@ -111,12 +112,13 @@ public class Post {
     this.comments = comments;
   }
 
-  public Set<Student> getLike() {
-    return like;
+  @JsonIgnore
+  public List<Like> getLikes() {
+    return likes;
   }
 
-  public void setLike(Set<Student> like) {
-    this.like = like;
+  public void setLikes(List<Like> likes) {
+    this.likes = likes;
   }
 
   public Boolean getPrivate() {

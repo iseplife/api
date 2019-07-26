@@ -2,7 +2,7 @@ package com.iseplive.api.entity.club;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplive.api.constants.ClubTypesEnum;
-import com.iseplive.api.entity.Post;
+import com.iseplive.api.entity.post.Post;
 
 import javax.persistence.*;
 import java.util.Date;
