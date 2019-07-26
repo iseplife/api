@@ -11,6 +11,7 @@ public class TokenPayload {
 
   private List<String> roles;
   private List<Long> clubsAdmin;
+  private List<Long> clubsPublisher;
 
   public Long getId() {
     return id;
@@ -32,8 +33,16 @@ public class TokenPayload {
     return clubsAdmin;
   }
 
-  public void setClubsAdmin(List<Long> clubsAdmin) {
-    this.clubsAdmin = clubsAdmin;
+  void setClubsAdmin(List<Long> clubsPublisher) {
+    this.clubsPublisher = clubsPublisher;
+  }
+
+  public List<Long> getClubsPublisher() {
+    return clubsPublisher;
+  }
+
+  void setClubsPublisher(List<Long> clubsPublisher) {
+    this.clubsPublisher = clubsPublisher;
   }
 
   @Override

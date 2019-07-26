@@ -7,7 +7,9 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.iseplive.api.constants.ClubRole;
 import com.iseplive.api.entity.club.Club;
+import com.iseplive.api.entity.club.ClubMember;
 import com.iseplive.api.entity.user.Student;
 import com.iseplive.api.exceptions.IllegalArgumentException;
 import com.iseplive.api.services.ClubService;
@@ -141,16 +143,28 @@ public class JwtTokenUtil {
       .sorted(Comparator.comparing(GrantedAuthority::getAuthority))
       .map(GrantedAuthority::getAuthority)
       .collect(Collectors.toList());
-    List<Long> clubs = clubService.getAdminClubs(student)
-      .stream()
-      .sorted(Comparator.comparing(Club::getName))
+
+    List<ClubMember> clubs = clubService.getPublisherClubs(student);
+
+    List<Long> publisherClubs = clubs.stream()
+      .sorted(Comparator.comparing(ClubMember::getId))
+      .map(ClubMember::getClub)
       .map(Club::getId)
       .collect(Collectors.toList());
+
+    List<Long> adminClubs = clubs.stream()
+      .filter(m -> m.getRole().is(ClubRole.ADMIN))
+      .sorted(Comparator.comparing(ClubMember::getId))
+      .map(ClubMember::getClub)
+      .map(Club::getId)
+      .collect(Collectors.toList());
+
 
     TokenPayload tokenPayload = new TokenPayload();
     tokenPayload.setId(student.getId());
     tokenPayload.setRoles(roles);
-    tokenPayload.setClubsAdmin(clubs);
+    tokenPayload.setClubsAdmin(adminClubs);
+    tokenPayload.setClubsPublisher(publisherClubs);
     return tokenPayload;
   }
 

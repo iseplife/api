@@ -110,6 +110,8 @@ public class PostService {
     Post post = postFactory.dtoToEntity(postDTO);
     post.setAuthor(studentRepository.findOne(postDTO.getAuthorId()));
 
+    post.setLinkedClub(clubService.getClub(postDTO.getLinkedClubId()));
+
     // if creator is a student but is has wrong author id on the post
     if (post.getLinkedClub() == null && !auth.getId().equals(postDTO.getAuthorId())) {
       throw new AuthException("not allowed to create this post");
@@ -119,7 +121,7 @@ public class PostService {
     if (!auth.getRoles().contains(Roles.ADMIN) && !auth.getRoles().contains(Roles.POST_MANAGER)) {
 
       // Check if user is able to post in club's name
-      if (post.getLinkedClub() != null && !auth.getClubsAdmin().contains(postDTO.getLinkedClubId())) {
+      if (post.getLinkedClub() != null && !auth.getClubsPublisher().contains(postDTO.getLinkedClubId())) {
         throw new AuthException("not allowed to create this post");
       }
     }
@@ -335,7 +337,7 @@ public class PostService {
   public List<PostView> getWaitingPosts(TokenPayload token) {
     List<Long> authors = new ArrayList<>();
     authors.add(token.getId());
-    authors.addAll(token.getClubsAdmin());
+    authors.addAll(token.getClubsPublisher());
     List<Post> waitingPosts = postRepository.findByPublishStateAndAuthor_IdInOrderByCreationDateDesc(PublishStateEnum.WAITING, authors);
     return waitingPosts.stream()
       .map(p -> postFactory.entityToView(p))
