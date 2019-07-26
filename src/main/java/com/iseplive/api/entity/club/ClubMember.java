@@ -1,7 +1,7 @@
 package com.iseplive.api.entity.club;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.iseplive.api.constants.ClubRoleEnum;
+import com.iseplive.api.constants.ClubRole;
 import com.iseplive.api.entity.user.Student;
 
 import javax.persistence.*;
@@ -22,7 +22,7 @@ public class ClubMember {
 
   // Determine the interactions allowed by the student
   @Enumerated(EnumType.STRING)
-  private ClubRoleEnum role;
+  private ClubRole role;
 
   // Student's position in club, doesn't have any effect
   private String position;
@@ -45,9 +45,9 @@ public class ClubMember {
 
   public void setStudent(Student student) { this.student = student; }
 
-  public ClubRoleEnum getRole() { return role; }
+  public ClubRole getRole() { return role; }
 
-  public void setRole(ClubRoleEnum role) { this.role = role; }
+  public void setRole(ClubRole role) { this.role = role; }
 
   public Club getClub() { return club; }
 

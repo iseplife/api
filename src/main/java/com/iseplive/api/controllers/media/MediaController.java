@@ -112,7 +112,7 @@ public class MediaController {
                                @AuthenticationPrincipal TokenPayload payload) {
     Gallery gallery = mediaService.getGallery(id);
     if (!payload.getRoles().contains(Roles.ADMIN) && !payload.getRoles().contains(Roles.POST_MANAGER)) {
-      if (!payload.getClubsAdmin().contains(gallery.getPost().getAuthor().getId())) {
+      if (!payload.getClubsPublisher().contains(gallery.getPost().getAuthor().getId())) {
         throw new AuthException("you cannot edit this gallery");
       }
     }
