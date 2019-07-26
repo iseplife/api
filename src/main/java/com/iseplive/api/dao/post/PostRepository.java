@@ -1,7 +1,7 @@
 package com.iseplive.api.dao.post;
 
 import com.iseplive.api.constants.PublishStateEnum;
-import com.iseplive.api.entity.Post;
+import com.iseplive.api.entity.post.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;

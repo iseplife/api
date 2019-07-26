@@ -1,7 +1,7 @@
 package com.iseplive.api.entity.media;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.iseplive.api.entity.Post;
+import com.iseplive.api.entity.post.Post;
 
 import javax.persistence.*;
 import java.util.Date;
