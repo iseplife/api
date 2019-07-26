@@ -1,9 +1,10 @@
 package com.iseplive.api.dto.view;
 
-import com.iseplive.api.entity.Post;
+import com.iseplive.api.entity.post.Like;
 import com.iseplive.api.entity.user.Student;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -15,7 +16,7 @@ public class CommentView {
   private Student student;
   private Date creation;
   private String message;
-  private Set<Student> likes;
+  private List<Like> likes;
   private boolean isLiked;
 
   public Long getId() {
@@ -50,11 +51,11 @@ public class CommentView {
     this.message = message;
   }
 
-  public Set<Student> getLikes() {
+  public List<Like> getLikes() {
     return likes;
   }
 
-  public void setLikes(Set<Student> likes) {
+  public void setLikes(List<Like> likes) {
     this.likes = likes;
   }
 

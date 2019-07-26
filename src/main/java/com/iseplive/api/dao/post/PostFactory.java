@@ -46,7 +46,7 @@ public class PostFactory {
     postView.setTitle(post.getTitle());
     postView.setDescription(post.getDescription());
     postView.setCreationDate(post.getCreationDate());
-    postView.setNbLikes(post.getLike().size());
+    postView.setNbLikes(post.getLikes().size());
     postView.setPinned(post.getPinned());
     postView.setNbComments(post.getComments().size());
 
