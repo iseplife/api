@@ -74,7 +74,7 @@ public class PostController {
   }
 
   @GetMapping("/comment/{id}/likes")
-  public Set<Student> getLikesComment(@PathVariable Long id) {
+  public List<Like> getLikesComment(@PathVariable Long id) {
     return postService.getLikesComment(id);
   }
 
@@ -123,7 +123,7 @@ public class PostController {
   }
 
   @GetMapping("/{id}/likes")
-  public Set<Student> getLikesPost(@PathVariable Long id) {
+  public List<Like> getLikesPost(@PathVariable Long id) {
     return postService.getLikesPost(id);
   }
 
