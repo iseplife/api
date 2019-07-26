@@ -1,5 +1,6 @@
 package com.iseplive.api.services;
 
+import com.google.common.collect.Sets;
 import com.iseplive.api.conf.jwt.TokenPayload;
 import com.iseplive.api.constants.ClubRole;
 import com.iseplive.api.constants.Roles;
@@ -19,9 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -114,7 +113,12 @@ public class ClubService {
    * @return a club list
    */
   List<Club> getClubAuthors(Student student) {
-    return clubRepository.findByMemberRole(student, ClubRoleEnum.PUBLISHER);
+    return clubRepository.findByRoleWithInheritance(student, ClubRole.PUBLISHER);
+  }
+
+  public List<ClubMember> getPublisherClubs(Student student){
+    //TODO: find a way to improve this method so the method getParent() is call in the repository
+    return clubMemberRepository.findByRoleWithInheritance(student, ClubRole.PUBLISHER);
   }
 
   public void deleteClub(Long id) {
@@ -129,7 +133,7 @@ public class ClubService {
     Club club = getClub(clubId);
     return club.getMembers()
     .stream()
-    .filter(s -> s.getRole() == ClubRoleEnum.PUBLISHER || s.getRole() == ClubRoleEnum.PRESIDENT)
+    .filter(s -> s.getRole().is(ClubRole.ADMIN))
     .map(ClubMember::getStudent)
     .collect(Collectors.toSet());
   }
@@ -137,7 +141,7 @@ public class ClubService {
   public Set<Student> getAdmins(Club club){
     return club.getMembers()
       .stream()
-      .filter(s -> s.getRole() == ClubRoleEnum.PUBLISHER || s.getRole() == ClubRoleEnum.PRESIDENT)
+      .filter(s -> s.getRole().is(ClubRole.ADMIN))
       .map(ClubMember::getStudent)
       .collect(Collectors.toSet());
   }
@@ -146,20 +150,16 @@ public class ClubService {
     ClubMember member = clubMemberRepository.findOneByStudentIdAndClubId(studId, clubId);
     if(member == null) throw new IllegalArgumentException("the student needs to be part of the club to be an admin");
 
-    member.setRole(ClubRoleEnum.PRESIDENT);
+    member.setRole(ClubRole.ADMIN);
     clubRepository.save(member.getClub());
   }
 
 
   public void removeAdmin(Long clubId, Long studId) {
     ClubMember member = clubMemberRepository.findOneByStudentIdAndClubId(clubId, studId);
-    member.setRole(ClubRoleEnum.MEMBER);
+    member.setRole(ClubRole.MEMBER);
 
     clubMemberRepository.save(member);
-  }
-
-  public List<Club> getAdminClubs(Student student) {
-    return clubRepository.findByMemberRole(student, ClubRoleEnum.PRESIDENT);
   }
 
   public Club updateClub(Long id, ClubDTO clubDTO, MultipartFile logo) {
@@ -176,7 +176,7 @@ public class ClubService {
     return clubRepository.save(club);
   }
 
-  public ClubMember updateMemberRole(Long member, ClubRoleEnum role, TokenPayload payload) {
+  public ClubMember updateMemberRole(Long member, ClubRole role, TokenPayload payload) {
     ClubMember clubMember = getMember(member);
     if (!payload.getRoles().contains(Roles.ADMIN) && payload.getRoles().contains(Roles.CLUB_MANAGER)) {
       if (!payload.getClubsAdmin().contains(clubMember.getClub().getId())) {

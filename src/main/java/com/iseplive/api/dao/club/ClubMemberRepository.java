@@ -1,7 +1,11 @@
 package com.iseplive.api.dao.club;
 
+import com.iseplive.api.constants.ClubRole;
 import com.iseplive.api.entity.club.ClubMember;
+import com.iseplive.api.entity.user.Student;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,4 +21,11 @@ public interface ClubMemberRepository extends CrudRepository<ClubMember, Long> {
   ClubMember findOneByStudentIdAndClubId(Long student_id, Long club_id);
 
   List<ClubMember> findByStudentId(Long student_id);
+
+  @Query("select m from ClubMember m " +
+    "where m.student = ?1 " +
+    "and m.role in :#{role.getParent()}"
+  )
+  List<ClubMember> findByRoleWithInheritance(Student student, ClubRole role);
+
 }
