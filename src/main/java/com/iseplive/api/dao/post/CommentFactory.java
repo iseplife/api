@@ -1,7 +1,7 @@
 package com.iseplive.api.dao.post;
 
 import com.iseplive.api.dto.view.CommentView;
-import com.iseplive.api.entity.Comment;
+import com.iseplive.api.entity.post.Comment;
 import com.iseplive.api.services.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,7 @@ public class CommentFactory {
 
     commentView.setId(comment.getId());
     commentView.setCreation(comment.getCreation());
-    commentView.setLikes(comment.getLike());
+    commentView.setLikes(comment.getLikes());
     commentView.setMessage(comment.getMessage());
     commentView.setStudent(comment.getStudent());
 

@@ -8,8 +8,9 @@ import com.iseplive.api.dto.PostDTO;
 import com.iseplive.api.dto.PostUpdateDTO;
 import com.iseplive.api.dto.view.CommentView;
 import com.iseplive.api.dto.view.PostView;
-import com.iseplive.api.entity.Comment;
-import com.iseplive.api.entity.Post;
+import com.iseplive.api.entity.post.Comment;
+import com.iseplive.api.entity.post.Like;
+import com.iseplive.api.entity.post.Post;
 import com.iseplive.api.entity.club.Club;
 import com.iseplive.api.entity.user.Student;
 import com.iseplive.api.services.AuthService;
@@ -73,7 +74,7 @@ public class PostController {
   }
 
   @GetMapping("/comment/{id}/likes")
-  public Set<Student> getLikesComment(@PathVariable Long id) {
+  public List<Like> getLikesComment(@PathVariable Long id) {
     return postService.getLikesComment(id);
   }
 
@@ -122,7 +123,7 @@ public class PostController {
   }
 
   @GetMapping("/{id}/likes")
-  public Set<Student> getLikesPost(@PathVariable Long id) {
+  public List<Like> getLikesPost(@PathVariable Long id) {
     return postService.getLikesPost(id);
   }
 

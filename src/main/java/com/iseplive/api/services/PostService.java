@@ -11,9 +11,10 @@ import com.iseplive.api.dto.PostDTO;
 import com.iseplive.api.dto.PostUpdateDTO;
 import com.iseplive.api.dto.view.CommentView;
 import com.iseplive.api.dto.view.PostView;
-import com.iseplive.api.entity.Comment;
+import com.iseplive.api.entity.post.Comment;
 import com.iseplive.api.entity.Event;
-import com.iseplive.api.entity.Post;
+import com.iseplive.api.entity.post.Like;
+import com.iseplive.api.entity.post.Post;
 import com.iseplive.api.entity.club.Club;
 import com.iseplive.api.entity.media.*;
 import com.iseplive.api.entity.user.Student;
@@ -46,6 +47,9 @@ public class PostService {
 
   @Autowired
   PostFactory postFactory;
+
+  @Autowired
+  LikeRepository likeRepository;
 
   @Autowired
   CommentFactory commentFactory;
@@ -203,29 +207,26 @@ public class PostService {
   }
 
   public void togglePostLike(Long postId, Long id) {
-    Post post = postRepository.findOne(postId);
-    Set<Student> students = post.getLike();
-    Student student = studentService.getStudent(id);
-
-    if (students.contains(student)) {
-      students.remove(student);
-      postRepository.save(post);
+    Like like = likeRepository.findOneByPostIdAndStudentId(postId, id);
+    if(like != null){
+      likeRepository.delete(like);
     } else {
-      students.add(student);
-      postRepository.save(post);
+      like = new Like();
+      like.setStudent(studentService.getStudent(id));
+      like.setPost(postRepository.findOne(postId));
+      likeRepository.save(like);
     }
   }
 
   public void toggleCommentLike(Long comId, Long id) {
-    Comment comment = commentRepository.findOne(comId);
-    Set<Student> students = comment.getLike();
-    Student student = studentService.getStudent(id);
-    if (students.contains(student)) {
-      students.remove(student);
-      commentRepository.save(comment);
+    Like like = likeRepository.findOneByCommentIdAndStudentId(comId, id);
+    if(like != null){
+      likeRepository.delete(like);
     } else {
-      students.add(student);
-      commentRepository.save(comment);
+      like = new Like();
+      like.setStudent(studentService.getStudent(id));
+      like.setComment(commentRepository.findOne(comId));
+      likeRepository.save(like);
     }
   }
 
@@ -265,14 +266,14 @@ public class PostService {
 
   public Boolean isPostLiked(Post post) {
     if (authService.isUserAnonymous()) return false;
-    Student student = authService.getLoggedUser();
-    return post.getLike().contains(student);
+
+    return likeRepository.findOneByPostIdAndStudentId(post.getId(), authService.getLoggedUser().getId()) != null;
   }
 
   public Boolean isCommentLiked(Comment comment) {
     if (authService.isUserAnonymous()) return false;
-    Student student = authService.getLoggedUser();
-    return comment.getLike().contains(student);
+
+    return likeRepository.findOneByCommentIdAndStudentId(comment.getId(), authService.getLoggedUser().getId()) != null;
   }
 
   public PostView getPostView(Long id) {
@@ -303,17 +304,17 @@ public class PostService {
     return postRepository.save(post);
   }
 
-  public Set<Student> getLikesPost(Long id) {
+  public List<Like> getLikesPost(Long id) {
     Post post = getPost(id);
-    return post.getLike();
+    return post.getLikes();
   }
 
-  public Set<Student> getLikesComment(Long id) {
+  public List<Like> getLikesComment(Long id) {
     Comment comment = commentRepository.findOne(id);
     if (comment == null) {
       throw new IllegalArgumentException("could not find a comment with this id");
     }
-    return comment.getLike();
+    return comment.getLikes();
   }
 
   private boolean hasRightOnPost(TokenPayload auth, Post post) {

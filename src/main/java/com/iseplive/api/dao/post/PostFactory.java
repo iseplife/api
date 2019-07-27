@@ -3,7 +3,7 @@ package com.iseplive.api.dao.post;
 import com.iseplive.api.constants.Roles;
 import com.iseplive.api.dto.PostDTO;
 import com.iseplive.api.dto.view.PostView;
-import com.iseplive.api.entity.Post;
+import com.iseplive.api.entity.post.Post;
 import com.iseplive.api.entity.user.Student;
 import com.iseplive.api.services.AuthService;
 import com.iseplive.api.services.ClubService;
@@ -46,7 +46,7 @@ public class PostFactory {
     postView.setTitle(post.getTitle());
     postView.setDescription(post.getDescription());
     postView.setCreationDate(post.getCreationDate());
-    postView.setNbLikes(post.getLike().size());
+    postView.setNbLikes(post.getLikes().size());
     postView.setPinned(post.getPinned());
     postView.setNbComments(post.getComments().size());
 

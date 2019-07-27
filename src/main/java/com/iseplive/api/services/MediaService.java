@@ -12,7 +12,7 @@ import com.iseplive.api.dto.TempFile;
 import com.iseplive.api.dto.view.MatchedView;
 import com.iseplive.api.entity.Image;
 import com.iseplive.api.entity.Matched;
-import com.iseplive.api.entity.Post;
+import com.iseplive.api.entity.post.Post;
 import com.iseplive.api.entity.media.*;
 import com.iseplive.api.entity.user.Student;
 import com.iseplive.api.exceptions.FileException;

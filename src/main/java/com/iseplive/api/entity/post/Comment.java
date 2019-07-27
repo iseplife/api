@@ -1,12 +1,10 @@
-package com.iseplive.api.entity;
+package com.iseplive.api.entity.post;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplive.api.entity.user.Student;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Guillaume on 31/07/2017.
@@ -27,11 +25,14 @@ public class Comment {
 
   private Date creation;
 
+  @ManyToOne
+  private Comment parent;
+
   @Column(length = 500)
   private String message;
 
-  @ManyToMany
-  private Set<Student> like = new HashSet<>();
+  @OneToMany
+  private List<Like> likes = new ArrayList<>();
 
   public Long getId() {
     return id;
@@ -75,15 +76,23 @@ public class Comment {
   }
 
   @JsonIgnore
-  public Set<Student> getLike() {
-    return like;
+  public List<Like> getLike() {
+    return likes;
   }
 
-  public void setLike(Set<Student> like) {
-    this.like = like;
+  public void setLike(List<Like> likes) {
+    this.likes = likes;
   }
 
-  public int getLikes() {
-    return like.size();
+  public List<Like> getLikes() {
+    return likes;
+  }
+
+  public Comment getParent() {
+    return parent;
+  }
+
+  public void setParent(Comment parent) {
+    this.parent = parent;
   }
 }
