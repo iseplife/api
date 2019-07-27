@@ -42,7 +42,7 @@ public class Post {
   private List<Comment> comments = new ArrayList<>();
 
   @JsonIgnore
-  @OneToMany
+  @OneToMany(cascade = CascadeType.REMOVE)
   private List<Like> likes = new ArrayList<>();
 
   @Enumerated(EnumType.STRING)
@@ -113,9 +113,7 @@ public class Post {
   }
 
   @JsonIgnore
-  public List<Like> getLikes() {
-    return likes;
-  }
+  public List<Like> getLikes() { return likes; }
 
   public void setLikes(List<Like> likes) {
     this.likes = likes;
