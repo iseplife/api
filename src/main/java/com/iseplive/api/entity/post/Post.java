@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplive.api.constants.PublishStateEnum;
 import com.iseplive.api.entity.club.Club;
 import com.iseplive.api.entity.media.Media;
-import com.iseplive.api.entity.post.Comment;
 import com.iseplive.api.entity.user.Student;
 
 import javax.persistence.*;
@@ -42,7 +41,7 @@ public class Post {
   private List<Comment> comments = new ArrayList<>();
 
   @JsonIgnore
-  @OneToMany(cascade = CascadeType.REMOVE)
+  @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
   private List<Like> likes = new ArrayList<>();
 
   @Enumerated(EnumType.STRING)

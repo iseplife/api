@@ -31,7 +31,7 @@ public class Comment {
   @Column(length = 500)
   private String message;
 
-  @OneToMany(cascade = CascadeType.REMOVE)
+  @OneToMany(mappedBy = "comment" ,cascade = CascadeType.REMOVE,  orphanRemoval = true)
   private List<Like> likes = new ArrayList<>();
 
   public Long getId() {
