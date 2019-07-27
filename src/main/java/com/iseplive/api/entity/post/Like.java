@@ -4,7 +4,7 @@ import com.iseplive.api.entity.user.Student;
 
 import javax.persistence.*;
 
-@Entity
+@Entity(name="`Like`")
 public class Like {
 
   @Id
@@ -14,7 +14,7 @@ public class Like {
   @ManyToOne
   private Post post;
 
-  @ManyToOne
+  @ManyToOne()
   private Comment comment;
 
   @ManyToOne
