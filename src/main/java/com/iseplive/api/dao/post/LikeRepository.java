@@ -1,8 +1,6 @@
 package com.iseplive.api.dao.post;
 
-import com.iseplive.api.entity.post.Comment;
 import com.iseplive.api.entity.post.Like;
-import com.iseplive.api.entity.post.Post;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
