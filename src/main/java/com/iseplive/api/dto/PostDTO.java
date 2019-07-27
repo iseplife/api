@@ -8,7 +8,6 @@ public class PostDTO {
   private String title;
   private String content;
   private Long linkedClubId;
-  private Long authorId;
   private Boolean isPrivate;
 
   public String getTitle() {
@@ -25,14 +24,6 @@ public class PostDTO {
 
   public void setContent(String content) {
     this.content = content;
-  }
-
-  public Long getAuthorId() {
-    return authorId;
-  }
-
-  public void setAuthorId(Long authorId) {
-    this.authorId = authorId;
   }
 
   public Boolean getPrivate() {
