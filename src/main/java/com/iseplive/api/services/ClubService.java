@@ -117,7 +117,6 @@ public class ClubService {
   }
 
   public List<ClubMember> getPublisherClubs(Student student){
-    //TODO: find a way to improve this method so the method getParent() is call in the repository
     return clubMemberRepository.findByRoleWithInheritance(student, ClubRole.PUBLISHER);
   }
 

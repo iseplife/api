@@ -23,9 +23,9 @@ public interface ClubMemberRepository extends CrudRepository<ClubMember, Long> {
   List<ClubMember> findByStudentId(Long student_id);
 
   @Query("select m from ClubMember m " +
-    "where m.student = ?1 " +
-    "and m.role in :#{role.getParent()}"
+    "where m.student = :#{#student} " +
+    "and m.role in :#{#role.getParents()}"
   )
-  List<ClubMember> findByRoleWithInheritance(Student student, ClubRole role);
+  List<ClubMember> findByRoleWithInheritance(@Param("student") Student student, @Param("role") ClubRole role);
 
 }
