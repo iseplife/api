@@ -127,7 +127,7 @@ public class PostService {
     }
 
     post.setCreationDate(new Date());
-    post.setPublishState(PublishStateEnum.PUBLISHED);
+    post.setPublishState(postDTO.isDraft() ? PublishStateEnum.WAITING: null);
 
     post = postRepository.save(post);
     postMessageService.broadcastPost(auth.getId(), post);

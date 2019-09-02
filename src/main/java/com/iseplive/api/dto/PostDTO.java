@@ -9,6 +9,7 @@ public class PostDTO {
   private String content;
   private Long linkedClubId;
   private Boolean isPrivate;
+  private Boolean draft;
 
   public String getTitle() {
     return title;
@@ -37,4 +38,8 @@ public class PostDTO {
   public Long getLinkedClubId() { return linkedClubId; }
 
   public void setLinkedClubId(Long linkedClubId) { this.linkedClubId = linkedClubId; }
+
+  public Boolean isDraft() { return draft; }
+
+  public void setDraft(Boolean draft) { this.draft = draft; }
 }

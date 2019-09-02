@@ -19,7 +19,7 @@ public enum ClubRole {
 
   public List<ClubRole> getLegacy() { return legacy; }
 
-  public List<ClubRole> getParent() {
+  public List<ClubRole> getParents() {
     return Arrays
       .stream(ClubRole.values())
       .filter(role -> role.is(this))
