@@ -236,10 +236,14 @@ public class MediaService {
    * @return
    */
   public Image addSingleImage(Long postId, MultipartFile file) {
-    Image image = imageRepository.save(addImage(file, null));
-    postService.addMediaEmbed(postId, image.getId());
+    Gallery gallery =  new Gallery();
+    Image img = addImage(file, gallery);
+    gallery.getImages().add(img);
+
+    mediaRepository.save(gallery);
+    postService.addMediaEmbed(postId, img.getId());
     postService.setPublishState(postId, PublishStateEnum.PUBLISHED);
-    return image;
+    return img;
   }
 
   /**
