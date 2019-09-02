@@ -1,6 +1,9 @@
 package com.iseplive.api.entity;
 
+import com.iseplive.api.entity.post.Post;
+
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Feed {
@@ -12,6 +15,9 @@ public class Feed {
   @Column(unique = true)
   private String name;
 
+  @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL)
+  private List<Post> posts;
+
   public Long getId() { return id; }
 
   public void setId(Long id) { this.id = id; }
@@ -19,4 +25,9 @@ public class Feed {
   public String getName() { return name; }
 
   public void setName(String name) { this.name = name; }
+
+  public List<Post> getPosts() { return posts; }
+
+  public void addPost(Post post) { posts.add(post); }
+
 }

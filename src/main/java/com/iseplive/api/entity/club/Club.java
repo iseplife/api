@@ -2,6 +2,7 @@ package com.iseplive.api.entity.club;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplive.api.constants.ClubTypesEnum;
+import com.iseplive.api.entity.Feed;
 import com.iseplive.api.entity.post.Post;
 
 import javax.persistence.*;
@@ -24,6 +25,9 @@ public class Club {
 
   private Date archivedAt = null;
   private Date createdAt;
+
+  @OneToOne
+  private Feed feed;
 
   @Enumerated(EnumType.STRING)
   private ClubTypesEnum type;
@@ -141,4 +145,12 @@ public class Club {
   public ClubTypesEnum getType() { return type; }
 
   public void setType(ClubTypesEnum type) { this.type = type; }
+
+  public Feed getFeed() {
+    return feed;
+  }
+
+  public void setFeed(Feed feed) {
+    this.feed = feed;
+  }
 }

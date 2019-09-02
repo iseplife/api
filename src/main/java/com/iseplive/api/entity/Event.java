@@ -4,10 +4,7 @@ import com.iseplive.api.constants.MediaType;
 import com.iseplive.api.entity.club.Club;
 import com.iseplive.api.entity.media.Media;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -26,6 +23,12 @@ public class Event extends Media {
   private String description;
 
   @OneToOne
+  private Feed feed;
+
+  @ManyToOne
+  private Feed target;
+
+  @ManyToOne
   private Club club;
 
   private String imageUrl;
@@ -81,5 +84,21 @@ public class Event extends Media {
 
   public void setImageUrl(String imageUrl) {
     this.imageUrl = imageUrl;
+  }
+
+  public Feed getFeed() {
+    return feed;
+  }
+
+  public void setFeed(Feed feed) {
+    this.feed = feed;
+  }
+
+  public Feed getTarget() {
+    return target;
+  }
+
+  public void setTarget(Feed target) {
+    this.target = target;
   }
 }
