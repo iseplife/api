@@ -1,6 +1,7 @@
 package com.iseplive.api.dao.post;
 
 import com.iseplive.api.constants.PublishStateEnum;
+import com.iseplive.api.entity.Feed;
 import com.iseplive.api.entity.post.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +19,8 @@ import java.util.List;
 public interface PostRepository extends CrudRepository<Post, Long> {
 
   List<Post> findAll();
+
+  List<Post> findByFeedAndIsPinnedIsTrue(Feed feed);
 
   Page<Post> findByPublishStateAndIsPinnedOrderByCreationDateDesc
     (PublishStateEnum publishState, Boolean isPinned, Pageable pageable);
