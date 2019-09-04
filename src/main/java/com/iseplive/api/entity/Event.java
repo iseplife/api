@@ -1,5 +1,6 @@
 package com.iseplive.api.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplive.api.constants.MediaType;
 import com.iseplive.api.entity.club.Club;
 import com.iseplive.api.entity.media.Media;
@@ -22,6 +23,7 @@ public class Event extends Media {
   @Column(columnDefinition = "TEXT")
   private String description;
 
+  @JsonIgnore
   @OneToOne
   private Feed feed;
 
