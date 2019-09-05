@@ -39,6 +39,7 @@ public class Post {
   private Club linkedClub = null;
 
   @JsonIgnore
+  @ManyToOne
   private Feed feed;
 
   @JsonIgnore
