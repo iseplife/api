@@ -155,11 +155,6 @@ public class PostService {
       gallery.getImages().forEach(img -> mediaService.deleteImageFile(img));
     }
 
-    if (post.getMedia() instanceof Event) {
-      Event event = (Event) post.getMedia();
-      mediaUtils.removeIfExistPublic(event.getImageUrl());
-    }
-
     if (post.getMedia() instanceof Document) {
       Document document = (Document) post.getMedia();
       mediaUtils.removeIfExistPublic(document.getPath());
