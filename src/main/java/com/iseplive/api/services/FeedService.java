@@ -1,10 +1,9 @@
 package com.iseplive.api.services;
 
-import com.google.common.base.CaseFormat;
 import com.iseplive.api.dao.feed.FeedRepository;
-import com.iseplive.api.dao.post.PostRepository;
+import com.iseplive.api.dto.view.PostView;
+import org.springframework.data.domain.Page;
 import com.iseplive.api.entity.Feed;
-import com.iseplive.api.entity.post.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,30 +16,25 @@ public class FeedService {
   private FeedRepository feedRepository;
 
   @Autowired
-  private PostRepository postRepository;
+  private PostService postService;
 
   public Feed getMain() {
     return feedRepository.findMain();
   }
 
-  public List<Post> getMainPosts() {
-    return
-      feedRepository
-      .findMain()
-      .getPosts();
+  public Page<PostView> getMainPosts(int page) {
+    Feed main = feedRepository.findMain();
+    return postService.getFeedPosts(main, page);
   }
 
-  public List<Post> getFeedPosts(String name) {
-    return
-      feedRepository
-      .findFeedByName(name.toUpperCase())
-      .getPosts();
-  }
-
-  public List<Post> getFeedPostsPinned(String name) {
+  public Page<PostView> getFeedPosts(String name, int page) {
     Feed feed = feedRepository.findFeedByName(name);
-    return
-      postRepository.findByFeedAndIsPinnedIsTrue(feed);
+    return postService.getFeedPosts(feed, page);
+  }
+
+  public List<PostView> getFeedPostsPinned(String name) {
+    Feed feed = feedRepository.findFeedByName(name);
+    return postService.getFeedPostsPinned(feed);
   }
 
   public Feed createFeed(String name) {

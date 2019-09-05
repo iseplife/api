@@ -20,6 +20,8 @@ public interface PostRepository extends CrudRepository<Post, Long> {
 
   List<Post> findAll();
 
+  Page<Post> findByFeed(Feed feed, Pageable pageable);
+
   List<Post> findByFeedAndIsPinnedIsTrue(Feed feed);
 
   Page<Post> findByPublishStateAndIsPinnedOrderByCreationDateDesc

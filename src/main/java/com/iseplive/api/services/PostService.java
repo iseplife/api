@@ -11,6 +11,7 @@ import com.iseplive.api.dto.PostDTO;
 import com.iseplive.api.dto.PostUpdateDTO;
 import com.iseplive.api.dto.view.CommentView;
 import com.iseplive.api.dto.view.PostView;
+import com.iseplive.api.entity.Feed;
 import com.iseplive.api.entity.post.Comment;
 import com.iseplive.api.entity.Event;
 import com.iseplive.api.entity.post.Like;
@@ -89,6 +90,19 @@ public class PostService {
     Page<Post> posts = postRepository.findByPublishStateAndIsPinnedOrderByCreationDateDesc(
       PublishStateEnum.PUBLISHED, false, createPage(page));
     return posts.map(post -> postFactory.entityToView(post));
+  }
+
+
+  public Page<PostView> getFeedPosts(Feed feed, int page){
+    Page<Post> posts = postRepository.findByFeed(feed, createPage(page));
+
+    return posts.map(post -> postFactory.entityToView(post));
+  }
+
+  public List<PostView> getFeedPostsPinned(Feed feed){
+    List<Post> posts = postRepository.findByFeedAndIsPinnedIsTrue(feed);
+
+    return posts.stream().map(post -> postFactory.entityToView(post)).collect(Collectors.toList());
   }
 
   public Page<PostView> getPublicPosts(int page) {

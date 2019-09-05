@@ -11,8 +11,6 @@ import com.iseplive.api.dto.view.PostView;
 import com.iseplive.api.entity.post.Comment;
 import com.iseplive.api.entity.post.Like;
 import com.iseplive.api.entity.post.Post;
-import com.iseplive.api.entity.club.Club;
-import com.iseplive.api.entity.user.Student;
 import com.iseplive.api.services.AuthService;
 import com.iseplive.api.services.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by Guillaume on 27/07/2017.
@@ -57,7 +54,6 @@ public class PostController {
 
   @GetMapping("/pinned")
   public List<PostView> getPinnedPosts() {
-
     return authService.isUserAnonymous() ? postService.getPublicPinnedPosts() : postService.getPinnedPosts();
   }
 
