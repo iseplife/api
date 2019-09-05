@@ -89,9 +89,7 @@ public class Student implements UserDetails {
     return phoneNumber;
   }
 
-  public void setPhoneNumber(String phone_number) {
-    this.phoneNumber = phone_number;
-  }
+  public void setPhoneNumber(String phone_number) { this.phoneNumber = phone_number; }
 
   public String getPhoneId() {
     return phoneId;

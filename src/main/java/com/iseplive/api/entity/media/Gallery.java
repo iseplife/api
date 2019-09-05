@@ -22,6 +22,8 @@ public class Gallery extends Media {
 
   private String name;
 
+  private Boolean official = false;
+
   @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "gallery")
   private List<Image> images = new ArrayList<>();
 
@@ -52,6 +54,10 @@ public class Gallery extends Media {
   }
 
   public List<Image> getPreviewImages() {
-    return images.subList(0, images.size() < 10 ? images.size() : 10);
+    return images.subList(0, Math.min(images.size(), 10));
   }
+
+  public Boolean getOfficial() { return official; }
+
+  public void setOfficial(Boolean official) { this.official = official; }
 }

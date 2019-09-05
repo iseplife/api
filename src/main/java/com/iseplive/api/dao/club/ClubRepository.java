@@ -30,10 +30,10 @@ public interface ClubRepository extends CrudRepository<Club, Long> {
 
   @Query("select c from Club c " +
     "join c.members m " +
-    "where m.student = ?1 " +
-    "and m.role in :#{role.getParent()}"
+    "where m.student = :#{#student} " +
+    "and m.role in :#{#role.getParents()}"
   )
-  List<Club> findByRoleWithInheritance(Student student, ClubRole role);
+  List<Club> findByRoleWithInheritance(@Param("student") Student student, @Param("role") ClubRole role);
 
 
   List<Club> findAllByNameContainingIgnoringCase(String name);

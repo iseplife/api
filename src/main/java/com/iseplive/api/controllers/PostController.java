@@ -46,30 +46,24 @@ public class PostController {
 
   @GetMapping
   public Page<PostView> getPosts(@RequestParam(defaultValue = "0") int page) {
-    if (authService.isUserAnonymous()) {
-      return postService.getPublicPosts(page);
-    }
-    return postService.getPosts(page);
+    return authService.isUserAnonymous() ? postService.getPublicPosts(page) : postService.getPosts(page);
   }
 
   @PostMapping
   @RolesAllowed({Roles.STUDENT})
   public Post createPost(@RequestBody PostDTO post, @AuthenticationPrincipal TokenPayload auth) {
-
     return postService.createPost(auth, post);
   }
 
   @GetMapping("/pinned")
   public List<PostView> getPinnedPosts() {
-    if (authService.isUserAnonymous()) {
-      return postService.getPublicPinnedPosts();
-    }
-    return postService.getPinnedPosts();
+
+    return authService.isUserAnonymous() ? postService.getPublicPinnedPosts() : postService.getPinnedPosts();
   }
 
   @GetMapping("/authors")
   @RolesAllowed({Roles.ADMIN, Roles.POST_MANAGER, Roles.STUDENT})
-  public List<Club> getAuthors(@AuthenticationPrincipal TokenPayload auth) {
+  public List<Object> getAuthors(@AuthenticationPrincipal TokenPayload auth) {
     return postService.getAuthors(auth);
   }
 

@@ -31,7 +31,7 @@ public class Comment {
   @Column(length = 500)
   private String message;
 
-  @OneToMany
+  @OneToMany(mappedBy = "comment" ,cascade = CascadeType.REMOVE,  orphanRemoval = true)
   private List<Like> likes = new ArrayList<>();
 
   public Long getId() {
@@ -75,12 +75,7 @@ public class Comment {
     this.creation = creation;
   }
 
-  @JsonIgnore
-  public List<Like> getLike() {
-    return likes;
-  }
-
-  public void setLike(List<Like> likes) {
+  public void setLikes(List<Like> likes) {
     this.likes = likes;
   }
 

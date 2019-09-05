@@ -112,14 +112,10 @@ public class PostService {
 
   public Post createPost(TokenPayload auth, PostDTO postDTO) {
     Post post = postFactory.dtoToEntity(postDTO);
-    post.setAuthor(studentRepository.findOne(postDTO.getAuthorId()));
+    post.setAuthor(studentRepository.findOne(auth.getId()));
 
     post.setLinkedClub(clubService.getClub(postDTO.getLinkedClubId()));
 
-    // if creator is a student but is has wrong author id on the post
-    if (post.getLinkedClub() == null && !auth.getId().equals(postDTO.getAuthorId())) {
-      throw new AuthException("not allowed to create this post");
-    }
 
     // if creator is not an ADMIN or POST_MANAGER
     if (!auth.getRoles().contains(Roles.ADMIN) && !auth.getRoles().contains(Roles.POST_MANAGER)) {
@@ -131,7 +127,7 @@ public class PostService {
     }
 
     post.setCreationDate(new Date());
-    post.setPublishState(PublishStateEnum.WAITING);
+    post.setPublishState(postDTO.isDraft() ? PublishStateEnum.WAITING: null);
 
     post = postRepository.save(post);
     postMessageService.broadcastPost(auth.getId(), post);
@@ -252,9 +248,11 @@ public class PostService {
     throw new AuthException("you are not allowed to pin this post");
   }
 
-  public List<Club> getAuthors(TokenPayload auth) {
-    List<Club> authors = new ArrayList<>();
+  public List<Object> getAuthors(TokenPayload auth) {
     Student student = studentService.getStudent(auth.getId());
+    List<Object> authors = new ArrayList<>();
+    authors.add(student);
+
 
     if (auth.getRoles().contains(Roles.ADMIN)) {
       authors.addAll(clubService.getAll());

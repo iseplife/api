@@ -85,7 +85,7 @@ public class StudentService {
       RESULTS_PER_PAGE,
       new Sort(
         new Sort.Order(Sort.Direction.DESC, "promo"),
-        new Sort.Order(direction, "lastname")
+        new Sort.Order(direction, "lastName")
       )
     );
     if (!promos.isEmpty()) {
