@@ -3,7 +3,6 @@ package com.iseplive.api.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplive.api.constants.MediaType;
 import com.iseplive.api.entity.club.Club;
-import com.iseplive.api.entity.media.Media;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -14,11 +13,17 @@ import java.util.Date;
  */
 @Entity
 @DiscriminatorValue(MediaType.EVENT)
-public class Event extends Media {
+public class Event {
+
+  @Id
+  @GeneratedValue
+  private Long id;
 
   private String title;
+  private Date startsAt;
+  private Date endsAt;
   private String location;
-  private Date date;
+  private Date creation;
 
   @Column(columnDefinition = "TEXT")
   private String description;
@@ -33,12 +38,12 @@ public class Event extends Media {
   @ManyToOne
   private Club club;
 
-  private String imageUrl;
+  @OneToOne
+  private Event previousEdition;
 
-  @Override
-  public void setCreation(Date creation) {
-    super.setCreation(creation);
-  }
+  public Long getId() { return id; }
+
+  public void setId(Long id) { this.id = id; }
 
   public String getTitle() {
     return title;
@@ -56,12 +61,12 @@ public class Event extends Media {
     this.location = location;
   }
 
-  public Date getDate() {
-    return date;
+  public Date getStartsAt() {
+    return startsAt;
   }
 
-  public void setDate(Date date) {
-    this.date = date;
+  public void setStartsAt(Date startsAt) {
+    this.startsAt = startsAt;
   }
 
   public String getDescription() {
@@ -103,4 +108,9 @@ public class Event extends Media {
   public void setTarget(Feed target) {
     this.target = target;
   }
+
+  public Date getEndsAt() { return endsAt; }
+
+  public void setEndsAt(Date endsAt) { this.endsAt = endsAt; }
+
 }

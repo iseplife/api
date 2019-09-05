@@ -13,7 +13,7 @@ public class EventFactory {
   public Event dtoToEntity(EventDTO dto) {
     Event event = new Event();
     event.setTitle(dto.getTitle());
-    event.setDate(dto.getDate());
+    event.setStartsAt(dto.getDate());
     event.setLocation(dto.getLocation());
     event.setDescription(dto.getDescription());
     return event;

@@ -84,7 +84,7 @@ public class EventService {
     event.setTitle(eventDTO.getTitle());
     event.setDescription(eventDTO.getDescription());
     event.setLocation(eventDTO.getLocation());
-    event.setDate(eventDTO.getDate());
+    event.setStartsAt(eventDTO.getDate());
 
     if (file != null) {
       String eventPath = createImageEvent(file);
