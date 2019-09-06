@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import springfox.documentation.annotations.Cacheable;
 
@@ -93,14 +94,20 @@ public class PostService {
   }
 
 
-  public Page<PostView> getFeedPosts(Feed feed, int page){
-    Page<Post> posts = postRepository.findByFeed(feed, createPage(page));
+  public Page<PostView> getFeedPosts(Feed feed, int page) {
+    Page<Post> posts = postRepository.findByFeedAndPublishStateOrderByPublicationDate(feed, PublishStateEnum.PUBLISHED, createPage(page));
 
     return posts.map(post -> postFactory.entityToView(post));
   }
 
-  public List<PostView> getFeedPostsPinned(Feed feed){
+  public List<PostView> getFeedPostsPinned(Feed feed) {
     List<Post> posts = postRepository.findByFeedAndIsPinnedIsTrue(feed);
+
+    return posts.stream().map(post -> postFactory.entityToView(post)).collect(Collectors.toList());
+  }
+
+  public List<PostView> getFeedDrafts(Feed feed, Student author) {
+    List<Post> posts = postRepository.findFeedDrafts(feed, author);
 
     return posts.stream().map(post -> postFactory.entityToView(post)).collect(Collectors.toList());
   }
@@ -141,7 +148,7 @@ public class PostService {
     }
 
     post.setCreationDate(new Date());
-    post.setPublishState(postDTO.isDraft() ? PublishStateEnum.WAITING: null);
+    post.setPublishState(postDTO.isDraft() ? PublishStateEnum.WAITING : null);
 
     post = postRepository.save(post);
     postMessageService.broadcastPost(auth.getId(), post);
@@ -213,7 +220,7 @@ public class PostService {
 
   public void togglePostLike(Long postId, Long id) {
     Like like = likeRepository.findOneByPostIdAndStudentId(postId, id);
-    if(like != null){
+    if (like != null) {
       likeRepository.delete(like);
     } else {
       like = new Like();
@@ -225,7 +232,7 @@ public class PostService {
 
   public void toggleCommentLike(Long comId, Long id) {
     Like like = likeRepository.findOneByCommentIdAndStudentId(comId, id);
-    if(like != null){
+    if (like != null) {
       likeRepository.delete(like);
     } else {
       like = new Like();

@@ -2,6 +2,7 @@ package com.iseplive.api.services;
 
 import com.iseplive.api.dao.feed.FeedRepository;
 import com.iseplive.api.dto.view.PostView;
+import com.iseplive.api.entity.user.Student;
 import org.springframework.data.domain.Page;
 import com.iseplive.api.entity.Feed;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,11 @@ public class FeedService {
   public List<PostView> getFeedPostsPinned(String name) {
     Feed feed = feedRepository.findFeedByName(name);
     return postService.getFeedPostsPinned(feed);
+  }
+
+  public List<PostView> getFeedDrafts(String name, Student author){
+    Feed feed = feedRepository.findFeedByName(name);
+    return postService.getFeedDrafts(feed, author);
   }
 
   public Feed createFeed(String name) {

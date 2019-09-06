@@ -1,12 +1,15 @@
 package com.iseplive.api.controllers;
 
 
+import com.iseplive.api.constants.Roles;
 import com.iseplive.api.dto.view.PostView;
+import com.iseplive.api.services.AuthService;
 import com.iseplive.api.services.FeedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.security.RolesAllowed;
 import java.util.List;
 
 
@@ -16,6 +19,9 @@ public class FeedController {
 
   @Autowired
   private FeedService feedService;
+
+  @Autowired
+  AuthService authService;
 
   @GetMapping("/main")
   public Page<PostView> getMain(@RequestParam(defaultValue = "0") int page) {
@@ -30,6 +36,12 @@ public class FeedController {
   @GetMapping("/{name}/pinned")
   public List<PostView> getClubPostPinned(@PathVariable String name) {
     return feedService.getFeedPostsPinned(name);
+  }
+
+  @GetMapping("/{name}/draft")
+  @RolesAllowed({Roles.STUDENT})
+  public List<PostView> getClubPostDraft(@PathVariable String name) {
+    return feedService.getFeedDrafts(name, authService.getLoggedUser());
   }
 
 
