@@ -24,6 +24,9 @@ public interface PostRepository extends CrudRepository<Post, Long> {
 
   Page<Post> findByFeedAndPublishStateOrderByPublicationDate(Feed feed, PublishStateEnum state, Pageable pageable);
 
+
+  List<Post> findByFeedAndPublishStateOrderByPublicationDate(Feed feed, PublishStateEnum state);
+
   @Query(
     "select p from Post p "+
       "where p.feed = ?1 " +

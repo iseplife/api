@@ -29,13 +29,19 @@ public class FeedController {
   }
 
   @GetMapping("/{name}")
-  public Page<PostView> getClubPost(@PathVariable String name, @RequestParam(defaultValue = "0") int page) {
+  public Page<PostView> getFeedPosts(@PathVariable String name, @RequestParam(defaultValue = "0") int page) {
     return feedService.getFeedPosts(name, page);
   }
 
   @GetMapping("/{name}/pinned")
-  public List<PostView> getClubPostPinned(@PathVariable String name) {
+  public List<PostView> getFeedPostsPinned(@PathVariable String name) {
     return feedService.getFeedPostsPinned(name);
+  }
+
+  @GetMapping("/{name}/wainting")
+  @RolesAllowed({Roles.ADMIN})
+  public List<PostView> getFeedPostsWaiting(@PathVariable String name) {
+    return feedService.getFeedPostsWaiting(name);
   }
 
   @GetMapping("/{name}/draft")

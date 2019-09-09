@@ -112,6 +112,12 @@ public class PostService {
     return posts.stream().map(post -> postFactory.entityToView(post)).collect(Collectors.toList());
   }
 
+  public List<PostView> getFeedPostsWaiting(Feed feed) {
+    List<Post> posts = postRepository.findByFeedAndPublishStateOrderByPublicationDate(feed, PublishStateEnum.WAITING);
+
+    return posts.stream().map(post -> postFactory.entityToView(post)).collect(Collectors.toList());
+  }
+
   public Page<PostView> getPublicPosts(int page) {
     Page<Post> posts = postRepository.findByPublishStateAndIsPinnedAndIsPrivateOrderByCreationDateDesc(
       PublishStateEnum.PUBLISHED, false, false, createPage(page));

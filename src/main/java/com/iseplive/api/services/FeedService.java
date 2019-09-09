@@ -33,6 +33,11 @@ public class FeedService {
     return postService.getFeedPosts(feed, page);
   }
 
+  public List<PostView> getFeedPostsWaiting(String name){
+    Feed feed = feedRepository.findFeedByName(name);
+    return postService.getFeedPostsWaiting(feed);
+  }
+
   public List<PostView> getFeedPostsPinned(String name) {
     Feed feed = feedRepository.findFeedByName(name);
     return postService.getFeedPostsPinned(feed);
@@ -49,5 +54,13 @@ public class FeedService {
 
     feedRepository.save(feed);
     return feed;
+  }
+
+  public void deleteFeed(String name) {
+    Feed feed = feedRepository.findFeedByName(name);
+
+    if(feed != null)
+      feedRepository.delete(feed);
+
   }
 }
