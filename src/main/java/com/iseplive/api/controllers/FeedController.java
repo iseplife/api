@@ -38,7 +38,7 @@ public class FeedController {
     return feedService.getFeedPostsPinned(name);
   }
 
-  @GetMapping("/{name}/wainting")
+  @GetMapping("/{name}/waiting")
   @RolesAllowed({Roles.ADMIN})
   public List<PostView> getFeedPostsWaiting(@PathVariable String name) {
     return feedService.getFeedPostsWaiting(name);
