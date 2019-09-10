@@ -9,6 +9,7 @@ import com.iseplive.api.dao.club.ClubMemberRepository;
 import com.iseplive.api.dao.club.ClubRepository;
 import com.iseplive.api.dto.ClubDTO;
 import com.iseplive.api.dto.view.ClubMemberView;
+import com.iseplive.api.entity.Feed;
 import com.iseplive.api.entity.club.Club;
 import com.iseplive.api.entity.club.ClubMember;
 import com.iseplive.api.entity.user.Student;
@@ -67,6 +68,11 @@ public class ClubService {
 
     club.setMembers(Collections.singletonList(clubMember));
     setClubLogo(club, logo);
+
+    Feed clubFeed = new Feed();
+    //TODO: slugify name
+    clubFeed.setName(club.getName());
+    club.setFeed(clubFeed);
     return clubRepository.save(club);
   }
 

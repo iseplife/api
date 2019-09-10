@@ -39,15 +39,14 @@ public class EventController {
 
   @PostMapping
   @RolesAllowed({Roles.ADMIN, Roles.EVENT_MANAGER, Roles.STUDENT})
-  public Event createEvent(@RequestParam("post") Long postId,
-                           @RequestParam("image") MultipartFile file,
+  public Event createEvent(@RequestParam("image") MultipartFile file,
                            @RequestParam("event") String event,
                            @AuthenticationPrincipal TokenPayload auth) {
     EventDTO eventDTO = jsonUtils.deserialize(event, EventDTO.class);
     if (hasRights(auth, eventDTO.getClubId())) {
       throw new AuthException("you are not this club's admin");
     }
-    return eventService.createEvent(postId, file, eventDTO);
+    return eventService.createEvent(file, eventDTO);
   }
 
   @GetMapping

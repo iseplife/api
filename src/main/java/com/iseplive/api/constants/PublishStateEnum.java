@@ -5,6 +5,8 @@ package com.iseplive.api.constants;
  * back
  */
 public enum PublishStateEnum {
+  DRAFT,
+
   /**
    * Item not published yet
    */

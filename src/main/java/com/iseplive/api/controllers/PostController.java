@@ -11,8 +11,6 @@ import com.iseplive.api.dto.view.PostView;
 import com.iseplive.api.entity.post.Comment;
 import com.iseplive.api.entity.post.Like;
 import com.iseplive.api.entity.post.Post;
-import com.iseplive.api.entity.club.Club;
-import com.iseplive.api.entity.user.Student;
 import com.iseplive.api.services.AuthService;
 import com.iseplive.api.services.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by Guillaume on 27/07/2017.
@@ -38,15 +35,34 @@ public class PostController {
   @Autowired
   AuthService authService;
 
+  /**
+   *  @deprecated Use feed's controller to get waiting posts
+   */
   @GetMapping("/waiting")
   @RolesAllowed({ Roles.STUDENT })
   public List<PostView> getWaitingPosts(@AuthenticationPrincipal TokenPayload token) {
     return postService.getWaitingPosts(token);
   }
 
+  /**
+   * @deprecated Use feed's controller to get posts
+   */
   @GetMapping
   public Page<PostView> getPosts(@RequestParam(defaultValue = "0") int page) {
     return authService.isUserAnonymous() ? postService.getPublicPosts(page) : postService.getPosts(page);
+  }
+
+  /**
+   * @deprecated Use feed's controller to get pinned posts
+   */
+  @GetMapping("/pinned")
+  public List<PostView> getPinnedPosts() {
+    return authService.isUserAnonymous() ? postService.getPublicPinnedPosts() : postService.getPinnedPosts();
+  }
+
+  @GetMapping("/{id}")
+  public PostView getPost(@PathVariable Long id) {
+    return postService.getPostView(id);
   }
 
   @PostMapping
@@ -55,26 +71,11 @@ public class PostController {
     return postService.createPost(auth, post);
   }
 
-  @GetMapping("/pinned")
-  public List<PostView> getPinnedPosts() {
-
-    return authService.isUserAnonymous() ? postService.getPublicPinnedPosts() : postService.getPinnedPosts();
-  }
 
   @GetMapping("/authors")
   @RolesAllowed({Roles.ADMIN, Roles.POST_MANAGER, Roles.STUDENT})
   public List<Object> getAuthors(@AuthenticationPrincipal TokenPayload auth) {
     return postService.getAuthors(auth);
-  }
-
-  @GetMapping("/comment/{id}/likes")
-  public List<Like> getLikesComment(@PathVariable Long id) {
-    return postService.getLikesComment(id);
-  }
-
-  @GetMapping("/{id}")
-  public PostView getPost(@PathVariable Long id) {
-    return postService.getPostView(id);
   }
 
   @PutMapping("/{id}")
@@ -110,6 +111,12 @@ public class PostController {
     return postService.commentPost(id, dto, auth.getId());
   }
 
+  @GetMapping("/comment/{id}/likes")
+  public List<Like> getLikesComment(@PathVariable Long id) {
+    return postService.getLikesComment(id);
+  }
+
+
   @PutMapping("/{id}/like")
   @RolesAllowed({Roles.STUDENT})
   public void likePost(@PathVariable Long id, @AuthenticationPrincipal TokenPayload auth) {
@@ -132,6 +139,7 @@ public class PostController {
   public void toggleCommentLike(@PathVariable Long comId, @AuthenticationPrincipal TokenPayload auth) {
     postService.toggleCommentLike(comId, auth.getId());
   }
+
 
   @PutMapping("/{id}/state/{state}")
   @RolesAllowed({Roles.ADMIN, Roles.POST_MANAGER, Roles.STUDENT})

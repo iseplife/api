@@ -2,6 +2,7 @@ package com.iseplive.api.entity.post;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplive.api.constants.PublishStateEnum;
+import com.iseplive.api.entity.Feed;
 import com.iseplive.api.entity.club.Club;
 import com.iseplive.api.entity.media.Media;
 import com.iseplive.api.entity.user.Student;
@@ -33,8 +34,13 @@ public class Post {
 
   @ManyToOne
   private Student author;
+
   @ManyToOne
   private Club linkedClub = null;
+
+  @JsonIgnore
+  @ManyToOne
+  private Feed feed;
 
   @JsonIgnore
   @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
@@ -148,5 +154,13 @@ public class Post {
 
   public void setLinkedClub(Club linkedClub) {
     this.linkedClub = linkedClub;
+  }
+
+  public Feed getFeed() {
+    return feed;
+  }
+
+  public void setFeed(Feed feed) {
+    this.feed = feed;
   }
 }

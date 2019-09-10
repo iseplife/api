@@ -4,6 +4,7 @@ import com.iseplive.api.constants.PublishStateEnum;
 import com.iseplive.api.dao.event.EventFactory;
 import com.iseplive.api.dao.event.EventRepository;
 import com.iseplive.api.dto.media.EventDTO;
+import com.iseplive.api.entity.Feed;
 import com.iseplive.api.entity.club.Club;
 import com.iseplive.api.entity.Event;
 import com.iseplive.api.exceptions.IllegalArgumentException;
@@ -41,7 +42,7 @@ public class EventService {
 
   private static final int WIDTH_EVENT_IMAGE = 1024;
 
-  public Event createEvent(Long postId, MultipartFile image, EventDTO dto) {
+  public Event createEvent(MultipartFile image, EventDTO dto) {
     Event event = eventFactory.dtoToEntity(dto);
     Club club = clubService.getClub(dto.getClubId());
     if (club == null) {
@@ -53,8 +54,11 @@ public class EventService {
 
     event.setImageUrl(mediaUtils.getPublicUrlImage(eventPath));
     event = eventRepository.save(event);
-    postService.addMediaEmbed(postId, event.getId());
-    postService.setPublishState(postId, PublishStateEnum.PUBLISHED);
+
+    Feed eventFeed = new Feed();
+    //TODO: slugify name
+    eventFeed.setName(event.getTitle());
+    event.setFeed(eventFeed);
     return event;
   }
 
@@ -84,7 +88,7 @@ public class EventService {
     event.setTitle(eventDTO.getTitle());
     event.setDescription(eventDTO.getDescription());
     event.setLocation(eventDTO.getLocation());
-    event.setDate(eventDTO.getDate());
+    event.setStartsAt(eventDTO.getDate());
 
     if (file != null) {
       String eventPath = createImageEvent(file);

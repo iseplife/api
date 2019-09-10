@@ -2,8 +2,10 @@ package com.iseplive.api;
 
 import com.google.common.collect.Sets;
 import com.iseplive.api.constants.Roles;
+import com.iseplive.api.dao.feed.FeedRepository;
 import com.iseplive.api.dao.student.RoleRepository;
 import com.iseplive.api.dao.student.StudentRepository;
+import com.iseplive.api.entity.Feed;
 import com.iseplive.api.entity.user.Role;
 import com.iseplive.api.entity.user.Student;
 import org.slf4j.Logger;
@@ -26,6 +28,9 @@ class DatabaseSeeder {
 
   @Autowired
   private RoleRepository roleRepository;
+
+  @Autowired
+  private FeedRepository feedRepository;
 
   void seedDatabase() {
     if (isDatabaseSeeded()) {
@@ -51,6 +56,7 @@ class DatabaseSeeder {
   }
 
   private void runSeedDatabase() {
+    /* Create all roles inside Roles class */
     List<Role> roles = new ArrayList<>();
     List<Role> savedRoles = roleRepository.findAll();
     for(Field f: Roles.class.getFields()) {
@@ -65,6 +71,7 @@ class DatabaseSeeder {
     }
     roleRepository.save(roles);
 
+    /* Create super admin user */
     Student student = new Student();
     student.setId(1L);
     student.setFirstName("Default");
@@ -76,5 +83,11 @@ class DatabaseSeeder {
     student.setRoles(Sets.newHashSet(roleStudent, roleAdmin));
 
     studentRepository.save(student);
+
+    /* Create main feed */
+    Feed mainFeed = new Feed();
+    mainFeed.setName("MAIN");
+
+    feedRepository.save(mainFeed);
   }
 }
