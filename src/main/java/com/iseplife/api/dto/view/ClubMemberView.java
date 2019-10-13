@@ -33,7 +33,6 @@ public class ClubMemberView {
   }
 
   public Club getClub() {
-
     return club;
   }
 

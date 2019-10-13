@@ -1,10 +1,14 @@
 package com.iseplive.api.entity.event;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.iseplive.api.constants.EventType;
 import com.iseplive.api.constants.MediaType;
+import com.iseplive.api.entity.Feed;
 import com.iseplive.api.entity.club.Club;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Guillaume on 27/07/2017.
@@ -19,7 +23,8 @@ public class Event {
   private Long id;
 
   private String title;
-  private String type;
+  private String imageUrl;
+  private EventType type;
   private Date startsAt;
   private Date endsAt;
   private String location;
@@ -30,11 +35,20 @@ public class Event {
   @Column(columnDefinition = "TEXT")
   private String description;
 
-  private String imageUrl;
+  @OneToMany
+  private List<Event> events;
 
   @OneToOne
   private Club club;
 
+  @JsonIgnore
+  @OneToOne
+  private Feed feed;
+
+  @ManyToOne
+  private Feed target;
+
+  @JsonIgnore
   @OneToOne
   private Event previousEdition;
 
@@ -74,9 +88,21 @@ public class Event {
 
   public void setPreviousEdition(Event previousEdition) { this.previousEdition = previousEdition; }
 
-  public String getType() { return type; }
+  public List<Event> getEvents() {
+    return events;
+  }
 
-  public void setType(String type) { this.type = type; }
+  public void addEvent(Event event) {
+    this.events.add(event);
+  }
+
+  public void setEvents(List<Event> events) {
+    this.events = events;
+  }
+
+  public EventType getType() { return type; }
+
+  public void setType(EventType type) { this.type = type; }
 
   public Coordinates getCoordinates() { return coordinates; }
 
@@ -89,4 +115,20 @@ public class Event {
   public Float getPrice() { return price; }
 
   public void setPrice(Float price) { this.price = price; }
+
+  public Feed getFeed() {
+    return feed;
+  }
+
+  public void setFeed(Feed feed) {
+    this.feed = feed;
+  }
+
+  public Feed getTarget() {
+    return target;
+  }
+
+  public void setTarget(Feed target) {
+    this.target = target;
+  }
 }
