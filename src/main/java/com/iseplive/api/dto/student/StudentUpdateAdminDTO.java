@@ -14,7 +14,6 @@ public class StudentUpdateAdminDTO {
   private String promo;
   private Date birthDate;
   private String phone;
-  private String bio;
   private String mail;
 
   private String facebook;
@@ -70,14 +69,6 @@ public class StudentUpdateAdminDTO {
 
   public void setPhone(String phone) {
     this.phone = phone;
-  }
-
-  public String getBio() {
-    return bio;
-  }
-
-  public void setBio(String bio) {
-    this.bio = bio;
   }
 
   public String getMail() {

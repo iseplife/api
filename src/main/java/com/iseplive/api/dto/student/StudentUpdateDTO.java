@@ -10,7 +10,6 @@ public class StudentUpdateDTO {
   private Long id;
   private Date birthDate;
   private String phone;
-  private String bio;
   private String mail;
   private String address;
   private String facebook;
@@ -32,14 +31,6 @@ public class StudentUpdateDTO {
 
   public void setPhone(String phone) {
     this.phone = phone;
-  }
-
-  public String getBio() {
-    return bio;
-  }
-
-  public void setBio(String bio) {
-    this.bio = bio;
   }
 
   public String getMail() {

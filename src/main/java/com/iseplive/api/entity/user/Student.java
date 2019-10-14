@@ -41,9 +41,6 @@ public class Student implements UserDetails {
   private String photoUrl;
   private String photoUrlThumb;
 
-  @Column(length = 300) // TODO: Potential removal
-  private String bio;
-
   @ManyToMany(fetch = FetchType.EAGER)
   private Set<Role> roles;
 
@@ -102,14 +99,6 @@ public class Student implements UserDetails {
   public Boolean getRecognition() { return recognition;  }
 
   public void setRecognition(Boolean recognition) { this.recognition = recognition; }
-
-  public String getBio() {
-    return bio;
-  }
-
-  public void setBio(String bio) {
-    this.bio = bio;
-  }
 
   public String getPhotoUrl() {
     return photoUrl;

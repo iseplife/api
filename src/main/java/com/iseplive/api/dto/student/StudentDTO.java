@@ -12,7 +12,6 @@ public class StudentDTO {
   private String lastname;
   private Date birthDate;
   private String phone;
-  private String bio;
   private String mail;
   private String mailISEP;
   private String address;
@@ -55,14 +54,6 @@ public class StudentDTO {
 
   public void setPhone(String phone) {
     this.phone = phone;
-  }
-
-  public String getBio() {
-    return bio;
-  }
-
-  public void setBio(String bio) {
-    this.bio = bio;
   }
 
   public String getMail() {
