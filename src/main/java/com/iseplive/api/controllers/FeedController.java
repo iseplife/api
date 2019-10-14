@@ -1,12 +1,14 @@
 package com.iseplive.api.controllers;
 
 
+import com.iseplive.api.conf.jwt.TokenPayload;
 import com.iseplive.api.constants.Roles;
 import com.iseplive.api.dto.view.PostView;
 import com.iseplive.api.services.AuthService;
 import com.iseplive.api.services.FeedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
@@ -50,5 +52,9 @@ public class FeedController {
     return feedService.getFeedDrafts(name, authService.getLoggedUser());
   }
 
-
+  @PostMapping("/{name}/subscribe")
+  @RolesAllowed({Roles.STUDENT})
+  public void subscribeFeed(@PathVariable String name, @AuthenticationPrincipal TokenPayload auth){
+    feedService.subscribeFeed(name, auth.getId());
+  }
 }

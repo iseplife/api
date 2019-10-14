@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 public class StudentFactory {
   public Student dtoToEntity(StudentDTO dto) {
     Student student = new Student();
-    student.setBio(dto.getBio());
     student.setBirthDate(dto.getBirthDate());
     student.setFirstName(dto.getFirstname());
     student.setLastName(dto.getLastname());
@@ -29,7 +28,6 @@ public class StudentFactory {
   }
 
   public void updateDtoToEntity(Student student, StudentUpdateDTO dto) {
-    student.setBio(dto.getBio());
     student.setBirthDate(dto.getBirthDate());
     student.setPhoneNumber(dto.getPhone());
     student.setMail(dto.getMail());
@@ -44,7 +42,6 @@ public class StudentFactory {
     student.setFirstName(dto.getFirstName());
     student.setLastName(dto.getLastName());
 
-    student.setBio(dto.getBio());
     student.setBirthDate(dto.getBirthDate());
     student.setPhoneNumber(dto.getPhone());
     student.setPromo(dto.getPromo());
@@ -63,7 +60,6 @@ public class StudentFactory {
     studentWithRoleView.setFirstName(student.getFirstName());
     studentWithRoleView.setLastName(student.getLastName());
 
-    studentWithRoleView.setBio(student.getBio());
     studentWithRoleView.setBirthDate(student.getBirthDate());
     studentWithRoleView.setPhone(student.getPhoneNumber());
     studentWithRoleView.setPromo(student.getPromo());
