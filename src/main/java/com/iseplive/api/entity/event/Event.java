@@ -35,7 +35,8 @@ public class Event {
   @Column(columnDefinition = "TEXT")
   private String description;
 
-  @OneToMany
+  @JsonIgnore
+  @OneToMany(cascade = CascadeType.ALL)
   private List<Event> events;
 
   @OneToOne
@@ -45,6 +46,7 @@ public class Event {
   @OneToOne
   private Feed feed;
 
+  @JsonIgnore
   @ManyToOne
   private Feed target;
 
