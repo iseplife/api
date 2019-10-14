@@ -1,12 +1,14 @@
 package com.iseplive.api.entity.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.iseplive.api.entity.Subscription;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -43,6 +45,10 @@ public class Student implements UserDetails {
 
   @ManyToMany(fetch = FetchType.EAGER)
   private Set<Role> roles;
+
+  @JsonIgnore
+  @OneToMany(mappedBy = "listener", cascade = CascadeType.ALL)
+  private List<Subscription> subscriptions;
 
   public Long getId() {
     return id;
@@ -223,4 +229,15 @@ public class Student implements UserDetails {
   }
 
 
+  public List<Subscription> getSubscriptions() {
+    return subscriptions;
+  }
+
+  public void setSubscriptions(List<Subscription> subscriptions) {
+    this.subscriptions = subscriptions;
+  }
+
+  public void addSubscription(Subscription subscription){
+    this.subscriptions.add(subscription);
+  }
 }
