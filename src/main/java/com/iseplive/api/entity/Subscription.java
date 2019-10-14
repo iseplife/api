@@ -14,6 +14,7 @@ public class Subscription {
   @ManyToOne
   private Student listener;
 
+  @ManyToOne
   private Feed feed;
 
 
