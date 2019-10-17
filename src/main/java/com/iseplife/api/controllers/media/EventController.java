@@ -52,7 +52,7 @@ public class EventController {
   }
 
   @GetMapping
-  public List<Event> getEvents() {
+  public List<EventPreviewView> getEventsPreview() {
     return eventService.getEvents();
   }
 

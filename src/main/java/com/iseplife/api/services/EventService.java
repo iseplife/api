@@ -80,8 +80,11 @@ public class EventService {
     return eventPath;
   }
 
-  public List<Event> getEvents() {
-    return eventRepository.findAll();
+  public List<EventPreviewView> getEvents() {
+    return eventRepository.findAll()
+      .stream()
+      .map(e -> eventFactory.entityToPreviewView(e))
+      .collect(Collectors.toList());
   }
 
   public Event getEvent(Long id) {
