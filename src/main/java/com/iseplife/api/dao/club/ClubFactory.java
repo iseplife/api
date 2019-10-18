@@ -1,6 +1,7 @@
 package com.iseplife.api.dao.club;
 
 import com.iseplife.api.dto.ClubDTO;
+import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.dto.ClubDTO;
 import com.iseplife.api.entity.club.Club;
 import org.springframework.stereotype.Component;

@@ -1,12 +1,14 @@
 package com.iseplife.api.controllers;
 
-import com.iseplife.api.constants.PublishStateEnum;
-import com.iseplife.api.constants.Roles;
+import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.dto.CommentDTO;
+import com.iseplife.api.dto.PostDTO;
+import com.iseplife.api.dto.PostUpdateDTO;
+import com.iseplife.api.dto.view.CommentView;
+import com.iseplife.api.dto.view.PostView;
 import com.iseplife.api.entity.post.Comment;
 import com.iseplife.api.entity.post.Like;
 import com.iseplife.api.entity.post.Post;
-import com.iseplife.api.services.AuthService;
-import com.iseplife.api.services.PostService;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.PublishStateEnum;
 import com.iseplife.api.constants.Roles;

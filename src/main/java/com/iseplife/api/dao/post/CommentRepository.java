@@ -1,6 +1,7 @@
 package com.iseplife.api.dao.post;
 
 import com.iseplife.api.entity.post.Comment;
+import com.iseplife.api.entity.post.Comment;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

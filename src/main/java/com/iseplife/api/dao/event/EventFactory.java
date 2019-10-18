@@ -1,9 +1,8 @@
 package com.iseplife.api.dao.event;
 
-import com.iseplife.api.dto.media.EventDTO;
-import com.iseplife.api.entity.Event;
-import com.iseplife.api.dto.media.EventDTO;
-import com.iseplife.api.entity.Event;
+import com.iseplife.api.dto.EventDTO;
+import com.iseplife.api.dto.view.EventPreviewView;
+import com.iseplife.api.entity.event.Event;
 import org.springframework.stereotype.Component;
 
 /**
@@ -33,5 +32,15 @@ public class EventFactory {
     event.setDescription(dto.getDescription() != null ? dto.getDescription(): previous.getDescription());
     event.setPreviousEdition(previous);
     return event;
+  }
+
+  public EventPreviewView entityToPreviewView(Event event){
+    EventPreviewView preview = new EventPreviewView();
+    preview.setId(event.getId());
+    preview.setTitle(event.getTitle());
+    preview.setStartsAt(event.getStartsAt());
+    preview.setEndsAt(event.getEndsAt());
+    preview.setImageUrl(event.getImageUrl());
+    return preview;
   }
 }

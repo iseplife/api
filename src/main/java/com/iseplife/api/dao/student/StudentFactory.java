@@ -6,12 +6,6 @@ import com.iseplife.api.dto.student.StudentUpdateDTO;
 import com.iseplife.api.dto.view.StudentWithRoleView;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.dto.student.StudentDTO;
-import com.iseplife.api.dto.student.StudentUpdateAdminDTO;
-import com.iseplife.api.dto.student.StudentUpdateDTO;
-import com.iseplife.api.dto.view.StudentWithRoleView;
-import com.iseplife.api.entity.user.Role;
-import com.iseplife.api.entity.user.Student;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;

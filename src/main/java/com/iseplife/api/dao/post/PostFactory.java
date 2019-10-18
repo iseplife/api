@@ -1,7 +1,5 @@
 package com.iseplife.api.dao.post;
 
-import com.iseplife.api.services.ClubService;
-import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dto.PostDTO;
 import com.iseplife.api.dto.view.PostView;
 import com.iseplife.api.entity.post.Post;
@@ -10,6 +8,7 @@ import com.iseplife.api.services.AuthService;
 import com.iseplife.api.services.ClubService;
 import com.iseplife.api.services.PostService;
 import com.iseplife.api.services.StudentService;
+import com.iseplife.api.constants.Roles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

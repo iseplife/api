@@ -2,12 +2,12 @@ package com.iseplife.api;
 
 import com.google.common.collect.Sets;
 import com.iseplife.api.dao.feed.FeedRepository;
-import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.student.RoleRepository;
 import com.iseplife.api.dao.student.StudentRepository;
 import com.iseplife.api.entity.Feed;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
+import com.iseplife.api.constants.Roles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

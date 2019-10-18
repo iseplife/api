@@ -1,10 +1,12 @@
-package com.iseplive.api.entity.event;
+package com.iseplife.api.entity.event;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.iseplive.api.constants.EventType;
-import com.iseplive.api.constants.MediaType;
-import com.iseplive.api.entity.Feed;
-import com.iseplive.api.entity.club.Club;
+import com.iseplife.api.entity.Feed;
+import com.iseplife.api.entity.club.Club;
+import com.iseplife.api.constants.EventType;
+import com.iseplife.api.constants.MediaType;
+import com.iseplife.api.entity.Feed;
+import com.iseplife.api.entity.club.Club;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -104,7 +106,7 @@ public class Event {
   public EventType getType() { return type; }
 
   public void setType(EventType type) { this.type = type; }
-  
+
   public String getTicketUrl() { return ticketUrl; }
 
   public void setTicketUrl(String ticketUrl) { this.ticketUrl = ticketUrl; }

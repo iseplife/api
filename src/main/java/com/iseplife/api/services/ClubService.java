@@ -1,8 +1,13 @@
 package com.iseplife.api.services;
 
 import com.google.common.collect.Sets;
-import com.iseplife.api.dao.club.ClubMemberRepository;
+import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dto.ClubDTO;
+import com.iseplife.api.dto.view.ClubMemberView;
+import com.iseplife.api.entity.Feed;
+import com.iseplife.api.entity.club.Club;
+import com.iseplife.api.entity.club.ClubMember;
+import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.ClubRole;
 import com.iseplife.api.constants.Roles;

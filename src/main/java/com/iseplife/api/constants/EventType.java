@@ -1,4 +1,4 @@
-package com.iseplive.api.constants;
+package com.iseplife.api.constants;
 
 public enum EventType {
   PARTY,

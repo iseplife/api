@@ -1,7 +1,6 @@
 package com.iseplife.api.websocket;
 
 import com.iseplife.api.entity.post.Post;
-import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.utils.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

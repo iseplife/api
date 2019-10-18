@@ -1,4 +1,4 @@
-package com.iseplive.api.dto.view;
+package com.iseplife.api.dto.view;
 
 import java.util.Date;
 

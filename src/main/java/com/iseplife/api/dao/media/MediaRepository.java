@@ -1,5 +1,6 @@
 package com.iseplife.api.dao.media;
 
+import com.iseplife.api.entity.media.Media;
 import com.iseplife.api.constants.PublishStateEnum;
 import com.iseplife.api.entity.media.Media;
 import org.springframework.data.domain.Page;

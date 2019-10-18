@@ -1,4 +1,4 @@
-package com.iseplive.api.entity.event;
+package com.iseplife.api.entity.event;
 
 public class Coordinates {
 

@@ -1,6 +1,5 @@
 package com.iseplife.api.controllers;
 
-import com.iseplife.api.exceptions.AuthException;
 import com.iseplife.api.conf.jwt.JwtAuthRequest;
 import com.iseplife.api.conf.jwt.JwtTokenUtil;
 import com.iseplife.api.conf.jwt.TokenSet;

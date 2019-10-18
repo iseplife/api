@@ -2,6 +2,7 @@ package com.iseplife.api.entity.post;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.entity.user.Student;
+import com.iseplife.api.entity.user.Student;
 
 import javax.persistence.*;
 import java.util.*;

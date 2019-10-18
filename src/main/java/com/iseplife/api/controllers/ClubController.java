@@ -1,15 +1,13 @@
 package com.iseplife.api.controllers;
 
-import com.iseplife.api.dto.ClubDTO;
-import com.iseplife.api.services.ClubService;
 import com.iseplife.api.conf.jwt.TokenPayload;
-import com.iseplife.api.constants.ClubRole;
-import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dto.ClubDTO;
 import com.iseplife.api.dto.view.PostView;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.club.ClubMember;
 import com.iseplife.api.entity.user.Student;
+import com.iseplife.api.constants.ClubRole;
+import com.iseplife.api.constants.Roles;
 import com.iseplife.api.exceptions.AuthException;
 import com.iseplife.api.services.AuthService;
 import com.iseplife.api.services.ClubService;

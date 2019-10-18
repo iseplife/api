@@ -2,8 +2,6 @@ package com.iseplife.api.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.entity.media.Gallery;
-import com.iseplife.api.entity.Matched;
-import com.iseplife.api.entity.media.Gallery;
 
 import javax.persistence.*;
 import java.util.List;
