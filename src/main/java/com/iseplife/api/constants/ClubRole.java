@@ -14,10 +14,13 @@ public enum ClubRole {
 
   private List<ClubRole> legacy;
 
-  ClubRole(List<ClubRole> legacy) { this.legacy = legacy;
+  ClubRole(List<ClubRole> legacy) {
+    this.legacy = legacy;
   }
 
-  public List<ClubRole> getLegacy() { return legacy; }
+  public List<ClubRole> getLegacy() {
+    return legacy;
+  }
 
   public List<ClubRole> getParents() {
     return Arrays

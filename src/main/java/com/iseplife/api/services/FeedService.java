@@ -1,17 +1,13 @@
 package com.iseplife.api.services;
 
-import com.iseplife.api.dao.feed.FeedRepository;
-import com.iseplife.api.dao.feed.SubscriptionRepository;
-import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.exceptions.IllegalArgumentException;
-import com.iseplife.api.dao.feed.FeedRepository;
-import com.iseplife.api.dao.feed.SubscriptionRepository;
 import com.iseplife.api.dto.view.PostView;
+import com.iseplife.api.entity.Feed;
 import com.iseplife.api.entity.Subscription;
 import com.iseplife.api.entity.user.Student;
+import com.iseplife.api.dao.feed.FeedRepository;
+import com.iseplife.api.dao.feed.SubscriptionRepository;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import org.springframework.data.domain.Page;
-import com.iseplife.api.entity.Feed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

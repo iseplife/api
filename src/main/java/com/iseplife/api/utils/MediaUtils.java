@@ -2,8 +2,6 @@ package com.iseplife.api.utils;
 
 import com.iseplife.api.exceptions.FileException;
 import com.iseplife.api.exceptions.IllegalArgumentException;
-import com.iseplife.api.exceptions.FileException;
-import com.iseplife.api.exceptions.IllegalArgumentException;
 import net.coobird.thumbnailator.Thumbnails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

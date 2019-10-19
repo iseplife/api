@@ -1,4 +1,4 @@
-package com.iseplife.api.dto.media;
+package com.iseplife.api.dto;
 
 import java.util.Date;
 

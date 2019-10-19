@@ -22,7 +22,7 @@ import java.util.Arrays;
 @Configuration
 @EnableSwagger2
 @Profile("default")
-@ComponentScan("com.iseplive.api")
+@ComponentScan("com.iseplife.api")
 public class SwaggerConfig {
 
   @Bean

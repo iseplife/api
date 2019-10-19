@@ -1,11 +1,15 @@
 package com.iseplife.api.controllers.media;
 
-import com.iseplife.api.dto.media.EventDTO;
-import com.iseplife.api.entity.Event;
+import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.dto.EventDTO;
+import com.iseplife.api.dto.view.EventPreviewView;
+import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
-import com.iseplife.api.dto.media.EventDTO;
-import com.iseplife.api.entity.Event;
+import com.iseplife.api.dto.EventDTO;
+import com.iseplife.api.dto.view.EventPreviewView;
+import com.iseplife.api.entity.event.Event;
+import com.iseplife.api.entity.media.Gallery;
 import com.iseplife.api.exceptions.AuthException;
 import com.iseplife.api.services.EventService;
 import com.iseplife.api.utils.JsonUtils;
@@ -52,7 +56,7 @@ public class EventController {
   }
 
   @GetMapping
-  public List<Event> getEvents() {
+  public List<EventPreviewView> getEventsPreview() {
     return eventService.getEvents();
   }
 
@@ -60,6 +64,22 @@ public class EventController {
   public Event getEvent(@PathVariable Long id) {
     return eventService.getEvent(id);
   }
+
+  @GetMapping("/{id}/previous")
+  public List<EventPreviewView> getPreviousEditions(@PathVariable Long id){
+    return eventService.getPreviousEditions(id);
+  }
+
+  @GetMapping("/{id}/galleries")
+  public List<Gallery> getGalleries(@PathVariable Long id){
+    return eventService.getEvent(id).getGalleries();
+  }
+
+  @GetMapping("/{id}/children")
+  public List<EventPreviewView> getChildrenEvents(@PathVariable Long id){
+    return eventService.getChildrenEvents(id);
+  }
+
 
   @PutMapping("/{id}")
   @RolesAllowed({Roles.ADMIN, Roles.EVENT_MANAGER, Roles.STUDENT})

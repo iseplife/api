@@ -1,7 +1,8 @@
 package com.iseplife.api.entity.post;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.iseplife.api.constants.PublishStateEnum;
+import com.iseplife.api.entity.club.Club;
+import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.PublishStateEnum;
 import com.iseplife.api.entity.Feed;
 import com.iseplife.api.entity.club.Club;

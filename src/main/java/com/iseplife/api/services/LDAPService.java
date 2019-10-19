@@ -1,7 +1,6 @@
 package com.iseplife.api.services;
 
-import com.iseplife.api.exceptions.AuthException;
-import com.iseplife.api.exceptions.NotFoundException;
+import com.iseplife.api.dto.LDAPUserDTO;
 import com.iseplife.api.dto.LDAPUserDTO;
 import com.iseplife.api.exceptions.AuthException;
 import com.iseplife.api.exceptions.NotFoundException;

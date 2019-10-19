@@ -3,6 +3,9 @@ package com.iseplife.api.dao.post;
 import com.iseplife.api.dto.view.CommentView;
 import com.iseplife.api.entity.post.Comment;
 import com.iseplife.api.services.PostService;
+import com.iseplife.api.dto.view.CommentView;
+import com.iseplife.api.entity.post.Comment;
+import com.iseplife.api.services.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

@@ -2,8 +2,6 @@ package com.iseplife.api.dto.view;
 
 import com.iseplife.api.entity.Image;
 import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.entity.Image;
-import com.iseplife.api.entity.user.Student;
 
 /**
  * Created by Guillaume on 26/01/2018.

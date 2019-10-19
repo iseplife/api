@@ -1,7 +1,6 @@
 package com.iseplife.api.conf;
 
 import com.iseplife.api.conf.jwt.JwtAuthenticationTokenFilter;
-import com.iseplife.api.conf.jwt.JwtAuthenticationTokenFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

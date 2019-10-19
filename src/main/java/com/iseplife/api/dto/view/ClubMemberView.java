@@ -1,11 +1,8 @@
 package com.iseplife.api.dto.view;
 
-import com.iseplife.api.constants.ClubRole;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.ClubRole;
-import com.iseplife.api.entity.club.Club;
-import com.iseplife.api.entity.user.Student;
 
 /**
  * Created by Guillaume on 03/12/2017.
@@ -33,7 +30,6 @@ public class ClubMemberView {
   }
 
   public Club getClub() {
-
     return club;
   }
 
