@@ -9,7 +9,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("default")
-public class IsepliveApplicationTests {
+public class IseplifeApplicationTests {
 
   @Test
   public void contextLoads() {
