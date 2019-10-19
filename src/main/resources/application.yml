@@ -39,7 +39,7 @@ storage:
 
 logging:
   level:
-    com.iseplive.api: INFO
+    com.iseplife.api: INFO
 
 
 jwt:
