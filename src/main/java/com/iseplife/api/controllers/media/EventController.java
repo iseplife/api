@@ -9,6 +9,7 @@ import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dto.EventDTO;
 import com.iseplife.api.dto.view.EventPreviewView;
 import com.iseplife.api.entity.event.Event;
+import com.iseplife.api.entity.media.Gallery;
 import com.iseplife.api.exceptions.AuthException;
 import com.iseplife.api.services.EventService;
 import com.iseplife.api.utils.JsonUtils;
@@ -67,6 +68,11 @@ public class EventController {
   @GetMapping("/{id}/previous")
   public List<EventPreviewView> getPreviousEditions(@PathVariable Long id){
     return eventService.getPreviousEditions(id);
+  }
+
+  @GetMapping("/{id}/galleries")
+  public List<Gallery> getGalleries(@PathVariable Long id){
+    return eventService.getEvent(id).getGalleries();
   }
 
   @GetMapping("/{id}/children")
