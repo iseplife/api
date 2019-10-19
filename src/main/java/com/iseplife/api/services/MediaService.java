@@ -232,6 +232,14 @@ public class MediaService {
     throw new RuntimeException("could not get the image with id: " + id);
   }
 
+  public boolean toggleNSFW(Long id) {
+    Media media = mediaRepository.findOne(id);
+    media.setNSFW(!media.isNSFW());
+
+    mediaRepository.save(media);
+    return media.isNSFW();
+  }
+
   /**
    * Add a single image
    * @param postId

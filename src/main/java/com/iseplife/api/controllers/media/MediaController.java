@@ -68,6 +68,9 @@ public class MediaController {
     return mediaService.uploadVideo(postId, name, video);
   }
 
+  @PutMapping("/image/{id}/nsfw")
+  public boolean toggleNSFW(@PathVariable Long id){ return mediaService.toggleNSFW(id); }
+
   @GetMapping("/image/{id}/tags")
   public List<Matched> getImageTags(@PathVariable Long id) {
     return mediaService.getImageTags(id);
