@@ -1,4 +1,4 @@
-package com.iseplife.api.controllers.media;
+package com.iseplife.api.controllers;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dto.EventDTO;
