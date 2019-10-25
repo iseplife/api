@@ -3,6 +3,7 @@ package com.iseplife.api.entity.club;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.constants.ClubTypesEnum;
 import com.iseplife.api.entity.Feed;
+import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.post.Post;
 
 import javax.persistence.*;
@@ -44,6 +45,10 @@ public class Club {
   @JsonIgnore
   @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ClubMember> members;
+
+  @JsonIgnore
+  @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = false)
+  private List<Event> events;
 
   @JsonIgnore
   @OneToMany(mappedBy = "linkedClub", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -101,6 +106,14 @@ public class Club {
 
   public void setMembers(List<ClubMember> members) {
     this.members = members;
+  }
+
+  public List<Event> getEvents() {
+    return events;
+  }
+
+  public void setEvents(List<Event> events) {
+    this.events = events;
   }
 
   public String getLogoUrl() {

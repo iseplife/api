@@ -45,7 +45,7 @@ public class Event {
   @OneToMany(cascade = CascadeType.ALL)
   private List<Gallery> galleries;
 
-  @OneToOne
+  @ManyToOne
   private Club club;
 
   @JsonIgnore
