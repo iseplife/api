@@ -19,23 +19,23 @@ public class SearchController {
   SearchService searchService;
 
   @GetMapping
-  public List<SearchItemView> globalSearch(@RequestParam String filter){
-    return searchService.globalSearch(filter);
+  public List<SearchItemView> globalSearch(@RequestParam String filter, @RequestParam(defaultValue = "0") Boolean allAnswer){
+    return searchService.globalSearch(filter, allAnswer);
   }
 
   @GetMapping("/user")
-  public List<SearchItemView> userSearch(@RequestParam String filter){
-    return searchService.searchUser(filter);
+  public List<SearchItemView> userSearch(@RequestParam String filter, @RequestParam(defaultValue = "0") Boolean allAnswer){
+    return searchService.searchUser(filter, allAnswer);
   }
 
   @GetMapping("/club")
-  public List<SearchItemView> clubSearch(@RequestParam String filter){
-    return searchService.searchClub(filter);
+  public List<SearchItemView> clubSearch(@RequestParam String filter, @RequestParam(defaultValue = "0") Boolean allAnswer){
+    return searchService.searchClub(filter, allAnswer);
   }
 
   @GetMapping("/event")
-  public List<SearchItemView> eventSearch(@RequestParam String filter){
-    return searchService.searchEvent(filter);
+  public List<SearchItemView> eventSearch(@RequestParam String filter, @RequestParam(defaultValue = "0") Boolean allAnswer){
+    return searchService.searchEvent(filter, allAnswer);
   }
 
 }

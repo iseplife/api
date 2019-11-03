@@ -45,4 +45,11 @@ public interface ClubRepository extends CrudRepository<Club, Long> {
   List<Club> findByAdminsContains(Student admin);
 
   Club findByIsAdmin(Boolean isAdmin);
+
+
+  @Query("select c from Club c " +
+      "where lower(c.name) like %?1% "
+  )
+  List<Club> searchClub(String name);
+
 }
