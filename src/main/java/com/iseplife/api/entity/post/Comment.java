@@ -1,6 +1,7 @@
 package com.iseplife.api.entity.post;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.entity.user.Student;
 
@@ -19,7 +20,7 @@ public class Comment {
   private Long id;
 
   @ManyToOne
-  private Post post;
+  private Thread thread;
 
   @ManyToOne
   private Student student;
@@ -60,12 +61,12 @@ public class Comment {
   }
 
   @JsonIgnore
-  public Post getPost() {
-    return post;
+  public Thread getThread() {
+    return thread;
   }
 
-  public void setPost(Post post) {
-    this.post = post;
+  public void setThread(Thread thread) {
+    this.thread = thread;
   }
 
   public Date getCreation() {

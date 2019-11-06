@@ -1,6 +1,7 @@
 package com.iseplife.api.entity.post;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.PublishStateEnum;
@@ -36,6 +37,10 @@ public class Post {
 
   @ManyToOne
   private Student author;
+
+  @JsonIgnore
+  @OneToOne(cascade = CascadeType.ALL)
+  private Thread thread;
 
   @ManyToOne
   private Club linkedClub = null;
@@ -164,5 +169,13 @@ public class Post {
 
   public void setFeed(Feed feed) {
     this.feed = feed;
+  }
+
+  public Thread getThread() {
+    return thread;
+  }
+
+  public void setThread(Thread thread) {
+    this.thread = thread;
   }
 }

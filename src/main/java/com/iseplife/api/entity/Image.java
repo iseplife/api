@@ -23,6 +23,10 @@ public class Image {
   @JsonIgnore
   private Gallery gallery;
 
+  @JsonIgnore
+  @OneToOne(cascade = CascadeType.ALL)
+  private Thread thread;
+
   @OneToMany(mappedBy = "image", cascade = CascadeType.ALL)
   private List<Matched> matched;
 
@@ -68,5 +72,13 @@ public class Image {
 
   public void setGallery(Gallery gallery) {
     this.gallery = gallery;
+  }
+
+  public Thread getThread() {
+    return thread;
+  }
+
+  public void setThread(Thread thread) {
+    this.thread = thread;
   }
 }
