@@ -5,6 +5,7 @@ import com.iseplife.api.dao.post.*;
 import com.iseplife.api.dto.CommentDTO;
 import com.iseplife.api.dto.PostDTO;
 import com.iseplife.api.dto.PostUpdateDTO;
+import com.iseplife.api.dto.view.AuthorView;
 import com.iseplife.api.dto.view.CommentView;
 import com.iseplife.api.dto.view.PostView;
 import com.iseplife.api.entity.Feed;
@@ -49,6 +50,9 @@ public class PostService {
 
   @Autowired
   PostFactory postFactory;
+
+  @Autowired
+  AuthorFactory authorFactory;
 
   @Autowired
   LikeRepository likeRepository;
@@ -270,18 +274,30 @@ public class PostService {
     throw new AuthException("you are not allowed to pin this post");
   }
 
-  public List<Object> getAuthors(TokenPayload auth) {
+  public Set<AuthorView> getAuthorizedPublish(TokenPayload auth) {
     Student student = studentService.getStudent(auth.getId());
-    List<Object> authors = new ArrayList<>();
-    authors.add(student);
 
+    Set<AuthorView> authorStatus = new HashSet<>();
+    authorStatus.add(authorFactory.entitytoView(student));
 
-    if (auth.getRoles().contains(Roles.ADMIN)) {
-      authors.addAll(clubService.getAll());
-    } else {
-      authors.addAll(clubService.getClubAuthors(student));
+    if(auth.getRoles().contains(Roles.ADMIN)){
+      authorStatus.add(authorFactory.admintoView());
+      authorStatus.addAll(
+        clubService.getAll()
+          .stream()
+          .map(c -> authorFactory.entitytoView(c))
+          .collect(Collectors.toSet())
+      );
+    }else {
+      authorStatus.addAll(
+        studentService.getPublisherClubs(student)
+          .stream()
+          .map(c -> authorFactory.entitytoView(c))
+          .collect(Collectors.toSet())
+      );
     }
-    return authors;
+
+    return authorStatus;
   }
 
   public Boolean isPostLiked(Post post) {

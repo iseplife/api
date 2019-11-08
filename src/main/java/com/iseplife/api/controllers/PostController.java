@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Guillaume on 27/07/2017.
@@ -103,10 +104,10 @@ public class PostController {
     postService.setPinnedPost(id, pinned, auth);
   }
 
-  @DeleteMapping("/{id}")
-  @RolesAllowed({Roles.ADMIN, Roles.POST_MANAGER, Roles.STUDENT})
-  public void deletePost(@PathVariable Long id, @AuthenticationPrincipal TokenPayload auth) {
-    postService.deletePost(id, auth);
+  @GetMapping("/authors")
+  @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
+  public Set<AuthorView> getAuthors(@AuthenticationPrincipal TokenPayload auth) {
+    return postService.getAuthorizedPublish(auth);
   }
 
   @GetMapping("/{id}/comment")
