@@ -29,35 +29,16 @@ public class FeedService {
   @Autowired
   private StudentService studentService;
 
+  private Feed getFeed(String name) {
+    Feed feed = feedRepository.findByName(name);
+    if (feed != null) {
+      return feed;
+    }
+    throw new IllegalArgumentException("could not find the feed with name: " + name);
+  }
+
   public Feed getMain() {
     return feedRepository.findMain();
-  }
-
-  @Cacheable("main-posts")
-  public Page<PostView> getMainPosts(int page) {
-    Feed main = feedRepository.findMain();
-    return postService.getFeedPosts(main, page);
-  }
-
-  @Cacheable("posts")
-  public Page<PostView> getFeedPosts(String name, int page) {
-    Feed feed = feedRepository.findByName(name);
-    return postService.getFeedPosts(feed, page);
-  }
-
-  public List<PostView> getFeedPostsWaiting(String name){
-    Feed feed = feedRepository.findByName(name);
-    return postService.getFeedPostsWaiting(feed);
-  }
-
-  public List<PostView> getFeedPostsPinned(String name) {
-    Feed feed = feedRepository.findByName(name);
-    return postService.getFeedPostsPinned(feed);
-  }
-
-  public List<PostView> getFeedDrafts(String name, Student author){
-    Feed feed = feedRepository.findByName(name);
-    return postService.getFeedDrafts(feed, author);
   }
 
   public Feed createFeed(String name) {
@@ -69,24 +50,52 @@ public class FeedService {
   }
 
   public void deleteFeed(String name) {
-    Feed feed = feedRepository.findByName(name);
-
-    if(feed != null)
-      feedRepository.delete(feed);
-
+    Feed feed = getFeed(name);
+    feedRepository.delete(feed);
   }
 
-  public void subscribeFeed(String name, Long studentId){
-    Feed feed = feedRepository.findByName(name);
+  @Cacheable("main-posts")
+  public Page<PostView> getMainPosts(int page) {
+    Feed main = feedRepository.findMain();
+    return postService.getFeedPosts(main, page);
+  }
 
-    if(feed != null){
-      Student student = studentService.getStudent(studentId);
-      Subscription sub = new Subscription();
-      sub.setFeed(feed);
+  @Cacheable("posts")
+  public Page<PostView> getFeedPosts(String name, int page) {
+    Feed feed = getFeed(name);
+    return postService.getFeedPosts(feed, page);
+  }
+
+  public List<PostView> getFeedPostsWaiting(String name) {
+    Feed feed = getFeed(name);
+    return postService.getFeedPostsWaiting(feed);
+  }
+
+  public List<PostView> getFeedPostsPinned(String name) {
+    Feed feed = getFeed(name);
+    return postService.getFeedPostsPinned(feed);
+  }
+
+  public List<PostView> getFeedDrafts(String name, Student author) {
+    Feed feed = getFeed(name);
+    return postService.getFeedDrafts(feed, author);
+  }
+
+  public Boolean isSubscribed(String name, Long studentID){
+    return subscriptionRepository.findByFeedNameAndListenerId(name, studentID) != null;
+  }
+
+  public void toggleSubscription(String name, Long studentID) {
+    Subscription sub = subscriptionRepository.findByFeedNameAndListenerId(name, studentID);
+    if (sub != null) {
+      subscriptionRepository.delete(sub);
+    }else {
+      Student student = studentService.getStudent(studentID);
+      sub = new Subscription();
+      sub.setFeed(getFeed(name));
       sub.setListener(student);
 
       subscriptionRepository.save(sub);
     }
-    throw new IllegalArgumentException("could not find the feed with name: " + name);
   }
 }
