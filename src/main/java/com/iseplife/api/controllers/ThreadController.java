@@ -29,7 +29,7 @@ public class ThreadController {
 
   @PutMapping("/{id}/like")
   @RolesAllowed({Roles.STUDENT})
-  public void likeThread(@PathVariable Long id, @AuthenticationPrincipal TokenPayload auth) {
+  public void toggleLike(@PathVariable Long id, @AuthenticationPrincipal TokenPayload auth) {
     threadService.toggleLike(id, auth.getId());
   }
 
@@ -44,15 +44,15 @@ public class ThreadController {
     return threadService.comment(id, dto, auth.getId());
   }
 
-  @PutMapping("/{id}/comment/{comId}/like")
+  @PutMapping("/{id}/comment/{comID}")
   @RolesAllowed({Roles.STUDENT})
-  public void toggleCommentLike(@PathVariable Long comId, @AuthenticationPrincipal TokenPayload auth) {
-    threadService.toggleCommentLike(comId, auth.getId());
+  public Comment editComment(@PathVariable Long comID, @RequestBody CommentDTO dto, @AuthenticationPrincipal TokenPayload auth) {
+    return threadService.editComment(comID, dto, auth.getId());
   }
 
-  @DeleteMapping("/{id}/comment/{comId}")
+  @DeleteMapping("/{id}/comment/{comID}")
   @RolesAllowed({Roles.STUDENT})
   public void deleteComment(@PathVariable Long comID, @AuthenticationPrincipal TokenPayload auth) {
-    threadService.deleteComment(comID, auth.getId());
+    threadService.deleteComment(comID, auth);
   }
 }

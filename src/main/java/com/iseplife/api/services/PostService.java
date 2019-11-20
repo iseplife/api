@@ -266,13 +266,6 @@ public class PostService {
     return authorStatus;
   }
 
-
-  public Boolean isCommentLiked(Comment comment) {
-    if (authService.isUserAnonymous()) return false;
-
-    return likeRepository.findOneByCommentIdAndStudentId(comment.getId(), authService.getLoggedUser().getId()) != null;
-  }
-
   public PostView getPostView(Long id) {
     Post post = getPost(id);
     if (post.getPrivate() && authService.isUserAnonymous()) {

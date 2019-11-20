@@ -1,5 +1,7 @@
 package com.iseplife.api.services;
 
+import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.constants.Roles;
 import com.iseplife.api.constants.ThreadType;
 import com.iseplife.api.dao.image.ImageRepository;
 import com.iseplife.api.dao.post.*;
@@ -95,7 +97,7 @@ public class ThreadService {
   }
 
   public void toggleLike(Long threadID, Long studentID) {
-    Like like = likeRepository.findOneByThreadIdAndStudentId(threadID, studentID);
+   Like like = likeRepository.findOneByThreadIdAndStudentId(threadID, studentID);
 
     if (like != null) {
       likeRepository.delete(like);
@@ -116,7 +118,6 @@ public class ThreadService {
   }
 
   public Comment comment(Long threadID, CommentDTO dto, Long studentID) {
-
     Comment comment = new Comment();
     comment.setThread(getThread(threadID));
     comment.setMessage(dto.getMessage());
@@ -126,12 +127,27 @@ public class ThreadService {
     return commentRepository.save(comment);
   }
 
-  public void deleteComment(Long comID, Long id) {
+  public Comment editComment(Long comID, CommentDTO dto, Long studentID) {
+    Comment comment = commentRepository.findOne(comID);
+
+    if (comment == null) {
+      throw new IllegalArgumentException("could not find this comment");
+    }
+    if (!comment.getStudent().getId().equals(studentID)) {
+      throw new AuthException("you cannot edit this comment");
+    }
+
+    comment.setMessage(dto.getMessage());
+    comment.setLastEdition(new Date());
+    return commentRepository.save(comment);
+  }
+
+  public void deleteComment(Long comID, TokenPayload auth) {
     Comment comment = commentRepository.findOne(comID);
     if (comment == null) {
       throw new IllegalArgumentException("could not find this comment");
     }
-    if (!comment.getStudent().getId().equals(id)) {
+    if (!comment.getStudent().getId().equals(auth.getId()) && !auth.getRoles().contains(Roles.ADMIN)) {
       throw new AuthException("you cannot delete this comment");
     }
     commentRepository.delete(comment);
