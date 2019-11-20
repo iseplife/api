@@ -10,6 +10,7 @@ import com.iseplife.api.exceptions.IllegalArgumentException;
 import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import springfox.documentation.annotations.Cacheable;
 
 import java.util.List;
 
@@ -32,28 +33,30 @@ public class FeedService {
     return feedRepository.findMain();
   }
 
+  @Cacheable("main-posts")
   public Page<PostView> getMainPosts(int page) {
     Feed main = feedRepository.findMain();
     return postService.getFeedPosts(main, page);
   }
 
+  @Cacheable("posts")
   public Page<PostView> getFeedPosts(String name, int page) {
-    Feed feed = feedRepository.findFeedByName(name);
+    Feed feed = feedRepository.findByName(name);
     return postService.getFeedPosts(feed, page);
   }
 
   public List<PostView> getFeedPostsWaiting(String name){
-    Feed feed = feedRepository.findFeedByName(name);
+    Feed feed = feedRepository.findByName(name);
     return postService.getFeedPostsWaiting(feed);
   }
 
   public List<PostView> getFeedPostsPinned(String name) {
-    Feed feed = feedRepository.findFeedByName(name);
+    Feed feed = feedRepository.findByName(name);
     return postService.getFeedPostsPinned(feed);
   }
 
   public List<PostView> getFeedDrafts(String name, Student author){
-    Feed feed = feedRepository.findFeedByName(name);
+    Feed feed = feedRepository.findByName(name);
     return postService.getFeedDrafts(feed, author);
   }
 
@@ -66,7 +69,7 @@ public class FeedService {
   }
 
   public void deleteFeed(String name) {
-    Feed feed = feedRepository.findFeedByName(name);
+    Feed feed = feedRepository.findByName(name);
 
     if(feed != null)
       feedRepository.delete(feed);
@@ -74,7 +77,7 @@ public class FeedService {
   }
 
   public void subscribeFeed(String name, Long studentId){
-    Feed feed = feedRepository.findFeedByName(name);
+    Feed feed = feedRepository.findByName(name);
 
     if(feed != null){
       Student student = studentService.getStudent(studentId);
