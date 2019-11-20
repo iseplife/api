@@ -5,6 +5,7 @@ package com.iseplife.api.dto;
  * back
  */
 public class PostDTO {
+  private String feed;
   private String title;
   private String content;
   private Long linkedClubId;
@@ -42,4 +43,12 @@ public class PostDTO {
   public Boolean isDraft() { return draft; }
 
   public void setDraft(Boolean draft) { this.draft = draft; }
+
+  public String getFeed() {
+    return feed;
+  }
+
+  public void setFeed(String feed) {
+    this.feed = feed;
+  }
 }

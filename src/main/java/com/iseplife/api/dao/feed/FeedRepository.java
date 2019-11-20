@@ -18,6 +18,6 @@ public interface FeedRepository extends CrudRepository<Feed, Long> {
   )
   Feed findMain();
 
-  Feed findFeedByName(String name);
+  Feed findByName(String name);
 
 }
