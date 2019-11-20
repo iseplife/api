@@ -27,6 +27,8 @@ public class Comment implements ThreadInterface {
 
   private Date creation;
 
+  private Date lastEdition;
+
   @ManyToOne
   private Comment parent;
 
@@ -89,6 +91,14 @@ public class Comment implements ThreadInterface {
 
   public void setCreation(Date creation) {
     this.creation = creation;
+  }
+
+  public Date getLastEdition() {
+    return lastEdition;
+  }
+
+  public void setLastEdition(Date lastEdition) {
+    this.lastEdition = lastEdition;
   }
 
   public void setLikes(List<Like> likes) {
