@@ -47,21 +47,21 @@ public class MediaController {
                                  @AuthenticationPrincipal TokenPayload auth) {
     if (authService.isUserAnonymous()) {
       return mediaService.getAllGalleryGazetteVideoPublic(page);
-    }else if(!auth.getRoles().contains(Roles.ADMIN) && !auth.getRoles().contains(Roles.CLUB_MANAGER)){
+    }else if(!auth.getRoles().contains(Roles.ADMIN)){
       return mediaService.getAllGalleryGazetteVideoPublished(page);
     }
     return mediaService.getAllGalleryGazetteVideo(page);
   }
 
   @PostMapping("/image")
-  @RolesAllowed({Roles.ADMIN, Roles.POST_MANAGER, Roles.STUDENT})
+  @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
   public Image addStandaloneImage(@RequestParam("post") Long postId,
                                   @RequestParam("image") MultipartFile image) {
     return mediaService.addSingleImage(postId, image);
   }
 
   @PostMapping("/video")
-  @RolesAllowed({Roles.ADMIN, Roles.POST_MANAGER, Roles.STUDENT})
+  @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
   public Video uploadVideo(@RequestParam("name") String name,
                            @RequestParam("post") Long postId,
                            @RequestParam("video") MultipartFile video) {
@@ -94,7 +94,7 @@ public class MediaController {
 
 
   @PostMapping("/gallery")
-  @RolesAllowed({Roles.ADMIN, Roles.POST_MANAGER, Roles.STUDENT})
+  @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
   public Gallery createGallery(@RequestParam("post") Long postId,
                                @RequestParam("name") String name,
                                @RequestParam("images[]") List<MultipartFile> images) {
@@ -117,7 +117,7 @@ public class MediaController {
                                @PathVariable Long id,
                                @AuthenticationPrincipal TokenPayload payload) {
     Gallery gallery = mediaService.getGallery(id);
-    if (!payload.getRoles().contains(Roles.ADMIN) && !payload.getRoles().contains(Roles.POST_MANAGER)) {
+    if (!payload.getRoles().contains(Roles.ADMIN)) {
       if (!payload.getClubsPublisher().contains(gallery.getPost().getAuthor().getId())) {
         throw new AuthException("you cannot edit this gallery");
       }
@@ -131,7 +131,7 @@ public class MediaController {
                                   @PathVariable Long id,
                                   @AuthenticationPrincipal TokenPayload payload) {
     Gallery gallery = mediaService.getGallery(id);
-    if (!payload.getRoles().contains(Roles.ADMIN) && !payload.getRoles().contains(Roles.POST_MANAGER)) {
+    if (!payload.getRoles().contains(Roles.ADMIN)) {
       if (!payload.getClubsAdmin().contains(gallery.getPost().getAuthor().getId())) {
         throw new AuthException("you cannot edit this gallery");
       }
@@ -140,7 +140,7 @@ public class MediaController {
   }
 
   @PostMapping("/document")
-  @RolesAllowed({Roles.ADMIN, Roles.POST_MANAGER, Roles.STUDENT})
+  @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
   public Document createDocument(@RequestParam("post") Long postId,
                                  @RequestParam("name") String name,
                                  @RequestParam("document") MultipartFile document) {

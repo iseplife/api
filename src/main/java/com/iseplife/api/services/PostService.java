@@ -125,7 +125,7 @@ public class PostService {
 
   public Post updatePost(Long postID, PostUpdateDTO update, TokenPayload auth) {
     Post post = getPost(postID);
-    if (authService.hasRightOn(auth, post)) {
+    if (authService.hasRightOn(post)) {
       throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");
     }
 
@@ -137,7 +137,7 @@ public class PostService {
 
   public void deletePost(Long postID, TokenPayload auth) {
     Post post = getPost(postID);
-    if (authService.hasRightOn(auth, post)) {
+    if (authService.hasRightOn(post)) {
       throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");
     }
     // delete media files on disk for each media type
@@ -164,7 +164,7 @@ public class PostService {
 
   public void togglePinnedPost(Long postID, TokenPayload auth) {
     Post post = getPost(postID);
-    if (authService.hasRightOn(auth, post) && post.getLinkedClub() != null) {
+    if (authService.hasRightOn(post) && post.getLinkedClub() != null) {
       throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");
     }
 

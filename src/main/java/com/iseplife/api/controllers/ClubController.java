@@ -54,7 +54,7 @@ public class ClubController {
   }
 
   @PostMapping
-  @RolesAllowed({Roles.ADMIN, Roles.CLUB_MANAGER})
+  @RolesAllowed({Roles.ADMIN})
   public Club createClub(@RequestParam("logo") MultipartFile logo,
                          @RequestParam("club") String club) {
     ClubDTO clubDTO = jsonUtils.deserialize(club, ClubDTO.class);
@@ -97,13 +97,13 @@ public class ClubController {
   }
 
   @DeleteMapping("/{id}")
-  @RolesAllowed({Roles.ADMIN, Roles.CLUB_MANAGER})
+  @RolesAllowed({Roles.ADMIN})
   public void deleteClub(@PathVariable Long id) {
     clubService.deleteClub(id);
   }
 
   private boolean hasAdminAccess(TokenPayload token, Long club) {
-    if (!token.getRoles().contains(Roles.ADMIN) && token.getRoles().contains(Roles.CLUB_MANAGER)) {
+    if (!token.getRoles().contains(Roles.ADMIN)) {
       return !token.getClubsAdmin().contains(club);
     }
     return false;

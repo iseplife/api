@@ -119,19 +119,14 @@ public class ClubService {
     return club;
   }
 
-  /**
-   * Retrieve the list of clubs where the student is admin
-   *
-   * @param student student id
-   * @return a club list
-   */
-  List<Club> getClubAuthors(Student student) {
-    return clubRepository.findByRoleWithInheritance(student, ClubRole.PUBLISHER);
+  public List<Student> getClubPublishers(Club club) {
+    return clubMemberRepository.findClubPublishers(club, ClubRole.PUBLISHER);
   }
 
-  public List<ClubMember> getPublisherClubs(Student student){
-    return clubMemberRepository.findByRoleWithInheritance(student, ClubRole.PUBLISHER);
+  public List<Club> getUserClubsWith(Student student, ClubRole role){
+    return clubRepository.findByRoleWithInheritance(student, role);
   }
+
 
   public void deleteClub(Long id) {
     clubRepository.delete(id);
@@ -190,7 +185,7 @@ public class ClubService {
 
   public ClubMember updateMemberRole(Long member, ClubRole role, TokenPayload payload) {
     ClubMember clubMember = getMember(member);
-    if (!payload.getRoles().contains(Roles.ADMIN) && payload.getRoles().contains(Roles.CLUB_MANAGER)) {
+    if (!payload.getRoles().contains(Roles.ADMIN) ) {
       if (!payload.getClubsAdmin().contains(clubMember.getClub().getId())) {
         throw new AuthException("no rights to modify this club");
       }
@@ -210,7 +205,7 @@ public class ClubService {
   public void removeMember(Long member, TokenPayload payload) {
     ClubMember clubMember = getMember(member);
     Club club = clubMember.getClub();
-    if (!payload.getRoles().contains(Roles.ADMIN) && payload.getRoles().contains(Roles.CLUB_MANAGER)) {
+    if (!payload.getRoles().contains(Roles.ADMIN)) {
       if (!payload.getClubsAdmin().contains(club.getId())) {
         throw new AuthException("no rights to modify this club");
       }

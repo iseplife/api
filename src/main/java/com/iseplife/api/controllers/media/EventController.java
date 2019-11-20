@@ -36,7 +36,7 @@ public class EventController {
   JsonUtils jsonUtils;
 
   private boolean hasRights(TokenPayload payload, Long clubId) {
-    if (!payload.getRoles().contains(Roles.ADMIN) && !payload.getRoles().contains(Roles.EVENT_MANAGER)) {
+    if (!payload.getRoles().contains(Roles.ADMIN)) {
       // if user is not the club admin
       return !payload.getClubsAdmin().contains(clubId);
     }
@@ -44,7 +44,7 @@ public class EventController {
   }
 
   @PostMapping
-  @RolesAllowed({Roles.ADMIN, Roles.EVENT_MANAGER, Roles.STUDENT})
+  @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
   public Event createEvent(@RequestParam("image") MultipartFile file,
                            @RequestParam("event") String event,
                            @AuthenticationPrincipal TokenPayload auth) {
@@ -82,7 +82,7 @@ public class EventController {
 
 
   @PutMapping("/{id}")
-  @RolesAllowed({Roles.ADMIN, Roles.EVENT_MANAGER, Roles.STUDENT})
+  @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
   public Event updateEvent(@PathVariable Long id,
                            @RequestParam(value = "image", required = false) MultipartFile file,
                            @RequestParam("event") String event,
@@ -95,7 +95,7 @@ public class EventController {
   }
 
   @DeleteMapping("/{id}")
-  @RolesAllowed({Roles.ADMIN, Roles.EVENT_MANAGER})
+  @RolesAllowed({Roles.ADMIN})
   public void deleteEvent(@PathVariable Long id) {
     eventService.removeEvent(id);
   }

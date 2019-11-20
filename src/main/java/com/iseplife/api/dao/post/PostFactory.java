@@ -56,15 +56,9 @@ public class PostFactory {
 
     postView.setLiked(threadService.isLiked(post));
 
-    Student user = authService.getLoggedUser();
     postView.setPrivate(post.getPrivate());
 
-    boolean isAdmin =
-      user.getRoles().contains(studentService.getRole(Roles.ADMIN))
-        || (post.getLinkedClub() != null && clubService.getClubPublishers(post.getLinkedClub()).contains(user))
-        || post.getAuthor().equals(user);
-
-    postView.setHasWriteAccess(isAdmin);
+    postView.setHasWriteAccess(authService.hasRightOn(post));
 
     return postView;
   }

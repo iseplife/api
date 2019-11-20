@@ -63,7 +63,7 @@ public class PollController {
   }
 
   @PostMapping
-  @RolesAllowed({Roles.ADMIN, Roles.POST_MANAGER, Roles.STUDENT})
+  @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
   public Poll createPoll(@RequestParam("post") Long postId, @RequestBody PollCreationDTO dto) {
     return pollService.createPoll(postId, dto);
   }

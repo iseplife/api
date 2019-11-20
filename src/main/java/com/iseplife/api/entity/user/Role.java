@@ -7,10 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
-/**
- * Created by Guillaume on 07/08/2017.
- * back
- */
+
 @Entity
 public class Role implements GrantedAuthority {
   @Id
