@@ -21,17 +21,12 @@ public class AuthService {
   @Autowired
   StudentService studentService;
 
-  private TokenPayload payload;
-
-  public AuthService(){
-    payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-  }
-
   /**
    * Check if user has one of the roles listed
    * @return
    */
   public boolean hasRoles(String... roles) {
+    TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
     for (String r: roles) {
       if (payload.getRoles().contains(r)) {
         return true;
@@ -48,7 +43,7 @@ public class AuthService {
 
   public Long getLoggedId() {
     if (!isUserAnonymous()) {
-      return payload.getId();
+      return ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
     }
     return null;
   }
@@ -58,6 +53,7 @@ public class AuthService {
   }
 
   public boolean hasRightOn(Post post) {
+    TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
     return payload.getRoles().contains(Roles.ADMIN)
       || post.getAuthor().getId().equals(payload.getId())
       || payload.getClubsPublisher().contains(post.getLinkedClub().getId())
@@ -65,6 +61,7 @@ public class AuthService {
   }
 
   public boolean hasRightOn(Feed feed) {
+    TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
     return payload.getRoles().contains(Roles.ADMIN)
       || (feed.getClub() != null && payload.getClubsPublisher().contains(feed.getClub().getId()))
       || (feed.getEvent() != null && payload.getClubsPublisher().contains(feed.getEvent().getClub().getId()) );
@@ -72,6 +69,6 @@ public class AuthService {
 
 
   public boolean userHasRole(String role) {
-    return payload.getRoles().contains(role);
+    return ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getRoles().contains(role);
   }
 }
