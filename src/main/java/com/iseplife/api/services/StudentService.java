@@ -2,10 +2,14 @@ package com.iseplife.api.services;
 
 import com.google.common.collect.Sets;
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.constants.ClubRole;
+import com.iseplife.api.dao.club.ClubMemberRepository;
 import com.iseplife.api.dto.student.StudentDTO;
 import com.iseplife.api.dto.student.StudentUpdateAdminDTO;
 import com.iseplife.api.dto.student.StudentUpdateDTO;
+import com.iseplife.api.dto.view.AuthorView;
 import com.iseplife.api.dto.view.StudentWithRoleView;
+import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.dao.student.RoleRepository;
@@ -21,11 +25,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 /**
  * Created by Guillaume on 30/07/2017.
@@ -43,8 +43,12 @@ public class StudentService {
   @Autowired
   StudentFactory studentFactory;
 
+
   @Autowired
   RoleRepository roleRepository;
+
+  @Autowired
+  ClubMemberRepository clubMemberRepository;
 
   @Value("${storage.student.url}")
   String studentImageStorage;
@@ -78,62 +82,6 @@ public class StudentService {
     studentRepository.save(student);
   }
 
-  public Page<Student> search(String name, String promos, String sort, int page) {
-    Sort.Direction direction = sort.equals("a") ? Sort.Direction.ASC : Sort.Direction.DESC;
-    PageRequest pageRequest = new PageRequest(
-      page,
-      RESULTS_PER_PAGE,
-      new Sort(
-        new Sort.Order(Sort.Direction.DESC, "promo"),
-        new Sort.Order(direction, "lastName")
-      )
-    );
-    if (!promos.isEmpty()) {
-      List<Integer> promoInt = Arrays.stream(promos.split(","))
-        .map(Integer::decode)
-        .collect(Collectors.toList());
-      return studentRepository.searchStudent(
-        name.toLowerCase(),
-        promoInt,
-        pageRequest
-      );
-    }
-    return studentRepository.searchStudent(
-      name.toLowerCase(),
-      pageRequest
-    );
-  }
-
-  public Page<StudentWithRoleView> searchAdmin(String name, String roles, String promos, String sort, int page) {
-    PageRequest pageRequest = new PageRequest(
-      page,
-      RESULTS_PER_PAGE,
-      new Sort(
-        new Sort.Order(Sort.Direction.DESC, "promo")
-      )
-    );
-
-    if (!roles.isEmpty()) {
-      Set<Role> rolesList = Sets.newHashSet(roles.split(",")).stream()
-        .map(r -> roleRepository.findByRole(r))
-        .collect(Collectors.toSet());
-
-      if (promos.isEmpty()) {
-        return studentRepository.searchStudentRole(name, rolesList, pageRequest)
-          .map(s -> studentFactory.studentToStudentWithRoles(s));
-      } else {
-        List<Integer> promoInt = Arrays.stream(promos.split(","))
-          .map(Integer::decode)
-          .collect(Collectors.toList());
-        return studentRepository.searchStudentRolePromo(name, rolesList, promoInt, pageRequest)
-          .map(s -> studentFactory.studentToStudentWithRoles(s));
-      }
-    }
-
-    return search(name, promos, sort, page)
-      .map(s -> studentFactory.studentToStudentWithRoles(s));
-  }
-
   public void toggleArchiveStudent(Long id) {
     Student student = getStudent(id);
     student.setArchivedAt(new Date());
@@ -160,6 +108,11 @@ public class StudentService {
     Student student = getStudent(id);
     return student.getRoles();
   }
+
+  public List<Club> getPublisherClubs(Student student){
+    return clubMemberRepository.findByRoleWithInheritance(student, ClubRole.PUBLISHER);
+  }
+
 
   public List<Role> getRoles() {
     return roleRepository.findAll();

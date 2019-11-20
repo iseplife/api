@@ -2,24 +2,24 @@ package com.iseplife.api.entity.post;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.entity.Thread;
+import com.iseplife.api.entity.ThreadInterface;
 import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.entity.user.Student;
+import com.iseplife.api.exceptions.CommentMaxDepthException;
 
 import javax.persistence.*;
 import java.util.*;
 
-/**
- * Created by Guillaume on 31/07/2017.
- * back
- */
 @Entity
-public class Comment {
+public class Comment implements ThreadInterface {
 
   @Id
   @GeneratedValue
   private Long id;
 
   @ManyToOne
+  private Thread parentThread;
+
+  @OneToOne(mappedBy = "comment")
   private Thread thread;
 
   @ManyToOne
@@ -61,12 +61,26 @@ public class Comment {
   }
 
   @JsonIgnore
+  public Thread getParentThread() {
+    return parentThread;
+  }
+
+  public void setParentThread(Thread parentThread) {
+    this.parentThread = parentThread;
+  }
+
+  @Override
   public Thread getThread() {
     return thread;
   }
 
+  @Override
   public void setThread(Thread thread) {
-    this.thread = thread;
+    if(parentThread.getComment() == null){
+      this.thread = thread;
+    }else {
+      throw new CommentMaxDepthException("Comment max depth reached (1)");
+    }
   }
 
   public Date getCreation() {

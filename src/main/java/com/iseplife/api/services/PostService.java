@@ -1,14 +1,14 @@
 package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.dao.feed.FeedRepository;
 import com.iseplife.api.dao.post.*;
-import com.iseplife.api.dto.CommentDTO;
 import com.iseplife.api.dto.PostDTO;
 import com.iseplife.api.dto.PostUpdateDTO;
 import com.iseplife.api.dto.view.AuthorView;
-import com.iseplife.api.dto.view.CommentView;
 import com.iseplife.api.dto.view.PostView;
 import com.iseplife.api.entity.Feed;
+import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.media.Document;
 import com.iseplife.api.entity.media.Gallery;
 import com.iseplife.api.entity.media.Media;
@@ -47,6 +47,12 @@ public class PostService {
 
   @Autowired
   PostRepository postRepository;
+
+  @Autowired
+  ThreadRepository threadRepository;
+
+  @Autowired
+  FeedRepository feedRepository;
 
   @Autowired
   PostFactory postFactory;
@@ -144,34 +150,27 @@ public class PostService {
   public Post createPost(TokenPayload auth, PostDTO postDTO) {
     Post post = postFactory.dtoToEntity(postDTO);
     post.setAuthor(studentRepository.findOne(auth.getId()));
-
     post.setLinkedClub(clubService.getClub(postDTO.getLinkedClubId()));
 
-
-    // if creator is not an ADMIN or POST_MANAGER
-    if (!auth.getRoles().contains(Roles.ADMIN) && !auth.getRoles().contains(Roles.POST_MANAGER)) {
-
+    // if creator is not an ADMIN
+    if (!auth.getRoles().contains(Roles.ADMIN)) {
       // Check if user is able to post in club's name
       if (post.getLinkedClub() != null && !auth.getClubsPublisher().contains(postDTO.getLinkedClubId())) {
         throw new AuthException("not allowed to create this post");
       }
     }
 
+    post.setFeed(feedRepository.findByName(postDTO.getFeed()));
+    post.setThread(new Thread());
     post.setCreationDate(new Date());
     post.setPublishState(postDTO.isDraft() ? PublishStateEnum.WAITING : null);
-
     post = postRepository.save(post);
+
     postMessageService.broadcastPost(auth.getId(), post);
     return post;
   }
 
-  public List<CommentView> getComments(Long postId) {
-    Post post = getPost(postId);
-    return post.getComments()
-      .stream()
-      .map(c -> commentFactory.entityToView(c))
-      .collect(Collectors.toList());
-  }
+
 
   public void deletePost(Long postId, TokenPayload auth) {
     Post post = getPost(postId);
@@ -211,16 +210,6 @@ public class PostService {
     return postRepository.save(post);
   }
 
-  public Comment commentPost(Long postId, CommentDTO dto, Long studentId) {
-    Comment comment = new Comment();
-    Post post = postRepository.findOne(postId);
-    comment.setPost(post);
-    comment.setMessage(dto.getMessage());
-    Student student = studentService.getStudent(studentId);
-    comment.setStudent(student);
-    comment.setCreation(new Date());
-    return commentRepository.save(comment);
-  }
 
   public void setPublishState(Long id, PublishStateEnum state) {
     Post post = postRepository.findOne(id);
@@ -228,29 +217,7 @@ public class PostService {
     postRepository.save(post);
   }
 
-  public void togglePostLike(Long postId, Long id) {
-    Like like = likeRepository.findOneByPostIdAndStudentId(postId, id);
-    if (like != null) {
-      likeRepository.delete(like);
-    } else {
-      like = new Like();
-      like.setStudent(studentService.getStudent(id));
-      like.setPost(postRepository.findOne(postId));
-      likeRepository.save(like);
-    }
-  }
 
-  public void toggleCommentLike(Long comId, Long id) {
-    Like like = likeRepository.findOneByCommentIdAndStudentId(comId, id);
-    if (like != null) {
-      likeRepository.delete(like);
-    } else {
-      like = new Like();
-      like.setStudent(studentService.getStudent(id));
-      like.setComment(commentRepository.findOne(comId));
-      likeRepository.save(like);
-    }
-  }
 
   public Post getPost(Long postId) {
     Post post = postRepository.findOne(postId);
@@ -263,7 +230,6 @@ public class PostService {
   public void setPinnedPost(Long id, Boolean pinned, TokenPayload auth) {
     Post post = getPost(id);
     boolean canPinPost = auth.getRoles().contains(Roles.ADMIN);
-    canPinPost |= auth.getRoles().contains(Roles.POST_MANAGER);
     canPinPost |= post.getLinkedClub() != null;
     if (canPinPost) {
       post.setPinned(pinned);
@@ -300,11 +266,6 @@ public class PostService {
     return authorStatus;
   }
 
-  public Boolean isPostLiked(Post post) {
-    if (authService.isUserAnonymous()) return false;
-
-    return likeRepository.findOneByPostIdAndStudentId(post.getId(), authService.getLoggedUser().getId()) != null;
-  }
 
   public Boolean isCommentLiked(Comment comment) {
     if (authService.isUserAnonymous()) return false;
@@ -340,36 +301,13 @@ public class PostService {
     return postRepository.save(post);
   }
 
-  public List<Like> getLikesPost(Long id) {
-    Post post = getPost(id);
-    return post.getLikes();
-  }
-
-  public List<Like> getLikesComment(Long id) {
-    Comment comment = commentRepository.findOne(id);
-    if (comment == null) {
-      throw new IllegalArgumentException("could not find a comment with this id");
-    }
-    return comment.getLikes();
-  }
-
   private boolean hasRightOnPost(TokenPayload auth, Post post) {
-    if (!auth.getRoles().contains(Roles.ADMIN) && !auth.getRoles().contains(Roles.POST_MANAGER)) {
+    if (!auth.getRoles().contains(Roles.ADMIN)) {
       return !post.getAuthor().getId().equals(auth.getId()) && !auth.getClubsAdmin().contains(post.getAuthor().getId());
     }
     return false;
   }
 
-  public void deleteComment(Long comId, Long id) {
-    Comment comment = commentRepository.findOne(comId);
-    if (comment == null) {
-      throw new IllegalArgumentException("could not find this comment");
-    }
-    if (!comment.getStudent().getId().equals(id)) {
-      throw new AuthException("you cannot delete this comment");
-    }
-    commentRepository.delete(comment);
-  }
 
   public List<PostView> getWaitingPosts(TokenPayload token) {
     List<Long> authors = new ArrayList<>();

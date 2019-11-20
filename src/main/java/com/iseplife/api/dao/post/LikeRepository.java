@@ -8,7 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface LikeRepository extends CrudRepository<Like, Long> {
 
-  Like findOneByCommentIdAndStudentId(Long comment, Long student);
-
-  Like findOneByPostIdAndStudentId(Long post, Long student);
+  Like findOneByThreadIdAndStudentId(Long thread, Long student);
 }

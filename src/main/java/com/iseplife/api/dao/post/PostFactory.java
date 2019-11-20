@@ -4,10 +4,7 @@ import com.iseplife.api.dto.PostDTO;
 import com.iseplife.api.dto.view.PostView;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.services.AuthService;
-import com.iseplife.api.services.ClubService;
-import com.iseplife.api.services.PostService;
-import com.iseplife.api.services.StudentService;
+import com.iseplife.api.services.*;
 import com.iseplife.api.constants.Roles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,10 +17,13 @@ import org.springframework.stereotype.Component;
 public class PostFactory {
 
   @Autowired
-  PostService postService;
+  AuthService authService;
 
   @Autowired
-  AuthService authService;
+  ThreadService threadService;
+
+  @Autowired
+  PostService postService;
 
   @Autowired
   StudentService studentService;
@@ -54,26 +54,17 @@ public class PostFactory {
     postView.setMedia(post.getMedia());
     postView.setAuthor(post.getAuthor());
 
-    postView.setLiked(postService.isPostLiked(post));
-    if (authService.isUserAnonymous()) {
-      postView.setHasWriteAccess(false);
-    } else {
-      Student user = authService.getLoggedUser();
-      postView.setPrivate(post.getPrivate());
-      if (post.getLinkedClub() != null) {
-        boolean isAdmin = clubService.getAdmins(post.getLinkedClub()).contains(user);
-        postView.setHasWriteAccess(isAdmin);
-      }else {
-        postView.setHasWriteAccess(post.getAuthor().equals(user));
-      }
+    postView.setLiked(threadService.isLiked(post));
 
-      if (user.getRoles().contains(studentService.getRole(Roles.ADMIN))) {
-        postView.setHasWriteAccess(true);
-      }
-      if (user.getRoles().contains(studentService.getRole(Roles.POST_MANAGER))) {
-        postView.setHasWriteAccess(true);
-      }
-    }
+    Student user = authService.getLoggedUser();
+    postView.setPrivate(post.getPrivate());
+
+    boolean isAdmin =
+      user.getRoles().contains(studentService.getRole(Roles.ADMIN))
+        || (post.getLinkedClub() != null && clubService.getClubPublishers(post.getLinkedClub()).contains(user))
+        || post.getAuthor().equals(user);
+
+    postView.setHasWriteAccess(isAdmin);
 
     return postView;
   }

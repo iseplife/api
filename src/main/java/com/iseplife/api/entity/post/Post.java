@@ -2,6 +2,7 @@ package com.iseplife.api.entity.post;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.entity.Thread;
+import com.iseplife.api.entity.ThreadInterface;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.PublishStateEnum;
@@ -18,7 +19,7 @@ import java.util.*;
  * back
  */
 @Entity
-public class Post {
+public class Post implements ThreadInterface {
 
   @Id
   @GeneratedValue
@@ -39,7 +40,7 @@ public class Post {
   private Student author;
 
   @JsonIgnore
-  @OneToOne(cascade = CascadeType.ALL)
+  @OneToOne()
   private Thread thread;
 
   @ManyToOne
@@ -48,14 +49,6 @@ public class Post {
   @JsonIgnore
   @ManyToOne
   private Feed feed;
-
-  @JsonIgnore
-  @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-  private List<Comment> comments = new ArrayList<>();
-
-  @JsonIgnore
-  @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
-  private List<Like> likes = new ArrayList<>();
 
   @Enumerated(EnumType.STRING)
   private PublishStateEnum publishState;
@@ -116,19 +109,14 @@ public class Post {
     this.media = media;
   }
 
+  @JsonIgnore
   public List<Comment> getComments() {
-    return comments;
-  }
-
-  public void setComments(List<Comment> comments) {
-    this.comments = comments;
+    return thread.getComments();
   }
 
   @JsonIgnore
-  public List<Like> getLikes() { return likes; }
-
-  public void setLikes(List<Like> likes) {
-    this.likes = likes;
+  public List<Like> getLikes() {
+    return thread.getLikes();
   }
 
   public Boolean getPrivate() {
@@ -171,10 +159,12 @@ public class Post {
     this.feed = feed;
   }
 
+  @Override
   public Thread getThread() {
     return thread;
   }
 
+  @Override
   public void setThread(Thread thread) {
     this.thread = thread;
   }
