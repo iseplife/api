@@ -1,8 +1,10 @@
-package com.iseplife.api.entity.media;
+package com.iseplife.api.entity.post.embed;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.iseplife.api.constants.MediaType;
-import com.iseplife.api.entity.Image;
+import com.iseplife.api.constants.EmbedType;
+import com.iseplife.api.entity.media.Embed;
+import com.iseplife.api.entity.media.Image;
+import com.iseplife.api.entity.media.Media;
 
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
@@ -12,13 +14,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by Guillaume on 27/07/2017.
- * back
- */
+
 @Entity
-@DiscriminatorValue(MediaType.GALLERY)
-public class Gallery extends Media {
+@DiscriminatorValue(EmbedType.GALLERY)
+public class Gallery extends Embed {
 
   private String name;
 

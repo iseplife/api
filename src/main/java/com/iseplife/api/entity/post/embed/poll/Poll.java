@@ -1,7 +1,7 @@
-package com.iseplife.api.entity.media.poll;
+package com.iseplife.api.entity.post.embed.poll;
 
-import com.iseplife.api.constants.MediaType;
-import com.iseplife.api.entity.media.Media;
+import com.iseplife.api.constants.EmbedType;
+import com.iseplife.api.entity.media.Embed;
 
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
@@ -10,19 +10,15 @@ import javax.persistence.OneToMany;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by Guillaume on 30/07/2017.
- * back
- */
 @Entity
-@DiscriminatorValue(MediaType.POLL)
-public class Poll extends Media {
+@DiscriminatorValue(EmbedType.POLL)
+public class Poll extends Embed {
 
   private String name;
   private Date endDate;
   private Boolean isMultiAnswers;
 
-  @OneToMany(mappedBy = MediaType.POLL, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = EmbedType.POLL, cascade = CascadeType.ALL)
   private List<PollAnswer> answers;
 
   public String getName() {

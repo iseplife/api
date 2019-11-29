@@ -6,10 +6,6 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import java.util.Date;
 
-/**
- * Created by Guillaume on 29/07/2017.
- * back
- */
 @Entity
 @DiscriminatorValue(MediaType.VIDEO)
 public class Video extends Media {
@@ -19,7 +15,6 @@ public class Video extends Media {
   private String poster;
 
   private Integer views = 0;
-
 
   @Override
   public void setCreation(Date creation) {

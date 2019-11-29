@@ -4,20 +4,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.ThreadInterface;
 import com.iseplife.api.entity.club.Club;
+import com.iseplife.api.entity.media.Embed;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.PublishStateEnum;
 import com.iseplife.api.entity.Feed;
-import com.iseplife.api.entity.club.Club;
-import com.iseplife.api.entity.media.Media;
-import com.iseplife.api.entity.user.Student;
 
 import javax.persistence.*;
 import java.util.*;
 
-/**
- * Created by Guillaume on 27/07/2017.
- * back
- */
 @Entity
 public class Post implements ThreadInterface {
 
@@ -34,7 +28,7 @@ public class Post implements ThreadInterface {
   private Boolean isPinned = false;
 
   @OneToOne(cascade = CascadeType.ALL)
-  private Media media;
+  private Embed embed;
 
   @ManyToOne
   private Student author;
@@ -101,12 +95,12 @@ public class Post implements ThreadInterface {
     this.publishState = publishState;
   }
 
-  public Media getMedia() {
-    return media;
+  public Embed getEmbed() {
+    return embed;
   }
 
-  public void setMedia(Media media) {
-    this.media = media;
+  public void setEmbed(Embed embed) {
+    this.embed = embed;
   }
 
   @JsonIgnore

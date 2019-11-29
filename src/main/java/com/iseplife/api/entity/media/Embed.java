@@ -1,19 +1,23 @@
 package com.iseplife.api.entity.media;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.iseplife.api.entity.post.Post;
+
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@DiscriminatorColumn(name = "mediaType")
-public abstract class Media {
+@DiscriminatorColumn(name = "embedType")
+public abstract class Embed {
   @Id
   @GeneratedValue
   private Long id;
 
   @Column(insertable = false, updatable = false)
-  private String mediaType;
+  private String embedType;
 
-  private Boolean NSFW = false;
+  @OneToOne(mappedBy = "embed", cascade = CascadeType.ALL)
+  private Post post;
 
   private Date creation;
 
@@ -25,8 +29,8 @@ public abstract class Media {
     this.id = id;
   }
 
-  public String getMediaType() {
-    return mediaType;
+  public String getEmbedType() {
+    return embedType;
   }
 
   public Date getCreation() {
@@ -37,11 +41,13 @@ public abstract class Media {
     this.creation = creation;
   }
 
-  public Boolean isNSFW() {
-    return NSFW;
+  public Long getPostId() {
+    return post != null ? post.getId() : 0;
   }
 
-  public void setNSFW(Boolean NSFW) {
-    this.NSFW = NSFW;
+  @JsonIgnore
+  public Post getPost() {
+    return post;
   }
+
 }

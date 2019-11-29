@@ -1,17 +1,15 @@
-package com.iseplife.api.entity.media;
+package com.iseplife.api.entity.post.embed;
 
-import com.iseplife.api.constants.MediaType;
+import com.iseplife.api.constants.EmbedType;
+import com.iseplife.api.entity.media.Embed;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
-/**
- * Created by Guillaume on 25/10/2017.
- * back
- */
+
 @Entity
-@DiscriminatorValue(MediaType.DOCUMENT)
-public class Document extends Media {
+@DiscriminatorValue(EmbedType.DOCUMENT)
+public class Document extends Embed {
   private String name;
   private String path;
   private String originalName;

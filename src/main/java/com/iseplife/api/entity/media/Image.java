@@ -1,17 +1,17 @@
-package com.iseplife.api.entity;
+package com.iseplife.api.entity.media;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.iseplife.api.entity.media.Gallery;
+import com.iseplife.api.constants.MediaType;
+import com.iseplife.api.entity.Matched;
+import com.iseplife.api.entity.Thread;
+import com.iseplife.api.entity.post.embed.Gallery;
 
 import javax.persistence.*;
 import java.util.List;
 
-/**
- * Created by Guillaume on 27/07/2017.
- * back
- */
 @Entity
-public class Image {
+@DiscriminatorValue(MediaType.IMAGE)
+public class Image extends Media {
   @Id
   @GeneratedValue
   private Long id;

@@ -1,4 +1,4 @@
-package com.iseplife.api.entity.media.poll;
+package com.iseplife.api.entity.embed.poll;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
