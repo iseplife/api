@@ -9,6 +9,7 @@ import com.iseplife.api.dto.view.AuthorView;
 import com.iseplife.api.dto.view.PostView;
 import com.iseplife.api.entity.Feed;
 import com.iseplife.api.entity.Thread;
+import com.iseplife.api.entity.media.Embed;
 import com.iseplife.api.entity.post.embed.Document;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.media.Media;
@@ -49,6 +50,9 @@ public class PostService {
 
   @Autowired
   MediaRepository mediaRepository;
+
+  @Autowired
+  EmbedRepository embedRepository;
 
   @Autowired
   StudentRepository studentRepository;
@@ -141,15 +145,22 @@ public class PostService {
       throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");
     }
     // delete media files on disk for each media type
-    if (post.getMedia() instanceof Gallery) {
-      Gallery gallery = (Gallery) post.getMedia();
+    if (post.getEmbed() instanceof Gallery) {
+      Gallery gallery = (Gallery) post.getEmbed();
       gallery.getImages().forEach(img -> mediaService.deleteImageFile(img));
     }
-    if (post.getMedia() instanceof Document) {
-      Document document = (Document) post.getMedia();
+
+    if (post.getEmbed() instanceof Document) {
+      Document document = (Document) post.getEmbed();
       mediaUtils.removeIfExistPublic(document.getPath());
     }
-    if (post.getMedia() instanceof Video) {
+
+    if (post.getEmbed() instanceof Document) {
+      Document document = (Document) post.getEmbed();
+      mediaUtils.removeIfExistPublic(document.getPath());
+    }
+
+    /*if (post.getEmbed() instanceof Video) {
       Video video = (Video) post.getMedia();
       if (video.getUrl() != null) {
         mediaUtils.removeIfExistPublic(video.getUrl());
@@ -157,7 +168,7 @@ public class PostService {
       if (video.getPoster() != null) {
         mediaUtils.removeIfExistPublic(video.getPoster());
       }
-    }
+    }*/
 
     postRepository.delete(postID);
   }
@@ -178,10 +189,10 @@ public class PostService {
     postRepository.save(post);
   }
 
-  public Post addMediaEmbed(Long id, Long mediaId) {
+  public Post addMediaEmbed(Long id, Long embedID) {
     Post post = postRepository.findOne(id);
-    Media media = mediaRepository.findOne(mediaId);
-    post.setMedia(media);
+    post.setEmbed(embedRepository.findOne(embedID));
+
     return postRepository.save(post);
   }
 

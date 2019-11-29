@@ -51,7 +51,7 @@ public class PostFactory {
     postView.setNbComments(post.getComments().size());
 
 
-    postView.setMedia(post.getMedia());
+    postView.setEmbed(post.getEmbed());
     postView.setAuthor(post.getAuthor());
 
     postView.setLiked(threadService.isLiked(post));
