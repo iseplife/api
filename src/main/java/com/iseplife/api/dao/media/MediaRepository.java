@@ -2,7 +2,6 @@ package com.iseplife.api.dao.media;
 
 import com.iseplife.api.entity.media.Media;
 import com.iseplife.api.constants.PublishStateEnum;
-import com.iseplife.api.entity.media.Media;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
@@ -10,10 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 
-/**
- * Created by Guillaume on 31/07/2017.
- * back
- */
 @Repository
 public interface MediaRepository extends CrudRepository<Media, Long> {
   Page<Media> findAllByMediaTypeInAndPost_isPrivateAndPost_PublishStateOrderByCreationDesc(

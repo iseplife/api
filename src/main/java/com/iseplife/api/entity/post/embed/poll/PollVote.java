@@ -1,4 +1,4 @@
-package com.iseplife.api.entity.embed.poll;
+package com.iseplife.api.entity.post.embed.poll;
 
 import com.iseplife.api.entity.user.Student;
 

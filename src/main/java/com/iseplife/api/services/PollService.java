@@ -2,9 +2,9 @@ package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dto.media.PollCreationDTO;
-import com.iseplife.api.entity.media.poll.Poll;
-import com.iseplife.api.entity.media.poll.PollAnswer;
-import com.iseplife.api.entity.media.poll.PollVote;
+import com.iseplife.api.entity.post.embed.poll.Poll;
+import com.iseplife.api.entity.post.embed.poll.PollAnswer;
+import com.iseplife.api.entity.post.embed.poll.PollVote;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.PublishStateEnum;
 import com.iseplife.api.dao.poll.PollAnswerRepository;

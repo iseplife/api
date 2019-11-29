@@ -1,10 +1,10 @@
 package com.iseplife.api.controllers.media;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
-import com.iseplife.api.entity.Image;
+import com.iseplife.api.entity.media.Image;
 import com.iseplife.api.entity.Matched;
-import com.iseplife.api.entity.media.Document;
-import com.iseplife.api.entity.media.Gallery;
+import com.iseplife.api.entity.post.embed.Document;
+import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.media.Media;
 import com.iseplife.api.entity.media.Video;
 import com.iseplife.api.constants.Roles;

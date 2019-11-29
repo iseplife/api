@@ -2,13 +2,9 @@ package com.iseplife.api.controllers.media;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dto.media.PollCreationDTO;
-import com.iseplife.api.entity.media.poll.Poll;
-import com.iseplife.api.entity.media.poll.PollVote;
-import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.entity.post.embed.poll.Poll;
+import com.iseplife.api.entity.post.embed.poll.PollVote;
 import com.iseplife.api.constants.Roles;
-import com.iseplife.api.dto.media.PollCreationDTO;
-import com.iseplife.api.entity.media.poll.Poll;
-import com.iseplife.api.entity.media.poll.PollVote;
 import com.iseplife.api.services.PollService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

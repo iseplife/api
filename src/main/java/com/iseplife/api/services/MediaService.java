@@ -1,17 +1,18 @@
 package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.constants.MediaType;
 import com.iseplife.api.dto.TempFile;
 import com.iseplife.api.dto.view.MatchedView;
-import com.iseplife.api.entity.Image;
+import com.iseplife.api.entity.media.Image;
 import com.iseplife.api.entity.Matched;
-import com.iseplife.api.entity.media.Document;
-import com.iseplife.api.entity.media.Gallery;
+import com.iseplife.api.entity.post.embed.Document;
+import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.media.Media;
 import com.iseplife.api.entity.media.Video;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.constants.MediaType;
+import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.constants.PublishStateEnum;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.image.ImageRepository;
@@ -98,7 +99,7 @@ public class MediaService {
    */
   public Page<Media> getAllGalleryGazetteVideoPublic(int page) {
     return mediaRepository.findAllByMediaTypeInAndPost_isPrivateAndPost_PublishStateOrderByCreationDesc(
-      Arrays.asList(MediaType.GALLERY, MediaType.VIDEO), false, PublishStateEnum.PUBLISHED, new PageRequest(page, ALL_MEDIA_PAGE_SIZE)
+      Arrays.asList(EmbedType.GALLERY, MediaType.VIDEO), false, PublishStateEnum.PUBLISHED, new PageRequest(page, ALL_MEDIA_PAGE_SIZE)
     );
   }
 
@@ -109,7 +110,7 @@ public class MediaService {
   @Cacheable("media-list-published")
   public Page<Media>getAllGalleryGazetteVideoPublished(int page) {
     return mediaRepository.findAllByMediaTypeInAndPost_PublishStateOrderByCreationDesc(
-      Arrays.asList(MediaType.GALLERY, MediaType.VIDEO), PublishStateEnum.PUBLISHED, new PageRequest(page, ALL_MEDIA_PAGE_SIZE)
+      Arrays.asList(EmbedType.GALLERY, MediaType.VIDEO), PublishStateEnum.PUBLISHED, new PageRequest(page, ALL_MEDIA_PAGE_SIZE)
     );
   }
 
@@ -121,7 +122,7 @@ public class MediaService {
   @Cacheable("media-list-all")
   public Page<Media> getAllGalleryGazetteVideo(int page) {
     return mediaRepository.findAllByMediaTypeInOrderByCreationDesc(
-      Arrays.asList(MediaType.GALLERY, MediaType.VIDEO), new PageRequest(page, ALL_MEDIA_PAGE_SIZE)
+      Arrays.asList(EmbedType.GALLERY, MediaType.VIDEO), new PageRequest(page, ALL_MEDIA_PAGE_SIZE)
     );
   }
 
