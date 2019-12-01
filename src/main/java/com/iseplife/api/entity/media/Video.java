@@ -8,7 +8,7 @@ import java.util.Date;
 
 @Entity
 @DiscriminatorValue(MediaType.VIDEO)
-public class Video extends Media {
+public class Video extends Media implements Embed {
   private String name;
 
   private String url;

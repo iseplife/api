@@ -11,7 +11,7 @@ import java.util.List;
 
 @Entity
 @DiscriminatorValue(MediaType.IMAGE)
-public class Image extends Media {
+public class Image extends Media implements Embed {
   @Id
   @GeneratedValue
   private Long id;
@@ -30,9 +30,13 @@ public class Image extends Media {
   @OneToMany(mappedBy = "image", cascade = CascadeType.ALL)
   private List<Matched> matched;
 
-  public Long getId() { return id; }
+  public Long getId() {
+    return id;
+  }
 
-  public void setId(Long id) { this.id = id;}
+  public void setId(Long id) {
+    this.id = id;
+  }
 
   public List<Matched> getMatched() {
     return matched;

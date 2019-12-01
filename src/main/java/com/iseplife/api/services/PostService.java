@@ -51,8 +51,7 @@ public class PostService {
   @Autowired
   MediaRepository mediaRepository;
 
-  @Autowired
-  EmbedRepository embedRepository;
+
 
   @Autowired
   StudentRepository studentRepository;
@@ -191,7 +190,7 @@ public class PostService {
 
   public Post addMediaEmbed(Long id, Long embedID) {
     Post post = postRepository.findOne(id);
-    post.setEmbed(embedRepository.findOne(embedID));
+   // post.setEmbed(embedRepository.findOne(embedID));
 
     return postRepository.save(post);
   }

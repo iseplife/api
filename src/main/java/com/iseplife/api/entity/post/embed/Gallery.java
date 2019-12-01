@@ -1,23 +1,21 @@
 package com.iseplife.api.entity.post.embed;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.entity.media.Embed;
 import com.iseplife.api.entity.media.Image;
-import com.iseplife.api.entity.media.Media;
 
-import javax.persistence.CascadeType;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 
 @Entity
-@DiscriminatorValue(EmbedType.GALLERY)
-public class Gallery extends Embed {
+public class Gallery implements Embed {
+
+  @Id
+  @GeneratedValue
+  private Long id;
 
   private String name;
 
@@ -26,9 +24,14 @@ public class Gallery extends Embed {
   @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "gallery")
   private List<Image> images = new ArrayList<>();
 
-  @Override
-  public void setCreation(Date creation) {
-    super.setCreation(creation);
+  private Date creation;
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
   }
 
   @JsonIgnore
@@ -59,4 +62,12 @@ public class Gallery extends Embed {
   public Boolean getOfficial() { return official; }
 
   public void setOfficial(Boolean official) { this.official = official; }
+
+  public void setCreation(Date creation) {
+    this.creation = creation;
+  }
+
+  public Date getCreation() {
+    return creation;
+  }
 }

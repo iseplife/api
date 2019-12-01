@@ -3,16 +3,15 @@ package com.iseplife.api.entity.post.embed.poll;
 import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.entity.media.Embed;
 
-import javax.persistence.CascadeType;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
 @Entity
-@DiscriminatorValue(EmbedType.POLL)
-public class Poll extends Embed {
+public class Poll implements Embed {
+  @Id
+  @GeneratedValue
+  private Long id;
 
   private String name;
   private Date endDate;
@@ -20,6 +19,16 @@ public class Poll extends Embed {
 
   @OneToMany(mappedBy = EmbedType.POLL, cascade = CascadeType.ALL)
   private List<PollAnswer> answers;
+
+  private Date creation;
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
 
   public String getName() {
     return name;
@@ -51,5 +60,13 @@ public class Poll extends Embed {
 
   public void setMultiAnswers(Boolean multiAnswers) {
     isMultiAnswers = multiAnswers;
+  }
+
+  public void setCreation(Date creation) {
+    this.creation = creation;
+  }
+
+  public Date getCreation() {
+    return creation;
   }
 }
