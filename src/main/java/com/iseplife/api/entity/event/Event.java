@@ -33,6 +33,7 @@ public class Event {
   @Column(columnDefinition = "TEXT")
   private String description;
 
+  //An event can have event child in specific cases (e.g BDE Campaign)
   @JsonIgnore
   @OneToMany(cascade = CascadeType.ALL)
   private List<Event> events;
