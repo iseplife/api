@@ -5,7 +5,7 @@ import java.util.Date;
 
 @Entity
 @DiscriminatorColumn(name = "mediaType")
-public abstract class Media {
+public abstract class Media implements Embed {
   @Id
   @GeneratedValue
   private Long id;

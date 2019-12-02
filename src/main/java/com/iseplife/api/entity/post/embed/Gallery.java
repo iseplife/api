@@ -1,6 +1,7 @@
 package com.iseplife.api.entity.post.embed;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.entity.media.Embed;
 import com.iseplife.api.entity.media.Image;
 
@@ -69,5 +70,9 @@ public class Gallery implements Embed {
 
   public Date getCreation() {
     return creation;
+  }
+
+  public String getEmbedType(){
+    return EmbedType.GALLERY;
   }
 }

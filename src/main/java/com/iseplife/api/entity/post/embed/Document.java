@@ -1,5 +1,6 @@
 package com.iseplife.api.entity.post.embed;
 
+import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.constants.MediaType;
 import com.iseplife.api.entity.media.Embed;
 import com.iseplife.api.entity.media.Media;
@@ -10,7 +11,7 @@ import javax.persistence.Entity;
 
 @Entity
 @DiscriminatorValue(MediaType.DOCUMENT)
-public class Document extends Media implements Embed {
+public class Document extends Media {
 
   private String name;
   private String path;
@@ -38,5 +39,9 @@ public class Document extends Media implements Embed {
 
   public void setOriginalName(String originalName) {
     this.originalName = originalName;
+  }
+
+  public String getEmbedType(){
+    return EmbedType.DOCUMENT;
   }
 }
