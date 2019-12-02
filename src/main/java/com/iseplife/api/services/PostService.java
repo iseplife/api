@@ -188,9 +188,9 @@ public class PostService {
     postRepository.save(post);
   }
 
-  public Post addMediaEmbed(Long id, Long embedID) {
+  public Post addMediaEmbed(Long id, Embed embed) {
     Post post = postRepository.findOne(id);
-   // post.setEmbed(embedRepository.findOne(embedID));
+    post.setEmbed(embed);
 
     return postRepository.save(post);
   }

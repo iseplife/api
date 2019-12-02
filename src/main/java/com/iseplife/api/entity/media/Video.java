@@ -1,5 +1,6 @@
 package com.iseplife.api.entity.media;
 
+import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.constants.MediaType;
 
 import javax.persistence.DiscriminatorValue;
@@ -8,7 +9,7 @@ import java.util.Date;
 
 @Entity
 @DiscriminatorValue(MediaType.VIDEO)
-public class Video extends Media implements Embed {
+public class Video extends Media {
   private String name;
 
   private String url;
@@ -51,5 +52,9 @@ public class Video extends Media implements Embed {
 
   public void setPoster(String poster) {
     this.poster = poster;
+  }
+
+  public String getEmbedType(){
+    return EmbedType.VIDEO;
   }
 }

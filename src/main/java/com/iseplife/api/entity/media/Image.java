@@ -1,6 +1,7 @@
 package com.iseplife.api.entity.media;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.constants.MediaType;
 import com.iseplife.api.entity.Matched;
 import com.iseplife.api.entity.Thread;
@@ -11,7 +12,7 @@ import java.util.List;
 
 @Entity
 @DiscriminatorValue(MediaType.IMAGE)
-public class Image extends Media implements Embed {
+public class Image extends Media {
   @Id
   @GeneratedValue
   private Long id;
@@ -84,5 +85,9 @@ public class Image extends Media implements Embed {
 
   public void setThread(Thread thread) {
     this.thread = thread;
+  }
+
+  public String getEmbedType(){
+    return EmbedType.IMAGE;
   }
 }

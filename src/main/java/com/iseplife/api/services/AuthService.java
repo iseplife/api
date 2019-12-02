@@ -6,6 +6,7 @@ import com.iseplife.api.entity.Feed;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.post.Post;
+import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.user.Student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,11 +24,12 @@ public class AuthService {
 
   /**
    * Check if user has one of the roles listed
+   *
    * @return
    */
   public boolean hasRoles(String... roles) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-    for (String r: roles) {
+    for (String r : roles) {
       if (payload.getRoles().contains(r)) {
         return true;
       }
@@ -64,7 +66,13 @@ public class AuthService {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
     return payload.getRoles().contains(Roles.ADMIN)
       || (feed.getClub() != null && payload.getClubsPublisher().contains(feed.getClub().getId()))
-      || (feed.getEvent() != null && payload.getClubsPublisher().contains(feed.getEvent().getClub().getId()) );
+      || (feed.getEvent() != null && payload.getClubsPublisher().contains(feed.getEvent().getClub().getId()));
+  }
+
+  public boolean hasRightOn(Gallery gallery) {
+    TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return payload.getRoles().contains(Roles.ADMIN)
+      || payload.getClubsPublisher().contains(gallery.getClub().getId());
   }
 
 

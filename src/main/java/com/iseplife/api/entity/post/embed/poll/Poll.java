@@ -69,4 +69,8 @@ public class Poll implements Embed {
   public Date getCreation() {
     return creation;
   }
+
+  public String getEmbedType(){
+    return EmbedType.POLL;
+  }
 }
