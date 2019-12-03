@@ -66,14 +66,14 @@ public class EventController {
     return eventService.getPreviousEditions(id);
   }
 
- // @GetMapping("/{id}/galleries")
-  //public List<Gallery> getGalleries(@PathVariable Long id){
-   // return eventService.getEvent(id).getGalleries();
-  //}
-
   @GetMapping("/{id}/children")
   public List<EventPreviewView> getChildrenEvents(@PathVariable Long id){
     return eventService.getChildrenEvents(id);
+  }
+
+  @GetMapping("/{id}/galleries")
+  public List<Gallery> getGalleries(@PathVariable Long id){
+    return eventService.getEventGalleries(id);
   }
 
 

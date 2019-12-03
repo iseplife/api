@@ -58,7 +58,7 @@ public class SearchService {
   }
 
   public List<SearchItemView> searchClub(String filter, Boolean returnAll) {
-    List<Club> clubs = clubRepository.searchClub(filter);
+    List<Club> clubs = clubRepository.findAllByNameContainingIgnoringCase(filter);
 
     return clubs.stream()
       .map(c -> searchFactory.entityToSearchItemView(c))
