@@ -10,7 +10,7 @@ import com.iseplife.api.dto.view.AuthorView;
 import com.iseplife.api.dto.view.PostView;
 import com.iseplife.api.entity.Feed;
 import com.iseplife.api.entity.Thread;
-import com.iseplife.api.entity.media.Embed;
+import com.iseplife.api.entity.media.Embedable;
 import com.iseplife.api.entity.post.embed.Document;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.post.Post;
@@ -193,7 +193,7 @@ public class PostService {
 
   public void addMediaEmbed(Long postID, String type, Long embedID) {
     Post post = postRepository.findOne(postID);
-    Embed embed;
+    Embedable embed;
     switch (type) {
       case EmbedType.GALLERY:
         embed = galleryService.getGallery(embedID);
@@ -214,7 +214,7 @@ public class PostService {
     postRepository.save(post);
   }
 
-  public Post addMediaEmbed(Long id, Embed embed) {
+  public Post addMediaEmbed(Long id, Embedable embed) {
     Post post = postRepository.findOne(id);
     post.setEmbed(embed);
 

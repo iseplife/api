@@ -7,6 +7,7 @@ import com.iseplife.api.dto.view.ClubMemberView;
 import com.iseplife.api.entity.Feed;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.club.ClubMember;
+import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.ClubRole;
@@ -25,6 +26,7 @@ import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.utils.MediaUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -49,6 +51,9 @@ public class ClubService {
 
   @Autowired
   StudentService studentService;
+
+  @Autowired
+  GalleryService galleryService;
 
   @Autowired
   MediaUtils imageUtils;
@@ -81,10 +86,6 @@ public class ClubService {
     clubFeed.setName(club.getName());
     club.setFeed(clubFeed);
     return clubRepository.save(club);
-  }
-
-  public List<Club> searchClubs(String name) {
-    return clubRepository.findAllByNameContainingIgnoringCase(name);
   }
 
   private void setClubLogo(Club club, MultipartFile file) {
@@ -134,6 +135,10 @@ public class ClubService {
 
   public List<ClubMember> getMembers(Long id) {
     return clubMemberRepository.findByClubId(id);
+  }
+
+  public Page<Gallery> getClubGalleries(Long id, int page){
+    return galleryService.getClubGalleries(getClub(id), page);
   }
 
   public Set<Student> getAdmins(Long clubId) {

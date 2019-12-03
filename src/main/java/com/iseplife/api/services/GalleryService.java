@@ -4,6 +4,8 @@ import com.iseplife.api.constants.PublishStateEnum;
 import com.iseplife.api.dao.GalleryRepository;
 import com.iseplife.api.dao.media.image.ImageRepository;
 import com.iseplife.api.dto.TempFile;
+import com.iseplife.api.entity.club.Club;
+import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.media.Image;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.exceptions.AuthException;
@@ -12,6 +14,8 @@ import com.iseplife.api.exceptions.IllegalArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -44,6 +48,8 @@ public class GalleryService {
   @Autowired
   MediaService mediaService;
 
+  private static final int GALLERY_PER_PAGE = 5;
+
   public Gallery getGallery(Long id) {
     Gallery gallery = galleryRepository.findOne(id);
     if (gallery == null) {
@@ -56,6 +62,15 @@ public class GalleryService {
   public List<Image> getGalleryImages(Long id) {
     return getGallery(id)
       .getImages();
+  }
+
+
+  public List<Gallery> getEventGalleries(Event event) {
+    return galleryRepository.findAllByFeed(event.getFeed());
+  }
+
+  public Page<Gallery> getClubGalleries(Club club, int page) {
+    return galleryRepository.findAllByClub(club, new PageRequest(page, GALLERY_PER_PAGE));
   }
 
   public Gallery createGallery(Long postID, String name, List<MultipartFile> files) {

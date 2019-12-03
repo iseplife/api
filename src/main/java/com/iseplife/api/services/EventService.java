@@ -7,6 +7,7 @@ import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.dao.event.EventFactory;
 import com.iseplife.api.dao.event.EventRepository;
+import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.utils.MediaUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,9 @@ public class EventService {
 
   @Autowired
   ClubService clubService;
+
+  @Autowired
+  GalleryService galleryService;
 
   @Autowired
   MediaUtils mediaUtils;
@@ -92,6 +96,10 @@ public class EventService {
       throw new IllegalArgumentException("could not find event with id: " + id);
     }
     return event;
+  }
+
+  public List<Gallery> getEventGalleries(Long id) {
+    return galleryService.getEventGalleries(getEvent(id));
   }
 
   public List<EventPreviewView> getChildrenEvents(Long id) {

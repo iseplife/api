@@ -2,8 +2,9 @@ package com.iseplife.api.entity.post.embed;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.constants.EmbedType;
+import com.iseplife.api.entity.Feed;
 import com.iseplife.api.entity.club.Club;
-import com.iseplife.api.entity.media.Embed;
+import com.iseplife.api.entity.media.Embedable;
 import com.iseplife.api.entity.media.Image;
 
 import javax.persistence.*;
@@ -13,7 +14,7 @@ import java.util.List;
 
 
 @Entity
-public class Gallery implements Embed {
+public class Gallery implements Embedable {
 
   @Id
   @GeneratedValue
@@ -25,6 +26,10 @@ public class Gallery implements Embed {
 
   @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "gallery")
   private List<Image> images = new ArrayList<>();
+
+  @ManyToOne
+  @JsonIgnore
+  private Feed feed;
 
   @ManyToOne
   private Club club;
@@ -86,5 +91,13 @@ public class Gallery implements Embed {
 
   public void setClub(Club club) {
     this.club = club;
+  }
+
+  public Feed getFeed(){
+    return feed;
+  }
+
+  public void setFeed(Feed feed){
+    this.feed = feed;
   }
 }

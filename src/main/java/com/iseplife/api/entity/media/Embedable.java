@@ -1,6 +1,6 @@
 package com.iseplife.api.entity.media;
 
-public interface Embed {
+public interface Embedable {
   Long id = 0L;
 
   Long getId();

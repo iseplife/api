@@ -5,6 +5,7 @@ import com.iseplife.api.dto.ClubDTO;
 import com.iseplife.api.dto.view.PostView;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.club.ClubMember;
+import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.ClubRole;
 import com.iseplife.api.constants.Roles;
@@ -46,11 +47,6 @@ public class ClubController {
   @GetMapping
   public List<Club> listClubs() {
     return clubService.getAll();
-  }
-
-  @GetMapping("/search")
-  public List<Club> searchClubs(@RequestParam String name) {
-    return clubService.searchClubs(name);
   }
 
   @PostMapping
@@ -95,6 +91,12 @@ public class ClubController {
   public Club getClub(@PathVariable Long id) {
     return clubService.getClub(id);
   }
+
+  @GetMapping("/{id}/galleries")
+  public Page<Gallery> getGalleries(@PathVariable Long id, @RequestParam(defaultValue = "0") int page){
+    return clubService.getClubGalleries(id, page);
+  }
+
 
   @DeleteMapping("/{id}")
   @RolesAllowed({Roles.ADMIN})
