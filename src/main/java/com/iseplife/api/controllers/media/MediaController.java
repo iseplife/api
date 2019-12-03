@@ -39,9 +39,7 @@ public class MediaController {
   @GetMapping
   public Page<Media> getAllMedia(@RequestParam(defaultValue = "0") int page,
                                  @AuthenticationPrincipal TokenPayload auth) {
-    if (authService.isUserAnonymous()) {
-      return mediaService.getAllGalleryGazetteVideoPublic(page);
-    }else if(!auth.getRoles().contains(Roles.ADMIN)){
+    if(!auth.getRoles().contains(Roles.ADMIN)){
       return mediaService.getAllGalleryGazetteVideoPublished(page);
     }
     return mediaService.getAllGalleryGazetteVideo(page);

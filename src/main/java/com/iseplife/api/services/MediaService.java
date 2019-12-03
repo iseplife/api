@@ -2,7 +2,9 @@ package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.MediaType;
+import com.iseplife.api.dao.GalleryRepository;
 import com.iseplife.api.dto.view.MatchedView;
+import com.iseplife.api.entity.media.Embed;
 import com.iseplife.api.entity.media.Image;
 import com.iseplife.api.entity.Matched;
 import com.iseplife.api.entity.post.embed.Document;
@@ -63,6 +65,9 @@ public class MediaService {
   PostRepository postRepository;
 
   @Autowired
+  GalleryRepository galleryRepository;
+
+  @Autowired
   PostService postService;
 
   @Autowired
@@ -74,8 +79,6 @@ public class MediaService {
   @Value("${storage.video.url}")
   String videoDir;
 
-
-
   @Value("${storage.document.url}")
   String documentDir;
 
@@ -86,47 +89,25 @@ public class MediaService {
 
   private static final int PHOTOS_PER_PAGE = 30;
 
-  /**
-   * List all galleries, gazette and video published in a public post
-   * @param page
-   * @return
-   */
-  public Page<Media> getAllGalleryGazetteVideoPublic(int page) {
-    return mediaRepository.findAllByMediaTypeInAndPost_isPrivateAndPost_PublishStateOrderByCreationDesc(
-      Arrays.asList(EmbedType.GALLERY, MediaType.VIDEO), false, PublishStateEnum.PUBLISHED, new PageRequest(page, ALL_MEDIA_PAGE_SIZE)
-    );
-  }
 
-  /**
-   * List all galleries, gazette and video published
-   * @param page
-   */
   @Cacheable("media-list-published")
-  public Page<Media>getAllGalleryGazetteVideoPublished(int page) {
-    return mediaRepository.findAllByMediaTypeInAndPost_PublishStateOrderByCreationDesc(
-      Arrays.asList(EmbedType.GALLERY, MediaType.VIDEO), PublishStateEnum.PUBLISHED, new PageRequest(page, ALL_MEDIA_PAGE_SIZE)
+  public Page<Media> getAllGalleryGazetteVideoPublished(int page) {
+    Page<Media> list = mediaRepository.findAllByMediaTypeInOrderByCreationDesc(
+      Arrays.asList(MediaType.IMAGE, MediaType.VIDEO),
+      new PageRequest(page, ALL_MEDIA_PAGE_SIZE)
     );
+
+    return list;
   }
 
-  /**
-   * List all galleries, gazette and video published or not
-   * @param page
-   * @return
-   */
   @Cacheable("media-list-all")
   public Page<Media> getAllGalleryGazetteVideo(int page) {
     return mediaRepository.findAllByMediaTypeInOrderByCreationDesc(
-      Arrays.asList(EmbedType.GALLERY, MediaType.VIDEO), new PageRequest(page, ALL_MEDIA_PAGE_SIZE)
+      Arrays.asList(MediaType.IMAGE, MediaType.VIDEO),
+      new PageRequest(page, ALL_MEDIA_PAGE_SIZE)
     );
   }
 
-  /**
-   * Create a document
-   * @param postId
-   * @param name
-   * @param fileUploaded
-   * @return
-   */
   public Document createDocument(Long postId, String name, MultipartFile fileUploaded) {
     Document document = new Document();
     document.setCreation(new Date());
@@ -134,7 +115,7 @@ public class MediaService {
     String random = mediaUtils.randomName();
     String documentPath = String.format(
       "%s_%s",
-      mediaUtils.resolvePath(documentDir, random,false, document.getCreation()),
+      mediaUtils.resolvePath(documentDir, random, false, document.getCreation()),
       fileUploaded.getOriginalFilename()
     );
 
@@ -152,6 +133,7 @@ public class MediaService {
 
   /**
    * Upload a video and compress it
+   *
    * @param postId
    * @param name
    * @param videoFile
@@ -217,6 +199,7 @@ public class MediaService {
 
   /**
    * get an image by ID
+   *
    * @param id
    * @return
    */
@@ -236,16 +219,17 @@ public class MediaService {
     return media.isNSFW();
   }
 
-  private void uploadFile(File file){
+  private void uploadFile(File file) {
 
   }
 
-  private void uploadFile(MultipartFile file){
+  private void uploadFile(MultipartFile file) {
 
   }
 
   /**
    * Add a single image
+   *
    * @param postID
    * @param file
    * @return
@@ -281,6 +265,7 @@ public class MediaService {
 
   /**
    * Add an image to a gallery after upload
+   *
    * @param file
    * @param gallery
    * @return
@@ -313,6 +298,7 @@ public class MediaService {
 
   /**
    * Add an image to a gallery from a file
+   *
    * @param file
    * @param contentType
    * @param gallery
@@ -328,8 +314,8 @@ public class MediaService {
 
     String pathOriginal = String.format(
       "%s.%s",
-      mediaUtils.resolvePath(imageDir, "original-"+name, false, new Date()),
-      contentType.equals("image/jpeg") ? "jpg": contentType.equals("image/png") ? "png":""
+      mediaUtils.resolvePath(imageDir, "original-" + name, false, new Date()),
+      contentType.equals("image/jpeg") ? "jpg" : contentType.equals("image/png") ? "png" : ""
     );
 
     mediaUtils.saveFile(pathOriginal, file);
@@ -348,6 +334,7 @@ public class MediaService {
 
   /**
    * Delete all files attached to an image on disk
+   *
    * @param image
    */
   void deleteImageFile(Image image) {
@@ -360,6 +347,7 @@ public class MediaService {
 
   /**
    * Get all people linked to an image
+   *
    * @param id
    * @return
    */
@@ -373,6 +361,7 @@ public class MediaService {
 
   /**
    * Get all photos tagged by a student
+   *
    * @param studentId
    * @param page
    * @return
@@ -393,6 +382,7 @@ public class MediaService {
 
   /**
    * Tag a student in an image
+   *
    * @param imageId
    * @param studentId
    * @param auth
@@ -418,6 +408,7 @@ public class MediaService {
 
   /**
    * Untag a student in an image
+   *
    * @param imageId
    * @param studentId
    * @param auth
