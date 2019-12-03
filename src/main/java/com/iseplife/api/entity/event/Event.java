@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.entity.Feed;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.constants.EventType;
-import com.iseplife.api.entity.post.embed.Gallery;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -37,10 +36,6 @@ public class Event {
   @JsonIgnore
   @OneToMany(cascade = CascadeType.ALL)
   private List<Event> events;
-
-  @JsonIgnore
-  @OneToMany(cascade = CascadeType.ALL)
-  private List<Gallery> galleries;
 
   @ManyToOne
   private Club club;
@@ -131,17 +126,5 @@ public class Event {
 
   public void setTarget(Feed target) {
     this.target = target;
-  }
-
-  public List<Gallery> getGalleries() {
-    return galleries;
-  }
-
-  public void addGallery(Gallery gallery) {
-    this.galleries.add(gallery);
-  }
-
-  public void setGalleries(List<Gallery> galleries) {
-    this.galleries = galleries;
   }
 }
