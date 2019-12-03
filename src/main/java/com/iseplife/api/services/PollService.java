@@ -80,7 +80,7 @@ public class PollService {
     poll.setMultiAnswers(pollDTO.getMultiAnswers());
     Poll saved = pollRepository.save(poll);
 
-    postService.addMediaEmbed(postId, saved.getId());
+    postService.addMediaEmbed(postId, saved);
 
     // Add answers
     pollDTO.getAnswers().forEach(q -> {
@@ -96,7 +96,7 @@ public class PollService {
 
   public Poll getPoll(Long pollId) {
     Poll poll = pollRepository.findOne(pollId);
-    if (authService.isUserAnonymous() && poll.getPost().getPrivate()) {
+    if (authService.isUserAnonymous()) {
       throw new AuthException("you can't access this poll");
     }
     return poll;

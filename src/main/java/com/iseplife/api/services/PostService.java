@@ -1,6 +1,7 @@
 package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.dao.feed.FeedRepository;
 import com.iseplife.api.dao.post.*;
 import com.iseplife.api.dto.PostDTO;
@@ -12,9 +13,8 @@ import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.media.Embed;
 import com.iseplife.api.entity.post.embed.Document;
 import com.iseplife.api.entity.post.embed.Gallery;
-import com.iseplife.api.entity.media.Media;
-import com.iseplife.api.entity.media.Video;
 import com.iseplife.api.entity.post.Post;
+import com.iseplife.api.entity.post.embed.poll.Poll;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.PublishStateEnum;
 import com.iseplife.api.constants.Roles;
@@ -51,8 +51,6 @@ public class PostService {
   @Autowired
   MediaRepository mediaRepository;
 
-
-
   @Autowired
   StudentRepository studentRepository;
 
@@ -70,6 +68,12 @@ public class PostService {
 
   @Autowired
   MediaService mediaService;
+
+  @Autowired
+  PollService pollService;
+
+  @Autowired
+  GalleryService galleryService;
 
   @Autowired
   FeedService feedService;
@@ -185,6 +189,29 @@ public class PostService {
   public void setPublishState(Long postID, PublishStateEnum state) {
     Post post = getPost(postID);
     post.setPublishState(state);
+    postRepository.save(post);
+  }
+
+  public void addMediaEmbed(Long postID, String type, Long embedID) {
+    Post post = postRepository.findOne(postID);
+    Embed embed;
+    switch (type) {
+      case EmbedType.GALLERY:
+        embed = galleryService.getGallery(embedID);
+        break;
+      case EmbedType.POLL:
+        embed = pollService.getPoll(embedID);
+        break;
+      case EmbedType.IMAGE:
+      case EmbedType.VIDEO:
+      case EmbedType.DOCUMENT:
+        embed = mediaRepository.findOne(embedID);
+        break;
+      default:
+        throw new IllegalArgumentException("the embed type (" + type + ") doesn't exist");
+    }
+
+    post.setEmbed(embed);
     postRepository.save(post);
   }
 

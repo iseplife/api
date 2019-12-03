@@ -80,10 +80,10 @@ public class PostController {
     postService.setPublishState(id, state);
   }
 
-  @PutMapping("/{id}/embed/{embedID}")
+  @PutMapping("/{id}/embed/{embedType}/{embedID}")
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
-  public void addMediaEmbed(@PathVariable Long id, @PathVariable Long embedID) {
-    postService.addMediaEmbed(id, embedID);
+  public void addMediaEmbed(@PathVariable Long id, @PathVariable String embedType, @PathVariable Long embedID) {
+    postService.addMediaEmbed(id, embedType, embedID);
   }
 
 }
