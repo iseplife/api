@@ -1,13 +1,10 @@
 package com.iseplife.api.controllers.embed;
 
-import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.entity.media.Image;
 import com.iseplife.api.entity.post.embed.Gallery;
-import com.iseplife.api.exceptions.AuthException;
 import com.iseplife.api.services.GalleryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 

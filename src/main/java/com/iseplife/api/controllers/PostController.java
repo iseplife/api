@@ -8,7 +8,6 @@ import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.constants.PublishStateEnum;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dto.view.PostView;
-import com.iseplife.api.exceptions.AuthException;
 import com.iseplife.api.services.AuthService;
 import com.iseplife.api.services.PostService;
 import com.iseplife.api.services.StudentService;

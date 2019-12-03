@@ -2,7 +2,6 @@ package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.MediaType;
-import com.iseplife.api.dto.TempFile;
 import com.iseplife.api.dto.view.MatchedView;
 import com.iseplife.api.entity.media.Image;
 import com.iseplife.api.entity.Matched;
@@ -41,7 +40,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 
 @Service

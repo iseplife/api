@@ -14,7 +14,6 @@ import com.iseplife.api.entity.media.Embed;
 import com.iseplife.api.entity.post.embed.Document;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.post.Post;
-import com.iseplife.api.entity.post.embed.poll.Poll;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.PublishStateEnum;
 import com.iseplife.api.constants.Roles;
