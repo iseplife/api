@@ -3,7 +3,7 @@ package com.iseplife.api.services;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.constants.ThreadType;
-import com.iseplife.api.dao.image.ImageRepository;
+import com.iseplife.api.dao.media.image.ImageRepository;
 import com.iseplife.api.dao.post.*;
 import com.iseplife.api.dto.CommentDTO;
 import com.iseplife.api.dto.view.CommentView;

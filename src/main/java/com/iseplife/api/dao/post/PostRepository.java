@@ -35,5 +35,4 @@ public interface PostRepository extends CrudRepository<Post, Long> {
   Page<Post> findByAuthorIdOrderByCreationDateDesc(Long author_id, Pageable pageable);
 
   Page<Post> findByAuthorIdAndIsPrivateOrderByCreationDateDesc(Long author_id, Boolean isPrivate, Pageable pageable);
-
 }
