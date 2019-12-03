@@ -1,19 +1,18 @@
 package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.constants.EmbedType;
+import com.iseplife.api.dao.feed.FeedRepository;
 import com.iseplife.api.dao.post.*;
-import com.iseplife.api.dto.CommentDTO;
 import com.iseplife.api.dto.PostDTO;
 import com.iseplife.api.dto.PostUpdateDTO;
-import com.iseplife.api.dto.view.CommentView;
+import com.iseplife.api.dto.view.AuthorView;
 import com.iseplife.api.dto.view.PostView;
 import com.iseplife.api.entity.Feed;
-import com.iseplife.api.entity.media.Document;
-import com.iseplife.api.entity.media.Gallery;
-import com.iseplife.api.entity.media.Media;
-import com.iseplife.api.entity.media.Video;
-import com.iseplife.api.entity.post.Comment;
-import com.iseplife.api.entity.post.Like;
+import com.iseplife.api.entity.Thread;
+import com.iseplife.api.entity.media.Embed;
+import com.iseplife.api.entity.post.embed.Document;
+import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.PublishStateEnum;
@@ -29,15 +28,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import springfox.documentation.annotations.Cacheable;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Created by Guillaume on 28/07/2017.
- * back
- */
 @Service
 public class PostService {
 
@@ -48,19 +42,10 @@ public class PostService {
   PostRepository postRepository;
 
   @Autowired
-  PostFactory postFactory;
+  ThreadRepository threadRepository;
 
   @Autowired
-  LikeRepository likeRepository;
-
-  @Autowired
-  CommentFactory commentFactory;
-
-  @Autowired
-  CommentRepository commentRepository;
-
-  @Autowired
-  StudentService studentService;
+  FeedRepository feedRepository;
 
   @Autowired
   MediaRepository mediaRepository;
@@ -69,10 +54,28 @@ public class PostService {
   StudentRepository studentRepository;
 
   @Autowired
+  PostFactory postFactory;
+
+  @Autowired
+  AuthorFactory authorFactory;
+
+  @Autowired
+  StudentService studentService;
+
+  @Autowired
   ClubService clubService;
 
   @Autowired
   MediaService mediaService;
+
+  @Autowired
+  PollService pollService;
+
+  @Autowired
+  GalleryService galleryService;
+
+  @Autowired
+  FeedService feedService;
 
   @Autowired
   PostMessageService postMessageService;
@@ -82,17 +85,167 @@ public class PostService {
 
   private final int POSTS_PER_PAGE = 10;
 
-  public Pageable createPage(int page) {
+  private Pageable createPage(int page) {
     return new PageRequest(page, POSTS_PER_PAGE);
   }
 
-  @Cacheable("posts")
-  public Page<PostView> getPosts(int page) {
-    Page<Post> posts = postRepository.findByPublishStateAndIsPinnedOrderByCreationDateDesc(
-      PublishStateEnum.PUBLISHED, false, createPage(page));
-    return posts.map(post -> postFactory.entityToView(post));
+
+  private Post getPost(Long postID) {
+    Post post = postRepository.findOne(postID);
+    if (post == null) {
+      throw new IllegalArgumentException("Could not find this post (id:" + postID + ")");
+    }
+    return post;
   }
 
+  public PostView getPostView(Long postID) {
+    Post post = getPost(postID);
+    if (post.getPrivate()) {
+      return null;
+    }
+    return postFactory.entityToView(post);
+  }
+
+  public Post createPost(TokenPayload auth, PostDTO postDTO) {
+    Post post = postFactory.dtoToEntity(postDTO);
+    post.setAuthor(studentRepository.findOne(auth.getId()));
+    post.setLinkedClub(clubService.getClub(postDTO.getLinkedClubId()));
+
+    // if creator is not an ADMIN
+    if (!auth.getRoles().contains(Roles.ADMIN)) {
+      // Check if user is able to post in club's name
+      if (post.getLinkedClub() != null && !auth.getClubsPublisher().contains(postDTO.getLinkedClubId())) {
+        throw new AuthException("not allowed to create this post");
+      }
+    }
+
+    post.setFeed(feedRepository.findByName(postDTO.getFeed()));
+    post.setThread(new Thread());
+    post.setCreationDate(new Date());
+    post.setPublishState(postDTO.isDraft() ? PublishStateEnum.WAITING : null);
+    post = postRepository.save(post);
+
+    postMessageService.broadcastPost(auth.getId(), post);
+    return post;
+  }
+
+  public Post updatePost(Long postID, PostUpdateDTO update, TokenPayload auth) {
+    Post post = getPost(postID);
+    if (authService.hasRightOn(post)) {
+      throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");
+    }
+
+    post.setTitle(update.getTitle());
+    post.setDescription(update.getContent());
+    post.setPrivate(update.getPrivate());
+    return postRepository.save(post);
+  }
+
+  public void deletePost(Long postID, TokenPayload auth) {
+    Post post = getPost(postID);
+    if (authService.hasRightOn(post)) {
+      throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");
+    }
+    // delete media files on disk for each media type
+    if (post.getEmbed() instanceof Gallery) {
+      Gallery gallery = (Gallery) post.getEmbed();
+      gallery.getImages().forEach(img -> mediaService.deleteImageFile(img));
+    }
+
+    if (post.getEmbed() instanceof Document) {
+      Document document = (Document) post.getEmbed();
+      mediaUtils.removeIfExistPublic(document.getPath());
+    }
+
+    if (post.getEmbed() instanceof Document) {
+      Document document = (Document) post.getEmbed();
+      mediaUtils.removeIfExistPublic(document.getPath());
+    }
+
+    /*if (post.getEmbed() instanceof Video) {
+      Video video = (Video) post.getMedia();
+      if (video.getUrl() != null) {
+        mediaUtils.removeIfExistPublic(video.getUrl());
+      }
+      if (video.getPoster() != null) {
+        mediaUtils.removeIfExistPublic(video.getPoster());
+      }
+    }*/
+
+    postRepository.delete(postID);
+  }
+
+  public void togglePinnedPost(Long postID, TokenPayload auth) {
+    Post post = getPost(postID);
+    if (authService.hasRightOn(post) && post.getLinkedClub() != null) {
+      throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");
+    }
+
+    post.setPinned(!post.getPinned());
+    postRepository.save(post);
+  }
+
+  public void setPublishState(Long postID, PublishStateEnum state) {
+    Post post = getPost(postID);
+    post.setPublishState(state);
+    postRepository.save(post);
+  }
+
+  public void addMediaEmbed(Long postID, String type, Long embedID) {
+    Post post = postRepository.findOne(postID);
+    Embed embed;
+    switch (type) {
+      case EmbedType.GALLERY:
+        embed = galleryService.getGallery(embedID);
+        break;
+      case EmbedType.POLL:
+        embed = pollService.getPoll(embedID);
+        break;
+      case EmbedType.IMAGE:
+      case EmbedType.VIDEO:
+      case EmbedType.DOCUMENT:
+        embed = mediaRepository.findOne(embedID);
+        break;
+      default:
+        throw new IllegalArgumentException("the embed type (" + type + ") doesn't exist");
+    }
+
+    post.setEmbed(embed);
+    postRepository.save(post);
+  }
+
+  public Post addMediaEmbed(Long id, Embed embed) {
+    Post post = postRepository.findOne(id);
+    post.setEmbed(embed);
+
+    return postRepository.save(post);
+  }
+
+  public Set<AuthorView> getAuthorizedPublish(TokenPayload auth) {
+    Student student = studentService.getStudent(auth.getId());
+
+    Set<AuthorView> authorStatus = new HashSet<>();
+    authorStatus.add(authorFactory.entitytoView(student));
+
+    if (auth.getRoles().contains(Roles.ADMIN)) {
+      authorStatus.add(authorFactory.admintoView());
+      authorStatus.addAll(
+        clubService.getAll()
+          .stream()
+          .map(c -> authorFactory.entitytoView(c))
+          .collect(Collectors.toSet())
+      );
+    } else {
+      authorStatus.addAll(
+        studentService.getPublisherClubs(student)
+          .stream()
+          .map(c -> authorFactory.entitytoView(c))
+          .collect(Collectors.toSet())
+      );
+    }
+
+    return authorStatus;
+  }
 
   public Page<PostView> getFeedPosts(Feed feed, int page) {
     Page<Post> posts = postRepository.findByFeedAndPublishStateOrderByPublicationDate(feed, PublishStateEnum.PUBLISHED, createPage(page));
@@ -118,192 +271,6 @@ public class PostService {
     return posts.stream().map(post -> postFactory.entityToView(post)).collect(Collectors.toList());
   }
 
-  public Page<PostView> getPublicPosts(int page) {
-    Page<Post> posts = postRepository.findByPublishStateAndIsPinnedAndIsPrivateOrderByCreationDateDesc(
-      PublishStateEnum.PUBLISHED, false, false, createPage(page));
-    return posts.map(post -> postFactory.entityToView(post));
-  }
-
-  @Cacheable("pinned-posts")
-  public List<PostView> getPinnedPosts() {
-    List<Post> posts = postRepository.findByPublishStateAndIsPinnedOrderByCreationDateDesc(
-      PublishStateEnum.PUBLISHED, true);
-    return posts.stream().map(post -> postFactory.entityToView(post)).collect(Collectors.toList());
-  }
-
-  public List<PostView> getPublicPinnedPosts() {
-    List<Post> posts = postRepository.findByPublishStateAndIsPinnedAndIsPrivateOrderByCreationDateDesc(
-      PublishStateEnum.PUBLISHED, true, false);
-    return posts.stream().map(post -> postFactory.entityToView(post)).collect(Collectors.toList());
-  }
-
-  public Post createPost(TokenPayload auth, PostDTO postDTO) {
-    Post post = postFactory.dtoToEntity(postDTO);
-    post.setAuthor(studentRepository.findOne(auth.getId()));
-
-    post.setLinkedClub(clubService.getClub(postDTO.getLinkedClubId()));
-
-
-    // if creator is not an ADMIN or POST_MANAGER
-    if (!auth.getRoles().contains(Roles.ADMIN) && !auth.getRoles().contains(Roles.POST_MANAGER)) {
-
-      // Check if user is able to post in club's name
-      if (post.getLinkedClub() != null && !auth.getClubsPublisher().contains(postDTO.getLinkedClubId())) {
-        throw new AuthException("not allowed to create this post");
-      }
-    }
-
-    post.setCreationDate(new Date());
-    post.setPublishState(postDTO.isDraft() ? PublishStateEnum.WAITING : null);
-
-    post = postRepository.save(post);
-    postMessageService.broadcastPost(auth.getId(), post);
-    return post;
-  }
-
-  public List<CommentView> getComments(Long postId) {
-    Post post = getPost(postId);
-    return post.getComments()
-      .stream()
-      .map(c -> commentFactory.entityToView(c))
-      .collect(Collectors.toList());
-  }
-
-  public void deletePost(Long postId, TokenPayload auth) {
-    Post post = getPost(postId);
-    if (hasRightOnPost(auth, post)) {
-      throw new AuthException("you cannot delete this post");
-    }
-
-    // delete media files on disk for each media type
-
-    if (post.getMedia() instanceof Gallery) {
-      Gallery gallery = (Gallery) post.getMedia();
-      gallery.getImages().forEach(img -> mediaService.deleteImageFile(img));
-    }
-
-    if (post.getMedia() instanceof Document) {
-      Document document = (Document) post.getMedia();
-      mediaUtils.removeIfExistPublic(document.getPath());
-    }
-
-    if (post.getMedia() instanceof Video) {
-      Video video = (Video) post.getMedia();
-      if (video.getUrl() != null) {
-        mediaUtils.removeIfExistPublic(video.getUrl());
-      }
-      if (video.getPoster() != null) {
-        mediaUtils.removeIfExistPublic(video.getPoster());
-      }
-    }
-
-    postRepository.delete(postId);
-  }
-
-  public Post addMediaEmbed(Long id, Long mediaId) {
-    Post post = postRepository.findOne(id);
-    Media media = mediaRepository.findOne(mediaId);
-    post.setMedia(media);
-    return postRepository.save(post);
-  }
-
-  public Comment commentPost(Long postId, CommentDTO dto, Long studentId) {
-    Comment comment = new Comment();
-    Post post = postRepository.findOne(postId);
-    comment.setPost(post);
-    comment.setMessage(dto.getMessage());
-    Student student = studentService.getStudent(studentId);
-    comment.setStudent(student);
-    comment.setCreation(new Date());
-    return commentRepository.save(comment);
-  }
-
-  public void setPublishState(Long id, PublishStateEnum state) {
-    Post post = postRepository.findOne(id);
-    post.setPublishState(state);
-    postRepository.save(post);
-  }
-
-  public void togglePostLike(Long postId, Long id) {
-    Like like = likeRepository.findOneByPostIdAndStudentId(postId, id);
-    if (like != null) {
-      likeRepository.delete(like);
-    } else {
-      like = new Like();
-      like.setStudent(studentService.getStudent(id));
-      like.setPost(postRepository.findOne(postId));
-      likeRepository.save(like);
-    }
-  }
-
-  public void toggleCommentLike(Long comId, Long id) {
-    Like like = likeRepository.findOneByCommentIdAndStudentId(comId, id);
-    if (like != null) {
-      likeRepository.delete(like);
-    } else {
-      like = new Like();
-      like.setStudent(studentService.getStudent(id));
-      like.setComment(commentRepository.findOne(comId));
-      likeRepository.save(like);
-    }
-  }
-
-  public Post getPost(Long postId) {
-    Post post = postRepository.findOne(postId);
-    if (post == null) {
-      throw new IllegalArgumentException("Could not find a post with id: " + postId);
-    }
-    return post;
-  }
-
-  public void setPinnedPost(Long id, Boolean pinned, TokenPayload auth) {
-    Post post = getPost(id);
-    boolean canPinPost = auth.getRoles().contains(Roles.ADMIN);
-    canPinPost |= auth.getRoles().contains(Roles.POST_MANAGER);
-    canPinPost |= post.getLinkedClub() != null;
-    if (canPinPost) {
-      post.setPinned(pinned);
-      postRepository.save(post);
-      return;
-    }
-
-    throw new AuthException("you are not allowed to pin this post");
-  }
-
-  public List<Object> getAuthors(TokenPayload auth) {
-    Student student = studentService.getStudent(auth.getId());
-    List<Object> authors = new ArrayList<>();
-    authors.add(student);
-
-
-    if (auth.getRoles().contains(Roles.ADMIN)) {
-      authors.addAll(clubService.getAll());
-    } else {
-      authors.addAll(clubService.getClubAuthors(student));
-    }
-    return authors;
-  }
-
-  public Boolean isPostLiked(Post post) {
-    if (authService.isUserAnonymous()) return false;
-
-    return likeRepository.findOneByPostIdAndStudentId(post.getId(), authService.getLoggedUser().getId()) != null;
-  }
-
-  public Boolean isCommentLiked(Comment comment) {
-    if (authService.isUserAnonymous()) return false;
-
-    return likeRepository.findOneByCommentIdAndStudentId(comment.getId(), authService.getLoggedUser().getId()) != null;
-  }
-
-  public PostView getPostView(Long id) {
-    Post post = getPost(id);
-    if (post.getPrivate() && authService.isUserAnonymous()) {
-      return null;
-    }
-    return postFactory.entityToView(post);
-  }
-
   public Page<PostView> getPostsAuthor(Long id, boolean isPublic, int page) {
     if (isPublic) {
       Page<Post> posts = postRepository.findByAuthorIdAndIsPrivateOrderByCreationDateDesc(id, false, createPage(page));
@@ -311,57 +278,5 @@ public class PostService {
     }
     Page<Post> posts = postRepository.findByAuthorIdOrderByCreationDateDesc(id, createPage(page));
     return posts.map(p -> postFactory.entityToView(p));
-  }
-
-  public Post updatePost(Long id, PostUpdateDTO update, TokenPayload auth) {
-    Post post = getPost(id);
-    if (hasRightOnPost(auth, post)) {
-      throw new AuthException("you cannot update this post");
-    }
-    post.setTitle(update.getTitle());
-    post.setDescription(update.getContent());
-    post.setPrivate(update.getPrivate());
-    return postRepository.save(post);
-  }
-
-  public List<Like> getLikesPost(Long id) {
-    Post post = getPost(id);
-    return post.getLikes();
-  }
-
-  public List<Like> getLikesComment(Long id) {
-    Comment comment = commentRepository.findOne(id);
-    if (comment == null) {
-      throw new IllegalArgumentException("could not find a comment with this id");
-    }
-    return comment.getLikes();
-  }
-
-  private boolean hasRightOnPost(TokenPayload auth, Post post) {
-    if (!auth.getRoles().contains(Roles.ADMIN) && !auth.getRoles().contains(Roles.POST_MANAGER)) {
-      return !post.getAuthor().getId().equals(auth.getId()) && !auth.getClubsAdmin().contains(post.getAuthor().getId());
-    }
-    return false;
-  }
-
-  public void deleteComment(Long comId, Long id) {
-    Comment comment = commentRepository.findOne(comId);
-    if (comment == null) {
-      throw new IllegalArgumentException("could not find this comment");
-    }
-    if (!comment.getStudent().getId().equals(id)) {
-      throw new AuthException("you cannot delete this comment");
-    }
-    commentRepository.delete(comment);
-  }
-
-  public List<PostView> getWaitingPosts(TokenPayload token) {
-    List<Long> authors = new ArrayList<>();
-    authors.add(token.getId());
-    authors.addAll(token.getClubsPublisher());
-    List<Post> waitingPosts = postRepository.findByPublishStateAndAuthor_IdInOrderByCreationDateDesc(PublishStateEnum.WAITING, authors);
-    return waitingPosts.stream()
-      .map(p -> postFactory.entityToView(p))
-      .collect(Collectors.toList());
   }
 }

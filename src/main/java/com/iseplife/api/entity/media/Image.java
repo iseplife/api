@@ -1,17 +1,18 @@
-package com.iseplife.api.entity;
+package com.iseplife.api.entity.media;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.iseplife.api.entity.media.Gallery;
+import com.iseplife.api.constants.EmbedType;
+import com.iseplife.api.constants.MediaType;
+import com.iseplife.api.entity.Matched;
+import com.iseplife.api.entity.Thread;
+import com.iseplife.api.entity.post.embed.Gallery;
 
 import javax.persistence.*;
 import java.util.List;
 
-/**
- * Created by Guillaume on 27/07/2017.
- * back
- */
 @Entity
-public class Image {
+@DiscriminatorValue(MediaType.IMAGE)
+public class Image extends Media {
   @Id
   @GeneratedValue
   private Long id;
@@ -23,12 +24,20 @@ public class Image {
   @JsonIgnore
   private Gallery gallery;
 
+  @JsonIgnore
+  @OneToOne(cascade = CascadeType.ALL)
+  private Thread thread;
+
   @OneToMany(mappedBy = "image", cascade = CascadeType.ALL)
   private List<Matched> matched;
 
-  public Long getId() { return id; }
+  public Long getId() {
+    return id;
+  }
 
-  public void setId(Long id) { this.id = id;}
+  public void setId(Long id) {
+    this.id = id;
+  }
 
   public List<Matched> getMatched() {
     return matched;
@@ -68,5 +77,17 @@ public class Image {
 
   public void setGallery(Gallery gallery) {
     this.gallery = gallery;
+  }
+
+  public Thread getThread() {
+    return thread;
+  }
+
+  public void setThread(Thread thread) {
+    this.thread = thread;
+  }
+
+  public String getEmbedType(){
+    return EmbedType.IMAGE;
   }
 }

@@ -1,8 +1,10 @@
 package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
-import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.constants.Roles;
+import com.iseplife.api.entity.Feed;
+import com.iseplife.api.entity.post.Post;
+import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.user.Student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,10 +22,12 @@ public class AuthService {
 
   /**
    * Check if user has one of the roles listed
+   *
    * @return
    */
-  public boolean hasRoles(TokenPayload payload, String... roles) {
-    for (String r: roles) {
+  public boolean hasRoles(String... roles) {
+    TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    for (String r : roles) {
       if (payload.getRoles().contains(r)) {
         return true;
       }
@@ -45,14 +49,32 @@ public class AuthService {
   }
 
   public Student getLoggedUser() {
-    if (!isUserAnonymous()) {
-      Long id = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
-      return studentService.getStudent(id);
-    }
-    return null;
+    return studentService.getStudent(getLoggedId());
   }
 
-  public boolean userHasRole(TokenPayload auth, String role) {
-    return auth.getRoles().contains(role);
+  public boolean hasRightOn(Post post) {
+    TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return payload.getRoles().contains(Roles.ADMIN)
+      || post.getAuthor().getId().equals(payload.getId())
+      || payload.getClubsPublisher().contains(post.getLinkedClub().getId())
+      || hasRightOn(post.getFeed());
+  }
+
+  public boolean hasRightOn(Feed feed) {
+    TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return payload.getRoles().contains(Roles.ADMIN)
+      || (feed.getClub() != null && payload.getClubsPublisher().contains(feed.getClub().getId()))
+      || (feed.getEvent() != null && payload.getClubsPublisher().contains(feed.getEvent().getClub().getId()));
+  }
+
+  public boolean hasRightOn(Gallery gallery) {
+    TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return payload.getRoles().contains(Roles.ADMIN)
+      || payload.getClubsPublisher().contains(gallery.getClub().getId());
+  }
+
+
+  public boolean userHasRole(String role) {
+    return ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getRoles().contains(role);
   }
 }

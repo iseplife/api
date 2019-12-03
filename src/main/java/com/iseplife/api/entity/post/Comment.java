@@ -1,30 +1,33 @@
 package com.iseplife.api.entity.post;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.iseplife.api.entity.Thread;
+import com.iseplife.api.entity.ThreadInterface;
 import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.entity.user.Student;
+import com.iseplife.api.exceptions.CommentMaxDepthException;
 
 import javax.persistence.*;
 import java.util.*;
 
-/**
- * Created by Guillaume on 31/07/2017.
- * back
- */
 @Entity
-public class Comment {
+public class Comment implements ThreadInterface {
 
   @Id
   @GeneratedValue
   private Long id;
 
   @ManyToOne
-  private Post post;
+  private Thread parentThread;
+
+  @OneToOne(mappedBy = "comment")
+  private Thread thread;
 
   @ManyToOne
   private Student student;
 
   private Date creation;
+
+  private Date lastEdition;
 
   @ManyToOne
   private Comment parent;
@@ -60,12 +63,26 @@ public class Comment {
   }
 
   @JsonIgnore
-  public Post getPost() {
-    return post;
+  public Thread getParentThread() {
+    return parentThread;
   }
 
-  public void setPost(Post post) {
-    this.post = post;
+  public void setParentThread(Thread parentThread) {
+    this.parentThread = parentThread;
+  }
+
+  @Override
+  public Thread getThread() {
+    return thread;
+  }
+
+  @Override
+  public void setThread(Thread thread) {
+    if(parentThread.getComment() == null){
+      this.thread = thread;
+    }else {
+      throw new CommentMaxDepthException("Comment max depth reached (1)");
+    }
   }
 
   public Date getCreation() {
@@ -74,6 +91,14 @@ public class Comment {
 
   public void setCreation(Date creation) {
     this.creation = creation;
+  }
+
+  public Date getLastEdition() {
+    return lastEdition;
+  }
+
+  public void setLastEdition(Date lastEdition) {
+    this.lastEdition = lastEdition;
   }
 
   public void setLikes(List<Like> likes) {

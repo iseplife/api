@@ -1,15 +1,12 @@
 package com.iseplife.api.entity.media;
 
+import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.constants.MediaType;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import java.util.Date;
 
-/**
- * Created by Guillaume on 29/07/2017.
- * back
- */
 @Entity
 @DiscriminatorValue(MediaType.VIDEO)
 public class Video extends Media {
@@ -19,7 +16,6 @@ public class Video extends Media {
   private String poster;
 
   private Integer views = 0;
-
 
   @Override
   public void setCreation(Date creation) {
@@ -56,5 +52,9 @@ public class Video extends Media {
 
   public void setPoster(String poster) {
     this.poster = poster;
+  }
+
+  public String getEmbedType(){
+    return EmbedType.VIDEO;
   }
 }

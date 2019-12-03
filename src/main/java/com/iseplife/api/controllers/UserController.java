@@ -78,20 +78,6 @@ public class UserController {
     return studentService.getAllForAdmin(page);
   }
 
-  @GetMapping("/student/search")
-  @RolesAllowed({ Roles.STUDENT })
-  public Page<Student> searchStudents(String name, String promos, String sort,
-                                      @RequestParam(defaultValue = "0") int page) {
-    return studentService.search(name, promos, sort, page);
-  }
-
-  @GetMapping("/student/search/admin")
-  @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
-  public Page<StudentWithRoleView> searchStudentsAdmin(String name, String roles, String promos, String sort,
-                                                       @RequestParam(defaultValue = "0") int page) {
-    return studentService.searchAdmin(name, roles, promos, sort, page);
-  }
-
   @GetMapping("/student/{id}/post")
   @RolesAllowed({Roles.STUDENT})
   public Page<PostView> getPostsStudent(@PathVariable Long id, @RequestParam(defaultValue = "0") int page) {

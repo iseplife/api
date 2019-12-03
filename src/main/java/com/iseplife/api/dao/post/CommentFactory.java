@@ -2,22 +2,16 @@ package com.iseplife.api.dao.post;
 
 import com.iseplife.api.dto.view.CommentView;
 import com.iseplife.api.entity.post.Comment;
-import com.iseplife.api.services.PostService;
-import com.iseplife.api.dto.view.CommentView;
-import com.iseplife.api.entity.post.Comment;
-import com.iseplife.api.services.PostService;
+import com.iseplife.api.services.ThreadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-/**
- * Created by Guillaume on 16/08/2017.
- * back
- */
+
 @Component
 public class CommentFactory {
 
   @Autowired
-  PostService postService;
+  ThreadService threadService;
 
   public CommentView entityToView(Comment comment) {
     CommentView commentView = new CommentView();
@@ -28,7 +22,7 @@ public class CommentFactory {
     commentView.setMessage(comment.getMessage());
     commentView.setStudent(comment.getStudent());
 
-    commentView.setLiked(postService.isCommentLiked(comment));
+    commentView.setLiked(threadService.isLiked(comment));
 
     return commentView;
   }

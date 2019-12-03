@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.entity.Feed;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.constants.EventType;
-import com.iseplife.api.constants.MediaType;
-import com.iseplife.api.entity.Feed;
-import com.iseplife.api.entity.club.Club;
-import com.iseplife.api.entity.media.Gallery;
+import com.iseplife.api.entity.post.embed.Gallery;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -18,7 +15,6 @@ import java.util.List;
  * back
  */
 @Entity
-@DiscriminatorValue(MediaType.EVENT)
 public class Event {
 
   @Id
@@ -37,6 +33,7 @@ public class Event {
   @Column(columnDefinition = "TEXT")
   private String description;
 
+  //An event can have event child in specific cases (e.g BDE Campaign)
   @JsonIgnore
   @OneToMany(cascade = CascadeType.ALL)
   private List<Event> events;

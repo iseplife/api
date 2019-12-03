@@ -147,18 +147,13 @@ public class JwtTokenUtil {
       .map(GrantedAuthority::getAuthority)
       .collect(Collectors.toList());
 
-    List<ClubMember> clubs = clubService.getPublisherClubs(student);
-
-    List<Long> publisherClubs = clubs.stream()
-      .sorted(Comparator.comparing(ClubMember::getId))
-      .map(ClubMember::getClub)
+    List<Long> publisherClubs = clubService.getUserClubsWith(student, ClubRole.PUBLISHER)
+      .stream()
       .map(Club::getId)
       .collect(Collectors.toList());
 
-    List<Long> adminClubs = clubs.stream()
-      .filter(m -> m.getRole().is(ClubRole.ADMIN))
-      .sorted(Comparator.comparing(ClubMember::getId))
-      .map(ClubMember::getClub)
+    List<Long> adminClubs = clubService.getUserClubsWith(student, ClubRole.ADMIN)
+      .stream()
       .map(Club::getId)
       .collect(Collectors.toList());
 

@@ -1,5 +1,6 @@
 package com.iseplife.api.dao.club;
 
+import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.club.ClubMember;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.ClubRole;
@@ -22,10 +23,16 @@ public interface ClubMemberRepository extends CrudRepository<ClubMember, Long> {
 
   List<ClubMember> findByStudentId(Long student_id);
 
-  @Query("select m from ClubMember m " +
-    "where m.student = :#{#student} " +
-    "and m.role in :#{#role.getParents()}"
+  @Query("select cm.club from ClubMember cm " +
+    "where cm.student.id = :#{#student} " +
+    "and cm.role in :#{#role.getParents()}"
   )
-  List<ClubMember> findByRoleWithInheritance(@Param("student") Student student, @Param("role") ClubRole role);
+  List<Club> findByRoleWithInheritance(Student student, ClubRole role);
+
+  @Query("select cm.student from ClubMember cm " +
+    "where cm.club = :#{#club} " +
+    "and cm.role in :#{#role.getParents()}"
+  )
+  List<Student> findClubPublishers(Club club, ClubRole role);
 
 }

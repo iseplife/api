@@ -1,5 +1,8 @@
 package com.iseplife.api.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.iseplife.api.entity.club.Club;
+import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.post.Post;
 
 import javax.persistence.*;
@@ -18,16 +21,47 @@ public class Feed {
   @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL)
   private List<Post> posts;
 
-  public Long getId() { return id; }
+  @JsonIgnore
+  @OneToOne(mappedBy = "feed")
+  private Event event;
 
-  public void setId(Long id) { this.id = id; }
+  @JsonIgnore
+  @OneToOne(mappedBy = "feed")
+  private Club club;
 
-  public String getName() { return name; }
+  public Long getId() {
+    return id;
+  }
 
-  public void setName(String name) { this.name = name; }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-  public List<Post> getPosts() { return posts; }
+  public String getName() {
+    return name;
+  }
 
-  public void addPost(Post post) { posts.add(post); }
+  public void setName(String name) {
+    this.name = name;
+  }
 
+  public List<Post> getPosts() {
+    return posts;
+  }
+
+  public void addPost(Post post) {
+    posts.add(post);
+  }
+
+  public void setPosts(List<Post> posts) {
+    this.posts = posts;
+  }
+
+  public Event getEvent() {
+    return event;
+  }
+
+  public Club getClub() {
+    return club;
+  }
 }

@@ -1,5 +1,7 @@
 package com.iseplife.api.entity.post;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.user.Student;
 
 import javax.persistence.*;
@@ -12,7 +14,7 @@ public class Like {
   private Long id;
 
   @ManyToOne
-  private Post post;
+  private Thread thread;
 
   @ManyToOne()
   private Comment comment;
@@ -28,9 +30,14 @@ public class Like {
 
   public void setComment(Comment comment) { this.comment = comment; }
 
-  public Post getPost() { return post; }
+  @JsonIgnore
+  public Thread getThread() {
+    return thread;
+  }
 
-  public void setPost(Post post) { this.post = post; }
+  public void setThread(Thread thread) {
+    this.thread = thread;
+  }
 
   public Student getStudent() { return student; }
 

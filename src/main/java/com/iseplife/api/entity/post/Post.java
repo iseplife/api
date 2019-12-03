@@ -1,23 +1,21 @@
 package com.iseplife.api.entity.post;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.iseplife.api.entity.Thread;
+import com.iseplife.api.entity.ThreadInterface;
 import com.iseplife.api.entity.club.Club;
+import com.iseplife.api.entity.media.Embed;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.PublishStateEnum;
 import com.iseplife.api.entity.Feed;
-import com.iseplife.api.entity.club.Club;
-import com.iseplife.api.entity.media.Media;
-import com.iseplife.api.entity.user.Student;
+import org.hibernate.annotations.*;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
 import java.util.*;
 
-/**
- * Created by Guillaume on 27/07/2017.
- * back
- */
 @Entity
-public class Post {
+public class Post implements ThreadInterface {
 
   @Id
   @GeneratedValue
@@ -31,11 +29,18 @@ public class Post {
   private Boolean isPrivate = false;
   private Boolean isPinned = false;
 
-  @OneToOne(cascade = CascadeType.ALL)
-  private Media media;
+  @Any(
+    metaDef = "postEmbed",
+    metaColumn = @Column(name = "embed_type"))
+  @JoinColumn(name = "embed_id")
+  private Embed embed;
 
   @ManyToOne
   private Student author;
+
+  @JsonIgnore
+  @OneToOne()
+  private Thread thread;
 
   @ManyToOne
   private Club linkedClub = null;
@@ -43,14 +48,6 @@ public class Post {
   @JsonIgnore
   @ManyToOne
   private Feed feed;
-
-  @JsonIgnore
-  @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-  private List<Comment> comments = new ArrayList<>();
-
-  @JsonIgnore
-  @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
-  private List<Like> likes = new ArrayList<>();
 
   @Enumerated(EnumType.STRING)
   private PublishStateEnum publishState;
@@ -103,27 +100,22 @@ public class Post {
     this.publishState = publishState;
   }
 
-  public Media getMedia() {
-    return media;
+  public Embed getEmbed() {
+    return embed;
   }
 
-  public void setMedia(Media media) {
-    this.media = media;
-  }
-
-  public List<Comment> getComments() {
-    return comments;
-  }
-
-  public void setComments(List<Comment> comments) {
-    this.comments = comments;
+  public void setEmbed(Embed embed) {
+    this.embed = embed;
   }
 
   @JsonIgnore
-  public List<Like> getLikes() { return likes; }
+  public List<Comment> getComments() {
+    return thread.getComments();
+  }
 
-  public void setLikes(List<Like> likes) {
-    this.likes = likes;
+  @JsonIgnore
+  public List<Like> getLikes() {
+    return thread.getLikes();
   }
 
   public Boolean getPrivate() {
@@ -164,5 +156,15 @@ public class Post {
 
   public void setFeed(Feed feed) {
     this.feed = feed;
+  }
+
+  @Override
+  public Thread getThread() {
+    return thread;
+  }
+
+  @Override
+  public void setThread(Thread thread) {
+    this.thread = thread;
   }
 }

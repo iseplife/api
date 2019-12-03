@@ -1,15 +1,11 @@
 package com.iseplife.api.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.iseplife.api.entity.user.Student;
+import com.iseplife.api.entity.media.Image;
 import com.iseplife.api.entity.user.Student;
 
 import javax.persistence.*;
 
-/**
- * Created by Guillaume on 02/11/2017.
- * back
- */
 @Entity
 public class Matched {
 

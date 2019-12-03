@@ -1,18 +1,11 @@
 package com.iseplife.api.entity.media;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.iseplife.api.entity.post.Post;
-
 import javax.persistence.*;
 import java.util.Date;
 
-/**
- * Created by Guillaume on 31/07/2017.
- * back
- */
 @Entity
 @DiscriminatorColumn(name = "mediaType")
-public abstract class Media {
+public abstract class Media implements Embed {
   @Id
   @GeneratedValue
   private Long id;
@@ -21,9 +14,6 @@ public abstract class Media {
   private String mediaType;
 
   private Boolean NSFW = false;
-
-  @OneToOne(mappedBy = "media", cascade = CascadeType.ALL)
-  private Post post;
 
   private Date creation;
 
@@ -45,15 +35,6 @@ public abstract class Media {
 
   public void setCreation(Date creation) {
     this.creation = creation;
-  }
-
-  public Long getPostId() {
-    return post != null ? post.getId() : 0;
-  }
-
-  @JsonIgnore
-  public Post getPost() {
-    return post;
   }
 
   public Boolean isNSFW() {

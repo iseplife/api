@@ -1,21 +1,23 @@
 package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
-import com.iseplife.api.dto.TempFile;
+import com.iseplife.api.constants.MediaType;
+import com.iseplife.api.dao.GalleryRepository;
 import com.iseplife.api.dto.view.MatchedView;
-import com.iseplife.api.entity.Image;
+import com.iseplife.api.entity.media.Embed;
+import com.iseplife.api.entity.media.Image;
 import com.iseplife.api.entity.Matched;
-import com.iseplife.api.entity.media.Document;
-import com.iseplife.api.entity.media.Gallery;
+import com.iseplife.api.entity.post.embed.Document;
+import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.media.Media;
 import com.iseplife.api.entity.media.Video;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.constants.MediaType;
+import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.constants.PublishStateEnum;
 import com.iseplife.api.constants.Roles;
-import com.iseplife.api.dao.image.ImageRepository;
-import com.iseplife.api.dao.image.MatchedRepository;
+import com.iseplife.api.dao.media.image.ImageRepository;
+import com.iseplife.api.dao.media.image.MatchedRepository;
 import com.iseplife.api.dao.media.MediaRepository;
 import com.iseplife.api.dao.post.PostRepository;
 import com.iseplife.api.exceptions.FileException;
@@ -36,17 +38,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
-/**
- * Created by Guillaume on 01/08/2017.
- * back
- */
+
 @Service
 public class MediaService {
 
@@ -68,6 +65,9 @@ public class MediaService {
   PostRepository postRepository;
 
   @Autowired
+  GalleryRepository galleryRepository;
+
+  @Autowired
   PostService postService;
 
   @Autowired
@@ -79,8 +79,6 @@ public class MediaService {
   @Value("${storage.video.url}")
   String videoDir;
 
-
-
   @Value("${storage.document.url}")
   String documentDir;
 
@@ -91,47 +89,25 @@ public class MediaService {
 
   private static final int PHOTOS_PER_PAGE = 30;
 
-  /**
-   * List all galleries, gazette and video published in a public post
-   * @param page
-   * @return
-   */
-  public Page<Media> getAllGalleryGazetteVideoPublic(int page) {
-    return mediaRepository.findAllByMediaTypeInAndPost_isPrivateAndPost_PublishStateOrderByCreationDesc(
-      Arrays.asList(MediaType.GALLERY, MediaType.VIDEO), false, PublishStateEnum.PUBLISHED, new PageRequest(page, ALL_MEDIA_PAGE_SIZE)
-    );
-  }
 
-  /**
-   * List all galleries, gazette and video published
-   * @param page
-   */
   @Cacheable("media-list-published")
-  public Page<Media>getAllGalleryGazetteVideoPublished(int page) {
-    return mediaRepository.findAllByMediaTypeInAndPost_PublishStateOrderByCreationDesc(
-      Arrays.asList(MediaType.GALLERY, MediaType.VIDEO), PublishStateEnum.PUBLISHED, new PageRequest(page, ALL_MEDIA_PAGE_SIZE)
+  public Page<Media> getAllGalleryGazetteVideoPublished(int page) {
+    Page<Media> list = mediaRepository.findAllByMediaTypeInOrderByCreationDesc(
+      Arrays.asList(MediaType.IMAGE, MediaType.VIDEO),
+      new PageRequest(page, ALL_MEDIA_PAGE_SIZE)
     );
+
+    return list;
   }
 
-  /**
-   * List all galleries, gazette and video published or not
-   * @param page
-   * @return
-   */
   @Cacheable("media-list-all")
   public Page<Media> getAllGalleryGazetteVideo(int page) {
     return mediaRepository.findAllByMediaTypeInOrderByCreationDesc(
-      Arrays.asList(MediaType.GALLERY, MediaType.VIDEO), new PageRequest(page, ALL_MEDIA_PAGE_SIZE)
+      Arrays.asList(MediaType.IMAGE, MediaType.VIDEO),
+      new PageRequest(page, ALL_MEDIA_PAGE_SIZE)
     );
   }
 
-  /**
-   * Create a document
-   * @param postId
-   * @param name
-   * @param fileUploaded
-   * @return
-   */
   public Document createDocument(Long postId, String name, MultipartFile fileUploaded) {
     Document document = new Document();
     document.setCreation(new Date());
@@ -139,7 +115,7 @@ public class MediaService {
     String random = mediaUtils.randomName();
     String documentPath = String.format(
       "%s_%s",
-      mediaUtils.resolvePath(documentDir, random,false, document.getCreation()),
+      mediaUtils.resolvePath(documentDir, random, false, document.getCreation()),
       fileUploaded.getOriginalFilename()
     );
 
@@ -149,13 +125,15 @@ public class MediaService {
     document.setOriginalName(fileUploaded.getOriginalFilename());
     document.setPath(mediaUtils.getPublicUrl(documentPath));
     document = mediaRepository.save(document);
-    postService.addMediaEmbed(postId, document.getId());
+
+    postService.addMediaEmbed(postId, document);
     postService.setPublishState(postId, PublishStateEnum.PUBLISHED);
     return document;
   }
 
   /**
    * Upload a video and compress it
+   *
    * @param postId
    * @param name
    * @param videoFile
@@ -180,7 +158,7 @@ public class MediaService {
     video.setName(name);
     video.setUrl(mediaUtils.getPublicUrl(videoPath));
     Video savedVideo = mediaRepository.save(video);
-    Post post = postService.addMediaEmbed(postId, video.getId());
+    Post post = postService.addMediaEmbed(postId, video);
 
     try {
       // temporary store video before compressing it
@@ -221,6 +199,7 @@ public class MediaService {
 
   /**
    * get an image by ID
+   *
    * @param id
    * @return
    */
@@ -240,30 +219,58 @@ public class MediaService {
     return media.isNSFW();
   }
 
+  private void uploadFile(File file) {
+
+  }
+
+  private void uploadFile(MultipartFile file) {
+
+  }
+
   /**
    * Add a single image
-   * @param postId
+   *
+   * @param postID
    * @param file
    * @return
    */
-  public Image addSingleImage(Long postId, MultipartFile file) {
-    Gallery gallery =  new Gallery();
-    Image img = addImage(file, gallery);
-    gallery.getImages().add(img);
+  public Image addSingleImage(Long postID, MultipartFile file) {
+    Image image = new Image();
+    String name = mediaUtils.randomName();
 
-    mediaRepository.save(gallery);
-    postService.addMediaEmbed(postId, img.getId());
-    postService.setPublishState(postId, PublishStateEnum.PUBLISHED);
-    return img;
+    String pathOriginal = String.format(
+      "%s_%s",
+      mediaUtils.resolvePath(imageDir, name, false, new Date()),
+      file.getOriginalFilename().replaceAll(" ", "-")
+    );
+    File originalFile = mediaUtils.saveFile(pathOriginal, file);
+
+    String path = mediaUtils.resolvePath(imageDir, name, false, new Date());
+    mediaUtils.saveJPG(originalFile, file.getContentType(), WIDTH_IMAGE_SIZE, path);
+
+    String pathThumb = mediaUtils.resolvePath(imageDir, name, true, new Date());
+    mediaUtils.saveJPG(originalFile, file.getContentType(), WIDTH_IMAGE_SIZE_THUMB, pathThumb);
+
+
+    image.setFullSizeUrl(mediaUtils.getPublicUrlImage(path));
+    image.setThumbUrl(mediaUtils.getPublicUrlImage(pathThumb));
+    image.setOriginalUrl(mediaUtils.getPublicUrl(pathOriginal));
+
+    image = mediaRepository.save(image);
+
+    postService.addMediaEmbed(postID, image);
+    postService.setPublishState(postID, PublishStateEnum.PUBLISHED);
+    return image;
   }
 
   /**
    * Add an image to a gallery after upload
+   *
    * @param file
    * @param gallery
    * @return
    */
-  private Image addImage(MultipartFile file, Gallery gallery) {
+  public Image addGalleryImage(MultipartFile file, Gallery gallery) {
     Image image = new Image();
     image.setGallery(gallery);
 
@@ -283,8 +290,6 @@ public class MediaService {
     mediaUtils.saveJPG(originalFile, file.getContentType(), WIDTH_IMAGE_SIZE_THUMB, pathThumb);
 
 
-
-
     image.setFullSizeUrl(mediaUtils.getPublicUrlImage(path));
     image.setThumbUrl(mediaUtils.getPublicUrlImage(pathThumb));
     image.setOriginalUrl(mediaUtils.getPublicUrl(pathOriginal));
@@ -293,12 +298,13 @@ public class MediaService {
 
   /**
    * Add an image to a gallery from a file
+   *
    * @param file
    * @param contentType
    * @param gallery
    * @return
    */
-  private Image addImage(File file, String contentType, Gallery gallery) {
+  public void addGalleryImage(File file, String contentType, Gallery gallery) {
     Image image = new Image();
     image.setGallery(gallery);
 
@@ -308,8 +314,8 @@ public class MediaService {
 
     String pathOriginal = String.format(
       "%s.%s",
-      mediaUtils.resolvePath(imageDir, "original-"+name, false, new Date()),
-      contentType.equals("image/jpeg") ? "jpg": contentType.equals("image/png") ? "png":""
+      mediaUtils.resolvePath(imageDir, "original-" + name, false, new Date()),
+      contentType.equals("image/jpeg") ? "jpg" : contentType.equals("image/png") ? "png" : ""
     );
 
     mediaUtils.saveFile(pathOriginal, file);
@@ -320,21 +326,28 @@ public class MediaService {
     image.setThumbUrl(mediaUtils.getPublicUrlImage(pathThumb));
     image.setOriginalUrl(mediaUtils.getPublicUrl(pathOriginal));
 
-    return image;
+    imageRepository.save(image);
+    if (!file.delete()) {
+      LOG.error("Could not delete this temp file: {}", file.getName());
+    }
   }
 
   /**
    * Delete all files attached to an image on disk
+   *
    * @param image
    */
   void deleteImageFile(Image image) {
     mediaUtils.removeIfExistPublic(image.getThumbUrl());
     mediaUtils.removeIfExistPublic(image.getFullSizeUrl());
     mediaUtils.removeIfExistPublic(image.getOriginalUrl());
+
+    imageRepository.delete(image);
   }
 
   /**
    * Get all people linked to an image
+   *
    * @param id
    * @return
    */
@@ -348,6 +361,7 @@ public class MediaService {
 
   /**
    * Get all photos tagged by a student
+   *
    * @param studentId
    * @param page
    * @return
@@ -368,6 +382,7 @@ public class MediaService {
 
   /**
    * Tag a student in an image
+   *
    * @param imageId
    * @param studentId
    * @param auth
@@ -375,9 +390,10 @@ public class MediaService {
   public void tagStudentInImage(Long imageId, Long studentId, TokenPayload auth) {
     Image image = getImage(imageId);
     List<Matched> matchedList = matchedRepository.findAllByImage(image);
-    int res = matchedList.stream()
+    int res = (int) matchedList.stream()
       .filter(m -> m.getMatch().getId().equals(studentId))
-      .collect(Collectors.toList()).size();
+      .count();
+
     if (res > 0) {
       throw new IllegalArgumentException("this user is already tagged");
     }
@@ -392,6 +408,7 @@ public class MediaService {
 
   /**
    * Untag a student in an image
+   *
    * @param imageId
    * @param studentId
    * @param auth
@@ -414,103 +431,4 @@ public class MediaService {
     });
   }
 
-  /**
-   * Create a new gallery
-   * @param postId
-   * @param name
-   * @param files
-   * @return
-   */
-  public Gallery createGallery(Long postId, String name, List<MultipartFile> files) {
-    Gallery gallery = new Gallery();
-    gallery.setName(name);
-    gallery.setCreation(new Date());
-
-    Gallery galleryRes = mediaRepository.save(gallery);
-    postService.addMediaEmbed(postId, galleryRes.getId());
-
-    List<TempFile> tempFiles = new ArrayList<>();
-    try {
-      Path galleryTmpDirectory = Files.createTempDirectory("gallery");
-      files.forEach(f -> {
-        try {
-          File tempFile = Files.createTempFile(galleryTmpDirectory, f.getOriginalFilename(), null).toFile();
-          TempFile tempFileData = new TempFile(f.getContentType(), tempFile);
-          f.transferTo(tempFile);
-          tempFiles.add(tempFileData);
-        } catch (IOException e) {
-          LOG.error("could not create tmp image from gallery: {}", f.getOriginalFilename(), e);
-        }
-      });
-    } catch (IOException e) {
-      LOG.error("could not create tmp gallery directory", e);
-      throw new FileException("could not create tmp directory");
-    }
-
-
-    CompletableFuture.runAsync(() -> {
-      tempFiles.forEach(file -> {
-        imageRepository.save(addImage(file.getFile(), file.getContentType(), galleryRes));
-        if (!file.getFile().delete()) {
-          LOG.error("could not delete this temp file: {}", file.getFile().getName());
-        }
-      });
-      postService.setPublishState(postId, PublishStateEnum.PUBLISHED);
-    });
-
-    return galleryRes;
-  }
-
-  /**
-   * Get a gallery by ID
-   * @param id
-   * @return
-   */
-  public Gallery getGallery(Long id) {
-    Media media = mediaRepository.findOne(id);
-    if (media instanceof Gallery) {
-      return (Gallery) media;
-    }
-    throw new IllegalArgumentException("Could not find gallery with id: "+id);
-  }
-
-  /**
-   * Get all images from a gallery
-   * @param id
-   * @return
-   */
-  public List<Image> getGalleryImages(Long id) {
-    Gallery gallery = getGallery(id);
-    return gallery.getImages();
-  }
-
-  /**
-   * Delete list of images
-   * @param imagesIds
-   * @param imagesIds
-   */
-  public void deleteImagesGallery(Long galleryId, List<Long> imagesIds) {
-    long imageNb = getGallery(galleryId).getImages().stream()
-      .filter(img -> imagesIds.contains(img.getId()))
-      .count();
-    if (imagesIds.size() != imageNb) {
-      throw new IllegalArgumentException("images does not belong to this gallery");
-    }
-    List<Image> images = imageRepository.findImageByIdIn(imagesIds);
-    images.forEach(img -> {
-      deleteImageFile(img);
-      imageRepository.delete(img);
-    });
-  }
-
-  /**
-   * Add images in a gallery
-   * @param gallery
-   * @param files
-   */
-  public void addImagesGallery(Gallery gallery, List<MultipartFile> files) {
-    List<Image> images = new ArrayList<>();
-    files.forEach(file -> images.add(addImage(file, gallery)));
-    imageRepository.save(images);
-  }
 }
