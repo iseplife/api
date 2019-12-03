@@ -3,7 +3,9 @@ package com.iseplife.api.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
+import com.iseplife.api.entity.media.Media;
 import com.iseplife.api.entity.post.Post;
+import com.iseplife.api.entity.post.embed.Gallery;
 
 import javax.persistence.*;
 import java.util.List;
@@ -20,6 +22,12 @@ public class Feed {
 
   @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL)
   private List<Post> posts;
+
+  @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL)
+  private List<Media> media;
+
+  @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL)
+  private List<Gallery> galleries;
 
   @JsonIgnore
   @OneToOne(mappedBy = "feed")

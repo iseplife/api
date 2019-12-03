@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.ThreadInterface;
 import com.iseplife.api.entity.club.Club;
-import com.iseplife.api.entity.media.Embed;
+import com.iseplife.api.entity.media.Embedable;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.PublishStateEnum;
 import com.iseplife.api.entity.Feed;
@@ -33,7 +33,7 @@ public class Post implements ThreadInterface {
     metaDef = "postEmbed",
     metaColumn = @Column(name = "embed_type"))
   @JoinColumn(name = "embed_id")
-  private Embed embed;
+  private Embedable embed;
 
   @ManyToOne
   private Student author;
@@ -100,11 +100,11 @@ public class Post implements ThreadInterface {
     this.publishState = publishState;
   }
 
-  public Embed getEmbed() {
+  public Embedable getEmbed() {
     return embed;
   }
 
-  public void setEmbed(Embed embed) {
+  public void setEmbed(Embedable embed) {
     this.embed = embed;
   }
 

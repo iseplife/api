@@ -1,14 +1,14 @@
 package com.iseplife.api.entity.post.embed.poll;
 
 import com.iseplife.api.constants.EmbedType;
-import com.iseplife.api.entity.media.Embed;
+import com.iseplife.api.entity.media.Embedable;
 
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
 @Entity
-public class Poll implements Embed {
+public class Poll implements Embedable {
   @Id
   @GeneratedValue
   private Long id;
