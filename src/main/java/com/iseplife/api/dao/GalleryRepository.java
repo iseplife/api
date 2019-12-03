@@ -17,8 +17,7 @@ public interface GalleryRepository extends CrudRepository<Gallery, Long> {
 
   List<Gallery> findAllByFeed(Feed feed);
 
-  @Query("select g from Gallery g " +
-    "join Event e " +
+  @Query("select g from Gallery g, Event e " +
     "where g.feed = e.feed " +
     "and e.club = :club"
   )
