@@ -1,5 +1,6 @@
 package com.iseplife.api.services;
 
+import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dto.EventDTO;
 import com.iseplife.api.dto.view.EventPreviewView;
 import com.iseplife.api.entity.Feed;
@@ -12,9 +13,14 @@ import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.utils.MediaUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,6 +53,12 @@ public class EventService {
   String eventBaseUrl;
 
   private static final int WIDTH_EVENT_IMAGE = 1024;
+
+  private final int EVENTS_PER_PAGE = 10;
+
+  private Pageable createPage(int page) {
+    return new PageRequest(page, EVENTS_PER_PAGE);
+  }
 
   public Event createEvent(MultipartFile image, EventDTO dto) {
     Event event = eventFactory.dtoToEntity(dto);
@@ -87,6 +99,31 @@ public class EventService {
       .stream()
       .map(e -> eventFactory.entityToPreviewView(e))
       .collect(Collectors.toList());
+  }
+
+  public List<EventPreviewView> getTodayEvents(TokenPayload token) {
+    Calendar tomorrow = Calendar.getInstance();
+    tomorrow.add(Calendar.DAY_OF_YEAR, 1);
+
+    return eventRepository.findCurrentEvents(token.getFeed(), token.getRoles().contains("ROLE_ADMIN"), Calendar.getInstance().getTime(), tomorrow.getTime())
+      .stream()
+      .map(e -> eventFactory.entityToPreviewView(e))
+      .collect(Collectors.toList());
+  }
+
+  public Page<EventPreviewView> getFutureEvents(TokenPayload token, int page) {
+    Calendar tomorrow = Calendar.getInstance();
+    tomorrow.add(Calendar.DAY_OF_YEAR, 1);
+
+    return eventRepository
+      .findFutureEvents(token.getFeed(), token.getRoles().contains("ROLE_ADMIN"), tomorrow.getTime(), createPage(page))
+      .map(e -> eventFactory.entityToPreviewView(e));
+  }
+
+  public Page<EventPreviewView> getPassedEvents(TokenPayload token, int page) {
+    return eventRepository
+      .findPassedEvents(token.getFeed(), token.getRoles().contains("ROLE_ADMIN"), Calendar.getInstance().getTime(), createPage(page))
+      .map(e -> eventFactory.entityToPreviewView(e));
   }
 
 

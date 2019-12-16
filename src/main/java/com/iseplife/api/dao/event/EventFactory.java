@@ -19,6 +19,7 @@ public class EventFactory {
     event.setPrice(dto.getPrice());
     event.setLocation(dto.getLocation());
     event.setDescription(dto.getDescription());
+    event.setVisible(dto.getVisible());
     return event;
   }
 
@@ -31,6 +32,7 @@ public class EventFactory {
     event.setLocation(dto.getLocation() !=  null ? dto.getLocation(): previous.getLocation());
     event.setDescription(dto.getDescription() != null ? dto.getDescription(): previous.getDescription());
     event.setPreviousEdition(previous);
+    event.setVisible(dto.getVisible());
     return event;
   }
 

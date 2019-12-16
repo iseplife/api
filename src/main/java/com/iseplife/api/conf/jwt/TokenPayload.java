@@ -12,6 +12,7 @@ public class TokenPayload {
   private List<String> roles;
   private List<Long> clubsAdmin;
   private List<Long> clubsPublisher;
+  private List<Long> feed;
 
   public Long getId() {
     return id;
@@ -52,5 +53,13 @@ public class TokenPayload {
       ", roles=" + roles +
       ", clubsAdmin=" + clubsAdmin +
       '}';
+  }
+
+  public List<Long> getFeed() {
+    return feed;
+  }
+
+  public void setFeed(List<Long> feed) {
+    this.feed = feed;
   }
 }

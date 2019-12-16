@@ -1,4 +1,4 @@
-package com.iseplife.api.controllers.media;
+package com.iseplife.api.controllers;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dto.EventDTO;
@@ -10,6 +10,7 @@ import com.iseplife.api.exceptions.AuthException;
 import com.iseplife.api.services.EventService;
 import com.iseplife.api.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -52,8 +53,18 @@ public class EventController {
   }
 
   @GetMapping
-  public List<EventPreviewView> getEventsPreview() {
-    return eventService.getEvents();
+  public List<EventPreviewView> getCurrentEvents(@AuthenticationPrincipal TokenPayload auth) {
+    return eventService.getTodayEvents(auth);
+  }
+
+  @GetMapping("/future")
+  public Page<EventPreviewView> getAllFutureEvents(@AuthenticationPrincipal TokenPayload auth, @RequestParam(defaultValue = "0") int page) {
+    return eventService.getFutureEvents(auth, page);
+  }
+
+  @GetMapping("/passed")
+  public Page<EventPreviewView> getAllPassedEvents(@AuthenticationPrincipal TokenPayload auth, @RequestParam(defaultValue = "0") int page) {
+    return eventService.getPassedEvents(auth, page);
   }
 
   @GetMapping("/{id}")
