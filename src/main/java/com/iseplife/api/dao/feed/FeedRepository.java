@@ -20,4 +20,6 @@ public interface FeedRepository extends CrudRepository<Feed, Long> {
 
   Feed findByName(String name);
 
+  List<Feed> findAllByName(List<String> name);
+
 }

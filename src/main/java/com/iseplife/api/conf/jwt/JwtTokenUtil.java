@@ -7,6 +7,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.iseplife.api.entity.Feed;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.club.ClubMember;
 import com.iseplife.api.entity.user.Student;
@@ -157,12 +158,17 @@ public class JwtTokenUtil {
       .map(Club::getId)
       .collect(Collectors.toList());
 
+    List<Long> feeds = studentService.getFeeds(student, roles, adminClubs)
+      .stream()
+      .map(Feed::getId)
+      .collect(Collectors.toList());
 
     TokenPayload tokenPayload = new TokenPayload();
     tokenPayload.setId(student.getId());
     tokenPayload.setRoles(roles);
     tokenPayload.setClubsAdmin(adminClubs);
     tokenPayload.setClubsPublisher(publisherClubs);
+    tokenPayload.setFeed(feeds);
     return tokenPayload;
   }
 
