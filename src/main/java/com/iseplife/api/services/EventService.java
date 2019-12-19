@@ -19,7 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -102,27 +101,26 @@ public class EventService {
   }
 
   public List<EventPreviewView> getTodayEvents(TokenPayload token) {
-    Calendar tomorrow = Calendar.getInstance();
-    tomorrow.add(Calendar.DAY_OF_YEAR, 1);
+   return getAroundDateEvents(token, new Date());
+  }
 
-    return eventRepository.findCurrentEvents(token.getFeed(), token.getRoles().contains("ROLE_ADMIN"), Calendar.getInstance().getTime(), tomorrow.getTime())
+  public List<EventPreviewView> getAroundDateEvents(TokenPayload token, Date date){
+    return eventRepository.findAroundDate(token.getFeed(), token.getRoles().contains("ROLE_ADMIN"), date)
       .stream()
       .map(e -> eventFactory.entityToPreviewView(e))
       .collect(Collectors.toList());
   }
 
-  public Page<EventPreviewView> getFutureEvents(TokenPayload token, int page) {
-    Calendar tomorrow = Calendar.getInstance();
-    tomorrow.add(Calendar.DAY_OF_YEAR, 1);
+  public Page<EventPreviewView> getFutureEvents(TokenPayload token, Date date, int page) {
 
     return eventRepository
-      .findFutureEvents(token.getFeed(), token.getRoles().contains("ROLE_ADMIN"), tomorrow.getTime(), createPage(page))
+      .findFutureEvents(token.getFeed(), token.getRoles().contains("ROLE_ADMIN"), date, createPage(page))
       .map(e -> eventFactory.entityToPreviewView(e));
   }
 
-  public Page<EventPreviewView> getPassedEvents(TokenPayload token, int page) {
+  public Page<EventPreviewView> getPassedEvents(TokenPayload token, Date date, int page) {
     return eventRepository
-      .findPassedEvents(token.getFeed(), token.getRoles().contains("ROLE_ADMIN"), Calendar.getInstance().getTime(), createPage(page))
+      .findPassedEvents(token.getFeed(), token.getRoles().contains("ROLE_ADMIN"), date, createPage(page))
       .map(e -> eventFactory.entityToPreviewView(e));
   }
 
