@@ -21,7 +21,7 @@ public interface EventRepository extends CrudRepository<Event, Long> {
   @Query(
     "select e from Event e " +
       "where e.target in ?1 " +
-      "and e.endsAt < ?3 and (e.visible = true or ?2 = true)"
+      "and e.endsAt <= ?3 and (e.visible = true or ?2 = true)"
   )
   Page<Event> findPassedEvents(List<Long> feed, Boolean admin, Date date, Pageable pageable);
 
@@ -39,8 +39,8 @@ public interface EventRepository extends CrudRepository<Event, Long> {
 
   @Query(
     "select e from Event e " +
-      "where e.target in ?1" +
-      "and e.startsAt > ?3  and (e.visible = true or ?2 = true) "
+      "where e.target.id in ?1 " +
+      "and e.startsAt >= ?3  and (e.visible = true or ?2 = true) "
   )
   Page<Event> findFutureEvents(List<Long> feed, Boolean admin, Date date, Pageable pageable);
 

@@ -10,7 +10,6 @@ import com.iseplife.api.exceptions.AuthException;
 import com.iseplife.api.services.EventService;
 import com.iseplife.api.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.security.RolesAllowed;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Guillaume on 31/07/2017.
@@ -54,22 +54,22 @@ public class EventController {
   }
 
   @GetMapping
-  public List<EventPreviewView> getCurrentEvents(@AuthenticationPrincipal TokenPayload auth) {
+  public Map<Long, List<EventPreviewView>> getCurrentEvents(@AuthenticationPrincipal TokenPayload auth) {
     return eventService.getTodayEvents(auth);
   }
 
   @GetMapping("/{timestamp}")
-  public List<EventPreviewView> getEventsAroundDate(@AuthenticationPrincipal TokenPayload auth, @PathVariable Long timestamp) {
+  public Map<Long, List<EventPreviewView>> getEventsAroundDate(@AuthenticationPrincipal TokenPayload auth, @PathVariable Long timestamp) {
     return eventService.getAroundDateEvents(auth, new Date(timestamp));
   }
 
   @GetMapping("/future/{timestamp}")
-  public Page<EventPreviewView> getAllFutureEvents(@AuthenticationPrincipal TokenPayload auth, @PathVariable Long timestamp, @RequestParam(defaultValue = "0") int page) {
+  public Map<Long, List<EventPreviewView>> getAllFutureEvents(@AuthenticationPrincipal TokenPayload auth, @PathVariable Long timestamp, @RequestParam(defaultValue = "0") int page) {
     return eventService.getFutureEvents(auth, new Date(timestamp), page);
   }
 
   @GetMapping("/passed/{timestamp")
-  public Page<EventPreviewView> getAllPassedEvents(@AuthenticationPrincipal TokenPayload auth, @PathVariable Long timestamp, @RequestParam(defaultValue = "0") int page) {
+  public Map<Long, List<EventPreviewView>> getAllPassedEvents(@AuthenticationPrincipal TokenPayload auth, @PathVariable Long timestamp, @RequestParam(defaultValue = "0") int page) {
     return eventService.getPassedEvents(auth, new Date(timestamp), page);
   }
 
