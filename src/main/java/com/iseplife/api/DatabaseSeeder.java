@@ -1,6 +1,7 @@
 package com.iseplife.api;
 
 import com.google.common.collect.Sets;
+import com.iseplife.api.constants.FeedConstant;
 import com.iseplife.api.dao.feed.FeedRepository;
 import com.iseplife.api.dao.student.RoleRepository;
 import com.iseplife.api.dao.student.StudentRepository;
@@ -17,6 +18,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 class DatabaseSeeder {
@@ -59,15 +61,15 @@ class DatabaseSeeder {
     /* Create all roles inside Roles class */
     List<Role> roles = new ArrayList<>();
     List<Role> savedRoles = roleRepository.findAll();
-    for(Field f: Roles.class.getFields()) {
-        try {
-          Role role = new Role((String) f.get(Roles.class));
-          if(!savedRoles.contains(role)){
-            roles.add(role);
-          }
-        }catch (Exception e){
-          LOG.debug(e.getMessage());
+    for (Field f : Roles.class.getFields()) {
+      try {
+        Role role = new Role((String) f.get(Roles.class));
+        if (!savedRoles.contains(role)) {
+          roles.add(role);
         }
+      } catch (Exception e) {
+        LOG.debug(e.getMessage());
+      }
     }
     roleRepository.save(roles);
 
@@ -84,10 +86,16 @@ class DatabaseSeeder {
 
     studentRepository.save(student);
 
-    /* Create main feed */
-    Feed mainFeed = new Feed();
-    mainFeed.setName("MAIN");
-
-    feedRepository.save(mainFeed);
+    /* Create main feeds */
+    List<Feed> feeds = new ArrayList<>();
+    List<String> savedFeeds = feedRepository.findAll().stream().map(Feed::getName).collect(Collectors.toList());
+    for (FeedConstant f : FeedConstant.values()) {
+      if(savedFeeds.contains(f.name())){
+        Feed feed = new Feed();
+        feed.setName(f.name());
+        feeds.add(feed);
+      }
+    }
+    feedRepository.save(feeds);
   }
 }

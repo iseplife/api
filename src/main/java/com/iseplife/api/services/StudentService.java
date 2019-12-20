@@ -140,7 +140,7 @@ public class StudentService {
       names.add(FeedConstant.ADMIN.name());
 
 
-    feeds.addAll(feedRepository.findAllByName(names));
+    feeds.addAll(feedRepository.findAllByNameIn(names));
     return feeds;
   }
 
