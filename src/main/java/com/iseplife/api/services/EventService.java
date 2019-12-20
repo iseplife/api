@@ -1,5 +1,6 @@
 package com.iseplife.api.services;
 
+import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dto.EventDTO;
 import com.iseplife.api.dto.view.EventPreviewView;
 import com.iseplife.api.entity.Feed;
@@ -12,11 +13,15 @@ import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.utils.MediaUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -47,6 +52,12 @@ public class EventService {
   String eventBaseUrl;
 
   private static final int WIDTH_EVENT_IMAGE = 1024;
+
+  private final int EVENTS_PER_PAGE = 10;
+
+  private Pageable createPage(int page) {
+    return new PageRequest(page, EVENTS_PER_PAGE);
+  }
 
   public Event createEvent(MultipartFile image, EventDTO dto) {
     Event event = eventFactory.dtoToEntity(dto);
@@ -89,6 +100,28 @@ public class EventService {
       .collect(Collectors.toList());
   }
 
+  public Map<Long, List<EventPreviewView>> getTodayEvents(TokenPayload token) {
+    return getAroundDateEvents(token, new Date());
+  }
+
+  public Map<Long, List<EventPreviewView>> getAroundDateEvents(TokenPayload token, Date date) {
+    return eventFactory.iterableToDateMap(
+      eventRepository.findAroundDate(token.getFeed(), token.getRoles().contains("ROLE_ADMIN"), date)
+    );
+  }
+
+  public Map<Long, List<EventPreviewView>> getFutureEvents(TokenPayload token, Date date, int page) {
+    return eventFactory.iterableToDateMap(
+      eventRepository.findFutureEvents(token.getFeed(), token.getRoles().contains("ROLE_ADMIN"), date, createPage(page))
+    );
+  }
+
+  public Map<Long, List<EventPreviewView>> getPassedEvents(TokenPayload token, Date date, int page) {
+    return eventFactory.iterableToDateMap(
+      eventRepository.findPassedEvents(token.getFeed(), token.getRoles().contains("ROLE_ADMIN"), date, createPage(page))
+    );
+  }
+
 
   public Event getEvent(Long id) {
     Event event = eventRepository.findOne(id);
@@ -122,9 +155,9 @@ public class EventService {
     }
 
     //Only return the 5 last edition
-    for(int i = 0; i < 5; i++){
+    for (int i = 0; i < 5; i++) {
       event = event.getPreviousEdition();
-      if(event != null){
+      if (event != null) {
         previousEditions.add(event);
       } else break;
     }

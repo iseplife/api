@@ -1,4 +1,4 @@
-package com.iseplife.api.controllers.media;
+package com.iseplife.api.controllers;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dto.EventDTO;
@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.security.RolesAllowed;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Guillaume on 31/07/2017.
@@ -52,8 +54,23 @@ public class EventController {
   }
 
   @GetMapping
-  public List<EventPreviewView> getEventsPreview() {
-    return eventService.getEvents();
+  public Map<Long, List<EventPreviewView>> getCurrentEvents(@AuthenticationPrincipal TokenPayload auth) {
+    return eventService.getTodayEvents(auth);
+  }
+
+  @GetMapping("/{timestamp}")
+  public Map<Long, List<EventPreviewView>> getEventsAroundDate(@AuthenticationPrincipal TokenPayload auth, @PathVariable Long timestamp) {
+    return eventService.getAroundDateEvents(auth, new Date(timestamp));
+  }
+
+  @GetMapping("/future/{timestamp}")
+  public Map<Long, List<EventPreviewView>> getAllFutureEvents(@AuthenticationPrincipal TokenPayload auth, @PathVariable Long timestamp, @RequestParam(defaultValue = "0") int page) {
+    return eventService.getFutureEvents(auth, new Date(timestamp), page);
+  }
+
+  @GetMapping("/passed/{timestamp")
+  public Map<Long, List<EventPreviewView>> getAllPassedEvents(@AuthenticationPrincipal TokenPayload auth, @PathVariable Long timestamp, @RequestParam(defaultValue = "0") int page) {
+    return eventService.getPassedEvents(auth, new Date(timestamp), page);
   }
 
   @GetMapping("/{id}")
@@ -62,17 +79,17 @@ public class EventController {
   }
 
   @GetMapping("/{id}/previous")
-  public List<EventPreviewView> getPreviousEditions(@PathVariable Long id){
+  public List<EventPreviewView> getPreviousEditions(@PathVariable Long id) {
     return eventService.getPreviousEditions(id);
   }
 
   @GetMapping("/{id}/children")
-  public List<EventPreviewView> getChildrenEvents(@PathVariable Long id){
+  public List<EventPreviewView> getChildrenEvents(@PathVariable Long id) {
     return eventService.getChildrenEvents(id);
   }
 
   @GetMapping("/{id}/galleries")
-  public List<Gallery> getGalleries(@PathVariable Long id){
+  public List<Gallery> getGalleries(@PathVariable Long id) {
     return eventService.getEventGalleries(id);
   }
 

@@ -6,6 +6,8 @@ import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.constants.EventType;
 
 import javax.persistence.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -22,12 +24,16 @@ public class Event {
 
   private String title;
   private String imageUrl;
+
+  @Enumerated(EnumType.STRING)
   private EventType type;
   private Date startsAt;
   private Date endsAt;
   private String location;
   private String ticketUrl = null;
   private Float price = null;
+  @JsonIgnore
+  private Boolean visible = false;
 
   @Column(columnDefinition = "TEXT")
   private String description;
@@ -52,41 +58,77 @@ public class Event {
   @OneToOne
   private Event previousEdition;
 
-  public Long getId() { return id; }
+  public Long getId() {
+    return id;
+  }
 
-  public void setId(Long id) { this.id = id; }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-  public String getTitle() { return title; }
+  public String getTitle() {
+    return title;
+  }
 
-  public void setTitle(String title) { this.title = title; }
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-  public String getLocation() { return location; }
+  public String getLocation() {
+    return location;
+  }
 
-  public void setLocation(String location) { this.location = location; }
+  public void setLocation(String location) {
+    this.location = location;
+  }
 
-  public Date getStartsAt() { return startsAt; }
+  public Date getStartsAt() {
+    return startsAt;
+  }
 
-  public void setStartsAt(Date startsAt) { this.startsAt = startsAt; }
+  public void setStartsAt(Date startsAt) {
+    this.startsAt = startsAt;
+  }
 
-  public String getDescription() { return description; }
+  public String getDescription() {
+    return description;
+  }
 
-  public void setDescription(String description) { this.description = description; }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-  public Club getClub() { return club; }
+  public Club getClub() {
+    return club;
+  }
 
-  public void setClub(Club club) { this.club = club; }
+  public void setClub(Club club) {
+    this.club = club;
+  }
 
-  public String getImageUrl() { return imageUrl; }
+  public String getImageUrl() {
+    return imageUrl;
+  }
 
-  public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+  public void setImageUrl(String imageUrl) {
+    this.imageUrl = imageUrl;
+  }
 
-  public Date getEndsAt() { return endsAt; }
+  public Date getEndsAt() {
+    return endsAt;
+  }
 
-  public void setEndsAt(Date endsAt) { this.endsAt = endsAt; }
+  public void setEndsAt(Date endsAt) {
+    this.endsAt = endsAt;
+  }
 
-  public Event getPreviousEdition() { return previousEdition; }
+  public Event getPreviousEdition() {
+    return previousEdition;
+  }
 
-  public void setPreviousEdition(Event previousEdition) { this.previousEdition = previousEdition; }
+  public void setPreviousEdition(Event previousEdition) {
+    this.previousEdition = previousEdition;
+  }
 
   public List<Event> getEvents() {
     return events;
@@ -100,17 +142,29 @@ public class Event {
     this.events = events;
   }
 
-  public EventType getType() { return type; }
+  public EventType getType() {
+    return type;
+  }
 
-  public void setType(EventType type) { this.type = type; }
+  public void setType(EventType type) {
+    this.type = type;
+  }
 
-  public String getTicketUrl() { return ticketUrl; }
+  public String getTicketUrl() {
+    return ticketUrl;
+  }
 
-  public void setTicketUrl(String ticketUrl) { this.ticketUrl = ticketUrl; }
+  public void setTicketUrl(String ticketUrl) {
+    this.ticketUrl = ticketUrl;
+  }
 
-  public Float getPrice() { return price; }
+  public Float getPrice() {
+    return price;
+  }
 
-  public void setPrice(Float price) { this.price = price; }
+  public void setPrice(Float price) {
+    this.price = price;
+  }
 
   public Feed getFeed() {
     return feed;
@@ -126,5 +180,13 @@ public class Event {
 
   public void setTarget(Feed target) {
     this.target = target;
+  }
+
+  public Boolean getVisible() {
+    return visible;
+  }
+
+  public void setVisible(Boolean visible) {
+    this.visible = visible;
   }
 }

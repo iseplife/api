@@ -3,7 +3,6 @@ package com.iseplife.api.entity.club;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.ClubRole;
-import com.iseplife.api.entity.user.Student;
 
 import javax.persistence.*;
 

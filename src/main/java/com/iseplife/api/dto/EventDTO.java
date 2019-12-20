@@ -16,6 +16,7 @@ public class EventDTO {
   private Long previousEditionId;
   private String ticketUrl;
   private Float price;
+  private Boolean visible;
 
   public String getTitle() {
     return title;
@@ -68,4 +69,12 @@ public class EventDTO {
   public Float getPrice() { return price; }
 
   public void setPrice(Float price) { this.price = price; }
+
+  public Boolean getVisible() {
+    return visible;
+  }
+
+  public void setVisible(Boolean visible) {
+    this.visible = visible;
+  }
 }

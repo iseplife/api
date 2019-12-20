@@ -3,9 +3,7 @@ package com.iseplife.api.controllers;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dto.view.PostView;
-import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
-import com.iseplife.api.dto.view.PostView;
 import com.iseplife.api.services.AuthService;
 import com.iseplife.api.services.FeedService;
 import org.springframework.beans.factory.annotation.Autowired;
