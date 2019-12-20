@@ -63,12 +63,12 @@ public class EventController {
     return eventService.getAroundDateEvents(auth, new Date(timestamp));
   }
 
-  @GetMapping("/future/{timestamp}")
+  @GetMapping("/{timestamp}/future")
   public Map<Long, List<EventPreviewView>> getAllFutureEvents(@AuthenticationPrincipal TokenPayload auth, @PathVariable Long timestamp, @RequestParam(defaultValue = "0") int page) {
     return eventService.getFutureEvents(auth, new Date(timestamp), page);
   }
 
-  @GetMapping("/passed/{timestamp")
+  @GetMapping("/{timestamp/previous")
   public Map<Long, List<EventPreviewView>> getAllPassedEvents(@AuthenticationPrincipal TokenPayload auth, @PathVariable Long timestamp, @RequestParam(defaultValue = "0") int page) {
     return eventService.getPassedEvents(auth, new Date(timestamp), page);
   }
