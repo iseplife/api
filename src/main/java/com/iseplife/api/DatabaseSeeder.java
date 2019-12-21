@@ -90,7 +90,7 @@ class DatabaseSeeder {
     List<Feed> feeds = new ArrayList<>();
     List<String> savedFeeds = feedRepository.findAll().stream().map(Feed::getName).collect(Collectors.toList());
     for (FeedConstant f : FeedConstant.values()) {
-      if(savedFeeds.contains(f.name())){
+      if(!savedFeeds.contains(f.name())){
         Feed feed = new Feed();
         feed.setName(f.name());
         feeds.add(feed);

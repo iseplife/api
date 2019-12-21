@@ -7,6 +7,7 @@ import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.exceptions.AuthException;
+import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.services.EventService;
 import com.iseplife.api.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.security.RolesAllowed;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +44,15 @@ public class EventController {
     return false;
   }
 
+  private Date convertStringToDate(String date) {
+    try {
+      return new SimpleDateFormat("yyyy-MM-dd").parse(date);
+    } catch (ParseException e) {
+      throw new IllegalArgumentException("Could not parse the following date: " + date);
+    }
+
+  }
+
   @PostMapping
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
   public Event createEvent(@RequestParam("image") MultipartFile file,
@@ -58,19 +70,19 @@ public class EventController {
     return eventService.getTodayEvents(auth);
   }
 
-  @GetMapping("/{timestamp}")
-  public Map<Long, List<EventPreviewView>> getEventsAroundDate(@AuthenticationPrincipal TokenPayload auth, @PathVariable Long timestamp) {
-    return eventService.getAroundDateEvents(auth, new Date(timestamp));
+  @GetMapping("/t/{date}")
+  public Map<Long, List<EventPreviewView>> getEventsAroundDate(@AuthenticationPrincipal TokenPayload auth, @PathVariable String date) {
+    return eventService.getAroundDateEvents(auth, convertStringToDate(date));
   }
 
-  @GetMapping("/{timestamp}/future")
-  public Map<Long, List<EventPreviewView>> getAllFutureEvents(@AuthenticationPrincipal TokenPayload auth, @PathVariable Long timestamp, @RequestParam(defaultValue = "0") int page) {
-    return eventService.getFutureEvents(auth, new Date(timestamp), page);
+  @GetMapping("/t/{date}/future")
+  public Map<Long, List<EventPreviewView>> getAllFutureEvents(@AuthenticationPrincipal TokenPayload auth, @PathVariable String date, @RequestParam(defaultValue = "0") int page) {
+    return eventService.getFutureEvents(auth, convertStringToDate(date), page);
   }
 
-  @GetMapping("/{timestamp/previous")
-  public Map<Long, List<EventPreviewView>> getAllPassedEvents(@AuthenticationPrincipal TokenPayload auth, @PathVariable Long timestamp, @RequestParam(defaultValue = "0") int page) {
-    return eventService.getPassedEvents(auth, new Date(timestamp), page);
+  @GetMapping("/t/{date}/previous")
+  public Map<Long, List<EventPreviewView>> getAllPassedEvents(@AuthenticationPrincipal TokenPayload auth, @PathVariable String date, @RequestParam(defaultValue = "0") int page) {
+    return eventService.getPassedEvents(auth, convertStringToDate(date), page);
   }
 
   @GetMapping("/{id}")

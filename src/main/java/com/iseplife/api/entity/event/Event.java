@@ -6,8 +6,6 @@ import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.constants.EventType;
 
 import javax.persistence.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -27,6 +25,7 @@ public class Event {
 
   @Enumerated(EnumType.STRING)
   private EventType type;
+
   private Date startsAt;
   private Date endsAt;
   private String location;
