@@ -18,10 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -106,7 +103,7 @@ public class EventService {
 
   public Map<Long, List<EventPreviewView>> getAroundDateEvents(TokenPayload token, Date date) {
     return eventFactory.iterableToDateMap(
-      eventRepository.findAroundDate(token.getFeed(), token.getRoles().contains("ROLE_ADMIN"), date)
+      eventRepository.findAroundDate(date, token.getRoles().contains("ROLE_ADMIN"), token.getFeed().stream().map(Object::toString).collect(Collectors.toList()))
     );
   }
 

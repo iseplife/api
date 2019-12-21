@@ -1,6 +1,5 @@
 package com.iseplife.api.services;
 
-import com.google.common.collect.Sets;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.ClubRole;
 import com.iseplife.api.constants.FeedConstant;
@@ -9,11 +8,9 @@ import com.iseplife.api.dao.feed.FeedRepository;
 import com.iseplife.api.dto.student.StudentDTO;
 import com.iseplife.api.dto.student.StudentUpdateAdminDTO;
 import com.iseplife.api.dto.student.StudentUpdateDTO;
-import com.iseplife.api.dto.view.AuthorView;
 import com.iseplife.api.dto.view.StudentWithRoleView;
 import com.iseplife.api.entity.Feed;
 import com.iseplife.api.entity.club.Club;
-import com.iseplife.api.entity.club.ClubMember;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.dao.student.RoleRepository;
@@ -25,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -117,7 +113,7 @@ public class StudentService {
     return student.getRoles();
   }
 
-  public List<Club> getPublisherClubs(Student student){
+  public List<Club> getPublisherClubs(Student student) {
     return clubMemberRepository.findByRoleWithInheritance(student, ClubRole.PUBLISHER);
   }
 
@@ -125,22 +121,22 @@ public class StudentService {
   public List<Feed> getFeeds(Student student, List<String> roles, List<Long> adminClub) {
     List<Feed> feeds =
       clubMemberRepository.findByStudentId(student.getId())
-      .stream()
-      .map(cm -> cm.getClub().getFeed())
-      .collect(Collectors.toList());
+        .stream()
+        .map(cm -> cm.getClub().getFeed())
+        .collect(Collectors.toList());
 
-    List<String> names = new ArrayList<>();
-    names.add("PROMO_"+student.getPromo());
-    if(feeds.size() > 0)
-      names.add(FeedConstant.ASSOCIATION_LIFE.name());
-    if(adminClub.size() > 0) {
-      names.add(FeedConstant.ADMIN_ASSOCIATION.name());
+    if (roles.contains("ROLE_ADMIN")) {
+      feeds.addAll(feedRepository.findAll());
+    } else {
+      List<String> names = new ArrayList<>();
+      names.add("PROMO_" + student.getPromo());
+      if (feeds.size() > 0)
+        names.add(FeedConstant.ASSOCIATION_LIFE.name());
+      if (adminClub.size() > 0) {
+        names.add(FeedConstant.ADMIN_ASSOCIATION.name());
+      }
+      feeds.addAll(feedRepository.findAllByNameIn(names));
     }
-    if(roles.contains("ROLE_ADMIN"))
-      names.add(FeedConstant.ADMIN.name());
-
-
-    feeds.addAll(feedRepository.findAllByNameIn(names));
     return feeds;
   }
 

@@ -20,22 +20,20 @@ public interface EventRepository extends CrudRepository<Event, Long> {
 
   @Query(
     "select e from Event e " +
-      "where e.target in ?1 " +
+      "where e.target.id in ?1 " +
       "and e.endsAt <= ?3 and (e.visible = true or ?2 = true)"
   )
   Page<Event> findPassedEvents(List<Long> feed, Boolean admin, Date date, Pageable pageable);
 
   @Query(
-    value = "select * from Event " +
-      "where target in ?1 " +
-      "and (visible = true or ?2 = true) " +
-      "and ( trunc(starts_at) = ?3 " +
-        "or id in (select id from Event where startsAt > dateadd(DAY, 1, ?3) limit 10) " +
-        "or id in (select id from Event where startsAt < dateadd(DAY, -1, ?3)) limit 10) "  +
-      "order by starts_at desc"
+    value =
+      "select * from event e where (e.visible = 1 or ?2 = 1) and date(e.starts_at) = ?1  and e.target_id in (?3) union " +
+        "(select * from event t where t.starts_at > date_add(?1, interval 1 day) and (t.visible = 1 or ?2 = 1) and t.target_id in (?3) limit 10) union " +
+        "(select * from event y where y.starts_at < date_add(?1, interval -1 day) and (y.visible = 1 or ?2 = 1) and y.target_id in (?3)  limit 10)"
     , nativeQuery = true
   )
-  List<Event> findAroundDate(List<Long> feed, Boolean admin, Date date);
+  List<Event> findAroundDate(Date date, Boolean admin, List<String> feeds);
+
 
   @Query(
     "select e from Event e " +

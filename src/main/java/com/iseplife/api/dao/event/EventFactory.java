@@ -49,7 +49,7 @@ public class EventFactory {
   }
 
   public Map<Long, List<EventPreviewView>> iterableToDateMap(Iterable<Event> events) {
-    Map<Long, List<EventPreviewView>> map = new HashMap<>();
+    Map<Long, List<EventPreviewView>> map = new TreeMap<>();
     final Calendar calendar = Calendar.getInstance();
     for (Event e : events) {
       EventPreviewView preview = entityToPreviewView(e);
@@ -58,10 +58,11 @@ public class EventFactory {
       calendar.set(Calendar.MINUTE, 0);
       calendar.set(Calendar.SECOND, 0);
       calendar.set(Calendar.MILLISECOND, 0);
-      if (map.putIfAbsent(calendar.getTimeInMillis(), Collections.singletonList(preview)) != null) {
-        List<EventPreviewView> previews = map.get(calendar.getTimeInMillis());
+
+      List<EventPreviewView> previews = new ArrayList<>();
+      previews.add(preview);
+        if ((previews = map.putIfAbsent(calendar.getTimeInMillis(), previews)) != null) {
         previews.add(preview);
-        map.put(calendar.getTimeInMillis(), previews);
       }
     }
     return map;
