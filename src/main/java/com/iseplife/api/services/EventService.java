@@ -104,7 +104,7 @@ public class EventService {
 
   public List<EventPreviewView> getAroundDateEvents(TokenPayload token, Date date) {
     return eventRepository
-      .findAroundDate(date, token.getRoles().contains("ROLE_ADMIN"), token.getFeed().stream().map(Object::toString).collect(Collectors.toList()))
+      .findAroundDate(date, token.getRoles().contains("ROLE_ADMIN"), token.getFeed())
       .stream()
       .map(e -> eventFactory.entityToPreviewView(e))
       .collect(Collectors.toList());
