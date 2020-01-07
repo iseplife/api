@@ -42,6 +42,8 @@ public class EventFactory {
     EventPreviewView preview = new EventPreviewView();
     preview.setId(event.getId());
     preview.setTitle(event.getTitle());
+    preview.setType(event.getType().name());
+    preview.setTarget(event.getTarget().getName());
     preview.setStartsAt(event.getStartsAt());
     preview.setEndsAt(event.getEndsAt());
     preview.setImageUrl(event.getImageUrl());

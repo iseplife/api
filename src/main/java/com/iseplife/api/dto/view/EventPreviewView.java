@@ -5,6 +5,8 @@ import java.util.Date;
 public class EventPreviewView {
   private Long id;
   private String title;
+  private String type;
+  private String target;
   private Date startsAt;
   private Date endsAt;
   private String imageUrl;
@@ -47,5 +49,21 @@ public class EventPreviewView {
 
   public void setImageUrl(String imageUrl) {
     this.imageUrl = imageUrl;
+  }
+
+  public String getTarget() {
+    return target;
+  }
+
+  public void setTarget(String target) {
+    this.target = target;
+  }
+
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
   }
 }
