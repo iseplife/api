@@ -16,7 +16,7 @@ public class EventDTO {
   private Long previousEditionId;
   private String ticketUrl;
   private Float price;
-  private Boolean visible;
+  private Boolean published;
 
   public String getTitle() {
     return title;
@@ -34,13 +34,21 @@ public class EventDTO {
     this.location = location;
   }
 
-  public Date getStartsAt() { return startsAt; }
+  public Date getStartsAt() {
+    return startsAt;
+  }
 
-  public void setStartsAt(Date startsAt) { this.startsAt = startsAt; }
+  public void setStartsAt(Date startsAt) {
+    this.startsAt = startsAt;
+  }
 
-  public Date getEndsAt() { return endsAt; }
+  public Date getEndsAt() {
+    return endsAt;
+  }
 
-  public void setEndsAt(Date endsAt) { this.endsAt = endsAt; }
+  public void setEndsAt(Date endsAt) {
+    this.endsAt = endsAt;
+  }
 
   public String getDescription() {
     return description;
@@ -58,23 +66,36 @@ public class EventDTO {
     this.clubId = clubId;
   }
 
-  public Long getPreviousEditionId() {  return previousEditionId; }
-
-  public void setPreviousEditionId(Long previousEditionId) { this.previousEditionId = previousEditionId; }
-
-  public String getTicketUrl() { return ticketUrl; }
-
-  public void setTicketUrl(String ticketUrl) { this.ticketUrl = ticketUrl; }
-
-  public Float getPrice() { return price; }
-
-  public void setPrice(Float price) { this.price = price; }
-
-  public Boolean getVisible() {
-    return visible;
+  public Long getPreviousEditionId() {
+    return previousEditionId;
   }
 
-  public void setVisible(Boolean visible) {
-    this.visible = visible;
+  public void setPreviousEditionId(Long previousEditionId) {
+    this.previousEditionId = previousEditionId;
+  }
+
+  public String getTicketUrl() {
+    return ticketUrl;
+  }
+
+  public void setTicketUrl(String ticketUrl) {
+    this.ticketUrl = ticketUrl;
+  }
+
+  public Float getPrice() {
+    return price;
+  }
+
+  public void setPrice(Float price) {
+    this.price = price;
+  }
+
+
+  public Boolean getPublished() {
+    return published;
+  }
+
+  public void setPublished(Boolean published) {
+    this.published = published;
   }
 }

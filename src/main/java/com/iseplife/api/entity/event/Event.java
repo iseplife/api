@@ -32,7 +32,7 @@ public class Event {
   private String ticketUrl = null;
   private Float price = null;
   @JsonIgnore
-  private Boolean visible = false;
+  private Boolean published = false;
 
   @Column(columnDefinition = "TEXT")
   private String description;
@@ -181,11 +181,11 @@ public class Event {
     this.target = target;
   }
 
-  public Boolean getVisible() {
-    return visible;
+  public Boolean getPublished() {
+    return published;
   }
 
-  public void setVisible(Boolean visible) {
-    this.visible = visible;
+  public void setPublished(Boolean published) {
+    this.published = published;
   }
 }

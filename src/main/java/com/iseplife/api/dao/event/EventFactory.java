@@ -21,7 +21,7 @@ public class EventFactory {
     event.setPrice(dto.getPrice());
     event.setLocation(dto.getLocation());
     event.setDescription(dto.getDescription());
-    event.setVisible(dto.getVisible());
+    event.setPublished(dto.getPublished());
     return event;
   }
 
@@ -34,7 +34,7 @@ public class EventFactory {
     event.setLocation(dto.getLocation() != null ? dto.getLocation() : previous.getLocation());
     event.setDescription(dto.getDescription() != null ? dto.getDescription() : previous.getDescription());
     event.setPreviousEdition(previous);
-    event.setVisible(dto.getVisible());
+    event.setPublished(dto.getPublished());
     return event;
   }
 
@@ -47,26 +47,8 @@ public class EventFactory {
     preview.setStartsAt(event.getStartsAt());
     preview.setEndsAt(event.getEndsAt());
     preview.setImageUrl(event.getImageUrl());
+    preview.setPublished(event.getPublished());
     return preview;
   }
 
-  public Map<Long, List<EventPreviewView>> iterableToDateMap(Iterable<Event> events) {
-    Map<Long, List<EventPreviewView>> map = new TreeMap<>();
-    final Calendar calendar = Calendar.getInstance();
-    for (Event e : events) {
-      EventPreviewView preview = entityToPreviewView(e);
-      calendar.setTime(preview.getStartsAt());
-      calendar.set(Calendar.HOUR_OF_DAY, 0);
-      calendar.set(Calendar.MINUTE, 0);
-      calendar.set(Calendar.SECOND, 0);
-      calendar.set(Calendar.MILLISECOND, 0);
-
-      List<EventPreviewView> previews = new ArrayList<>();
-      previews.add(preview);
-        if ((previews = map.putIfAbsent(calendar.getTimeInMillis(), previews)) != null) {
-        previews.add(preview);
-      }
-    }
-    return map;
-  }
 }

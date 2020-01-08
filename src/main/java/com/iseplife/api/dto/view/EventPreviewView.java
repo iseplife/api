@@ -10,6 +10,7 @@ public class EventPreviewView {
   private Date startsAt;
   private Date endsAt;
   private String imageUrl;
+  private Boolean published;
 
   public Long getId() {
     return id;
@@ -65,5 +66,13 @@ public class EventPreviewView {
 
   public void setType(String type) {
     this.type = type;
+  }
+
+  public Boolean getPublished() {
+    return published;
+  }
+
+  public void setPublished(Boolean published) {
+    this.published = published;
   }
 }
