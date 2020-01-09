@@ -158,9 +158,9 @@ public class JwtTokenUtil {
       .map(Club::getId)
       .collect(Collectors.toList());
 
-    List<Long> feeds = studentService.getFeeds(student, roles, adminClubs)
+    List<String> feeds = studentService.getFeeds(student, roles, adminClubs)
       .stream()
-      .map(Feed::getId)
+      .map(Feed::getName)
       .collect(Collectors.toList());
 
     TokenPayload tokenPayload = new TokenPayload();

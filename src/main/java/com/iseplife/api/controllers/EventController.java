@@ -45,15 +45,6 @@ public class EventController {
     return false;
   }
 
-  private Date convertStringToDate(String date) {
-    try {
-      return new SimpleDateFormat("yyyy-MM-dd").parse(date);
-    } catch (ParseException e) {
-      throw new IllegalArgumentException("Could not parse the following date: " + date);
-    }
-
-  }
-
   @PostMapping
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
   public Event createEvent(@RequestParam("image") MultipartFile file,
@@ -71,19 +62,19 @@ public class EventController {
     return eventService.getTodayEvents(auth);
   }
 
-  @GetMapping("/t/{date}")
-  public  List<EventPreviewView> getEventsAroundDate(@AuthenticationPrincipal TokenPayload auth, @PathVariable String date) {
-    return eventService.getAroundDateEvents(auth, convertStringToDate(date));
+  @GetMapping("/t/{timestamp}")
+  public  List<EventPreviewView> getEventsAroundDate(@AuthenticationPrincipal TokenPayload auth, @PathVariable Long timestamp) {
+    return eventService.getAroundDateEvents(auth, new Date(timestamp));
   }
 
-  @GetMapping("/t/{date}/future")
-  public  Page<EventPreviewView> getAllFutureEvents(@AuthenticationPrincipal TokenPayload auth, @PathVariable String date, @RequestParam(defaultValue = "0") int page) {
-    return eventService.getFutureEvents(auth, convertStringToDate(date), page);
+  @GetMapping("/t/{timestamp}/future")
+  public  Page<EventPreviewView> getAllFutureEvents(@AuthenticationPrincipal TokenPayload auth, @PathVariable Long timestamp, @RequestParam(defaultValue = "0") int page) {
+    return eventService.getFutureEvents(auth, new Date(timestamp), page);
   }
 
-  @GetMapping("/t/{date}/previous")
-  public Page<EventPreviewView> getAllPassedEvents(@AuthenticationPrincipal TokenPayload auth, @PathVariable String date, @RequestParam(defaultValue = "0") int page) {
-    return eventService.getPassedEvents(auth, convertStringToDate(date), page);
+  @GetMapping("/t/{timestamp}/previous")
+  public Page<EventPreviewView> getAllPassedEvents(@AuthenticationPrincipal TokenPayload auth, @PathVariable Long timestamp, @RequestParam(defaultValue = "0") int page) {
+    return eventService.getPassedEvents(auth, new Date(timestamp), page);
   }
 
   @GetMapping("/{id}")

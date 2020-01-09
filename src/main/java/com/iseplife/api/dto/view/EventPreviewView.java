@@ -5,9 +5,12 @@ import java.util.Date;
 public class EventPreviewView {
   private Long id;
   private String title;
+  private String type;
+  private String target;
   private Date startsAt;
   private Date endsAt;
   private String imageUrl;
+  private Boolean published;
 
   public Long getId() {
     return id;
@@ -47,5 +50,29 @@ public class EventPreviewView {
 
   public void setImageUrl(String imageUrl) {
     this.imageUrl = imageUrl;
+  }
+
+  public String getTarget() {
+    return target;
+  }
+
+  public void setTarget(String target) {
+    this.target = target;
+  }
+
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  public Boolean getPublished() {
+    return published;
+  }
+
+  public void setPublished(Boolean published) {
+    this.published = published;
   }
 }
