@@ -43,6 +43,7 @@ public class EventFactory {
     preview.setId(event.getId());
     preview.setTitle(event.getTitle());
     preview.setType(event.getType().name());
+    preview.setTarget(event.getTarget() == null ? null: event.getTarget().getName());
     preview.setStartsAt(event.getStartsAt());
     preview.setEndsAt(event.getEndsAt());
     preview.setImageUrl(event.getImageUrl());
