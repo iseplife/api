@@ -33,6 +33,7 @@ public class Event {
   private Float price = null;
   @JsonIgnore
   private Boolean published = false;
+  private Boolean closed = false;
 
   @Column(columnDefinition = "TEXT")
   private String description;
@@ -186,5 +187,13 @@ public class Event {
 
   public void setPublished(Boolean published) {
     this.published = published;
+  }
+
+  public Boolean getClosed() {
+    return closed;
+  }
+
+  public void setClosed(Boolean closed) {
+    this.closed = closed;
   }
 }
