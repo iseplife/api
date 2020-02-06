@@ -1,11 +1,13 @@
 package com.iseplife.api;
 
 import com.google.common.collect.Sets;
+import com.iseplife.api.constants.ClubTypesEnum;
 import com.iseplife.api.constants.FeedConstant;
 import com.iseplife.api.dao.feed.FeedRepository;
 import com.iseplife.api.dao.student.RoleRepository;
 import com.iseplife.api.dao.student.StudentRepository;
 import com.iseplife.api.entity.Feed;
+import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.Roles;
@@ -15,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -85,6 +89,27 @@ class DatabaseSeeder {
     student.setRoles(Sets.newHashSet(roleStudent, roleAdmin));
 
     studentRepository.save(student);
+
+
+    Student studentMe = new Student();
+    studentMe.setId(60275L);
+    studentMe.setFirstName("Bastien");
+    studentMe.setLastName("Grignon");
+    try {
+      studentMe.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse("28/12/1997"));
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+    studentMe.setMail("bastien.grignon@isep.fr");
+    studentMe.setPromo("2021");
+    studentMe.setPhotoUrl("https://i.pravatar.cc/");
+
+    Role roleStudentMe = roleRepository.findByRole(Roles.STUDENT);
+    Role roleAdminMe = roleRepository.findByRole(Roles.ADMIN);
+    studentMe.setRoles(Sets.newHashSet(roleStudentMe, roleAdminMe));
+
+    studentRepository.save(studentMe);
+
 
     /* Create main feeds */
     List<Feed> feeds = new ArrayList<>();

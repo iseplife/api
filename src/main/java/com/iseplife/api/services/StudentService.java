@@ -64,7 +64,7 @@ public class StudentService {
 
 
   public Page<Student> getAll(int page) {
-    return studentRepository.findAll(new PageRequest(page, RESULTS_PER_PAGE));
+    return studentRepository.findAllByOrderByLastName(new PageRequest(page, RESULTS_PER_PAGE));
   }
 
   public Student getStudent(Long id) {
