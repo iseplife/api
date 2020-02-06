@@ -13,7 +13,7 @@ import java.util.Set;
 
 @Repository
 public interface StudentRepository extends CrudRepository<Student, Long> {
-  Page<Student> findAll(Pageable pageable);
+  Page<Student> findAllByOrderByLastName(Pageable pageable);
 
   @Query(
     "select s from Student s " +

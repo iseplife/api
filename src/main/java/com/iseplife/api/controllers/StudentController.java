@@ -29,8 +29,8 @@ import java.util.Set;
  * back
  */
 @RestController
-@RequestMapping("/user")
-public class UserController {
+@RequestMapping("/student")
+public class StudentController {
 
   @Autowired
   StudentService studentService;
@@ -53,68 +53,68 @@ public class UserController {
   @Autowired
   JsonUtils jsonUtils;
 
-  @GetMapping("/student")
-  @RolesAllowed({ Roles.STUDENT })
+  @GetMapping()
+  @RolesAllowed({Roles.STUDENT})
   public Page<Student> getAllStudents(@RequestParam(defaultValue = "0") int page) {
     return studentService.getAll(page);
   }
 
-  @PostMapping("/student")
+  @PostMapping()
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
   public Student createStudent(@RequestBody StudentDTO dto) {
     return studentService.createStudent(dto);
   }
 
-  @PutMapping("/student")
+  @PutMapping()
   @RolesAllowed({Roles.STUDENT})
   public Student updateStudent(@AuthenticationPrincipal TokenPayload auth,
                                @RequestBody StudentUpdateDTO dto) {
     return studentService.updateStudent(dto, auth.getId());
   }
 
-  @GetMapping("/student/admin")
-  @RolesAllowed({ Roles.ADMIN, Roles.USER_MANAGER })
+  @GetMapping("/admin")
+  @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
   public Page<StudentWithRoleView> getAllStudentsAdmin(@RequestParam(defaultValue = "0") int page) {
     return studentService.getAllForAdmin(page);
   }
 
-  @GetMapping("/student/{id}/post")
+  @GetMapping("/{id}/post")
   @RolesAllowed({Roles.STUDENT})
   public Page<PostView> getPostsStudent(@PathVariable Long id, @RequestParam(defaultValue = "0") int page) {
     return postService.getPostsAuthor(id, authService.isUserAnonymous(), page);
   }
 
-  @GetMapping("/student/{id}/photo")
+  @GetMapping("/{id}/photo")
   @RolesAllowed({Roles.STUDENT})
   public Page<MatchedView> getPhotosStudent(@PathVariable Long id, @RequestParam(defaultValue = "0") int page) {
     return mediaService.getPhotosTaggedByStudent(id, page);
   }
 
-  @GetMapping("/student/{id}/club")
+  @GetMapping("/{id}/club")
   @RolesAllowed({Roles.STUDENT})
   public List<ClubMemberView> getClubsStudent(@PathVariable Long id) {
     return clubService.getStudentClubs(id);
   }
 
-  @GetMapping("/student/{id}")
+  @GetMapping("/{id}")
   @RolesAllowed({Roles.STUDENT})
   public Student getStudent(@PathVariable Long id) {
     return studentService.getStudent(id);
   }
 
-  @PutMapping("/student/{id}/archive")
+  @PutMapping("/{id}/archive")
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
   public void toggleArchiveStudent(@PathVariable Long id) {
     studentService.toggleArchiveStudent(id);
   }
 
-  @GetMapping("/student/{id}/roles")
+  @GetMapping("/{id}/roles")
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
   public Set<Role> getStudentRoles(@PathVariable Long id) {
     return studentService.getStudentRoles(id);
   }
 
-  @PutMapping("/student/admin")
+  @PutMapping("/admin")
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
   public Student updateStudentAdmin(@RequestParam(value = "image", required = false) MultipartFile image,
                                     @RequestParam(value = "form") String form) {
@@ -122,20 +122,20 @@ public class UserController {
     return studentService.updateStudentAdmin(dto, image);
   }
 
-  @GetMapping("/student/me")
+  @GetMapping("/me")
   @RolesAllowed({Roles.STUDENT})
   public Student getLoggedStudent(@AuthenticationPrincipal TokenPayload auth) {
     return studentService.getStudent(auth.getId());
   }
 
-  @PostMapping("/student/import")
+  @PostMapping("/import")
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
   public ImportStudentResultView importStudents(@RequestParam("csv") MultipartFile csv,
                                                 @RequestParam("images[]") List<MultipartFile> photos) {
     return studentImportService.importStudents(csv, photos);
   }
 
-  @PutMapping("/student/notification")
+  @PutMapping("/notification")
   @RolesAllowed({Roles.STUDENT})
   public void toggleNotification(@AuthenticationPrincipal TokenPayload auth) {
     studentService.toggleNotifications(auth);
