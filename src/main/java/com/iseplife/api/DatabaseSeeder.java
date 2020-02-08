@@ -90,27 +90,6 @@ class DatabaseSeeder {
 
     studentRepository.save(student);
 
-
-    Student studentMe = new Student();
-    studentMe.setId(60275L);
-    studentMe.setFirstName("Bastien");
-    studentMe.setLastName("Grignon");
-    try {
-      studentMe.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse("28/12/1997"));
-    } catch (ParseException e) {
-      e.printStackTrace();
-    }
-    studentMe.setMail("bastien.grignon@isep.fr");
-    studentMe.setPromo("2021");
-    studentMe.setPhotoUrl("https://i.pravatar.cc/");
-
-    Role roleStudentMe = roleRepository.findByRole(Roles.STUDENT);
-    Role roleAdminMe = roleRepository.findByRole(Roles.ADMIN);
-    studentMe.setRoles(Sets.newHashSet(roleStudentMe, roleAdminMe));
-
-    studentRepository.save(studentMe);
-
-
     /* Create main feeds */
     List<Feed> feeds = new ArrayList<>();
     List<String> savedFeeds = feedRepository.findAll().stream().map(Feed::getName).collect(Collectors.toList());
