@@ -1,0 +1,10 @@
+deploy:
+  type: deploy
+  image : ruby:2.6
+  script:
+  - apt-get update -yq
+  - apt-get install -yq ruby-dev
+  - gem install dpl
+  - dpl --provider=heroku --app=iseplife --api-key=$HEROKU_API_KEY
+  only:
+  - master
