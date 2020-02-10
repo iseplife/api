@@ -17,7 +17,6 @@ public class Image extends Media {
   @GeneratedValue
   private Long id;
 
-
   @ManyToOne
   @JsonIgnore
   private Gallery gallery;

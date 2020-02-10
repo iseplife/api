@@ -123,6 +123,14 @@ public class GalleryService {
     galleryRepository.save(gallery);
   }
 
+  public void deleteGallery(Gallery gallery){
+    gallery
+      .getImages()
+      .forEach(img -> mediaService.deleteMedia(img));
+
+    galleryRepository.delete(gallery);
+  }
+
 
   public void deleteImagesGallery(Long galleryID, List<Long> imagesID) {
     Gallery gallery = getGallery(galleryID);
@@ -141,7 +149,7 @@ public class GalleryService {
 
     List<Image> images = imageRepository.findImageByIdIn(imagesID);
     images.forEach(img -> {
-      mediaService.deleteImageFile(img);
+      mediaService.deleteMedia(img);
     });
   }
 }

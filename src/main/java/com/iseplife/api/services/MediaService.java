@@ -111,13 +111,13 @@ public class MediaService {
     throw new RuntimeException("could not get the image with id: " + id);
   }
 
-  public Document createDocument(Long postId, MultipartFile fileUploaded) {
+  public Document createDocument(Long postId, String title, MultipartFile fileUploaded) {
     Document document = new Document();
     document.setCreation(new Date());
 
     String name = fileHandler.upload(fileUploaded, ObjectUtils.asMap("folder", "document"));
     document.setName(name);
-    document.setOriginalName(fileUploaded.getOriginalFilename());
+    document.setTitle(title);
     document = mediaRepository.save(document);
 
     postService.addMediaEmbed(postId, document);
@@ -202,9 +202,9 @@ public class MediaService {
     }
   }
 
-  void deleteImageFile(Image image) {
-    fileHandler.delete(image.getName(), ObjectUtils.emptyMap());
-    imageRepository.delete(image);
+  void deleteMedia(Media media) {
+    fileHandler.delete(media.getName(), ObjectUtils.emptyMap());
+    mediaRepository.delete(media);
   }
 
   /**

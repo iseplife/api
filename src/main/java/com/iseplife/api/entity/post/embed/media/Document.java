@@ -11,26 +11,17 @@ import javax.persistence.Entity;
 @DiscriminatorValue(MediaType.DOCUMENT)
 public class Document extends Media {
 
-  private String name;
-  private String originalName;
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getOriginalName() {
-    return originalName;
-  }
-
-  public void setOriginalName(String originalName) {
-    this.originalName = originalName;
-  }
+  private String title;
 
   public String getEmbedType(){
     return EmbedType.DOCUMENT;
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
   }
 }
