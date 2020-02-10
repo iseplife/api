@@ -1,13 +1,11 @@
 package com.iseplife.api.services;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.iseplife.api.constants.AWSBucket;
-import com.iseplife.api.services.uploading.FileHandlerInterface;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+import com.iseplife.api.exceptions.FileException;
+import com.iseplife.api.utils.MediaUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,66 +14,68 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Map;
 
 @Service
-public class FileHandler implements FileHandlerInterface {
-  private AmazonS3 s3client;
-  
-  @Value("${amazonProperties.accessKey}")
-  private String accessKey;
+public class FileHandler {
+  private final Logger LOG = LoggerFactory.getLogger(FileHandler.class);
+  private final int VIDEO_THRESHOLD_SIZE = 100000000;
 
-  @Value("${amazonProperties.secretKey}")
-  private String secretKey;
+  private Cloudinary cloudinary;
+
+  @Value("${cloudinary.api_key}")
+  private String key;
+
+  @Value("${cloudinary.api_secret}")
+  private String secret;
+
+  @Value("${cloudinary.clound_name}")
+  private String cloud;
 
   @PostConstruct
-  private void initializeAmazonClient() {
-    AWSCredentials credentials = new BasicAWSCredentials(this.accessKey, this.secretKey);
-    s3client = AmazonS3ClientBuilder
-      .standard()
-      .withCredentials(new AWSStaticCredentialsProvider(credentials))
-      .withRegion(Regions.EU_WEST_1)
-      .build();
+  private void initializeCloudinary() {
+    cloudinary = new Cloudinary("cloudinary://" + key + ":" + secret + "@" + cloud);
   }
 
-  private File convertToFile(MultipartFile file) throws IOException {
-    File convertedFile = new File(file.getOriginalFilename());
-    FileOutputStream fos = new FileOutputStream(convertedFile);
-    fos.write(file.getBytes());
-    fos.close();
+
+  public String upload(MultipartFile file, Map params) {
+    return upload(convertToFile(file), params);
+  }
+
+  public String upload(File file, Map params) {
+    Map res;
+    try {
+      if(params.get("resource_type").equals("video") && file.length() > VIDEO_THRESHOLD_SIZE){
+        res = cloudinary.uploader().uploadLarge(file, params);
+      }else {
+        res = cloudinary.uploader().upload(file, params);
+      }
+    } catch (IOException e) {
+      throw new FileException("Could not upload file to cloudinary: ", e);
+    }
+    return (String) res.get("public_id");
+  }
+
+  private File convertToFile(MultipartFile file) {
+    File convertedFile;
+    try {
+      convertedFile = new File(file.getOriginalFilename());
+      FileOutputStream fos = new FileOutputStream(convertedFile);
+      fos.write(file.getBytes());
+      fos.close();
+    } catch (IOException e) {
+      LOG.error("could not save file", e);
+      throw new FileException("could not create file: ", e);
+    }
     return convertedFile;
   }
 
-
-  public String upload(MultipartFile file, String fileURL, AWSBucket bucket) {
+  public void delete(String name, Map params) {
     try {
-      return upload(convertToFile(file), fileURL, bucket);
+      cloudinary.uploader().destroy(name, params);
     } catch (IOException e) {
-      e.printStackTrace();
-      return null;
+      LOG.error("could not save delete file " + name, e);
+      throw new FileException("Couldn't delete file", e);
     }
   }
-
-  @Override
-  public String upload(File file, String fileURL, AWSBucket bucket) {
-    s3client.putObject(
-      bucket.name(),
-      fileURL,
-      file
-    );
-    return fileURL;
-  }
-
-  @Override
-  public Boolean delete(String fileURL) {
-    return null;
-  }
-
-  private String datePath() {
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
-    return dateFormat.format(new Date()) + "/";
-  }
-
-
 }
