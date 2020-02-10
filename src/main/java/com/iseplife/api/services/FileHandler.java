@@ -29,7 +29,7 @@ public class FileHandler {
   @Value("${cloudinary.api_secret}")
   private String secret;
 
-  @Value("${cloudinary.clound_name}")
+  @Value("${cloudinary.cloud_name}")
   private String cloud;
 
   @PostConstruct
