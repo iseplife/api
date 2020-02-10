@@ -1,5 +1,6 @@
 package com.iseplife.api.services;
 
+import com.cloudinary.utils.ObjectUtils;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.ClubRole;
 import com.iseplife.api.constants.FeedConstant;
@@ -44,7 +45,6 @@ public class StudentService {
   @Autowired
   StudentFactory studentFactory;
 
-
   @Autowired
   RoleRepository roleRepository;
 
@@ -53,6 +53,9 @@ public class StudentService {
 
   @Autowired
   ClubMemberRepository clubMemberRepository;
+
+  @Autowired
+  FileHandler fileHandler;
 
   @Value("${storage.student.url}")
   String studentImageStorage;
@@ -159,18 +162,7 @@ public class StudentService {
   }
 
   private void updateProfileImage(Student student, MultipartFile image) {
-    String path = imageUtils.resolvePath(studentImageStorage,
-      Long.toString(student.getId()), false, student.getId());
-    imageUtils.removeIfExistJPEG(path);
-    imageUtils.saveJPG(image, WIDTH_PROFILE_IMAGE, path);
-
-    String pathThumb = imageUtils.resolvePath(studentImageStorage,
-      Long.toString(student.getId()), true, student.getId());
-    imageUtils.removeIfExistJPEG(pathThumb);
-    imageUtils.saveJPG(image, WIDTH_PROFILE_IMAGE_THUMB, pathThumb);
-
-    student.setPhotoUrl(imageUtils.getPublicUrlImage(path));
-    student.setPhotoUrlThumb(imageUtils.getPublicUrlImage(pathThumb));
+    fileHandler.upload(image, ObjectUtils.asMap("public_id", "user/"+student.getId()));
   }
 
   public Page<StudentWithRoleView> getAllForAdmin(int page) {
