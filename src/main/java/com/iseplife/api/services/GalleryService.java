@@ -6,7 +6,7 @@ import com.iseplife.api.dao.media.image.ImageRepository;
 import com.iseplife.api.dto.TempFile;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
-import com.iseplife.api.entity.media.Image;
+import com.iseplife.api.entity.post.embed.media.Image;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.exceptions.AuthException;
 import com.iseplife.api.exceptions.FileException;
@@ -102,7 +102,7 @@ public class GalleryService {
 
     CompletableFuture.runAsync(() -> {
       tempFiles.forEach(file -> {
-        mediaService.addGalleryImage(file.getFile(), file.getContentType(), gallery);
+        mediaService.addGalleryImage(file.getFile(), gallery);
       });
       postService.setPublishState(postID, PublishStateEnum.PUBLISHED);
     });

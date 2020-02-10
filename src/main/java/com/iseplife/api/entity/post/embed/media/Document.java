@@ -1,8 +1,7 @@
-package com.iseplife.api.entity.post.embed;
+package com.iseplife.api.entity.post.embed.media;
 
 import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.constants.MediaType;
-import com.iseplife.api.entity.media.Media;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -13,7 +12,6 @@ import javax.persistence.Entity;
 public class Document extends Media {
 
   private String name;
-  private String path;
   private String originalName;
 
   public String getName() {
@@ -22,14 +20,6 @@ public class Document extends Media {
 
   public void setName(String name) {
     this.name = name;
-  }
-
-  public String getPath() {
-    return path;
-  }
-
-  public void setPath(String path) {
-    this.path = path;
   }
 
   public String getOriginalName() {

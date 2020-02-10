@@ -1,7 +1,7 @@
 package com.iseplife.api.entity.post.embed.poll;
 
 import com.iseplife.api.constants.EmbedType;
-import com.iseplife.api.entity.media.Embedable;
+import com.iseplife.api.entity.post.embed.Embedable;
 
 import javax.persistence.*;
 import java.util.Date;

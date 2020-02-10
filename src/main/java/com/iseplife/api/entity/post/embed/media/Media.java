@@ -1,7 +1,8 @@
-package com.iseplife.api.entity.media;
+package com.iseplife.api.entity.post.embed.media;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.entity.Feed;
+import com.iseplife.api.entity.post.embed.Embedable;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -19,6 +20,8 @@ public abstract class Media implements Embedable {
   private Boolean NSFW = false;
 
   private Date creation;
+
+  private String name;
 
   @ManyToOne
   @JsonIgnore
@@ -50,6 +53,14 @@ public abstract class Media implements Embedable {
 
   public void setNSFW(Boolean NSFW) {
     this.NSFW = NSFW;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
   public Feed getFeed(){

@@ -1,6 +1,6 @@
 package com.iseplife.api.dao.media;
 
-import com.iseplife.api.entity.media.Media;
+import com.iseplife.api.entity.post.embed.media.Media;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;

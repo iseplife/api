@@ -4,8 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.entity.Feed;
 import com.iseplife.api.entity.club.Club;
-import com.iseplife.api.entity.media.Embedable;
-import com.iseplife.api.entity.media.Image;
+import com.iseplife.api.entity.post.embed.media.Image;
 
 import javax.persistence.*;
 import java.util.ArrayList;

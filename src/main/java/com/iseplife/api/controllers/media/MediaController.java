@@ -1,11 +1,11 @@
 package com.iseplife.api.controllers.media;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
-import com.iseplife.api.entity.media.Image;
+import com.iseplife.api.entity.post.embed.media.Image;
 import com.iseplife.api.entity.Matched;
-import com.iseplife.api.entity.post.embed.Document;
-import com.iseplife.api.entity.media.Media;
-import com.iseplife.api.entity.media.Video;
+import com.iseplife.api.entity.post.embed.media.Document;
+import com.iseplife.api.entity.post.embed.media.Media;
+import com.iseplife.api.entity.post.embed.media.Video;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.services.AuthService;
 import com.iseplife.api.services.ClubService;
