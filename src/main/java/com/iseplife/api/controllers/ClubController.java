@@ -45,6 +45,7 @@ public class ClubController {
   JsonUtils jsonUtils;
 
   @GetMapping
+  @RolesAllowed({Roles.STUDENT})
   public List<Club> listClubs() {
     return clubService.getAll();
   }
@@ -88,11 +89,13 @@ public class ClubController {
   }
 
   @GetMapping("/{id}")
+  @RolesAllowed({Roles.STUDENT})
   public Club getClub(@PathVariable Long id) {
     return clubService.getClub(id);
   }
 
   @GetMapping("/{id}/galleries")
+  @RolesAllowed({Roles.STUDENT})
   public Page<Gallery> getGalleries(@PathVariable Long id, @RequestParam(defaultValue = "0") int page){
     return clubService.getClubGalleries(id, page);
   }
@@ -104,6 +107,7 @@ public class ClubController {
     clubService.deleteClub(id);
   }
 
+  @RolesAllowed({Roles.STUDENT})
   private boolean hasAdminAccess(TokenPayload token, Long club) {
     if (!token.getRoles().contains(Roles.ADMIN)) {
       return !token.getClubsAdmin().contains(club);
@@ -123,6 +127,7 @@ public class ClubController {
   }
 
   @GetMapping("/{id}/admins")
+  @RolesAllowed({Roles.STUDENT})
   public Set<Student> getAdmins(@PathVariable Long id) {
     return clubService.getAdmins(id);
   }
@@ -150,11 +155,13 @@ public class ClubController {
   }
 
   @GetMapping("/{id}/member")
+  @RolesAllowed({Roles.STUDENT})
   public List<ClubMember> getMembers(@PathVariable Long id) {
     return clubService.getMembers(id);
   }
 
   @GetMapping("/{id}/post")
+  @RolesAllowed({Roles.STUDENT})
   public Page<PostView> getPosts(@PathVariable Long id, @RequestParam(defaultValue = "0") int page) {
     return postService.getPostsAuthor(id, authService.isUserAnonymous(), page);
   }
