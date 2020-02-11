@@ -43,9 +43,10 @@ public class FileHandler {
   }
 
   public String upload(File file, Map params) {
+    String type = (String) params.get("resource_type");
     Map res;
     try {
-      if(params.get("resource_type").equals("video") && file.length() > VIDEO_THRESHOLD_SIZE){
+      if( type != null  && type.equals("video") && file.length() > VIDEO_THRESHOLD_SIZE){
         res = cloudinary.uploader().uploadLarge(file, params);
       }else {
         res = cloudinary.uploader().upload(file, params);
