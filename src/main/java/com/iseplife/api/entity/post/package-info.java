@@ -1,7 +1,7 @@
 @AnyMetaDef(
   name = "postEmbed",
   metaType = "string",
-  idType = "int",
+  idType = "long",
   metaValues = {
     @MetaValue(value = EmbedType.GALLERY, targetEntity = Gallery.class),
     @MetaValue(value = EmbedType.POLL, targetEntity = Poll.class),
