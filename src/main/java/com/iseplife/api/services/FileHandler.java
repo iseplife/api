@@ -2,6 +2,7 @@ package com.iseplife.api.services;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.iseplife.api.dto.TempFile;
 import com.iseplife.api.exceptions.FileException;
 import com.iseplife.api.utils.MediaUtils;
 import org.slf4j.Logger;
@@ -14,6 +15,7 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Map;
 
 @Service
@@ -46,29 +48,15 @@ public class FileHandler {
     String type = (String) params.get("resource_type");
     Map res;
     try {
-      if( type != null  && type.equals("video") && file.length() > VIDEO_THRESHOLD_SIZE){
+      if (type != null && type.equals("video") && file.length() > VIDEO_THRESHOLD_SIZE) {
         res = cloudinary.uploader().uploadLarge(file, params);
-      }else {
+      } else {
         res = cloudinary.uploader().upload(file, params);
       }
     } catch (IOException e) {
       throw new FileException("Could not upload file to cloudinary: ", e);
     }
     return (String) res.get("public_id");
-  }
-
-  private File convertToFile(MultipartFile file) {
-    File convertedFile;
-    try {
-      convertedFile = new File(file.getOriginalFilename());
-      FileOutputStream fos = new FileOutputStream(convertedFile);
-      fos.write(file.getBytes());
-      fos.close();
-    } catch (IOException e) {
-      LOG.error("could not save file", e);
-      throw new FileException("could not create file: ", e);
-    }
-    return convertedFile;
   }
 
   public void delete(String name, Map params) {
@@ -78,5 +66,18 @@ public class FileHandler {
       LOG.error("could not save delete file " + name, e);
       throw new FileException("Couldn't delete file", e);
     }
+  }
+
+  private File convertToFile(MultipartFile file) {
+    File tempFile;
+    try {
+      tempFile = Files.createTempFile(null, file.getOriginalFilename()).toFile();
+      file.transferTo(tempFile);
+
+    } catch (IOException e) {
+      LOG.error("could not save file", e);
+      throw new FileException("could not create file: ", e);
+    }
+    return tempFile;
   }
 }
