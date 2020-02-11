@@ -93,6 +93,12 @@
         <version>2.7.0</version>
     </dependency>
 
+    <dependency>
+      <groupId>com.cloudinary</groupId>
+      <artifactId>cloudinary-http44</artifactId>
+      <version>1.25.0</version>
+    </dependency>
+
 	</dependencies>
 
 	<build>

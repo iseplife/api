@@ -1,4 +1,4 @@
-package com.iseplife.api.entity.media;
+package com.iseplife.api.entity.post.embed;
 
 public interface Embedable {
   Long id = 0L;

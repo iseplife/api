@@ -1,4 +1,4 @@
-package com.iseplife.api.entity.media;
+package com.iseplife.api.entity.post.embed.media;
 
 import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.constants.MediaType;
@@ -10,9 +10,7 @@ import java.util.Date;
 @Entity
 @DiscriminatorValue(MediaType.VIDEO)
 public class Video extends Media {
-  private String name;
-
-  private String url;
+  private String title;
   private String poster;
 
   private Integer views = 0;
@@ -22,20 +20,12 @@ public class Video extends Media {
     super.setCreation(creation);
   }
 
-  public String getUrl() {
-    return url;
+  public String getTitle() {
+    return title;
   }
 
-  public void setUrl(String url) {
-    this.url = url;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
+  public void setTitle(String title) {
+    this.title = title;
   }
 
   public Integer getViews() {
@@ -57,4 +47,6 @@ public class Video extends Media {
   public String getEmbedType(){
     return EmbedType.VIDEO;
   }
+
+
 }

@@ -10,10 +10,12 @@ import com.iseplife.api.dto.view.AuthorView;
 import com.iseplife.api.dto.view.PostView;
 import com.iseplife.api.entity.Feed;
 import com.iseplife.api.entity.Thread;
-import com.iseplife.api.entity.media.Embedable;
-import com.iseplife.api.entity.post.embed.Document;
+import com.iseplife.api.entity.post.embed.Embedable;
+import com.iseplife.api.entity.post.embed.media.Document;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.post.Post;
+import com.iseplife.api.entity.post.embed.media.Media;
+import com.iseplife.api.entity.post.embed.poll.Poll;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.PublishStateEnum;
 import com.iseplife.api.constants.Roles;
@@ -146,34 +148,18 @@ public class PostService {
     if (authService.hasRightOn(post)) {
       throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");
     }
-    // delete media files on disk for each media type
-    if (post.getEmbed() instanceof Gallery) {
-      Gallery gallery = (Gallery) post.getEmbed();
-      gallery.getImages().forEach(img -> mediaService.deleteImageFile(img));
-    }
 
-    if (post.getEmbed() instanceof Document) {
-      Document document = (Document) post.getEmbed();
-      mediaUtils.removeIfExistPublic(document.getPath());
+    Embedable embed = post.getEmbed();
+    if (embed instanceof Media) {
+      mediaService.deleteMedia((Media) embed);
     }
-
-    if (post.getEmbed() instanceof Document) {
-      Document document = (Document) post.getEmbed();
-      mediaUtils.removeIfExistPublic(document.getPath());
+    if (embed instanceof Gallery) {
+      galleryService.deleteGallery((Gallery) embed);
     }
-
-    /*if (post.getEmbed() instanceof Video) {
-      Video video = (Video) post.getMedia();
-      if (video.getUrl() != null) {
-        mediaUtils.removeIfExistPublic(video.getUrl());
-      }
-      if (video.getPoster() != null) {
-        mediaUtils.removeIfExistPublic(video.getPoster());
-      }
-    }*/
 
     postRepository.delete(postID);
   }
+
 
   public void togglePinnedPost(Long postID, TokenPayload auth) {
     Post post = getPost(postID);

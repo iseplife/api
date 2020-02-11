@@ -1,6 +1,6 @@
 package com.iseplife.api.dao.media.image;
 
-import com.iseplife.api.entity.media.Image;
+import com.iseplife.api.entity.post.embed.media.Image;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

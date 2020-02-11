@@ -3,7 +3,7 @@ package com.iseplife.api.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
-import com.iseplife.api.entity.media.Media;
+import com.iseplife.api.entity.post.embed.media.Media;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.post.embed.Gallery;
 

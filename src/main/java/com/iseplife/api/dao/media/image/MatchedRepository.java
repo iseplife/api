@@ -1,6 +1,6 @@
 package com.iseplife.api.dao.media.image;
 
-import com.iseplife.api.entity.media.Image;
+import com.iseplife.api.entity.post.embed.media.Image;
 import com.iseplife.api.entity.Matched;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

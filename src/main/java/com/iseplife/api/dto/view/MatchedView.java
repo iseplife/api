@@ -1,6 +1,6 @@
 package com.iseplife.api.dto.view;
 
-import com.iseplife.api.entity.media.Image;
+import com.iseplife.api.entity.post.embed.media.Image;
 import com.iseplife.api.entity.user.Student;
 
 /**

@@ -1,7 +1,7 @@
 package com.iseplife.api.dto.view;
 
 import com.iseplife.api.entity.club.Club;
-import com.iseplife.api.entity.media.Embedable;
+import com.iseplife.api.entity.post.embed.Embedable;
 import com.iseplife.api.entity.user.Student;
 
 import java.util.Date;
