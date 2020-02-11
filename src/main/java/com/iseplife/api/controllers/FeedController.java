@@ -26,16 +26,19 @@ public class FeedController {
   AuthService authService;
 
   @GetMapping("/main")
+  @RolesAllowed({Roles.STUDENT})
   public Page<PostView> getMain(@RequestParam(defaultValue = "0") int page) {
     return feedService.getMainPosts(page);
   }
 
   @GetMapping("/{name}")
+  @RolesAllowed({Roles.STUDENT})
   public Page<PostView> getFeedPosts(@PathVariable String name, @RequestParam(defaultValue = "0") int page) {
     return feedService.getFeedPosts(name, page);
   }
 
   @GetMapping("/{name}/pinned")
+  @RolesAllowed({Roles.STUDENT})
   public List<PostView> getFeedPostsPinned(@PathVariable String name) {
     return feedService.getFeedPostsPinned(name);
   }

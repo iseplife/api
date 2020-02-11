@@ -1,13 +1,12 @@
 package com.iseplife.api.controllers;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dto.EventDTO;
 import com.iseplife.api.dto.view.EventPreviewView;
 import com.iseplife.api.entity.event.Event;
-import com.iseplife.api.constants.Roles;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.exceptions.AuthException;
-import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.services.EventService;
 import com.iseplife.api.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.security.RolesAllowed;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Guillaume on 31/07/2017.
@@ -58,41 +54,49 @@ public class EventController {
   }
 
   @GetMapping
+  @RolesAllowed({Roles.STUDENT})
   public List<EventPreviewView> getCurrentEvents(@AuthenticationPrincipal TokenPayload auth) {
     return eventService.getTodayEvents(auth);
   }
 
   @GetMapping("/t/{timestamp}")
+  @RolesAllowed({Roles.STUDENT})
   public  List<EventPreviewView> getEventsAroundDate(@AuthenticationPrincipal TokenPayload auth, @PathVariable Long timestamp) {
     return eventService.getAroundDateEvents(auth, new Date(timestamp));
   }
 
   @GetMapping("/t/{timestamp}/future")
+  @RolesAllowed({Roles.STUDENT})
   public  Page<EventPreviewView> getAllFutureEvents(@AuthenticationPrincipal TokenPayload auth, @PathVariable Long timestamp, @RequestParam(defaultValue = "0") int page) {
     return eventService.getFutureEvents(auth, new Date(timestamp), page);
   }
 
   @GetMapping("/t/{timestamp}/previous")
+  @RolesAllowed({Roles.STUDENT})
   public Page<EventPreviewView> getAllPassedEvents(@AuthenticationPrincipal TokenPayload auth, @PathVariable Long timestamp, @RequestParam(defaultValue = "0") int page) {
     return eventService.getPassedEvents(auth, new Date(timestamp), page);
   }
 
   @GetMapping("/{id}")
+  @RolesAllowed({Roles.STUDENT})
   public Event getEvent(@PathVariable Long id) {
     return eventService.getEvent(id);
   }
 
   @GetMapping("/{id}/previous")
+  @RolesAllowed({Roles.STUDENT})
   public List<EventPreviewView> getPreviousEditions(@PathVariable Long id) {
     return eventService.getPreviousEditions(id);
   }
 
   @GetMapping("/{id}/children")
+  @RolesAllowed({Roles.STUDENT})
   public List<EventPreviewView> getChildrenEvents(@PathVariable Long id) {
     return eventService.getChildrenEvents(id);
   }
 
   @GetMapping("/{id}/galleries")
+  @RolesAllowed({Roles.STUDENT})
   public List<Gallery> getGalleries(@PathVariable Long id) {
     return eventService.getEventGalleries(id);
   }
