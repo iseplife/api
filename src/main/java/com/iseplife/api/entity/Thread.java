@@ -16,10 +16,10 @@ public class Thread {
   @GeneratedValue
   private Long id;
 
-  @OneToOne(cascade = CascadeType.ALL)
+  @OneToOne(mappedBy = "thread", cascade = CascadeType.ALL)
   private Post post;
 
-  @OneToOne(cascade = CascadeType.ALL)
+  @OneToOne(mappedBy = "thread", cascade = CascadeType.ALL)
   private Comment comment;
 
   @JsonIgnore
@@ -30,9 +30,13 @@ public class Thread {
   @OneToMany(mappedBy = "thread", cascade = CascadeType.REMOVE, orphanRemoval = true)
   private List<Like> likes = new ArrayList<>();
 
-  public Long getId() { return id; }
+  public Long getId() {
+    return id;
+  }
 
-  public void setId(Long id) { this.id = id; }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
   public List<Comment> getComments() {
     return comments;
@@ -43,7 +47,9 @@ public class Thread {
   }
 
   @JsonIgnore
-  public List<Like> getLikes() { return likes; }
+  public List<Like> getLikes() {
+    return likes;
+  }
 
   public void setLikes(List<Like> likes) {
     this.likes = likes;

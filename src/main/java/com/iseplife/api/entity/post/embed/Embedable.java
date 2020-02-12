@@ -1,9 +1,8 @@
 package com.iseplife.api.entity.post.embed;
 
-public interface Embedable {
-  Long id = 0L;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-  Long getId();
-  void setId(Long id);
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+public interface Embedable {
   String getEmbedType();
 }

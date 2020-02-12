@@ -6,7 +6,7 @@ import com.iseplife.api.entity.user.Student;
 
 import javax.persistence.*;
 
-@Entity(name="`Like`")
+@Entity(name="Likes")
 public class Like {
 
   @Id
@@ -16,19 +16,12 @@ public class Like {
   @ManyToOne
   private Thread thread;
 
-  @ManyToOne()
-  private Comment comment;
-
   @ManyToOne
   private Student student;
 
   public Long getId() { return id; }
 
   public void setId(Long id) { this.id = id; }
-
-  public Comment getComment() { return comment; }
-
-  public void setComment(Comment comment) { this.comment = comment; }
 
   @JsonIgnore
   public Thread getThread() {
