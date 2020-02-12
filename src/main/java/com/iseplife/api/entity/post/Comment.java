@@ -19,7 +19,7 @@ public class Comment implements ThreadInterface {
   @ManyToOne
   private Thread parentThread;
 
-  @OneToOne(mappedBy = "comment")
+  @OneToOne
   private Thread thread;
 
   @ManyToOne
@@ -34,9 +34,6 @@ public class Comment implements ThreadInterface {
 
   @Column(length = 500)
   private String message;
-
-  @OneToMany(mappedBy = "comment" ,cascade = CascadeType.REMOVE,  orphanRemoval = true)
-  private List<Like> likes = new ArrayList<>();
 
   public Long getId() {
     return id;
@@ -101,12 +98,8 @@ public class Comment implements ThreadInterface {
     this.lastEdition = lastEdition;
   }
 
-  public void setLikes(List<Like> likes) {
-    this.likes = likes;
-  }
-
   public List<Like> getLikes() {
-    return likes;
+    return thread.getLikes();
   }
 
   public Comment getParent() {

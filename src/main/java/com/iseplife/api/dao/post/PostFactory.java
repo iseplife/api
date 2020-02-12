@@ -3,9 +3,7 @@ package com.iseplife.api.dao.post;
 import com.iseplife.api.dto.PostDTO;
 import com.iseplife.api.dto.view.PostView;
 import com.iseplife.api.entity.post.Post;
-import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.services.*;
-import com.iseplife.api.constants.Roles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,15 +19,6 @@ public class PostFactory {
 
   @Autowired
   ThreadService threadService;
-
-  @Autowired
-  PostService postService;
-
-  @Autowired
-  StudentService studentService;
-
-  @Autowired
-  ClubService clubService;
 
   public Post dtoToEntity(PostDTO post) {
     Post p = new Post();
@@ -50,12 +39,11 @@ public class PostFactory {
     postView.setPinned(post.getPinned());
     postView.setNbComments(post.getComments().size());
 
-
     postView.setEmbed(post.getEmbed());
+
+
     postView.setAuthor(post.getAuthor());
-
-    postView.setLiked(threadService.isLiked(post));
-
+    postView.setLiked(threadService.isLiked(post.getThread()));
     postView.setPrivate(post.getPrivate());
 
     postView.setHasWriteAccess(authService.hasRightOn(post));

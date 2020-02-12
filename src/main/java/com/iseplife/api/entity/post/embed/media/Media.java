@@ -14,6 +14,11 @@ public abstract class Media implements Embedable {
   @GeneratedValue
   private Long id;
 
+  /**
+   * We can ignore this field in json as the Embeddable interface
+   * will already give use the media type by giving us the embed type
+   */
+  @JsonIgnore
   @Column(insertable = false, updatable = false)
   private String mediaType;
 

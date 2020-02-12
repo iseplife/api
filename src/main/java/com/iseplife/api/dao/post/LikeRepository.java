@@ -8,5 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface LikeRepository extends CrudRepository<Like, Long> {
 
+  boolean existsByThread_IdAndStudent_Id(Long thread, Long student);
+
   Like findOneByThreadIdAndStudentId(Long thread, Long student);
 }

@@ -17,14 +17,15 @@ public class Image extends Media {
   @GeneratedValue
   private Long id;
 
-  @ManyToOne
   @JsonIgnore
+  @ManyToOne
   private Gallery gallery;
 
   @JsonIgnore
   @OneToOne(cascade = CascadeType.ALL)
   private Thread thread;
 
+  @JsonIgnore
   @OneToMany(mappedBy = "image", cascade = CascadeType.ALL)
   private List<Matched> matched;
 
@@ -63,4 +64,5 @@ public class Image extends Media {
   public String getEmbedType(){
     return EmbedType.IMAGE;
   }
+
 }

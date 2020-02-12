@@ -89,11 +89,13 @@ public class ThreadService {
     return thread.getLikes();
   }
 
+  public Boolean isLiked(Thread thread){
+    return likeRepository.existsByThread_IdAndStudent_Id(thread.getId(), authService.getLoggedUser().getId());
+  }
+
   public Boolean isLiked(Object entity) {
     Thread thread = getThread(entity);
-
-    if (authService.isUserAnonymous()) return false;
-    return likeRepository.findOneByThreadIdAndStudentId(thread.getId(), authService.getLoggedUser().getId()) != null;
+    return isLiked(thread);
   }
 
   public void toggleLike(Long threadID, Long studentID) {
