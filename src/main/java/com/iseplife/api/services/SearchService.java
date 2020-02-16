@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,19 +35,26 @@ public class SearchService {
 
   //TODO: potentially paginate results
 
-  public List<SearchItemView> globalSearch(String filter, Boolean returnAll) {
+  public List<SearchItemView> globalSearch(String filter, String promos, Boolean returnAll) {
     return Stream
-      .of(searchUser(filter, returnAll), searchEvent(filter, returnAll), searchClub(filter, returnAll))
-      .flatMap(Collection::stream)
-      .collect(Collectors.toList());
+            .of(searchUser(filter, promos, returnAll), searchEvent(filter, returnAll), searchClub(filter, returnAll))
+            .flatMap(Collection::stream)
+            .collect(Collectors.toList());
   }
 
-  public List<SearchItemView> searchUser(String filter, Boolean returnAll) {
-    List<Student> students = studentRepository.searchStudent(filter);
+  public List<SearchItemView> searchUser(String filter, String promos, Boolean returnAll) {
+
+    List<Integer> promoInteger = null;
+    if (!promos.isEmpty()) {
+      promoInteger = Arrays.stream(promos.split(","))
+              .map(Integer::parseInt)
+              .collect(Collectors.toList());
+    }
+    List<Student> students = studentRepository.searchStudent(filter, promoInteger);
 
     return students.stream()
-      .map(s -> searchFactory.entityToSearchItemView(s))
-      .collect(Collectors.toList());
+            .map(s -> searchFactory.entityToSearchItemView(s))
+            .collect(Collectors.toList());
   }
 
   public List<SearchItemView> searchEvent(String filter, Boolean returnAll) {

@@ -22,25 +22,25 @@ public class SearchController {
 
   @GetMapping
   @RolesAllowed({Roles.STUDENT})
-  public List<SearchItemView> globalSearch(@RequestParam String filter, @RequestParam(defaultValue = "0") Boolean allAnswer){
-    return searchService.globalSearch(filter, allAnswer);
+  public List<SearchItemView> globalSearch(String name, String promos, @RequestParam(defaultValue = "0") Boolean allAnswer) {
+    return searchService.globalSearch(name, promos, allAnswer);
   }
 
-  @GetMapping("/user")
+  @GetMapping("/student")
   @RolesAllowed({Roles.STUDENT})
-  public List<SearchItemView> userSearch(@RequestParam String filter, @RequestParam(defaultValue = "0") Boolean allAnswer){
-    return searchService.searchUser(filter, allAnswer);
+  public List<SearchItemView> userSearch(String name, String promos, @RequestParam(defaultValue = "0") Boolean allAnswer) {
+    return searchService.searchUser(name, promos, allAnswer);
   }
 
   @GetMapping("/club")
   @RolesAllowed({Roles.STUDENT})
-  public List<SearchItemView> clubSearch(@RequestParam String filter, @RequestParam(defaultValue = "0") Boolean allAnswer){
+  public List<SearchItemView> clubSearch(@RequestParam String filter, @RequestParam(defaultValue = "0") Boolean allAnswer) {
     return searchService.searchClub(filter, allAnswer);
   }
 
   @GetMapping("/event")
   @RolesAllowed({Roles.STUDENT})
-  public List<SearchItemView> eventSearch(@RequestParam String filter, @RequestParam(defaultValue = "0") Boolean allAnswer){
+  public List<SearchItemView> eventSearch(@RequestParam String filter, @RequestParam(defaultValue = "0") Boolean allAnswer) {
     return searchService.searchEvent(filter, allAnswer);
   }
 
