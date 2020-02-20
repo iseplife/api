@@ -44,12 +44,14 @@ public class SearchService {
 
   public List<SearchItemView> searchUser(String filter, String promos, Boolean returnAll) {
 
-    List<String> promoArray = null;
+    List<Student> students;
     if (!promos.isEmpty()) {
-      promoArray = Arrays.stream(promos.split(","))
+      List<String> promoArray = Arrays.stream(promos.split(","))
               .collect(Collectors.toList());
+      students = studentRepository.searchStudent(filter, promoArray);
+    } else {
+      students = studentRepository.searchStudent(filter);
     }
-    List<Student> students = studentRepository.searchStudent(filter, promoArray);
 
     return students.stream()
             .map(s -> searchFactory.entityToSearchItemView(s))
