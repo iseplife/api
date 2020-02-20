@@ -51,7 +51,7 @@ public interface StudentRepository extends CrudRepository<Student, Long> {
                   "where lower(concat(s.firstName, ' ', s.lastName)) like %?1% " +
                   "and s.promo in ?2 "
   )
-  List<Student> searchStudent(String name, List<Integer> promo);
+  List<Student> searchStudent(String name, List<String> promo);
 
   @Query(
           "select s from Student s " +
