@@ -60,4 +60,9 @@ public interface StudentRepository extends CrudRepository<Student, Long> {
   )
   Page<Student> searchStudent(String name, List<Integer> promo, Pageable pageable);
 
+  @Query(
+          "select distinct s.promo from Student s order by s.promo desc"
+  )
+  List<String> findDistinctPromo();
+
 }
