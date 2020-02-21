@@ -23,6 +23,7 @@ public class ThreadController {
   ThreadService threadService;
 
   @GetMapping("/{id}/likes")
+  @RolesAllowed({Roles.STUDENT})
   public List<Like> getLikes(@PathVariable Long id) {
     return threadService.getLikes(id);
   }
@@ -34,6 +35,7 @@ public class ThreadController {
   }
 
   @GetMapping("/{id}/comment")
+  @RolesAllowed({Roles.STUDENT})
   public List<CommentView> getComments(@PathVariable Long id) {
     return threadService.getComments(id);
   }

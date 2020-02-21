@@ -43,6 +43,7 @@ public class PostController {
   }
 
   @GetMapping("/{id}")
+  @RolesAllowed({Roles.STUDENT})
   public PostView getPost(@PathVariable Long id) {
     return postService.getPostView(id);
   }
