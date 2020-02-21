@@ -22,7 +22,6 @@ public class PostFactory {
 
   public Post dtoToEntity(PostDTO post) {
     Post p = new Post();
-    p.setTitle(post.getTitle());
     p.setDescription(post.getContent());
     p.setPrivate(post.getPrivate());
     return p;
@@ -32,7 +31,6 @@ public class PostFactory {
     PostView postView = new PostView();
 
     postView.setId(post.getId());
-    postView.setTitle(post.getTitle());
     postView.setDescription(post.getDescription());
     postView.setCreationDate(post.getCreationDate());
     postView.setNbLikes(post.getLikes().size());

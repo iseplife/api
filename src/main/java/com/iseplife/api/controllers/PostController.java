@@ -51,21 +51,20 @@ public class PostController {
   @PutMapping("/{id}")
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
   public Post updatePost(@PathVariable Long id,
-                         @RequestBody PostUpdateDTO update,
-                         @AuthenticationPrincipal TokenPayload auth) {
-    return postService.updatePost(id, update, auth);
+                         @RequestBody PostUpdateDTO update) {
+    return postService.updatePost(id, update);
   }
 
   @DeleteMapping("/{id}")
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
-  public void deletePost(@PathVariable Long id, @AuthenticationPrincipal TokenPayload auth) {
-    postService.deletePost(id, auth);
+  public void deletePost(@PathVariable Long id) {
+    postService.deletePost(id);
   }
 
   @PutMapping("/{id}/pin")
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
-  public void togglePinPost(@PathVariable Long id, @AuthenticationPrincipal TokenPayload auth) {
-    postService.togglePinnedPost(id, auth);
+  public void togglePinPost(@PathVariable Long id) {
+    postService.togglePinnedPost(id);
   }
 
   @GetMapping("/authors")

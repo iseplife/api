@@ -124,26 +124,25 @@ public class PostService {
     post.setFeed(feedRepository.findByName(postDTO.getFeed()));
     post.setThread(new Thread());
     post.setCreationDate(new Date());
-    post.setPublishState(postDTO.isDraft() ? PublishStateEnum.WAITING : null);
+    post.setPublishState(postDTO.getDraft() ? PublishStateEnum.WAITING : null);
     post = postRepository.save(post);
 
     postMessageService.broadcastPost(auth.getId(), post);
     return post;
   }
 
-  public Post updatePost(Long postID, PostUpdateDTO update, TokenPayload auth) {
+  public Post updatePost(Long postID, PostUpdateDTO update) {
     Post post = getPost(postID);
     if (authService.hasRightOn(post)) {
       throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");
     }
 
-    post.setTitle(update.getTitle());
     post.setDescription(update.getContent());
     post.setPrivate(update.getPrivate());
     return postRepository.save(post);
   }
 
-  public void deletePost(Long postID, TokenPayload auth) {
+  public void deletePost(Long postID) {
     Post post = getPost(postID);
     if (authService.hasRightOn(post)) {
       throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");
@@ -161,7 +160,7 @@ public class PostService {
   }
 
 
-  public void togglePinnedPost(Long postID, TokenPayload auth) {
+  public void togglePinnedPost(Long postID) {
     Post post = getPost(postID);
     if (authService.hasRightOn(post) && post.getLinkedClub() != null) {
       throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");

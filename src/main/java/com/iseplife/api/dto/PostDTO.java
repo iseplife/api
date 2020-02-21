@@ -6,19 +6,10 @@ package com.iseplife.api.dto;
  */
 public class PostDTO {
   private String feed;
-  private String title;
   private String content;
   private Long linkedClubId;
   private Boolean isPrivate;
-  private Boolean draft;
-
-  public String getTitle() {
-    return title;
-  }
-
-  public void setTitle(String title) {
-    this.title = title;
-  }
+  private Boolean isDraft;
 
   public String getContent() {
     return content;
@@ -40,9 +31,9 @@ public class PostDTO {
 
   public void setLinkedClubId(Long linkedClubId) { this.linkedClubId = linkedClubId; }
 
-  public Boolean isDraft() { return draft; }
+  public Boolean getDraft() { return isDraft; }
 
-  public void setDraft(Boolean draft) { this.draft = draft; }
+  public void setDraft(Boolean draft) { this.isDraft = draft; }
 
   public String getFeed() {
     return feed;

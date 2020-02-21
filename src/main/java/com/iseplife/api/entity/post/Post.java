@@ -26,7 +26,6 @@ public class Post implements ThreadInterface {
   @Id
   @GeneratedValue
   private Long id;
-  private String title;
   @Column(columnDefinition = "TEXT")
   private String description;
 
@@ -75,14 +74,6 @@ public class Post implements ThreadInterface {
 
   public void setId(Long id) {
     this.id = id;
-  }
-
-  public String getTitle() {
-    return title;
-  }
-
-  public void setTitle(String title) {
-    this.title = title;
   }
 
   public Date getCreationDate() {
