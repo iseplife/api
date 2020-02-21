@@ -111,12 +111,12 @@ public class PostService {
   public Post createPost(TokenPayload auth, PostDTO postDTO) {
     Post post = postFactory.dtoToEntity(postDTO);
     post.setAuthor(studentRepository.findOne(auth.getId()));
-    post.setLinkedClub(clubService.getClub(postDTO.getLinkedClubId()));
+    post.setLinkedClub(clubService.getClub(postDTO.getLinkedClub()));
 
     // if creator is not an ADMIN
     if (!auth.getRoles().contains(Roles.ADMIN)) {
       // Check if user is able to post in club's name
-      if (post.getLinkedClub() != null && !auth.getClubsPublisher().contains(postDTO.getLinkedClubId())) {
+      if (post.getLinkedClub() != null && !auth.getClubsPublisher().contains(postDTO.getLinkedClub())) {
         throw new AuthException("not allowed to create this post");
       }
     }

@@ -7,7 +7,7 @@ package com.iseplife.api.dto;
 public class PostDTO {
   private String feed;
   private String description;
-  private Long linkedClubId;
+  private Long linkedClub;
   private Boolean isPrivate;
   private Boolean isDraft;
 
@@ -27,9 +27,9 @@ public class PostDTO {
     isPrivate = aPrivate;
   }
 
-  public Long getLinkedClubId() { return linkedClubId; }
+  public Long getLinkedClub() { return linkedClub; }
 
-  public void setLinkedClubId(Long linkedClubId) { this.linkedClubId = linkedClubId; }
+  public void setLinkedClub(Long linkedClub) { this.linkedClub = linkedClub; }
 
   public Boolean getDraft() { return isDraft; }
 
