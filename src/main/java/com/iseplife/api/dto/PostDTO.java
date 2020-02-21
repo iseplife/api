@@ -6,17 +6,17 @@ package com.iseplife.api.dto;
  */
 public class PostDTO {
   private String feed;
-  private String content;
+  private String description;
   private Long linkedClubId;
   private Boolean isPrivate;
   private Boolean isDraft;
 
-  public String getContent() {
-    return content;
+  public String getDescription() {
+    return description;
   }
 
-  public void setContent(String content) {
-    this.content = content;
+  public void setDescription(String description) {
+    this.description = description;
   }
 
   public Boolean getPrivate() {

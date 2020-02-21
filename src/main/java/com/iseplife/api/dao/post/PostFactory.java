@@ -22,7 +22,7 @@ public class PostFactory {
 
   public Post dtoToEntity(PostDTO post) {
     Post p = new Post();
-    p.setDescription(post.getContent());
+    p.setDescription(post.getDescription());
     p.setPrivate(post.getPrivate());
     return p;
   }
