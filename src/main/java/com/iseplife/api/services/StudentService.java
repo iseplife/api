@@ -162,10 +162,14 @@ public class StudentService {
   }
 
   private void updateProfileImage(Student student, MultipartFile image) {
-    fileHandler.upload(image, ObjectUtils.asMap("public_id", "user/"+student.getId()));
+    fileHandler.upload(image, ObjectUtils.asMap("public_id", "user/" + student.getId()));
   }
 
   public Page<StudentWithRoleView> getAllForAdmin(int page) {
     return getAll(page).map(s -> studentFactory.studentToStudentWithRoles(s));
+  }
+
+  public List<String> getAllPromo() {
+    return studentRepository.findDistinctPromo();
   }
 }

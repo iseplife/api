@@ -141,4 +141,9 @@ public class StudentController {
     studentService.toggleNotifications(auth);
   }
 
+  @GetMapping("/promos")
+  @RolesAllowed({Roles.STUDENT})
+  public List<String> getAllPromos() {
+    return studentService.getAllPromo();
+  }
 }

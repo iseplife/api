@@ -38,7 +38,8 @@ public class SearchFactory {
     SearchItemView searchItem = new SearchItemView();
     searchItem.setId(student.getId());
     searchItem.setName(student.getFirstName() + " " + student.getLastName());
-    searchItem.setThumbURL(student.getPhotoUrlThumb());
+    searchItem.setThumbURL(student.getPhotoUrl());
+    searchItem.setDescription(student.getPromo());
 
     // Status is false when student is archived or promotion is passed
     searchItem.setStatus(!student.isArchived() || Integer.parseInt(student.getPromo()) < Calendar.getInstance().get(Calendar.YEAR));
