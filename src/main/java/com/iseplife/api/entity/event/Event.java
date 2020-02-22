@@ -45,7 +45,6 @@ public class Event {
   @ManyToOne
   private Club club;
 
-  @JsonIgnore
   @OneToOne
   private Feed feed;
 

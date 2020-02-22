@@ -37,6 +37,14 @@ public class FeedService {
     throw new IllegalArgumentException("could not find the feed with name: " + name);
   }
 
+  private Feed getFeed(Long id) {
+    Feed feed = feedRepository.findOne(id);
+    if (feed != null) {
+      return feed;
+    }
+    throw new IllegalArgumentException("could not find the feed with id: " + id);
+  }
+
   public Feed getMain() {
     return feedRepository.findMain();
   }
@@ -61,38 +69,38 @@ public class FeedService {
   }
 
   @Cacheable("posts")
-  public Page<PostView> getFeedPosts(String name, int page) {
-    Feed feed = getFeed(name);
+  public Page<PostView> getFeedPosts(Long id, int page) {
+    Feed feed = getFeed(id);
     return postService.getFeedPosts(feed, page);
   }
 
-  public List<PostView> getFeedPostsWaiting(String name) {
-    Feed feed = getFeed(name);
+  public List<PostView> getFeedPostsWaiting(Long id) {
+    Feed feed = getFeed(id);
     return postService.getFeedPostsWaiting(feed);
   }
 
-  public List<PostView> getFeedPostsPinned(String name) {
-    Feed feed = getFeed(name);
+  public List<PostView> getFeedPostsPinned(Long id) {
+    Feed feed = getFeed(id);
     return postService.getFeedPostsPinned(feed);
   }
 
-  public List<PostView> getFeedDrafts(String name, Student author) {
-    Feed feed = getFeed(name);
+  public List<PostView> getFeedDrafts(Long id, Student author) {
+    Feed feed = getFeed(id);
     return postService.getFeedDrafts(feed, author);
   }
 
-  public Boolean isSubscribed(String name, Long studentID){
-    return subscriptionRepository.findByFeedNameAndListenerId(name, studentID) != null;
+  public Boolean isSubscribed(Long id, Long studentID){
+    return subscriptionRepository.findByFeedIdAndListenerId(id, studentID) != null;
   }
 
-  public void toggleSubscription(String name, Long studentID) {
-    Subscription sub = subscriptionRepository.findByFeedNameAndListenerId(name, studentID);
+  public void toggleSubscription(Long id, Long studentID) {
+    Subscription sub = subscriptionRepository.findByFeedIdAndListenerId(id, studentID);
     if (sub != null) {
       subscriptionRepository.delete(sub);
     }else {
       Student student = studentService.getStudent(studentID);
       sub = new Subscription();
-      sub.setFeed(getFeed(name));
+      sub.setFeed(getFeed(id));
       sub.setListener(student);
 
       subscriptionRepository.save(sub);

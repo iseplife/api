@@ -6,9 +6,12 @@ import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.post.embed.media.Media;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.post.embed.Gallery;
+import com.iseplife.api.entity.user.Role;
+import com.iseplife.api.entity.user.Student;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Feed {
@@ -20,14 +23,21 @@ public class Feed {
   @Column(unique = true)
   private String name;
 
-  @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL)
+  @JsonIgnore
+  @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<Post> posts;
 
-  @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL)
+  @JsonIgnore
+  @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<Media> media;
 
-  @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL)
+  @JsonIgnore
+  @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<Gallery> galleries;
+
+  @JsonIgnore
+  @ManyToMany(fetch = FetchType.LAZY)
+  private Set<Student> admin;
 
   @JsonIgnore
   @OneToOne(mappedBy = "feed")
