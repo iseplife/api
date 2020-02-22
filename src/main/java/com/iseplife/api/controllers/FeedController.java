@@ -31,39 +31,39 @@ public class FeedController {
     return feedService.getMainPosts(page);
   }
 
-  @GetMapping("/{name}")
+  @GetMapping("/{id}/post")
   @RolesAllowed({Roles.STUDENT})
-  public Page<PostView> getFeedPosts(@PathVariable String name, @RequestParam(defaultValue = "0") int page) {
-    return feedService.getFeedPosts(name, page);
+  public Page<PostView> getFeedPosts(@PathVariable Long id, @RequestParam(defaultValue = "0") int page) {
+    return feedService.getFeedPosts(id, page);
   }
 
-  @GetMapping("/{name}/pinned")
+  @GetMapping("/{id}/post/pinned")
   @RolesAllowed({Roles.STUDENT})
-  public List<PostView> getFeedPostsPinned(@PathVariable String name) {
-    return feedService.getFeedPostsPinned(name);
+  public List<PostView> getFeedPostsPinned(@PathVariable Long id) {
+    return feedService.getFeedPostsPinned(id);
   }
 
-  @GetMapping("/{name}/waiting")
+  @GetMapping("/{id}/post/waiting")
   @RolesAllowed({Roles.ADMIN})
-  public List<PostView> getFeedPostsWaiting(@PathVariable String name) {
-    return feedService.getFeedPostsWaiting(name);
+  public List<PostView> getFeedPostsWaiting(@PathVariable Long id) {
+    return feedService.getFeedPostsWaiting(id);
   }
 
-  @GetMapping("/{name}/draft")
+  @GetMapping("/{id}/post/draft")
   @RolesAllowed({Roles.STUDENT})
-  public List<PostView> getClubPostDraft(@PathVariable String name) {
-    return feedService.getFeedDrafts(name, authService.getLoggedUser());
+  public List<PostView> getClubPostDraft(@PathVariable Long id) {
+    return feedService.getFeedDrafts(id, authService.getLoggedUser());
   }
 
-  @GetMapping("/{name}/subscribe")
+  @GetMapping("/{id}/subscribe")
   @RolesAllowed({Roles.STUDENT})
-  public Boolean isFeedSubscribed(@PathVariable String name, @AuthenticationPrincipal TokenPayload auth){
-    return feedService.isSubscribed(name, auth.getId());
+  public Boolean isFeedSubscribed(@PathVariable Long id, @AuthenticationPrincipal TokenPayload auth){
+    return feedService.isSubscribed(id, auth.getId());
   }
 
-  @PostMapping("/{name}/subscribe")
+  @PostMapping("/{id}/subscribe")
   @RolesAllowed({Roles.STUDENT})
-  public void toggleFeedSubscription(@PathVariable String name, @AuthenticationPrincipal TokenPayload auth){
-    feedService.toggleSubscription(name, auth.getId());
+  public void toggleFeedSubscription(@PathVariable Long id, @AuthenticationPrincipal TokenPayload auth){
+    feedService.toggleSubscription(id, auth.getId());
   }
 }
