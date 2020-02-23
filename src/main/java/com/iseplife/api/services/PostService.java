@@ -108,7 +108,7 @@ public class PostService {
     return postFactory.entityToView(post);
   }
 
-  public Post createPost(TokenPayload auth, PostDTO postDTO) {
+  public PostView createPost(TokenPayload auth, PostDTO postDTO) {
     Post post = postFactory.dtoToEntity(postDTO);
     post.setAuthor(studentRepository.findOne(auth.getId()));
     post.setLinkedClub(postDTO.getLinkedClub() != null ? clubService.getClub(postDTO.getLinkedClub()): null);
@@ -128,7 +128,7 @@ public class PostService {
     post = postRepository.save(post);
 
     postMessageService.broadcastPost(auth.getId(), post);
-    return post;
+    return postFactory.entityToView(post);
   }
 
   public Post updatePost(Long postID, PostUpdateDTO update) {
@@ -144,7 +144,7 @@ public class PostService {
 
   public void deletePost(Long postID) {
     Post post = getPost(postID);
-    if (authService.hasRightOn(post)) {
+    if (!authService.hasRightOn(post)) {
       throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");
     }
 
