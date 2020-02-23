@@ -121,7 +121,7 @@ public class PostService {
       }
     }
 
-    post.setFeed(feedRepository.findByName(postDTO.getFeed()));
+    post.setFeed(feedRepository.findOne(postDTO.getFeed()));
     post.setThread(new Thread());
     post.setCreationDate(new Date());
     post.setPublishState(postDTO.getDraft() ? PublishStateEnum.WAITING : null);
