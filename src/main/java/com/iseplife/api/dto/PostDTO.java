@@ -7,7 +7,7 @@ package com.iseplife.api.dto;
 public class PostDTO {
   private String feed;
   private String description;
-  private Long linkedClub;
+  private Long linkedClub = null;
   private Boolean isPrivate;
   private Boolean isDraft;
 
