@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:mysql://fojvtycq53b2f2kx.chr7pe7iynqr.eu-west-1.rds.amazonaws.com:3306/tj2pt8gklezq8i0k?createDatabaseIfNotExist=true&useSSL=false&useUnicode=yes&characterEncoding=UTF-8
-    username: fdy9oxaobvtkbbth
-    password: xi0mcx138xg7fyxt
+    url: jdbc:mysql://${MYSQL_DB:bastiengrignon.ddns.net:3306}/iseplife?createDatabaseIfNotExist=true&useSSL=false&useUnicode=yes&characterEncoding=UTF-8
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:""}
   jpa:
     hibernate:
       ddl-auto: update
@@ -40,6 +40,11 @@ storage:
 logging:
   level:
     com.iseplife.api: INFO
+
+cloudinary:
+  api_key: 433151233382194
+  api_secret: 0v0SI1ZNboGf_AiwsoCEs3Y6Mxo
+  cloud_name: iseplife
 
 jwt:
   secret: 1jmhvPXhI40vqAnm
