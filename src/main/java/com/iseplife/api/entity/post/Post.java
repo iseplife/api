@@ -17,6 +17,7 @@ import com.iseplife.api.entity.Feed;
 import org.hibernate.annotations.*;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import java.util.*;
 
@@ -53,9 +54,9 @@ public class Post implements ThreadInterface {
 
   @ManyToOne
   private Student author;
-
+ 
   @JsonIgnore
-  @OneToOne()
+  @OneToOne(cascade = CascadeType.ALL)
   private Thread thread;
 
   @ManyToOne
