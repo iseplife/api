@@ -24,6 +24,7 @@ public class PostView {
   private Integer nbComments;
   private Boolean isPinned;
   private Boolean isPrivate;
+  private Long thread;
   private Boolean hasWriteAccess;
 
   public Long getId() {
@@ -124,4 +125,11 @@ public class PostView {
 
   public void setLinkedClub(Club linkedClub) { this.linkedClub = linkedClub; }
 
+  public Long getThread() {
+    return thread;
+  }
+
+  public void setThread(Long thread) {
+    this.thread = thread;
+  }
 }

@@ -101,6 +101,7 @@ public class ThreadService {
   public void toggleLike(Long threadID, Long studentID) {
    Like like = likeRepository.findOneByThreadIdAndStudentId(threadID, studentID);
 
+   //TODO: check permissions
     if (like != null) {
       likeRepository.delete(like);
     } else {
