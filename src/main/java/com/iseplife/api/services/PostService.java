@@ -134,7 +134,7 @@ public class PostService {
 
   public Post updatePost(Long postID, PostUpdateDTO update) {
     Post post = getPost(postID);
-    if (authService.hasRightOn(post)) {
+    if (!authService.hasRightOn(post)) {
       throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");
     }
 
