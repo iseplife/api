@@ -124,6 +124,7 @@ public class PostService {
     post.setFeed(feedRepository.findOne(postDTO.getFeed()));
     post.setThread(new Thread());
     post.setCreationDate(new Date());
+    post.setPublicationDate(postDTO.getPublicationDate() == null ? new Date() : postDTO.getPublicationDate());
     post.setPublishState(postDTO.getDraft() ? PublishStateEnum.WAITING : null);
     post = postRepository.save(post);
 
@@ -137,7 +138,8 @@ public class PostService {
       throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");
     }
 
-    post.setDescription(update.getContent());
+    post.setDescription(update.getDescription());
+    post.setPublicationDate(update.getPublicationDate());
     post.setPrivate(update.getPrivate());
     return postRepository.save(post);
   }

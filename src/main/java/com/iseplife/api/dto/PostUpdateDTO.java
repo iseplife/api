@@ -1,31 +1,33 @@
 package com.iseplife.api.dto;
 
+import java.util.Date;
+
 /**
  * Created by Guillaume on 28/10/2017.
  * back
  */
 public class PostUpdateDTO {
-  private String title;
-  private String content;
+  private String description;
+  private Date publicationDate;
   private Boolean isPrivate = true;
 
-  public String getTitle() {
-    return title;
+  public String getDescription() {
+    return description;
   }
 
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
-  public String getContent() {
-    return content;
-  }
-
-  public void setContent(String content) {
-    this.content = content;
+  public void setDescription(String description) {
+    this.description = description;
   }
 
   public Boolean getPrivate() { return isPrivate;  }
 
   public void setPrivate(Boolean aPrivate) {  isPrivate = aPrivate; }
+
+  public Date getPublicationDate() {
+    return publicationDate;
+  }
+
+  public void setPublicationDate(Date publicationDate) {
+    this.publicationDate = publicationDate;
+  }
 }

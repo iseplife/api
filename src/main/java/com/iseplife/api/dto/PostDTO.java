@@ -1,5 +1,7 @@
 package com.iseplife.api.dto;
 
+import java.util.Date;
+
 /**
  * Created by Guillaume on 27/07/2017.
  * back
@@ -7,6 +9,7 @@ package com.iseplife.api.dto;
 public class PostDTO {
   private Long feed;
   private String description;
+  private Date publicationDate = null;
   private Long linkedClub = null;
   private Boolean isPrivate;
   private Boolean isDraft;
@@ -41,5 +44,13 @@ public class PostDTO {
 
   public void setFeed(Long feed) {
     this.feed = feed;
+  }
+
+  public Date getPublicationDate() {
+    return publicationDate;
+  }
+
+  public void setPublicationDate(Date publicationDate) {
+    this.publicationDate = publicationDate;
   }
 }
