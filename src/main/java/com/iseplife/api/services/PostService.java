@@ -111,7 +111,7 @@ public class PostService {
   public PostView createPost(TokenPayload auth, PostDTO postDTO) {
     Post post = postFactory.dtoToEntity(postDTO);
     post.setAuthor(studentRepository.findOne(auth.getId()));
-    post.setLinkedClub(postDTO.getLinkedClub() != null ? clubService.getClub(postDTO.getLinkedClub()): null);
+    post.setLinkedClub(postDTO.getLinkedClub() != null ? clubService.getClub(postDTO.getLinkedClub()) : null);
 
     // if creator is not an ADMIN
     if (!auth.getRoles().contains(Roles.ADMIN)) {
