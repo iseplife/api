@@ -1,5 +1,4 @@
 deploy:
-  type: deploy
   image : ruby:2.6
   script:
   - apt-get update -yq
