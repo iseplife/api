@@ -1,5 +1,5 @@
 deploy:
-  image : ruby:2.6
+  image : ruby:latest
   script:
   - apt-get update -yq
   - apt-get install -yq ruby-dev
