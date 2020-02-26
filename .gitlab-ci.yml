@@ -5,6 +5,6 @@ deploy:
   - apt-get update -yq
   - apt-get install -yq ruby-dev
   - gem install dpl
-  - dpl --provider=heroku --app=iseplife --api-key=$HEROKU_API_KEY
+  - dpl --provider=heroku --app=iseplife-api --api-key=$HEROKU_API_KEY
   only:
   - master
