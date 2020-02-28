@@ -108,10 +108,10 @@ public class PostService {
     return postFactory.entityToView(post);
   }
 
-  public Post createPost(TokenPayload auth, PostDTO postDTO) {
+  public PostView createPost(TokenPayload auth, PostDTO postDTO) {
     Post post = postFactory.dtoToEntity(postDTO);
     post.setAuthor(studentRepository.findOne(auth.getId()));
-    post.setLinkedClub(postDTO.getLinkedClub() != null ? clubService.getClub(postDTO.getLinkedClub()): null);
+    post.setLinkedClub(postDTO.getLinkedClub() != null ? clubService.getClub(postDTO.getLinkedClub()) : null);
 
     // if creator is not an ADMIN
     if (!auth.getRoles().contains(Roles.ADMIN)) {
@@ -121,30 +121,32 @@ public class PostService {
       }
     }
 
-    post.setFeed(feedRepository.findByName(postDTO.getFeed()));
+    post.setFeed(feedRepository.findOne(postDTO.getFeed()));
     post.setThread(new Thread());
     post.setCreationDate(new Date());
+    post.setPublicationDate(postDTO.getPublicationDate() == null ? new Date() : postDTO.getPublicationDate());
     post.setPublishState(postDTO.getDraft() ? PublishStateEnum.WAITING : null);
     post = postRepository.save(post);
 
     postMessageService.broadcastPost(auth.getId(), post);
-    return post;
+    return postFactory.entityToView(post);
   }
 
   public Post updatePost(Long postID, PostUpdateDTO update) {
     Post post = getPost(postID);
-    if (authService.hasRightOn(post)) {
+    if (!authService.hasRightOn(post)) {
       throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");
     }
 
-    post.setDescription(update.getContent());
+    post.setDescription(update.getDescription());
+    post.setPublicationDate(update.getPublicationDate());
     post.setPrivate(update.getPrivate());
     return postRepository.save(post);
   }
 
   public void deletePost(Long postID) {
     Post post = getPost(postID);
-    if (authService.hasRightOn(post)) {
+    if (!authService.hasRightOn(post)) {
       throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");
     }
 

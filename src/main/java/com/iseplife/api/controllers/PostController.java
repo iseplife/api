@@ -38,7 +38,7 @@ public class PostController {
 
   @PostMapping
   @RolesAllowed({Roles.STUDENT})
-  public Post createPost(@RequestBody PostDTO post, @AuthenticationPrincipal TokenPayload auth) {
+  public PostView createPost(@RequestBody PostDTO post, @AuthenticationPrincipal TokenPayload auth) {
     return postService.createPost(auth, post);
   }
 
