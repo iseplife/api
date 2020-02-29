@@ -1,6 +1,6 @@
 package com.iseplife.api.controllers;
 
-
+import org.springframework.data.domain.Page;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dto.view.SearchItemView;
 import com.iseplife.api.services.SearchService;
@@ -19,17 +19,19 @@ public class SearchController {
 
   @Autowired
   SearchService searchService;
+/*
 
   @GetMapping("/student")
   @RolesAllowed({Roles.STUDENT})
-  public List<SearchItemView> userSearchPaged(String name, String promos, @RequestParam(defaultValue = "0") Boolean allAnswer) {
-    return searchService.searchUserPaged(name, promos, allAnswer);
+  public List<SearchItemView> globalSearch(String name, String promos, Integer page, @RequestParam(defaultValue = "0") Boolean allAnswer) {
+    return searchService.globalSearch(name, promos, page, allAnswer);
   }
+*/
 
   @GetMapping("/student/all")
   @RolesAllowed({Roles.STUDENT})
-  public List<SearchItemView> userSearch(String name) {
-    return searchService.searchUser(name);
+  public Page<SearchItemView> userSearch(String name, String promos, Integer page, @RequestParam(defaultValue = "0") Boolean allAnswer) {
+    return searchService.searchUser(name, promos, page, allAnswer);
   }
 
   @GetMapping("/club")

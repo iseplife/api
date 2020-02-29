@@ -61,7 +61,7 @@ public interface StudentRepository extends CrudRepository<Student, Long> {
                   "where lower(concat(s.firstName, ' ', s.lastName)) " +
                   "like %?1% and s.promo in ?2 "
   )
-  Page<Student> searchStudent(String name, List<Integer> promo, Pageable pageable);
+  Page<Student> searchStudent(String name, List<String> promo, Pageable pageable);
 
   @Query(
           "select distinct s.promo from Student s order by s.promo desc"
