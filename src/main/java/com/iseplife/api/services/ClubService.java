@@ -1,6 +1,5 @@
 package com.iseplife.api.services;
 
-import com.google.common.collect.Sets;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dto.ClubDTO;
 import com.iseplife.api.dto.view.ClubMemberView;
@@ -9,21 +8,14 @@ import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.club.ClubMember;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.ClubRole;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.club.ClubFactory;
 import com.iseplife.api.dao.club.ClubMemberRepository;
 import com.iseplife.api.dao.club.ClubRepository;
-import com.iseplife.api.dto.ClubDTO;
-import com.iseplife.api.dto.view.ClubMemberView;
-import com.iseplife.api.entity.Feed;
-import com.iseplife.api.entity.club.Club;
-import com.iseplife.api.entity.club.ClubMember;
-import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.exceptions.AuthException;
 import com.iseplife.api.exceptions.IllegalArgumentException;
-import com.iseplife.api.utils.MediaUtils;
+import com.iseplife.api.services.fileHandler.FileHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -56,12 +48,10 @@ public class ClubService {
   GalleryService galleryService;
 
   @Autowired
-  MediaUtils imageUtils;
+  FileHandler fileHandler;
 
   @Value("${storage.club.url}")
   public String clubLogoStorage;
-
-  private static final int WIDTH_LOGO_CLUB = 256;
 
   public Club createClub(ClubDTO dto, MultipartFile logo) {
     Club club = clubFactory.dtoToEntity(dto);
@@ -89,10 +79,10 @@ public class ClubService {
   }
 
   private void setClubLogo(Club club, MultipartFile file) {
-    String path = imageUtils.resolvePath(clubLogoStorage, club.getName(), false);
-    imageUtils.removeIfExistJPEG(path);
-    imageUtils.saveJPG(file, WIDTH_LOGO_CLUB, path);
-    club.setLogoUrl(imageUtils.getPublicUrlImage(path));
+    fileHandler.delete(club.getLogoUrl());
+    String url = fileHandler.upload(file, "/img/usr", Collections.EMPTY_MAP);
+
+    club.setLogoUrl(url);
   }
 
   public ClubMember addMember(Long clubId, Long studentId) {

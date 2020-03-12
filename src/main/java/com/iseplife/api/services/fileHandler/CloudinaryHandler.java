@@ -1,26 +1,19 @@
-package com.iseplife.api.services;
+package com.iseplife.api.services.fileHandler;
 
 import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
-import com.iseplife.api.dto.TempFile;
 import com.iseplife.api.exceptions.FileException;
-import com.iseplife.api.utils.MediaUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.util.Collections;
 import java.util.Map;
 
 @Service
-public class FileHandler {
-  private final Logger LOG = LoggerFactory.getLogger(FileHandler.class);
+public class CloudinaryHandler extends FileHandler {
   private final int VIDEO_THRESHOLD_SIZE = 100000000;
 
   private Cloudinary cloudinary;
@@ -39,13 +32,13 @@ public class FileHandler {
     cloudinary = new Cloudinary("cloudinary://" + key + ":" + secret + "@" + cloud);
   }
 
-
-  public String upload(MultipartFile file, Map params) {
-    return upload(convertToFile(file), params);
+  public String upload(MultipartFile file, String path, Map params) {
+    return upload(convertToFile(file), path, params);
   }
 
-  public String upload(File file, Map params) {
+  public String upload(File file, String path, Map params) {
     String type = (String) params.get("resource_type");
+    params.put("folder", path);
     Map res;
     try {
       if (type != null && type.equals("video") && file.length() > VIDEO_THRESHOLD_SIZE) {
@@ -59,25 +52,22 @@ public class FileHandler {
     return (String) res.get("public_id");
   }
 
+  public boolean delete(String name) {
+    try {
+      cloudinary.uploader().destroy(name, Collections.EMPTY_MAP);
+      return true;
+    } catch (IOException e) {
+      LOG.error("could not save delete file " + name, e);
+      return false;
+    }
+  }
+
   public void delete(String name, Map params) {
     try {
       cloudinary.uploader().destroy(name, params);
     } catch (IOException e) {
-      LOG.error("could not save delete file " + name, e);
       throw new FileException("Couldn't delete file", e);
     }
   }
 
-  private File convertToFile(MultipartFile file) {
-    File tempFile;
-    try {
-      tempFile = Files.createTempFile(null, file.getOriginalFilename()).toFile();
-      file.transferTo(tempFile);
-
-    } catch (IOException e) {
-      LOG.error("could not save file", e);
-      throw new FileException("could not create file: ", e);
-    }
-    return tempFile;
-  }
 }

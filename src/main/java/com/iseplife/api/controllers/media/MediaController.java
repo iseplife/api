@@ -10,7 +10,6 @@ import com.iseplife.api.constants.Roles;
 import com.iseplife.api.services.AuthService;
 import com.iseplife.api.services.ClubService;
 import com.iseplife.api.services.MediaService;
-import com.iseplife.api.utils.MediaUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,9 +23,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/media")
 public class MediaController {
-  @Autowired
-  MediaUtils mediaUtils;
-
   @Autowired
   MediaService mediaService;
 
@@ -115,12 +111,10 @@ public class MediaController {
 //    return new FileSystemResource(file);
 //  }
 
-  @DeleteMapping("/ressource/{type}/{filename:.+}")
+  @DeleteMapping("/ressource/{filename:.+}")
   @RolesAllowed({Roles.ADMIN})
-  public boolean deleteRessource(@PathVariable String type, @PathVariable String filename) {
-    String baseUrl = mediaUtils.getBaseUrl();
-    File file = new File(baseUrl + "/" + type + "/" + filename);
-    return file.delete();
+  public boolean deleteRessource(@PathVariable String filename) {
+    return mediaService.removeMedia(filename);
   }
 
 }

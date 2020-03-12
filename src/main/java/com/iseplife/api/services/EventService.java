@@ -10,7 +10,7 @@ import com.iseplife.api.dao.event.EventFactory;
 import com.iseplife.api.dao.event.EventRepository;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.exceptions.IllegalArgumentException;
-import com.iseplife.api.utils.MediaUtils;
+import com.iseplife.api.services.fileHandler.FileHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -41,10 +41,10 @@ public class EventService {
   GalleryService galleryService;
 
   @Autowired
-  MediaUtils mediaUtils;
+  PostService postService;
 
   @Autowired
-  PostService postService;
+  FileHandler fileHandler;
 
   @Value("${storage.event.url}")
   String eventBaseUrl;
@@ -71,9 +71,9 @@ public class EventService {
       event = eventFactory.dtoToEntity(dto);
     }
 
-    String eventPath = createImageEvent(image);
+    String path = createImageEvent(image);
 
-    event.setImageUrl(mediaUtils.getPublicUrlImage(eventPath));
+    event.setImageUrl(path);
     event = eventRepository.save(event);
 
     Feed eventFeed = new Feed();
@@ -84,11 +84,7 @@ public class EventService {
   }
 
   private String createImageEvent(MultipartFile image) {
-    String random = mediaUtils.randomName();
-    String eventPath = mediaUtils.resolvePath(
-      eventBaseUrl, random, false);
-    mediaUtils.saveJPG(image, WIDTH_EVENT_IMAGE, eventPath);
-    return eventPath;
+    return fileHandler.upload(image, "/img/", Collections.EMPTY_MAP);
   }
 
   public List<EventPreviewView> getEvents() {
@@ -179,9 +175,11 @@ public class EventService {
       event.setPreviousEdition(prev);
     }
     if (file != null) {
-      String eventPath = createImageEvent(file);
-      mediaUtils.removeIfExistPublic(event.getImageUrl());
-      event.setImageUrl(mediaUtils.getPublicUrlImage(eventPath));
+      if(event.getImageUrl() != null){
+        fileHandler.delete(event.getImageUrl());
+      }
+
+      event.setImageUrl(createImageEvent(file));
     }
 
     return eventRepository.save(event);
@@ -189,7 +187,9 @@ public class EventService {
 
   public void removeEvent(Long id) {
     Event event = getEvent(id);
-    mediaUtils.removeIfExistPublic(event.getImageUrl());
+    if(event.getImageUrl() != null){
+      fileHandler.delete(event.getImageUrl());
+    }
     eventRepository.delete(id);
   }
 }

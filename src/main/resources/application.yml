@@ -46,6 +46,11 @@ cloudinary:
   api_secret: 0v0SI1ZNboGf_AiwsoCEs3Y6Mxo
   cloud_name: iseplife
 
+aws:
+  api_key:  AKIAXCT4SFVRCEKAVA6S
+  api_secret: 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
+  bucket: iseplife
+
 jwt:
   secret: 1jmhvPXhI40vqAnm
   refreshSecret: fIH3ZmRmqH2LT6vH
