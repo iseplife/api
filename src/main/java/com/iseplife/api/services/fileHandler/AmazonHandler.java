@@ -34,7 +34,7 @@ public class AmazonHandler extends FileHandler {
 
   @Override
   public String upload(File file, String path, Map params) {
-    String fullName = path + "/" + randomName();
+    String fullName = path + "/" + generateRandomName(file);
     s3client.putObject(
       bucket,
       fullName,

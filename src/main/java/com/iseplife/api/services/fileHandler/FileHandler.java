@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Map;
+import java.util.Optional;
 
 public abstract class FileHandler {
   protected final Logger LOG = LoggerFactory.getLogger(FileHandler.class);
@@ -42,17 +43,22 @@ public abstract class FileHandler {
     return tempFile;
   }
 
-  protected String randomName(int length) {
+  protected String generateRandomName(File file, int length) {
     String random = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     StringBuilder out = new StringBuilder();
     for (int i = 0; i < length; i++) {
       int pos = (int) (Math.random() * random.length());
       out.append(random.charAt(pos));
     }
-    return out.toString();
+    return out.toString() + "." + getFileExtension(file.getName());
   }
 
-  protected String randomName() {
-    return randomName(30);
+  public String getFileExtension(String filename) {
+    int index = filename.lastIndexOf(".");
+    return index != -1 ? filename.substring(index + 1) : "";
+  }
+
+  protected String generateRandomName(File file) {
+    return generateRandomName(file, 30);
   }
 }
