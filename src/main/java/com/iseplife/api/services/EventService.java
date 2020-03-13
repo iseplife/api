@@ -12,6 +12,7 @@ import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.services.fileHandler.FileHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -43,6 +44,7 @@ public class EventService {
   @Autowired
   PostService postService;
 
+  @Qualifier("FileHandlerBean")
   @Autowired
   FileHandler fileHandler;
 

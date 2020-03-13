@@ -3,6 +3,7 @@ package com.iseplife.api.services.fileHandler;
 import com.iseplife.api.exceptions.FileException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -12,6 +13,15 @@ import java.util.Map;
 
 public abstract class FileHandler {
   protected final Logger LOG = LoggerFactory.getLogger(FileHandler.class);
+
+  @Value("${cloud_handler.api_key}")
+  protected String key;
+
+  @Value("${cloud_handler.api_secret}")
+  protected String secret;
+
+  @Value("${cloud_handler.bucket}")
+  protected String bucket;
 
   public abstract String upload(MultipartFile file, String path, Map params);
 

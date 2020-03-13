@@ -17,6 +17,7 @@ import com.iseplife.api.exceptions.AuthException;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.services.fileHandler.FileHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -47,6 +48,7 @@ public class ClubService {
   @Autowired
   GalleryService galleryService;
 
+  @Qualifier("FileHandlerBean")
   @Autowired
   FileHandler fileHandler;
 

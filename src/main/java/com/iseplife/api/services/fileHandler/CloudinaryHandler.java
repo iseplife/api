@@ -2,8 +2,6 @@ package com.iseplife.api.services.fileHandler;
 
 import com.cloudinary.Cloudinary;
 import com.iseplife.api.exceptions.FileException;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
@@ -12,24 +10,14 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 
-@Service
 public class CloudinaryHandler extends FileHandler {
   private final int VIDEO_THRESHOLD_SIZE = 100000000;
 
   private Cloudinary cloudinary;
 
-  @Value("${cloudinary.api_key}")
-  private String key;
-
-  @Value("${cloudinary.api_secret}")
-  private String secret;
-
-  @Value("${cloudinary.cloud_name}")
-  private String cloud;
-
   @PostConstruct
   private void initializeCloudinary() {
-    cloudinary = new Cloudinary("cloudinary://" + key + ":" + secret + "@" + cloud);
+    cloudinary = new Cloudinary("cloudinary://" + key + ":" + secret + "@" + bucket);
   }
 
   public String upload(MultipartFile file, String path, Map params) {
