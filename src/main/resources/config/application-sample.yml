@@ -37,6 +37,12 @@ logging:
   level:
     com.iseplife.api: ERROR
 
+cloud_handler:
+  name: <cloud-handler-name>
+  api_key:  <api-key>
+  api_secret: <api-secrect-key>
+  bucket: iseplife
+
 jwt:
   secret: <secret>
   refreshSecret: <refresh-secret>

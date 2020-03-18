@@ -21,10 +21,11 @@ import com.iseplife.api.dao.media.image.MatchedRepository;
 import com.iseplife.api.dao.media.MediaRepository;
 import com.iseplife.api.dao.post.PostRepository;
 import com.iseplife.api.exceptions.IllegalArgumentException;
-import com.iseplife.api.utils.MediaUtils;
+import com.iseplife.api.services.fileHandler.FileHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -43,9 +44,6 @@ import java.util.List;
 public class MediaService {
 
   private final Logger LOG = LoggerFactory.getLogger(MediaService.class);
-
-  @Autowired
-  MediaUtils mediaUtils;
 
   @Autowired
   MediaRepository mediaRepository;
@@ -68,6 +66,7 @@ public class MediaService {
   @Autowired
   StudentService studentService;
 
+  @Qualifier("FileHandlerBean")
   @Autowired
   FileHandler fileHandler;
 
@@ -115,7 +114,7 @@ public class MediaService {
     Document document = new Document();
     document.setCreation(new Date());
 
-    String name = fileHandler.upload(fileUploaded, ObjectUtils.asMap("folder", "document"));
+    String name = fileHandler.upload(fileUploaded, "document", ObjectUtils.asMap());
     document.setName(name);
     document.setTitle(title);
     document = mediaRepository.save(document);
@@ -133,8 +132,8 @@ public class MediaService {
 
     String name = fileHandler.upload(
       videoFile,
+      "post",
       ObjectUtils.asMap(
-        "folder", "post",
         "async", true,
         "eager", Collections.singletonList(new Transformation().audioCodec("aac").videoCodec("h264"))
       ));
@@ -147,14 +146,16 @@ public class MediaService {
   }
 
 
-
-
   public boolean toggleNSFW(Long id) {
     Media media = mediaRepository.findOne(id);
     media.setNSFW(!media.isNSFW());
 
     mediaRepository.save(media);
     return media.isNSFW();
+  }
+
+  public boolean removeMedia(String filename){
+    return fileHandler.delete(filename);
   }
 
 
@@ -169,7 +170,7 @@ public class MediaService {
     Image image = new Image();
     image.setCreation(new Date());
 
-    String name = fileHandler.upload(file, ObjectUtils.asMap("folder", "post"));
+    String name = fileHandler.upload(file, "post", ObjectUtils.asMap("folder", "post"));
     image.setName(name);
     image = mediaRepository.save(image);
 
@@ -182,8 +183,10 @@ public class MediaService {
     Image image = new Image();
     image.setGallery(gallery);
 
-    String name = fileHandler.upload(file, ObjectUtils.asMap("folder", "post/" + gallery.getId()));
+    String name = fileHandler.upload(file, "img/g" + gallery.getId(), ObjectUtils.asMap("folder",
+      "post/" + gallery.getId()));
     image.setName(name);
+    mediaRepository.save(image);
 
     return image;
   }
@@ -193,7 +196,7 @@ public class MediaService {
     image.setGallery(gallery);
     image.setCreation(new Date());
 
-    String name = fileHandler.upload(file, ObjectUtils.asMap("folder", "post/" + gallery.getId()));
+    String name = fileHandler.upload(file, "img/g" + gallery.getId(), ObjectUtils.asMap("folder", "post/" + gallery.getId()));
     image.setName(name);
 
     mediaRepository.save(image);
@@ -203,7 +206,7 @@ public class MediaService {
   }
 
   void deleteMedia(Media media) {
-    fileHandler.delete(media.getName(), ObjectUtils.emptyMap());
+    fileHandler.delete(media.getName());
     mediaRepository.delete(media);
   }
 

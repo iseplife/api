@@ -11,11 +11,9 @@ import com.iseplife.api.dto.view.PostView;
 import com.iseplife.api.entity.Feed;
 import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.post.embed.Embedable;
-import com.iseplife.api.entity.post.embed.media.Document;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.post.embed.media.Media;
-import com.iseplife.api.entity.post.embed.poll.Poll;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.PublishStateEnum;
 import com.iseplife.api.constants.Roles;
@@ -23,7 +21,6 @@ import com.iseplife.api.dao.media.MediaRepository;
 import com.iseplife.api.dao.student.StudentRepository;
 import com.iseplife.api.exceptions.AuthException;
 import com.iseplife.api.exceptions.IllegalArgumentException;
-import com.iseplife.api.utils.MediaUtils;
 import com.iseplife.api.websocket.PostMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -81,9 +78,6 @@ public class PostService {
 
   @Autowired
   PostMessageService postMessageService;
-
-  @Autowired
-  MediaUtils mediaUtils;
 
   private final int POSTS_PER_PAGE = 10;
 

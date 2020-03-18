@@ -18,8 +18,9 @@ import com.iseplife.api.dao.student.RoleRepository;
 import com.iseplife.api.dao.student.StudentFactory;
 import com.iseplife.api.dao.student.StudentRepository;
 import com.iseplife.api.exceptions.IllegalArgumentException;
-import com.iseplife.api.utils.MediaUtils;
+import com.iseplife.api.services.fileHandler.FileHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,9 +41,6 @@ public class StudentService {
   StudentRepository studentRepository;
 
   @Autowired
-  MediaUtils imageUtils;
-
-  @Autowired
   StudentFactory studentFactory;
 
   @Autowired
@@ -54,6 +52,7 @@ public class StudentService {
   @Autowired
   ClubMemberRepository clubMemberRepository;
 
+  @Qualifier("FileHandlerBean")
   @Autowired
   FileHandler fileHandler;
 
@@ -162,7 +161,7 @@ public class StudentService {
   }
 
   private void updateProfileImage(Student student, MultipartFile image) {
-    fileHandler.upload(image, ObjectUtils.asMap("public_id", "user/" + student.getId()));
+    fileHandler.upload(image, "user/", Collections.EMPTY_MAP);
   }
 
   public Page<StudentWithRoleView> getAllForAdmin(int page) {
