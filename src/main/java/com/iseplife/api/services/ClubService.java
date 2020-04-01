@@ -52,9 +52,6 @@ public class ClubService {
   @Autowired
   FileHandler fileHandler;
 
-  @Value("${storage.club.url}")
-  public String clubLogoStorage;
-
   public Club createClub(ClubDTO dto, MultipartFile logo) {
     Club club = clubFactory.dtoToEntity(dto);
     if (dto.getAdminId() == null) {

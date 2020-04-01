@@ -48,8 +48,6 @@ public class EventService {
   @Autowired
   FileHandler fileHandler;
 
-  @Value("${storage.event.url}")
-  String eventBaseUrl;
 
   private static final int WIDTH_EVENT_IMAGE = 1024;
 

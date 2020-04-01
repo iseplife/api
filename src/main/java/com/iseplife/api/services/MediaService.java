@@ -70,15 +70,6 @@ public class MediaService {
   @Autowired
   FileHandler fileHandler;
 
-  @Value("${storage.image.url}")
-  String imageDir;
-
-  @Value("${storage.video.url}")
-  String videoDir;
-
-  @Value("${storage.document.url}")
-  String documentDir;
-
   private static final int ALL_MEDIA_PAGE_SIZE = 20;
 
   private static final int PHOTOS_PER_PAGE = 30;

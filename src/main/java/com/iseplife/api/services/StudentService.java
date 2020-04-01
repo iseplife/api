@@ -56,9 +56,6 @@ public class StudentService {
   @Autowired
   FileHandler fileHandler;
 
-  @Value("${storage.student.url}")
-  String studentImageStorage;
-
   private static final int RESULTS_PER_PAGE = 20;
 
   private static final int WIDTH_PROFILE_IMAGE = 768;
