@@ -27,7 +27,6 @@ public class Club {
   private Date archivedAt = null;
   private Date createdAt;
 
-  @JsonIgnore
   @OneToOne
   private Feed feed;
 
