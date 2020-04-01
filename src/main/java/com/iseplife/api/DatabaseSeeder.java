@@ -49,12 +49,7 @@ class DatabaseSeeder {
   }
 
   private boolean isDatabaseSeeded() {
-
-    Student user = studentRepository.findOne(1L);
-    // if it's found, the database is already seeded
-
-    return user != null;
-
+    return studentRepository.findById(1L).isPresent();
   }
 
   private void runSeedDatabase() {
@@ -71,7 +66,7 @@ class DatabaseSeeder {
         LOG.debug(e.getMessage());
       }
     }
-    roleRepository.save(roles);
+    roleRepository.saveAll(roles);
 
     /* Create super admin user */
     Student student = new Student();
@@ -96,6 +91,6 @@ class DatabaseSeeder {
         feeds.add(feed);
       }
     }
-    feedRepository.save(feeds);
+    feedRepository.saveAll(feeds);
   }
 }

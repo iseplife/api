@@ -122,7 +122,7 @@ public class StudentImportService {
       }
     });
 
-    studentRepository.save(studentsToCreate);
+    studentRepository.saveAll(studentsToCreate);
     // add photo to new students
     for (Student s : studentsToCreate) {
       if (photosToAdd.get(s.getId()) != null) {

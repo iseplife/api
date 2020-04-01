@@ -11,11 +11,13 @@ import com.iseplife.api.dao.poll.PollAnswerRepository;
 import com.iseplife.api.dao.poll.PollRepository;
 import com.iseplife.api.dao.poll.PollVoteRepository;
 import com.iseplife.api.exceptions.AuthException;
+import com.iseplife.api.exceptions.IllegalArgumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -49,17 +51,20 @@ public class PollService {
       List<PollVote> voteList = pollVoteRepository.findByAnswer_Poll_IdAndStudent_Id(pollId, studentId).stream()
         .filter(votes -> !votes.getAnswer().getId().equals(pollAnswId))
         .collect(Collectors.toList());
-      pollVoteRepository.delete(voteList);
+      pollVoteRepository.deleteAll(voteList);
     }
 
     if (checkIsAnswered(pollAnswId, studentId)) {
       throw new IllegalArgumentException("This answer has already been chosen");
     }
 
-    PollAnswer pollAnswer = pollAnswerRepository.findOne(pollAnswId);
+    Optional<PollAnswer> pollAnswer = pollAnswerRepository.findById(pollAnswId);
+    if(pollAnswer.isEmpty())
+      throw new IllegalArgumentException("Unknown answer");
+
     Student student = studentService.getStudent(studentId);
     PollVote pollVote = new PollVote();
-    pollVote.setAnswer(pollAnswer);
+    pollVote.setAnswer(pollAnswer.get());
     pollVote.setStudent(student);
     pollVoteRepository.save(pollVote);
   }
@@ -85,21 +90,21 @@ public class PollService {
     // Add answers
     pollDTO.getAnswers().forEach(q -> {
       PollAnswer pollAnswer = new PollAnswer();
-      pollAnswer.setPoll(poll);
+      pollAnswer.setPoll(saved);
       pollAnswer.setContent(q);
       pollAnswerRepository.save(pollAnswer);
     });
 
     postService.setPublishState(postId, PublishStateEnum.PUBLISHED);
-    return pollRepository.findOne(saved.getId());
+    return getPoll(saved.getId());
   }
 
   public Poll getPoll(Long pollId) {
-    Poll poll = pollRepository.findOne(pollId);
-    if (authService.isUserAnonymous()) {
-      throw new AuthException("you can't access this poll");
-    }
-    return poll;
+    Optional<Poll> poll = pollRepository.findById(pollId);
+    if(poll.isEmpty())
+      throw new IllegalArgumentException("Could not find this poll (id:" + pollId + ")");
+
+    return poll.get();
   }
 
   public List<PollVote> getUserVotes(Long pollId) {

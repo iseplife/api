@@ -39,12 +39,6 @@ public interface ClubRepository extends CrudRepository<Club, Long> {
 
   List<Club> findAllByNameContainingIgnoringCase(String name);
 
-  @Query("select c from Club c " +
-    "join c.members m " +
-    "where m.student = :student " +
-    "or m.role = :role")
-  List<Club> findByAdminsContains(Student admin);
-
   Club findByIsAdmin(Boolean isAdmin);
 
 }

@@ -26,6 +26,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -51,12 +52,11 @@ public class GalleryService {
   private static final int GALLERY_PER_PAGE = 5;
 
   public Gallery getGallery(Long id) {
-    Gallery gallery = galleryRepository.findOne(id);
-    if (gallery == null) {
+    Optional<Gallery> gallery = galleryRepository.findById(id);
+    if (gallery.isEmpty())
       throw new IllegalArgumentException("Could not find this gallery (id:" + id + ")");
-    }
-    return gallery;
 
+    return gallery.get();
   }
 
   public List<Image> getGalleryImages(Long id) {
@@ -70,7 +70,7 @@ public class GalleryService {
   }
 
   public Page<Gallery> getClubGalleries(Club club, int page) {
-    return galleryRepository.findAllByClub(club, new PageRequest(page, GALLERY_PER_PAGE));
+    return galleryRepository.findAllByClub(club, PageRequest.of(page, GALLERY_PER_PAGE));
   }
 
   public Gallery createGallery(Long postID, String name, List<MultipartFile> files) {

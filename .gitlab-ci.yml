@@ -1,9 +1,41 @@
-deploy:
-  image : ruby:latest
-  script:
-  - apt-get update -yq
-  - apt-get install -yq ruby-dev
-  - gem install dpl
-  - dpl --provider=heroku --app=iseplife-api --api-key=$HEROKU_API_KEY
+image: docker:latest
+services:
+  - docker:dind
+
+variables:
+  APP_VERSION: v1.4
+  DOCKER_DRIVER: overlay
+  SPRING_PROFILES_ACTIVE: gitlab-ci
+
+cache:
+  paths:
+    - .m2/repository
+
+
+stages:
+  - build
+  - package
+
+
+maven-build:
+  image: maven:3.6.3-jdk-11
+  stage: build
+  script: "mvn package -B -V -e -fae -Pprod -DskipTests"
+  artifacts:
+    paths:
+      - target/*.jar
   only:
-  - master
+    - master
+    - feature/ci
+
+docker-build:
+  stage: package
+  script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker build -t $CI_REGISTRY_IMAGE/api:$APP_VERSION -t $CI_REGISTRY_IMAGE/api:latest .
+    - docker push $CI_REGISTRY_IMAGE/api:$APP_VERSION
+    - docker push $CI_REGISTRY_IMAGE/api:latest
+  dependencies:
+    - maven-build
+  only:
+    - master

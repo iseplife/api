@@ -56,25 +56,19 @@ public class StudentService {
   @Autowired
   FileHandler fileHandler;
 
-  @Value("${storage.student.url}")
-  String studentImageStorage;
-
   private static final int RESULTS_PER_PAGE = 20;
-
-  private static final int WIDTH_PROFILE_IMAGE = 768;
-  private static final int WIDTH_PROFILE_IMAGE_THUMB = 384;
 
 
   public Page<Student> getAll(int page) {
-    return studentRepository.findAllByOrderByLastName(new PageRequest(page, RESULTS_PER_PAGE));
+    return studentRepository.findAllByOrderByLastName(PageRequest.of(page, RESULTS_PER_PAGE));
   }
 
   public Student getStudent(Long id) {
-    Student student = studentRepository.findOne(id);
-    if (student != null) {
-      return student;
-    }
-    throw new IllegalArgumentException("could not find the student with id: " + id);
+    Optional<Student> student = studentRepository.findById(id);
+    if(student.isEmpty())
+      throw new IllegalArgumentException("could not find the student with id: " + id);
+
+    return student.get();
   }
 
   public Student createStudent(StudentDTO dto) {
@@ -83,7 +77,7 @@ public class StudentService {
   }
 
   void addProfileImage(Long studentId, MultipartFile image) {
-    Student student = studentRepository.findOne(studentId);
+    Student student = getStudent(studentId);
     updateProfileImage(student, image);
     studentRepository.save(student);
   }
@@ -95,7 +89,7 @@ public class StudentService {
   }
 
   public Student updateStudent(StudentUpdateDTO dto, Long id) {
-    Student student = studentRepository.findOne(id);
+    Student student = getStudent(id);
     studentFactory.updateDtoToEntity(student, dto);
     return studentRepository.save(student);
   }

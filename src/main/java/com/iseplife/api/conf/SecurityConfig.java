@@ -55,7 +55,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
       ).permitAll()
 
       // allow files
-      .antMatchers("/storage/**").permitAll()
       .antMatchers("/auth/**").permitAll()
 
       .anyRequest().authenticated();

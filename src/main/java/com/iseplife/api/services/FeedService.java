@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import springfox.documentation.annotations.Cacheable;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class FeedService {
@@ -37,12 +38,12 @@ public class FeedService {
     throw new IllegalArgumentException("could not find the feed with name: " + name);
   }
 
-  private Feed getFeed(Long id) {
-    Feed feed = feedRepository.findOne(id);
-    if (feed != null) {
-      return feed;
-    }
-    throw new IllegalArgumentException("could not find the feed with id: " + id);
+  public Feed getFeed(Long id) {
+    Optional<Feed> feed = feedRepository.findById(id);
+    if (feed.isEmpty())
+      throw new IllegalArgumentException("could not find the feed with id: " + id);
+
+    return feed.get();
   }
 
   public Feed getMain() {

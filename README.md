@@ -2,7 +2,7 @@
 
 ## Getting Started
 ### Prerequisites
-- [Java](https://java.com/): 1.8
+- [Java](https://java.com/): 11.0.6 LTS
 - [Maven](https://maven.apache.org/): 3.5.4
 
 ### Installation

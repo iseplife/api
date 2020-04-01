@@ -1,12 +1,12 @@
 spring:
   datasource:
-    url: jdbc:mysql://${MYSQL_DB:bastiengrignon.ddns.net:3306}/iseplife?createDatabaseIfNotExist=true&useSSL=false&useUnicode=yes&characterEncoding=UTF-8
+    url: jdbc:mysql://${MYSQL_DB:bastiengrignon.ddns.net:3306}/iseplife?createDatabaseIfNotExist=true&useSSL=false&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
     username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD:""}
   jpa:
     hibernate:
       ddl-auto: update
-  http:
+  servlet:
     multipart:
       max-file-size: 2000MB
       max-request-size: 2000MB
@@ -17,45 +17,21 @@ security:
   basic:
     enabled: false
 
-storage:
-  url: "storage"
-  club:
-    url: "/club"
-  event:
-    url: "/event"
-  image:
-    url: "/image"
-  student:
-    url: "/student"
-  video:
-    url: "/video"
-  document:
-    url: "/document"
-  dor:
-    config:
-      url: "/dor/config"
-    diploma:
-      url: "/dor/diploma"
-
 logging:
   level:
     com.iseplife.api: INFO
 
-cloudinary:
-  api_key: 433151233382194
-  api_secret: 0v0SI1ZNboGf_AiwsoCEs3Y6Mxo
-  cloud_name: iseplife
-
-aws:
-  api_key:  AKIAXCT4SFVRCEKAVA6S
-  api_secret: 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
+cloud_handler:
+  name: ${CLOUD_NAME:aws}
+  api_key:  ${CLOUD_API_KEY:}
+  api_secret: ${CLOUD_API_SECRET:}
   bucket: iseplife
-
+  
 jwt:
   secret: 1jmhvPXhI40vqAnm
   refreshSecret: fIH3ZmRmqH2LT6vH
-  tokenDuration: 600 # 10 min
-  refreshTokenDuration: 604800 # 7 jours
+  tokenDuration: 600              # 10 min
+  refreshTokenDuration: 604800    # 7 jours
   issuer: iseplife
 
 auth:
