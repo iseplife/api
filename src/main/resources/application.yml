@@ -1,12 +1,12 @@
 spring:
   datasource:
-    url: jdbc:mysql://${MYSQL_DB:bastiengrignon.ddns.net:3306}/iseplife?createDatabaseIfNotExist=true&useSSL=false&useUnicode=yes&characterEncoding=UTF-8
+    url: jdbc:mysql://${MYSQL_DB:bastiengrignon.ddns.net:3306}/iseplife?createDatabaseIfNotExist=true&useSSL=false&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
     username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD:""}
   jpa:
     hibernate:
       ddl-auto: update
-  http:
+  servlet:
     multipart:
       max-file-size: 2000MB
       max-request-size: 2000MB
@@ -22,9 +22,9 @@ logging:
     com.iseplife.api: INFO
 
 cloud_handler:
-  name: ${CLOUD_NAME:"aws"}
-  api_key:  ${CLOUD_API_KEY:""}
-  api_secret: ${CLOUD_API_SECRET:""}
+  name: ${CLOUD_NAME:aws}
+  api_key:  ${CLOUD_API_KEY:}
+  api_secret: ${CLOUD_API_SECRET:}
   bucket: iseplife
   
 jwt:

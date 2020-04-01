@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,11 +49,11 @@ public class ThreadService {
   CommentFactory commentFactory;
 
   private Thread getThread(Long id) {
-    Thread thread = threadRepository.findOne(id);
-    if (thread == null) {
+    Optional<Thread> thread = threadRepository.findById(id);
+    if (thread.isEmpty())
       throw new IllegalArgumentException("Could not find a thread with id: " + id);
-    }
-    return thread;
+
+    return thread.get();
   }
 
   private Thread getThread(Object entityThread) {
@@ -62,26 +63,6 @@ public class ThreadService {
       return (Thread) entityThread;
 
     throw new IllegalArgumentException("Could not find a thread as this object doesn't seem to have one!");
-  }
-
-  private Thread getThread(Long id, ThreadType type) {
-    Object entityThread;
-
-    switch (type) {
-      case POST:
-        entityThread = postRepository.findOne(id);
-        break;
-      case MEDIA:
-        entityThread = imageRepository.findOne(id);
-        break;
-      case COMMENT:
-        entityThread = commentRepository.findOne(id);
-        break;
-      default:
-        return getThread(id);
-    }
-    return getThread(entityThread);
-
   }
 
   public List<Like> getLikes(Long threadID) {
@@ -131,11 +112,12 @@ public class ThreadService {
   }
 
   public Comment editComment(Long comID, CommentDTO dto, Long studentID) {
-    Comment comment = commentRepository.findOne(comID);
+    Optional<Comment> optional = commentRepository.findById(comID);
 
-    if (comment == null) {
+    if (optional.isEmpty())
       throw new IllegalArgumentException("could not find this comment");
-    }
+
+    Comment comment = optional.get();
     if (!comment.getStudent().getId().equals(studentID)) {
       throw new AuthException("you cannot edit this comment");
     }
@@ -146,14 +128,16 @@ public class ThreadService {
   }
 
   public void deleteComment(Long comID, TokenPayload auth) {
-    Comment comment = commentRepository.findOne(comID);
-    if (comment == null) {
+    Optional<Comment> optional = commentRepository.findById(comID);
+
+    if (optional.isEmpty())
       throw new IllegalArgumentException("could not find this comment");
-    }
+
+    Comment comment = optional.get();
     if (!comment.getStudent().getId().equals(auth.getId()) && !auth.getRoles().contains(Roles.ADMIN)) {
       throw new AuthException("you cannot delete this comment");
     }
-    commentRepository.delete(comment);
+    commentRepository.deleteById(comID);
   }
 
 

@@ -7,13 +7,9 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.iseplife.api.constants.ClubRole;
 import com.iseplife.api.entity.Feed;
 import com.iseplife.api.entity.club.Club;
-import com.iseplife.api.entity.club.ClubMember;
-import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.constants.ClubRole;
-import com.iseplife.api.entity.club.Club;
-import com.iseplife.api.entity.club.ClubMember;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.services.ClubService;
@@ -25,15 +21,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
-import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -53,7 +46,7 @@ public class JwtTokenUtil {
 
   public static final String CLAIM_PAYLOAD = "payload";
   private static final String CLAIM_USER_ID = "userID";
-  private static final String SECRET_HASHING_ALGORITHM = "SHA-256";
+  private static final String SECRET_HASHING_ALGORITHM = "SHA3_256";
   private final Locale locale = Locale.FRANCE;
 
   @Value("${jwt.secret}")
@@ -193,11 +186,13 @@ public class JwtTokenUtil {
 
   private String generateRefreshSecret(TokenPayload tokenPayload) {
     try {
-      MessageDigest messageDigest = MessageDigest.getInstance(SECRET_HASHING_ALGORITHM);
-      String encryptedString = DatatypeConverter.printHexBinary(
-        messageDigest.digest(tokenPayload.toString().getBytes("UTF-8")));
-      return encryptedString + refreshSecret;
-    } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+      MessageDigest digest = MessageDigest.getInstance(SECRET_HASHING_ALGORITHM);
+      String hashString = Base64.getEncoder().encodeToString(
+        digest.digest(tokenPayload.toString().getBytes(StandardCharsets.UTF_8))
+      );
+
+      return hashString + refreshSecret;
+    } catch (NoSuchAlgorithmException e) {
       e.printStackTrace();
     }
     return null;

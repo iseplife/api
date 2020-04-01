@@ -48,14 +48,8 @@ public class EventService {
   @Autowired
   FileHandler fileHandler;
 
-
-  private static final int WIDTH_EVENT_IMAGE = 1024;
-
   private final int EVENTS_PER_PAGE = 10;
 
-  private Pageable createPage(int page) {
-    return new PageRequest(page, EVENTS_PER_PAGE);
-  }
 
   public Event createEvent(MultipartFile image, EventDTO dto) {
     Event event = eventFactory.dtoToEntity(dto);
@@ -65,7 +59,7 @@ public class EventService {
       throw new IllegalArgumentException("Could not find a club with id: " + dto.getClubId());
     }
     if (dto.getPreviousEditionId() != null) {
-      Event previous = eventRepository.findOne(dto.getPreviousEditionId());
+      Event previous = getEvent(dto.getPreviousEditionId());
       event = eventFactory.dtoToEntity(dto, previous);
     } else {
       event = eventFactory.dtoToEntity(dto);
@@ -108,23 +102,23 @@ public class EventService {
 
   public Page<EventPreviewView> getFutureEvents(TokenPayload token, Date date, int page) {
     return eventRepository
-      .findFutureEvents(token.getFeed(), token.getRoles().contains("ROLE_ADMIN"), date, createPage(page))
+      .findFutureEvents(token.getFeed(), token.getRoles().contains("ROLE_ADMIN"), date, PageRequest.of(page, EVENTS_PER_PAGE))
       .map(e -> eventFactory.entityToPreviewView(e));
   }
 
   public Page<EventPreviewView> getPassedEvents(TokenPayload token, Date date, int page) {
     return eventRepository
-      .findPassedEvents(token.getFeed(), token.getRoles().contains("ROLE_ADMIN"), date, createPage(page))
+      .findPassedEvents(token.getFeed(), token.getRoles().contains("ROLE_ADMIN"), date, PageRequest.of(page, EVENTS_PER_PAGE))
       .map(e -> eventFactory.entityToPreviewView(e));
   }
 
 
   public Event getEvent(Long id) {
-    Event event = eventRepository.findOne(id);
-    if (event == null) {
+    Optional<Event> event = eventRepository.findById(id);
+    if (event.isEmpty())
       throw new IllegalArgumentException("could not find event with id: " + id);
-    }
-    return event;
+
+    return event.get();
   }
 
   public List<Gallery> getEventGalleries(Long id) {
@@ -132,7 +126,7 @@ public class EventService {
   }
 
   public List<EventPreviewView> getChildrenEvents(Long id) {
-    Event event = eventRepository.findOne(id);
+    Event event = getEvent(id);
     if (event == null) {
       throw new IllegalArgumentException("could not find event with id: " + id);
     }
@@ -144,8 +138,8 @@ public class EventService {
   }
 
   public List<EventPreviewView> getPreviousEditions(Long id) {
-    Event event = eventRepository.findOne(id);
-    List<Event> previousEditions = new LinkedList<Event>();
+    Event event = getEvent(id);
+    List<Event> previousEditions = new LinkedList<>();
     if (event == null) {
       throw new IllegalArgumentException("could not find event with id: " + id);
     }
@@ -171,7 +165,7 @@ public class EventService {
     event.setLocation(eventDTO.getLocation());
     event.setStartsAt(eventDTO.getStartsAt());
     if (eventDTO.getPreviousEditionId() != null) {
-      Event prev = eventRepository.findOne(eventDTO.getPreviousEditionId());
+      Event prev = getEvent(eventDTO.getPreviousEditionId());
       event.setPreviousEdition(prev);
     }
     if (file != null) {
@@ -190,6 +184,6 @@ public class EventService {
     if(event.getImageUrl() != null){
       fileHandler.delete(event.getImageUrl());
     }
-    eventRepository.delete(id);
+    eventRepository.deleteById(id);
   }
 }

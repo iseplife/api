@@ -81,17 +81,13 @@ public class PostService {
 
   private final int POSTS_PER_PAGE = 10;
 
-  private Pageable createPage(int page) {
-    return new PageRequest(page, POSTS_PER_PAGE);
-  }
-
 
   private Post getPost(Long postID) {
-    Post post = postRepository.findOne(postID);
-    if (post == null) {
+    Optional<Post> post = postRepository.findById(postID);
+    if (post.isEmpty())
       throw new IllegalArgumentException("Could not find this post (id:" + postID + ")");
-    }
-    return post;
+
+    return post.get();
   }
 
   public PostView getPostView(Long postID) {
@@ -104,7 +100,7 @@ public class PostService {
 
   public PostView createPost(TokenPayload auth, PostDTO postDTO) {
     Post post = postFactory.dtoToEntity(postDTO);
-    post.setAuthor(studentRepository.findOne(auth.getId()));
+    post.setAuthor(studentService.getStudent(auth.getId()));
     post.setLinkedClub(postDTO.getLinkedClub() != null ? clubService.getClub(postDTO.getLinkedClub()) : null);
 
     // if creator is not an ADMIN
@@ -115,7 +111,7 @@ public class PostService {
       }
     }
 
-    post.setFeed(feedRepository.findOne(postDTO.getFeed()));
+    post.setFeed(feedService.getFeed(postDTO.getFeed()));
     post.setThread(new Thread());
     post.setCreationDate(new Date());
     post.setPublicationDate(postDTO.getPublicationDate() == null ? new Date() : postDTO.getPublicationDate());
@@ -152,7 +148,7 @@ public class PostService {
       galleryService.deleteGallery((Gallery) embed);
     }
 
-    postRepository.delete(postID);
+    postRepository.deleteById(postID);
   }
 
 
@@ -173,7 +169,7 @@ public class PostService {
   }
 
   public void addMediaEmbed(Long postID, String type, Long embedID) {
-    Post post = postRepository.findOne(postID);
+    Post post = getPost(postID);
     Embedable embed;
     switch (type) {
       case EmbedType.GALLERY:
@@ -185,7 +181,7 @@ public class PostService {
       case EmbedType.IMAGE:
       case EmbedType.VIDEO:
       case EmbedType.DOCUMENT:
-        embed = mediaRepository.findOne(embedID);
+        embed = mediaService.getMedia(embedID);
         break;
       default:
         throw new IllegalArgumentException("the embed type (" + type + ") doesn't exist");
@@ -196,7 +192,7 @@ public class PostService {
   }
 
   public Post addMediaEmbed(Long id, Embedable embed) {
-    Post post = postRepository.findOne(id);
+    Post post = getPost(id);
     post.setEmbed(embed);
 
     return postRepository.save(post);
@@ -229,7 +225,8 @@ public class PostService {
   }
 
   public Page<PostView> getFeedPosts(Feed feed, int page) {
-    Page<Post> posts = postRepository.findByFeedAndPublishStateOrderByPublicationDate(feed, PublishStateEnum.PUBLISHED, createPage(page));
+    Page<Post> posts = postRepository.findByFeedAndPublishStateOrderByPublicationDate(feed,
+      PublishStateEnum.PUBLISHED, PageRequest.of(page, POSTS_PER_PAGE));
 
     return posts.map(post -> postFactory.entityToView(post));
   }
@@ -254,10 +251,10 @@ public class PostService {
 
   public Page<PostView> getPostsAuthor(Long id, boolean isPublic, int page) {
     if (isPublic) {
-      Page<Post> posts = postRepository.findByAuthorIdAndIsPrivateOrderByCreationDateDesc(id, false, createPage(page));
+      Page<Post> posts = postRepository.findByAuthorIdAndIsPrivateOrderByCreationDateDesc(id, false, PageRequest.of(page, POSTS_PER_PAGE));
       return posts.map(p -> postFactory.entityToView(p));
     }
-    Page<Post> posts = postRepository.findByAuthorIdOrderByCreationDateDesc(id, createPage(page));
+    Page<Post> posts = postRepository.findByAuthorIdOrderByCreationDateDesc(id, PageRequest.of(page, POSTS_PER_PAGE));
     return posts.map(p -> postFactory.entityToView(p));
   }
 }

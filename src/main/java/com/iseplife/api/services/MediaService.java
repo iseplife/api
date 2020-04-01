@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -34,10 +33,8 @@ import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.Cacheable;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.security.InvalidParameterException;
+import java.util.*;
 
 
 @Service
@@ -75,11 +72,19 @@ public class MediaService {
   private static final int PHOTOS_PER_PAGE = 30;
 
 
+  public Media getMedia(Long id){
+    Optional<Media> media = mediaRepository.findById(id);
+    if(media.isEmpty())
+      throw new InvalidParameterException("could not get the image with id: " + id);
+
+    return media.get();
+  }
+
   @Cacheable("media-list-published")
   public Page<Media> getAllGalleryGazetteVideoPublished(int page) {
     Page<Media> list = mediaRepository.findAllByMediaTypeInOrderByCreationDesc(
       Arrays.asList(MediaType.IMAGE, MediaType.VIDEO),
-      new PageRequest(page, ALL_MEDIA_PAGE_SIZE)
+      PageRequest.of(page, ALL_MEDIA_PAGE_SIZE)
     );
 
     return list;
@@ -89,16 +94,16 @@ public class MediaService {
   public Page<Media> getAllGalleryGazetteVideo(int page) {
     return mediaRepository.findAllByMediaTypeInOrderByCreationDesc(
       Arrays.asList(MediaType.IMAGE, MediaType.VIDEO),
-      new PageRequest(page, ALL_MEDIA_PAGE_SIZE)
+      PageRequest.of(page, ALL_MEDIA_PAGE_SIZE)
     );
   }
 
   private Image getImage(Long id) {
-    Image img = imageRepository.findOne(id);
-    if (img != null) {
-      return img;
-    }
-    throw new RuntimeException("could not get the image with id: " + id);
+    Optional<Image> img = imageRepository.findById(id);
+    if (img.isEmpty())
+      throw new RuntimeException("could not get the image with id: " + id);
+
+    return img.get();
   }
 
   public Document createDocument(Long postId, String title, MultipartFile fileUploaded) {
@@ -138,7 +143,7 @@ public class MediaService {
 
 
   public boolean toggleNSFW(Long id) {
-    Media media = mediaRepository.findOne(id);
+    Media media = getImage(id);
     media.setNSFW(!media.isNSFW());
 
     mediaRepository.save(media);
@@ -208,10 +213,8 @@ public class MediaService {
    * @return
    */
   public List<Matched> getImageTags(Long id) {
-    Image image = imageRepository.findOne(id);
-    if (image == null) {
-      throw new IllegalArgumentException("could not find this image");
-    }
+    Image image = getImage(id);
+
     return image.getMatched();
   }
 
@@ -223,7 +226,7 @@ public class MediaService {
    * @return
    */
   public Page<MatchedView> getPhotosTaggedByStudent(Long studentId, int page) {
-    return matchedRepository.findAllByMatchId(studentId, new PageRequest(page, PHOTOS_PER_PAGE)).map(m -> {
+    return matchedRepository.findAllByMatchId(studentId, PageRequest.of(page, PHOTOS_PER_PAGE)).map(m -> {
       MatchedView matchedView = new MatchedView();
       matchedView.setId(m.getId());
       matchedView.setImage(m.getImage());
