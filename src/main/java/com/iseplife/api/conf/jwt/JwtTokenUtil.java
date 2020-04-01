@@ -3,6 +3,7 @@ package com.iseplife.api.conf.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -71,7 +72,7 @@ public class JwtTokenUtil {
         .withIssuer(issuer)
         .build(); //Reusable verifier instance
       return verifier.verify(token);
-    } catch (UnsupportedEncodingException e) {
+    } catch (JWTVerificationException e) {
       LOG.error("could not decode token", e);
     }
     throw new JWTVerificationException("invalid token");
@@ -128,7 +129,7 @@ public class JwtTokenUtil {
         verifier.verify(token);
         return generateToken(student);
       }
-    } catch (UnsupportedEncodingException | IllegalArgumentException e) {
+    } catch (JWTVerificationException | IllegalArgumentException e) {
       LOG.error("could not refresh token", e);
     }
     throw new JWTVerificationException("token invalid");
@@ -178,7 +179,7 @@ public class JwtTokenUtil {
         .withExpiresAt(calendar.getTime())
         .withClaim(CLAIM_PAYLOAD, payload)
         .sign(algorithm);
-    } catch (JsonProcessingException | UnsupportedEncodingException e) {
+    } catch (JsonProcessingException e) {
       e.printStackTrace();
     }
     return null;
@@ -214,7 +215,7 @@ public class JwtTokenUtil {
       } else {
         throw new JWTVerificationException("Could not generate secret");
       }
-    } catch (UnsupportedEncodingException e) {
+    } catch (JWTCreationException e) {
       e.printStackTrace();
     }
     return null;
