@@ -1,4 +1,4 @@
-FROM openjdk:openjdk:11-jre-slim
+FROM openjdk:11-jre-slim
 
 VOLUME /tmp
 ADD /target/iseplife-api-0.0.1-SNAPSHOT.jar iseplife-api.jar
