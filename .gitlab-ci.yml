@@ -11,11 +11,9 @@ cache:
   paths:
     - .m2/repository
 
-
 stages:
   - build
   - package
-
 
 maven-build:
   image: maven:3.6.3-jdk-11

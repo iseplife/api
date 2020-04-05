@@ -37,23 +37,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
       .authorizeRequests()
 
-      .antMatchers(
-        HttpMethod.GET,
-        "/post/authors",
-        "/poll/{\\d+}/vote"
-      ).authenticated()
-
-      // /auth and GET method in public
-      .antMatchers(
-        HttpMethod.GET,
-        "/post/**",
-        "/poll/**",
-        "/club/**",
-        "/media/**",
-        "/event/**",
-        "/user/student/search"
-      ).permitAll()
-
       // allow files
       .antMatchers("/auth/**").permitAll()
 

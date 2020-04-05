@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://${MYSQL_DB:bastiengrignon.ddns.net:3306}/iseplife?createDatabaseIfNotExist=true&useSSL=false&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    url: jdbc:mysql://${DB_HOST:bastiengrignon.ddns.net:3306}/iseplife?createDatabaseIfNotExist=true&useSSL=false&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
     username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD:""}
   jpa:
@@ -13,9 +13,6 @@ spring:
 
 server:
   port: 8080
-security:
-  basic:
-    enabled: false
 
 logging:
   level:
@@ -26,7 +23,7 @@ cloud_handler:
   api_key:  ${CLOUD_API_KEY:}
   api_secret: ${CLOUD_API_SECRET:}
   bucket: iseplife
-  
+
 jwt:
   secret: 1jmhvPXhI40vqAnm
   refreshSecret: fIH3ZmRmqH2LT6vH
@@ -35,5 +32,5 @@ jwt:
   issuer: iseplife
 
 auth:
-  password: password
+  password: ${ROOT_PASS:password}
   enable: true
