@@ -40,7 +40,6 @@ public class AuthController {
 
   @PostMapping
   public TokenSet getToken(@RequestBody JwtAuthRequest authRequest) {
-
     // TODO: replace with correct auth, currently only for testing
     if (passwordEnable) {
       if (authRequest.getUsername().equals("admin") && authRequest.getPassword().equals(defaultPassword)) {

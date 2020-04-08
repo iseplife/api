@@ -1,6 +1,5 @@
 package com.iseplife.api.services;
 
-import com.cloudinary.utils.ObjectUtils;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.ClubRole;
 import com.iseplife.api.constants.FeedConstant;
@@ -9,6 +8,9 @@ import com.iseplife.api.dao.feed.FeedRepository;
 import com.iseplife.api.dto.student.StudentDTO;
 import com.iseplife.api.dto.student.StudentUpdateAdminDTO;
 import com.iseplife.api.dto.student.StudentUpdateDTO;
+import com.iseplife.api.dto.student.view.StudentAdminView;
+import com.iseplife.api.dto.student.view.StudentPreview;
+import com.iseplife.api.dto.student.view.StudentPreviewAdmin;
 import com.iseplife.api.dto.view.StudentWithRoleView;
 import com.iseplife.api.entity.Feed;
 import com.iseplife.api.entity.club.Club;
@@ -21,7 +23,6 @@ import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.services.fileHandler.FileHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -58,23 +59,38 @@ public class StudentService {
 
   private static final int RESULTS_PER_PAGE = 20;
 
-
-  public Page<Student> getAll(int page) {
+  private Page<Student> getAllStudent(int page) {
     return studentRepository.findAllByOrderByLastName(PageRequest.of(page, RESULTS_PER_PAGE));
+  }
+
+  public Page<StudentPreview> getAll(int page) {
+    return getAllStudent(page).map(StudentFactory::entityToPreview);
+  }
+
+  public Page<StudentPreviewAdmin> getAllForAdmin(int page) {
+    return getAllStudent(page).map(StudentFactory::entityToPreviewAdmin);
   }
 
   public Student getStudent(Long id) {
     Optional<Student> student = studentRepository.findById(id);
-    if(student.isEmpty())
+    if (student.isEmpty())
       throw new IllegalArgumentException("could not find the student with id: " + id);
 
     return student.get();
   }
 
-  public Student createStudent(StudentDTO dto) {
+  public StudentAdminView createStudent(StudentDTO dto) {
+    if (studentRepository.existsById(dto.getId()))
+      throw new IllegalArgumentException("Student already exist with this id ("+dto.getId()+")");
+
     Student student = studentFactory.dtoToEntity(dto);
-    return studentRepository.save(student);
+    student.setRoles(roleRepository.findAllByRoleIn(dto.getRoles()));
+
+    return StudentFactory.entityToAdminView(
+      studentRepository.save(student)
+    );
   }
+
 
   void addProfileImage(Long studentId, MultipartFile image) {
     Student student = getStudent(studentId);
@@ -82,10 +98,11 @@ public class StudentService {
     studentRepository.save(student);
   }
 
-  public void toggleArchiveStudent(Long id) {
+  public StudentAdminView toggleArchiveStudent(Long id) {
     Student student = getStudent(id);
-    student.setArchivedAt(new Date());
-    studentRepository.save(student);
+
+    student.setArchivedAt(student.isArchived() ? null : new Date());
+    return StudentFactory.entityToAdminView(studentRepository.save(student));
   }
 
   public Student updateStudent(StudentUpdateDTO dto, Long id) {
@@ -140,26 +157,24 @@ public class StudentService {
     return roleRepository.findAll();
   }
 
-  public Student updateStudentAdmin(StudentUpdateAdminDTO dto, MultipartFile file) {
+  public StudentAdminView updateStudentAdmin(StudentUpdateAdminDTO dto) {
     Student student = getStudent(dto.getId());
     studentFactory.updateAdminDtoToEntity(student, dto);
 
-    if (file != null) {
-      updateProfileImage(student, file);
+    if (dto.getPicture() != null) {
+      updateProfileImage(student, dto.getPicture());
+    } else if (dto.getResetPicture()) {
+      fileHandler.delete(student.getPicture());
     }
 
-    Set<Role> roles = roleRepository.findAllByIdIn(dto.getRoles());
+    Set<Role> roles = roleRepository.findAllByRoleIn(dto.getRoles());
     student.setRoles(roles);
 
-    return studentRepository.save(student);
+    return StudentFactory.entityToAdminView(studentRepository.save(student));
   }
 
   private void updateProfileImage(Student student, MultipartFile image) {
     fileHandler.upload(image, "user/", Collections.EMPTY_MAP);
-  }
-
-  public Page<StudentWithRoleView> getAllForAdmin(int page) {
-    return getAll(page).map(s -> studentFactory.studentToStudentWithRoles(s));
   }
 
   public List<String> getAllPromo() {

@@ -58,7 +58,7 @@ public class StudentImportService {
           String firstname = cols[0];
           String lastname = cols[1];
           Long studentId = Long.parseLong(cols[2]);
-          String promo = cols[3];
+          Integer promo = Integer.parseInt(cols[3]);
 
           Student student = new Student();
           student.setId(studentId);
@@ -102,7 +102,7 @@ public class StudentImportService {
       if (student != null) {
         res.incrAlreadyImported();
         // add image if not present
-        if (student.getPhotoUrl() == null || student.getPhotoUrlThumb() == null) {
+        if (student.getPicture() == null) {
           // check if photo can be added
           if (photosToAdd.get(student.getId()) != null) {
             studentService.addProfileImage(student.getId(), photosToAdd.get(student.getId()));

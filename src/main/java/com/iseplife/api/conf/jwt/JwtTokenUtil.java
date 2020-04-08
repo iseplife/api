@@ -15,6 +15,7 @@ import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.services.ClubService;
 import com.iseplife.api.services.StudentService;
+import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.stream.Collectors;
+
 
 /**
  * Created by Guillaume on 07/08/2017.
@@ -193,9 +195,8 @@ public class JwtTokenUtil {
 
       return hashString + refreshSecret;
     } catch (NoSuchAlgorithmException e) {
-      e.printStackTrace();
+      throw new JWTVerificationException(e.getMessage());
     }
-    return null;
   }
 
   private String generateRefreshToken(TokenPayload tokenPayload) {

@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -18,16 +19,21 @@ public class Student implements UserDetails {
   @Column(unique = true)
   private Long id;
 
-  private String promo;
-  private Date archivedAt = null;
+  @NotBlank(message = "Promo is mandatory")
+  private Integer promo;
+  private Date archivedAt;
 
+  @NotBlank(message = "firstName is mandatory")
   private String firstName;
+  @NotBlank(message = "lastName is mandatory")
   private String lastName;
   private String mail;
   private Date birthDate;
+
   @JsonIgnore
   private Boolean recognition;
 
+  @JsonIgnore
   @Column(unique = true)
   private String phoneId;
   @Column(unique = true)
@@ -38,10 +44,10 @@ public class Student implements UserDetails {
   private String instagram;
   private String snapchat;
 
+  @JsonIgnore
   private Boolean allowNotifications = false;
 
-  private String photoUrl;
-  private String photoUrlThumb;
+  private String picture;
 
   @ManyToMany(fetch = FetchType.EAGER)
   private Set<Role> roles;
@@ -58,11 +64,11 @@ public class Student implements UserDetails {
     this.id = id;
   }
 
-  public String getPromo() {
+  public Integer getPromo() {
     return promo;
   }
 
-  public void setPromo(String promo) { this.promo = promo;  }
+  public void setPromo(Integer promo) { this.promo = promo;  }
 
   public String getFirstName() {
     return firstName;
@@ -105,14 +111,6 @@ public class Student implements UserDetails {
   public Boolean getRecognition() { return recognition;  }
 
   public void setRecognition(Boolean recognition) { this.recognition = recognition; }
-
-  public String getPhotoUrl() {
-    return photoUrl;
-  }
-
-  public void setPhotoUrl(String photoUrl) {
-    this.photoUrl = photoUrl;
-  }
 
   public boolean isArchived() { return archivedAt != null; }
 
@@ -204,14 +202,6 @@ public class Student implements UserDetails {
     this.twitter = twitter;
   }
 
-  public String getPhotoUrlThumb() {
-    return photoUrlThumb;
-  }
-
-  public void setPhotoUrlThumb(String photoUrlThumb) {
-    this.photoUrlThumb = photoUrlThumb;
-  }
-
   public Boolean getAllowNotifications() {
     return allowNotifications;
   }
@@ -239,5 +229,13 @@ public class Student implements UserDetails {
 
   public void addSubscription(Subscription subscription){
     this.subscriptions.add(subscription);
+  }
+
+  public String getPicture() {
+    return picture;
+  }
+
+  public void setPicture(String picture) {
+    this.picture = picture;
   }
 }

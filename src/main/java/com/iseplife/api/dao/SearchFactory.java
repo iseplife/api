@@ -38,11 +38,11 @@ public class SearchFactory {
     SearchItemView searchItem = new SearchItemView();
     searchItem.setId(student.getId());
     searchItem.setName(student.getFirstName() + " " + student.getLastName());
-    searchItem.setThumbURL(student.getPhotoUrl());
-    searchItem.setDescription(student.getPromo());
+    searchItem.setThumbURL(student.getPicture());
+    searchItem.setDescription(student.getPromo().toString());
 
     // Status is false when student is archived or promotion is passed
-    searchItem.setStatus(!student.isArchived() || Integer.parseInt(student.getPromo()) < Calendar.getInstance().get(Calendar.YEAR));
+    searchItem.setStatus(!student.isArchived() || student.getPromo() < Calendar.getInstance().get(Calendar.YEAR));
     return searchItem;
   }
 

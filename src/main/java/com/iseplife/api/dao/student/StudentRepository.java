@@ -13,6 +13,9 @@ import java.util.Set;
 
 @Repository
 public interface StudentRepository extends CrudRepository<Student, Long> {
+
+  boolean existsById(Long id);
+
   Page<Student> findAllByOrderByLastName(Pageable pageable);
 
   @Query(

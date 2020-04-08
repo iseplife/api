@@ -1,7 +1,6 @@
 package com.iseplife.api.dao.student;
 
 import com.iseplife.api.entity.user.Role;
-import com.iseplife.api.entity.user.Role;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -16,5 +15,8 @@ import java.util.Set;
 public interface RoleRepository extends CrudRepository<Role, Long> {
   Role findByRole(String name);
   List<Role> findAll();
+
+  Set<Role> findAllByRoleIn(List<String> roles);
+
   Set<Role> findAllByIdIn(List<Long> id);
 }

@@ -71,8 +71,9 @@ class DatabaseSeeder {
     /* Create super admin user */
     Student student = new Student();
     student.setId(1L);
-    student.setFirstName("Default");
-    student.setLastName("Admin");
+    student.setFirstName("Zinedine");
+    student.setLastName("Zidane");
+    student.setPromo(1998);
     student.setBirthDate(new Date());
 
     Role roleStudent = roleRepository.findByRole(Roles.STUDENT);

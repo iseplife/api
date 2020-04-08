@@ -1,21 +1,21 @@
-package com.iseplife.api.dto.student;
-
-import org.springframework.web.multipart.MultipartFile;
+package com.iseplife.api.dto.student.view;
 
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by Guillaume on 03/12/2017.
- * back
- */
-public class StudentUpdateAdminDTO {
+public class StudentAdminView {
   private Long id;
+
+  private boolean isArchived;
+  private Integer promo;
+  private String picture;
+
   private String firstName;
   private String lastName;
-  private Integer promo;
-  private Date birthDate;
   private String mail;
+  private Date birthDate;
+
+  private String phoneNumber;
 
   private String facebook;
   private String twitter;
@@ -24,16 +24,28 @@ public class StudentUpdateAdminDTO {
 
   private List<String> roles;
 
-  private Boolean resetPicture = false;
-
-  private MultipartFile picture;
-
   public Long getId() {
     return id;
   }
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public Integer getPromo() {
+    return promo;
+  }
+
+  public void setPromo(Integer promo) {
+    this.promo = promo;
+  }
+
+  public String getPicture() {
+    return picture;
+  }
+
+  public void setPicture(String picture) {
+    this.picture = picture;
   }
 
   public String getFirstName() {
@@ -52,12 +64,12 @@ public class StudentUpdateAdminDTO {
     this.lastName = lastName;
   }
 
-  public Integer getPromo() {
-    return promo;
+  public String getMail() {
+    return mail;
   }
 
-  public void setPromo(Integer promo) {
-    this.promo = promo;
+  public void setMail(String mail) {
+    this.mail = mail;
   }
 
   public Date getBirthDate() {
@@ -68,12 +80,12 @@ public class StudentUpdateAdminDTO {
     this.birthDate = birthDate;
   }
 
-  public String getMail() {
-    return mail;
+  public String getPhoneNumber() {
+    return phoneNumber;
   }
 
-  public void setMail(String mail) {
-    this.mail = mail;
+  public void setPhoneNumber(String phoneNumber) {
+    this.phoneNumber = phoneNumber;
   }
 
   public String getFacebook() {
@@ -116,19 +128,11 @@ public class StudentUpdateAdminDTO {
     this.roles = roles;
   }
 
-  public Boolean getResetPicture() {
-    return resetPicture;
+  public boolean isArchived() {
+    return isArchived;
   }
 
-  public void setResetPicture(Boolean resetPicture) {
-    this.resetPicture = resetPicture;
-  }
-
-  public MultipartFile getPicture() {
-    return picture;
-  }
-
-  public void setPicture(MultipartFile picture) {
-    this.picture = picture;
+  public void setArchived(boolean archived) {
+    isArchived = archived;
   }
 }
