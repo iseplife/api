@@ -22,6 +22,7 @@ import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.services.fileHandler.FileHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -29,9 +30,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static com.iseplife.api.conf.StorageConfig.USER_MEDIA_PATH;
-import static com.iseplife.api.conf.StorageConfig.USER_MEDIA_PATH_ORIGINAL;
 
 /**
  * Created by Guillaume on 30/07/2017.
@@ -59,7 +57,17 @@ public class StudentService {
   @Autowired
   FileHandler fileHandler;
 
+  @Value("${storage.image.student.default}")
+  protected String defaultPath;
+
+  @Value("${storage.image.student.original}")
+  protected String originalPath;
+
   private static final int RESULTS_PER_PAGE = 20;
+
+  public String getSigned(){
+    return fileHandler.generatePresignUrl("post/a2C9IyruWsHogCCUWIJzrufereJKu5.jpg");
+  }
 
   private Page<Student> getAllStudent(int page) {
     return studentRepository.findAllByOrderByLastName(PageRequest.of(page, RESULTS_PER_PAGE));
@@ -105,7 +113,7 @@ public class StudentService {
   public String uploadOriginalPicture(Student student, MultipartFile image) {
     String name = student.getId() + "." + fileHandler.getFileExtension(image.getName());
 
-    return fileHandler.upload(image, USER_MEDIA_PATH_ORIGINAL + "/" + name, true);
+    return fileHandler.upload(image, originalPath + "/" + name, true);
   }
 
   public void updateProfilePicture(Long id, MultipartFile image) {
@@ -114,7 +122,7 @@ public class StudentService {
 
   private void updateProfilePicture(Student student, MultipartFile image) {
     student.setPicture(
-      fileHandler.upload(image, USER_MEDIA_PATH, false)
+      fileHandler.upload(image, defaultPath, false)
     );
     studentRepository.save(student);
   }
