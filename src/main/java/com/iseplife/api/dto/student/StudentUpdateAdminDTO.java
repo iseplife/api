@@ -26,8 +26,6 @@ public class StudentUpdateAdminDTO {
 
   private Boolean resetPicture = false;
 
-  private MultipartFile picture;
-
   public Long getId() {
     return id;
   }
@@ -122,13 +120,5 @@ public class StudentUpdateAdminDTO {
 
   public void setResetPicture(Boolean resetPicture) {
     this.resetPicture = resetPicture;
-  }
-
-  public MultipartFile getPicture() {
-    return picture;
-  }
-
-  public void setPicture(MultipartFile picture) {
-    this.picture = picture;
   }
 }

@@ -22,8 +22,8 @@ public class StudentFactory {
     Student student = new Student();
     student.setId(dto.getId());
     student.setBirthDate(dto.getBirthDate());
-    student.setFirstName(dto.getFirstname());
-    student.setLastName(dto.getLastname());
+    student.setFirstName(dto.getFirstName());
+    student.setLastName(dto.getLastName());
     student.setPhoneNumber(dto.getPhone());
     student.setPromo(dto.getPromo());
     student.setMail(dto.getMail());

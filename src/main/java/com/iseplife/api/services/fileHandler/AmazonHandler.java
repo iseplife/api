@@ -28,20 +28,20 @@ public class AmazonHandler extends FileHandler {
   }
 
   @Override
-  public String upload(MultipartFile file, String path, Map params) {
-    return upload(convertToFile(file), path, params);
+  public String upload(MultipartFile file, String path, Boolean pathContainName) {
+    return upload(convertToFile(file), path, pathContainName);
   }
 
   @Override
-  public String upload(File file, String path, Map params) {
-    String fullName = path + "/" + generateRandomName(file);
+  public String upload(File file, String path, Boolean pathContainName) {
+    String completePath = pathContainName ? path : path + "/" + generateRandomName(file);
     s3client.putObject(
       bucket,
-      fullName,
+      completePath,
       file
     );
 
-    return fullName;
+    return completePath;
   }
 
   @Override

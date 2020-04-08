@@ -1,5 +1,7 @@
 package com.iseplife.api.dto.student;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
@@ -9,14 +11,11 @@ import java.util.List;
  * back
  */
 public class StudentDTO {
-  @NotNull
+
   private Long id;
-  @NotNull
   private Integer promo;
-  @NotNull
-  private String firstname;
-  @NotNull
-  private String lastname;
+  private String firstName;
+  private String lastName;
 
   private Date birthDate;
   private String phone;
@@ -41,21 +40,6 @@ public class StudentDTO {
     this.promo = promo;
   }
 
-  public String getFirstname() {
-    return firstname;
-  }
-
-  public void setFirstname(String firstname) {
-    this.firstname = firstname;
-  }
-
-  public String getLastname() {
-    return lastname;
-  }
-
-  public void setLastname(String lastname) {
-    this.lastname = lastname;
-  }
 
   public Date getBirthDate() {
     return birthDate;
@@ -104,4 +88,21 @@ public class StudentDTO {
   public void setRoles(List<String> roles) {
     this.roles = roles;
   }
+
+  public String getFirstName() {
+    return firstName;
+  }
+
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
+  }
+
+  public String getLastName() {
+    return lastName;
+  }
+
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
+  }
+
 }

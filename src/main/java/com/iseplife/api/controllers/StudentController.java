@@ -71,8 +71,12 @@ public class StudentController {
 
   @PostMapping
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
-  public StudentAdminView createStudent(@RequestBody StudentDTO dto) {
-    return studentService.createStudent(dto);
+  public StudentAdminView createStudent(
+    @RequestParam(name="form") String form,
+    @RequestParam(name="file", required = false) MultipartFile file
+  ) {
+    StudentDTO dto = jsonUtils.deserialize(form, StudentDTO.class);
+    return studentService.createStudent(dto, file);
   }
 
   @GetMapping("/me")
@@ -101,8 +105,12 @@ public class StudentController {
 
   @PutMapping("/admin")
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
-  public StudentAdminView updateStudentAdmin(@RequestBody StudentUpdateAdminDTO form) {
-    return studentService.updateStudentAdmin(form);
+  public StudentAdminView updateStudentAdmin(
+    @RequestParam(name="form") String form,
+    @RequestParam(name="file", required = false) MultipartFile file
+  ) {
+    StudentUpdateAdminDTO dto = jsonUtils.deserialize(form, StudentUpdateAdminDTO.class);
+    return studentService.updateStudentAdmin(dto, file);
   }
 
   @GetMapping("/{id}/post")

@@ -19,13 +19,10 @@ public class Student implements UserDetails {
   @Column(unique = true)
   private Long id;
 
-  @NotBlank(message = "Promo is mandatory")
   private Integer promo;
   private Date archivedAt;
 
-  @NotBlank(message = "firstName is mandatory")
   private String firstName;
-  @NotBlank(message = "lastName is mandatory")
   private String lastName;
   private String mail;
   private Date birthDate;

@@ -11,7 +11,6 @@ import com.iseplife.api.dto.student.StudentUpdateDTO;
 import com.iseplife.api.dto.student.view.StudentAdminView;
 import com.iseplife.api.dto.student.view.StudentPreview;
 import com.iseplife.api.dto.student.view.StudentPreviewAdmin;
-import com.iseplife.api.dto.view.StudentWithRoleView;
 import com.iseplife.api.entity.Feed;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.user.Role;
@@ -30,6 +29,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.iseplife.api.conf.StorageConfig.USER_MEDIA_PATH;
+import static com.iseplife.api.conf.StorageConfig.USER_MEDIA_PATH_ORIGINAL;
 
 /**
  * Created by Guillaume on 30/07/2017.
@@ -79,22 +81,41 @@ public class StudentService {
     return student.get();
   }
 
-  public StudentAdminView createStudent(StudentDTO dto) {
+  public StudentAdminView createStudent(StudentDTO dto, MultipartFile file) {
     if (studentRepository.existsById(dto.getId()))
-      throw new IllegalArgumentException("Student already exist with this id ("+dto.getId()+")");
+      throw new IllegalArgumentException("Student already exist with this id (" + dto.getId() + ")");
 
     Student student = studentFactory.dtoToEntity(dto);
     student.setRoles(roleRepository.findAllByRoleIn(dto.getRoles()));
+
+    if (file != null)
+      student.setPicture(uploadOriginalPicture(student, file));
 
     return StudentFactory.entityToAdminView(
       studentRepository.save(student)
     );
   }
 
-
-  void addProfileImage(Long studentId, MultipartFile image) {
+  void addProfilePicture(Long studentId, MultipartFile image) {
     Student student = getStudent(studentId);
-    updateProfileImage(student, image);
+    updateProfilePicture(student, image);
+    studentRepository.save(student);
+  }
+
+  public String uploadOriginalPicture(Student student, MultipartFile image) {
+    String name = student.getId() + "." + fileHandler.getFileExtension(image.getName());
+
+    return fileHandler.upload(image, USER_MEDIA_PATH_ORIGINAL + "/" + name, true);
+  }
+
+  public void updateProfilePicture(Long id, MultipartFile image) {
+    updateProfilePicture(getStudent(id), image);
+  }
+
+  private void updateProfilePicture(Student student, MultipartFile image) {
+    student.setPicture(
+      fileHandler.upload(image, USER_MEDIA_PATH, false)
+    );
     studentRepository.save(student);
   }
 
@@ -157,12 +178,12 @@ public class StudentService {
     return roleRepository.findAll();
   }
 
-  public StudentAdminView updateStudentAdmin(StudentUpdateAdminDTO dto) {
+  public StudentAdminView updateStudentAdmin(StudentUpdateAdminDTO dto, MultipartFile file) {
     Student student = getStudent(dto.getId());
     studentFactory.updateAdminDtoToEntity(student, dto);
 
-    if (dto.getPicture() != null) {
-      updateProfileImage(student, dto.getPicture());
+    if (file != null) {
+      updateProfilePicture(student, file);
     } else if (dto.getResetPicture()) {
       fileHandler.delete(student.getPicture());
     }
@@ -173,9 +194,6 @@ public class StudentService {
     return StudentFactory.entityToAdminView(studentRepository.save(student));
   }
 
-  private void updateProfileImage(Student student, MultipartFile image) {
-    fileHandler.upload(image, "user/", Collections.EMPTY_MAP);
-  }
 
   public List<String> getAllPromo() {
     return studentRepository.findDistinctPromo();
