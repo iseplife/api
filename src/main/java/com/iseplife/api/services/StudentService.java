@@ -65,10 +65,6 @@ public class StudentService {
 
   private static final int RESULTS_PER_PAGE = 20;
 
-  public String getSigned(){
-    return fileHandler.generatePresignUrl("post/a2C9IyruWsHogCCUWIJzrufereJKu5.jpg");
-  }
-
   private Page<Student> getAllStudent(int page) {
     return studentRepository.findAllByOrderByLastName(PageRequest.of(page, RESULTS_PER_PAGE));
   }
