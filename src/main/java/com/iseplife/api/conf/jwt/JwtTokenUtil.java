@@ -23,7 +23,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -47,7 +46,7 @@ public class JwtTokenUtil {
 
   public static final String CLAIM_PAYLOAD = "payload";
   private static final String CLAIM_USER_ID = "userID";
-  private static final String SECRET_HASHING_ALGORITHM = "SHA3_256";
+  private static final String SECRET_HASHING_ALGORITHM = "SHA-256";
   private final Locale locale = Locale.FRANCE;
 
   @Value("${jwt.secret}")

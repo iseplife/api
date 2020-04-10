@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://${DB_HOST:bastiengrignon.ddns.net:3306}/iseplife?createDatabaseIfNotExist=true&useSSL=false&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    url: jdbc:mysql://${DB_HOST:localhost:3306}/iseplife?createDatabaseIfNotExist=true&useSSL=false&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
     username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD:""}
   jpa:
@@ -10,27 +10,40 @@ spring:
     multipart:
       max-file-size: 2000MB
       max-request-size: 2000MB
-
+  ​
 server:
   port: 8080
-
+  ​
 logging:
   level:
     com.iseplife.api: INFO
-
+  ​
 cloud_handler:
   name: ${CLOUD_NAME:aws}
   api_key:  ${CLOUD_API_KEY:}
   api_secret: ${CLOUD_API_SECRET:}
   bucket: iseplife
-
+  ​
+storage:
+  image:
+    default: "img"
+    feed:
+      default: "img/f"
+      gallery: "g"
+    student:
+      default: "img/usr"
+      original: "img/usr/original"
+  video: "/vid"
+  document: "/doc"
+  ​
+  ​
 jwt:
   secret: 1jmhvPXhI40vqAnm
   refreshSecret: fIH3ZmRmqH2LT6vH
   tokenDuration: 600              # 10 min
   refreshTokenDuration: 604800    # 7 jours
   issuer: iseplife
-
+  ​
 auth:
   password: ${ROOT_PASS:password}
   enable: true
