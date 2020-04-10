@@ -1,7 +1,7 @@
 spring:
   datasource:
-    url: jdbc:mysql://${DB_HOST:bastiengrignon.ddns.net:3306}/iseplife?createDatabaseIfNotExist=true&useSSL=false&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
-    username: ${DB_USERNAME:root}
+    url: jdbc:mysql://${DB_HOST:iseplife.fr:3306}/iseplife?createDatabaseIfNotExist=true&useSSL=false&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    username: ${DB_USERNAME:remote}
     password: ${DB_PASSWORD:""}
   jpa:
     hibernate:
