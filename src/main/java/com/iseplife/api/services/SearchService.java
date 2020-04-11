@@ -50,9 +50,9 @@ public class SearchService {
     if (!promos.isEmpty()) {
       List<String> promoArray = Arrays.stream(promos.split(","))
               .collect(Collectors.toList());
-      students = studentRepository.searchStudent(filter, promoArray, new PageRequest(page, RESULTS_PER_PAGE));
+      students = studentRepository.searchStudent(filter, promoArray, PageRequest.of(page, RESULTS_PER_PAGE));
     } else {
-      students = studentRepository.searchStudent(filter, new PageRequest(page, RESULTS_PER_PAGE));
+      students = studentRepository.searchStudent(filter, PageRequest.of(page, RESULTS_PER_PAGE));
     }
 
     return students.map(s -> searchFactory.entityToSearchItemView(s));
