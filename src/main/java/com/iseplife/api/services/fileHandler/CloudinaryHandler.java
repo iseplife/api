@@ -1,6 +1,7 @@
 package com.iseplife.api.services.fileHandler;
 
 import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.iseplife.api.exceptions.FileException;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,13 +21,18 @@ public class CloudinaryHandler extends FileHandler {
     cloudinary = new Cloudinary("cloudinary://" + key + ":" + secret + "@" + bucket);
   }
 
-  public String upload(MultipartFile file, String path, Map params) {
-    return upload(convertToFile(file), path, params);
+  public String upload(MultipartFile file, String path, Boolean pathContainName) {
+    return upload(convertToFile(file), path, pathContainName);
   }
 
-  public String upload(File file, String path, Map params) {
+  public String upload(File file, String path, Boolean pathContainName) {
+    Map params = ObjectUtils.asMap(
+      "resource_type", "TBD",
+     "public_id", "my_folder/my_name",
+     "folder", path
+    );
     String type = (String) params.get("resource_type");
-    params.put("folder", path);
+
     Map res;
     try {
       if (type != null && type.equals("video") && file.length() > VIDEO_THRESHOLD_SIZE) {

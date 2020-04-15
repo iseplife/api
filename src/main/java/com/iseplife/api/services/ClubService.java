@@ -79,7 +79,7 @@ public class ClubService {
 
   private void setClubLogo(Club club, MultipartFile file) {
     fileHandler.delete(club.getLogoUrl());
-    String url = fileHandler.upload(file, "/img/usr", Collections.EMPTY_MAP);
+    String url = fileHandler.upload(file, "/img/usr", false);
 
     club.setLogoUrl(url);
   }

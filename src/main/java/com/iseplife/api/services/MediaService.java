@@ -110,7 +110,7 @@ public class MediaService {
     Document document = new Document();
     document.setCreation(new Date());
 
-    String name = fileHandler.upload(fileUploaded, "document", ObjectUtils.asMap());
+    String name = fileHandler.upload(fileUploaded, "/document",false);
     document.setName(name);
     document.setTitle(title);
     document = mediaRepository.save(document);
@@ -126,6 +126,7 @@ public class MediaService {
     video.setCreation(new Date());
     video.setTitle(title);
 
+    /*
     String name = fileHandler.upload(
       videoFile,
       "post",
@@ -133,7 +134,9 @@ public class MediaService {
         "async", true,
         "eager", Collections.singletonList(new Transformation().audioCodec("aac").videoCodec("h264"))
       ));
-    video.setName(name);
+      */
+    video.setName("name");
+
 
     Video savedVideo = mediaRepository.save(video);
     Post post = postService.addMediaEmbed(postId, video);
@@ -166,7 +169,7 @@ public class MediaService {
     Image image = new Image();
     image.setCreation(new Date());
 
-    String name = fileHandler.upload(file, "post", ObjectUtils.asMap("folder", "post"));
+    String name = fileHandler.upload(file, "post", false);
     image.setName(name);
     image = mediaRepository.save(image);
 
@@ -179,8 +182,7 @@ public class MediaService {
     Image image = new Image();
     image.setGallery(gallery);
 
-    String name = fileHandler.upload(file, "img/g" + gallery.getId(), ObjectUtils.asMap("folder",
-      "post/" + gallery.getId()));
+    String name = fileHandler.upload(file, "img/g/" + gallery.getId(), false);
     image.setName(name);
     mediaRepository.save(image);
 
@@ -192,7 +194,7 @@ public class MediaService {
     image.setGallery(gallery);
     image.setCreation(new Date());
 
-    String name = fileHandler.upload(file, "img/g" + gallery.getId(), ObjectUtils.asMap("folder", "post/" + gallery.getId()));
+    String name = fileHandler.upload(file, "img/g/" + gallery.getId(), false);
     image.setName(name);
 
     mediaRepository.save(image);

@@ -78,7 +78,7 @@ public class EventService {
   }
 
   private String createImageEvent(MultipartFile image) {
-    return fileHandler.upload(image, "/img/", Collections.EMPTY_MAP);
+    return fileHandler.upload(image, "/img", false);
   }
 
   public List<EventPreviewView> getEvents() {

@@ -24,7 +24,7 @@ public class AuthorFactory {
     author.setId(student.getId());
     author.setType(AuthorType.STUDENT);
     author.setName(student.getFirstName() + " " + student.getLastName());
-    author.setThumbnail(student.getPhotoUrlThumb());
+    author.setThumbnail(student.getPicture());
 
     return author;
   }

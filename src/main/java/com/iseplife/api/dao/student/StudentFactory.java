@@ -3,7 +3,9 @@ package com.iseplife.api.dao.student;
 import com.iseplife.api.dto.student.StudentDTO;
 import com.iseplife.api.dto.student.StudentUpdateAdminDTO;
 import com.iseplife.api.dto.student.StudentUpdateDTO;
-import com.iseplife.api.dto.view.StudentWithRoleView;
+import com.iseplife.api.dto.student.view.StudentAdminView;
+import com.iseplife.api.dto.student.view.StudentPreview;
+import com.iseplife.api.dto.student.view.StudentPreviewAdmin;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
 import org.springframework.stereotype.Component;
@@ -18,9 +20,10 @@ import java.util.stream.Collectors;
 public class StudentFactory {
   public Student dtoToEntity(StudentDTO dto) {
     Student student = new Student();
+    student.setId(dto.getId());
     student.setBirthDate(dto.getBirthDate());
-    student.setFirstName(dto.getFirstname());
-    student.setLastName(dto.getLastname());
+    student.setFirstName(dto.getFirstName());
+    student.setLastName(dto.getLastName());
     student.setPhoneNumber(dto.getPhone());
     student.setPromo(dto.getPromo());
     student.setMail(dto.getMail());
@@ -43,7 +46,7 @@ public class StudentFactory {
     student.setLastName(dto.getLastName());
 
     student.setBirthDate(dto.getBirthDate());
-    student.setPhoneNumber(dto.getPhone());
+
     student.setPromo(dto.getPromo());
     student.setMail(dto.getMail());
 
@@ -53,34 +56,64 @@ public class StudentFactory {
     student.setInstagram(dto.getInstagram());
   }
 
-  public StudentWithRoleView studentToStudentWithRoles(Student student) {
-    StudentWithRoleView studentWithRoleView = new StudentWithRoleView();
+  public static StudentPreview entityToPreview(Student student){
+    StudentPreview studentPreview = new StudentPreview();
 
-    studentWithRoleView.setId(student.getId());
-    studentWithRoleView.setFirstName(student.getFirstName());
-    studentWithRoleView.setLastName(student.getLastName());
+    studentPreview.setId(student.getId());
+    studentPreview.setFirstName(student.getFirstName());
+    studentPreview.setLastName(student.getLastName());
+    studentPreview.setPromo(student.getPromo());
+    studentPreview.setPicture(student.getPicture());
 
-    studentWithRoleView.setBirthDate(student.getBirthDate());
-    studentWithRoleView.setPhone(student.getPhoneNumber());
-    studentWithRoleView.setPromo(student.getPromo());
-    studentWithRoleView.setMail(student.getMail());
-
-    studentWithRoleView.setFacebook(student.getFacebook());
-    studentWithRoleView.setTwitter(student.getTwitter());
-    studentWithRoleView.setSnapchat(student.getSnapchat());
-    studentWithRoleView.setInstagram(student.getInstagram());
-
-    studentWithRoleView.setId(student.getId());
-    studentWithRoleView.setPhotoUrl(student.getPhotoUrl());
-    studentWithRoleView.setPhotoUrlThumb(student.getPhotoUrlThumb());
-
-    studentWithRoleView.setArchived(student.isArchived());
-
-    studentWithRoleView.setRolesValues(
-      student.getRoles().stream()
-      .map(Role::getRole)
-      .collect(Collectors.toList())
-    );
-    return studentWithRoleView;
+    return studentPreview;
   }
+
+  public static StudentPreviewAdmin entityToPreviewAdmin(Student student){
+    StudentPreviewAdmin studentPreviewAdmin = new StudentPreviewAdmin();
+
+    studentPreviewAdmin.setId(student.getId());
+    studentPreviewAdmin.setFirstName(student.getFirstName());
+    studentPreviewAdmin.setLastName(student.getLastName());
+    studentPreviewAdmin.setPromo(student.getPromo());
+    studentPreviewAdmin.setPicture(student.getPicture());
+    studentPreviewAdmin.setArchived(student.isArchived());
+    studentPreviewAdmin.setRoles(
+      student.getRoles()
+        .stream()
+        .map(Role::getRole)
+        .collect(Collectors.toList())
+    );
+
+    return studentPreviewAdmin;
+  }
+
+  public static StudentAdminView entityToAdminView(Student student){
+    StudentAdminView studentAdmin = new StudentAdminView();
+
+    studentAdmin.setId(student.getId());
+
+    studentAdmin.setFirstName(student.getFirstName());
+    studentAdmin.setLastName(student.getLastName());
+    studentAdmin.setPromo(student.getPromo());
+    studentAdmin.setPicture(student.getPicture());
+
+    studentAdmin.setPhoneNumber(student.getPhoneNumber());
+    studentAdmin.setMail(student.getMail());
+
+    studentAdmin.setBirthDate(student.getBirthDate());
+    studentAdmin.setFacebook(student.getFacebook());
+    studentAdmin.setTwitter(student.getTwitter());
+    studentAdmin.setInstagram(student.getInstagram());
+
+    studentAdmin.setArchived(student.isArchived());
+    studentAdmin.setRoles(
+      student.getRoles()
+        .stream()
+        .map(Role::getRole)
+        .collect(Collectors.toList())
+    );
+
+    return studentAdmin;
+  }
+
 }

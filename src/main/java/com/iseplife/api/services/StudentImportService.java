@@ -5,9 +5,6 @@ import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.student.StudentRepository;
-import com.iseplife.api.dto.view.ImportStudentResultView;
-import com.iseplife.api.entity.user.Role;
-import com.iseplife.api.entity.user.Student;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +55,7 @@ public class StudentImportService {
           String firstname = cols[0];
           String lastname = cols[1];
           Long studentId = Long.parseLong(cols[2]);
-          String promo = cols[3];
+          Integer promo = Integer.parseInt(cols[3]);
 
           Student student = new Student();
           student.setId(studentId);
@@ -102,10 +99,10 @@ public class StudentImportService {
       if (student != null) {
         res.incrAlreadyImported();
         // add image if not present
-        if (student.getPhotoUrl() == null || student.getPhotoUrlThumb() == null) {
+        if (student.getPicture() == null) {
           // check if photo can be added
           if (photosToAdd.get(student.getId()) != null) {
-            studentService.addProfileImage(student.getId(), photosToAdd.get(student.getId()));
+            studentService.addProfilePicture(student.getId(), photosToAdd.get(student.getId()));
             res.incrPhotoAdded();
             res.incrStudentPhotoNotMatched();
           }
@@ -126,7 +123,7 @@ public class StudentImportService {
     // add photo to new students
     for (Student s : studentsToCreate) {
       if (photosToAdd.get(s.getId()) != null) {
-        studentService.addProfileImage(s.getId(), photosToAdd.get(s.getId()));
+        studentService.addProfilePicture(s.getId(), photosToAdd.get(s.getId()));
         res.incrPhotoAdded();
       }
     }
