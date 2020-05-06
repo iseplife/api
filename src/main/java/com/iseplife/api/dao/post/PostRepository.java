@@ -3,7 +3,7 @@ package com.iseplife.api.dao.post;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.constants.PublishStateEnum;
+import com.iseplife.api.constants.PostState;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -17,10 +17,10 @@ public interface PostRepository extends CrudRepository<Post, Long> {
 
   List<Post> findAll();
 
-  Page<Post> findByFeedAndPublishStateOrderByPublicationDate(Feed feed, PublishStateEnum state, Pageable pageable);
+  Page<Post> findByFeedAndPublishStateOrderByPublicationDate(Feed feed, PostState state, Pageable pageable);
 
 
-  List<Post> findByFeedAndPublishStateOrderByPublicationDate(Feed feed, PublishStateEnum state);
+  List<Post> findByFeedAndPublishStateOrderByPublicationDate(Feed feed, PostState state);
 
   @Query(
     "select p from Post p "+

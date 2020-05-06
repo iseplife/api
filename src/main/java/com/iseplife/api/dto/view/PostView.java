@@ -12,8 +12,6 @@ import java.util.Date;
  */
 public class PostView {
   private Long id;
-  private String title;
-  private Date creationDate;
   private Date publicationDate;
   private String description;
   private Embedable embed;
@@ -33,22 +31,6 @@ public class PostView {
 
   public void setId(Long id) {
     this.id = id;
-  }
-
-  public String getTitle() {
-    return title;
-  }
-
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
-  public Date getCreationDate() {
-    return creationDate;
-  }
-
-  public void setCreationDate(Date creationDate) {
-    this.creationDate = creationDate;
   }
 
   public Date getPublicationDate() { return publicationDate; }

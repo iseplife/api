@@ -14,7 +14,7 @@ import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.post.embed.media.Media;
 import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.constants.PublishStateEnum;
+import com.iseplife.api.constants.PostState;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.media.MediaRepository;
 import com.iseplife.api.dao.student.StudentRepository;
@@ -92,12 +92,11 @@ public class PostService {
 
   public PostView createPost(TokenPayload auth, PostDTO postDTO) {
     Post post = postFactory.dtoToEntity(postDTO);
-    post.setAuthor(studentService.getStudent(auth.getId()));
+    post.setAuthor(authService.getLoggedUser());
     post.setLinkedClub(postDTO.getLinkedClub() != null ? clubService.getClub(postDTO.getLinkedClub()) : null);
 
-    // if creator is not an ADMIN
+    // Author should be an admin
     if (!auth.getRoles().contains(Roles.ADMIN)) {
-      // Check if user is able to post in club's name
       if (post.getLinkedClub() != null && !auth.getClubsPublisher().contains(postDTO.getLinkedClub())) {
         throw new AuthException("not allowed to create this post");
       }
@@ -106,11 +105,16 @@ public class PostService {
     post.setFeed(feedService.getFeed(postDTO.getFeed()));
     post.setThread(new Thread());
     post.setCreationDate(new Date());
-    post.setPublicationDate(postDTO.getPublicationDate() == null ? new Date() : postDTO.getPublicationDate());
-    post.setPublishState(postDTO.getDraft() ? PublishStateEnum.WAITING : null);
+    post.setPublicationDate(postDTO.getPublicationDate());
+    post.setState(postDTO.getDraft() ?
+      PostState.DRAFT :
+      postDTO.hasAttachements() ?
+        PostState.WAITING :
+        PostState.READY
+    );
+
     post = postRepository.save(post);
 
-    postMessageService.broadcastPost(auth.getId(), post);
     return postFactory.entityToView(post);
   }
 
@@ -154,9 +158,9 @@ public class PostService {
     postRepository.save(post);
   }
 
-  public void setPublishState(Long postID, PublishStateEnum state) {
+  public void setPublishState(Long postID, PostState state) {
     Post post = getPost(postID);
-    post.setPublishState(state);
+    post.setState(state);
     postRepository.save(post);
   }
 
@@ -221,7 +225,7 @@ public class PostService {
 
   public Page<PostView> getFeedPosts(Feed feed, int page) {
     Page<Post> posts = postRepository.findByFeedAndPublishStateOrderByPublicationDate(feed,
-      PublishStateEnum.PUBLISHED, PageRequest.of(page, POSTS_PER_PAGE));
+      PostState.READY, PageRequest.of(page, POSTS_PER_PAGE));
 
     return posts.map(post -> postFactory.entityToView(post));
   }
@@ -239,7 +243,7 @@ public class PostService {
   }
 
   public List<PostView> getFeedPostsWaiting(Feed feed) {
-    List<Post> posts = postRepository.findByFeedAndPublishStateOrderByPublicationDate(feed, PublishStateEnum.WAITING);
+    List<Post> posts = postRepository.findByFeedAndPublishStateOrderByPublicationDate(feed, PostState.WAITING);
 
     return posts.stream().map(post -> postFactory.entityToView(post)).collect(Collectors.toList());
   }

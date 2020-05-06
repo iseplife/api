@@ -5,7 +5,7 @@ import com.iseplife.api.dto.PostDTO;
 import com.iseplife.api.dto.PostUpdateDTO;
 import com.iseplife.api.dto.view.*;
 import com.iseplife.api.entity.post.Post;
-import com.iseplife.api.constants.PublishStateEnum;
+import com.iseplife.api.constants.PostState;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dto.view.PostView;
 import com.iseplife.api.services.AuthService;
@@ -75,7 +75,7 @@ public class PostController {
 
   @PutMapping("/{id}/state/{state}")
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
-  public void setPublishState(@PathVariable("id") Long id, @PathVariable("state") PublishStateEnum state) {
+  public void setPublishState(@PathVariable("id") Long id, @PathVariable("state") PostState state) {
     postService.setPublishState(id, state);
   }
 

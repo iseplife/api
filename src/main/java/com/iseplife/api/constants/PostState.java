@@ -4,7 +4,10 @@ package com.iseplife.api.constants;
  * Created by Guillaume on 30/07/2017.
  * back
  */
-public enum PublishStateEnum {
+public enum PostState {
+  /**
+   * Item is draft
+   */
   DRAFT,
 
   /**
@@ -15,7 +18,7 @@ public enum PublishStateEnum {
   /**
    * Item available
    */
-  PUBLISHED,
+  READY,
 
   /**
    * Item archived

@@ -12,8 +12,8 @@ import com.iseplife.api.entity.post.embed.media.Image;
 import com.iseplife.api.entity.post.embed.media.Video;
 import com.iseplife.api.entity.post.embed.poll.Poll;
 import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.constants.PublishStateEnum;
-import com.iseplife.api.entity.feed.Feed;
+import com.iseplife.api.constants.PostState;
+import com.iseplife.api.entity.Feed;
 import org.hibernate.annotations.*;
 
 import javax.persistence.*;
@@ -67,7 +67,7 @@ public class Post implements ThreadInterface {
   private Feed feed;
 
   @Enumerated(EnumType.STRING)
-  private PublishStateEnum publishState;
+  private PostState state;
 
   public Long getId() {
     return id;
@@ -101,12 +101,12 @@ public class Post implements ThreadInterface {
     this.author = author;
   }
 
-  public PublishStateEnum getPublishState() {
-    return publishState;
+  public PostState getState() {
+    return state;
   }
 
-  public void setPublishState(PublishStateEnum publishState) {
-    this.publishState = publishState;
+  public void setState(PostState state) {
+    this.state = state;
   }
 
   public Embedable getEmbed() {
