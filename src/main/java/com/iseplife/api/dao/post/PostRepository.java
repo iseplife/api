@@ -17,16 +17,16 @@ public interface PostRepository extends CrudRepository<Post, Long> {
 
   List<Post> findAll();
 
-  Page<Post> findByFeedAndPublishStateOrderByPublicationDate(Feed feed, PostState state, Pageable pageable);
+  Page<Post> findByFeedAndStateOrderByPublicationDate(Feed feed, PostState state, Pageable pageable);
 
 
-  List<Post> findByFeedAndPublishStateOrderByPublicationDate(Feed feed, PostState state);
+  List<Post> findByFeedAndStateOrderByPublicationDate(Feed feed, PostState state);
 
   @Query(
     "select p from Post p "+
       "where p.feed = ?1 " +
       "and p.author = ?2 " +
-      "and p.publishState = 'DRAFT'"
+      "and p.state = 'DRAFT'"
   )
   List<Post> findFeedDrafts(Feed feed, Student author);
 

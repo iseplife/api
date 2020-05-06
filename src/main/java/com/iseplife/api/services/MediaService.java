@@ -2,6 +2,7 @@ package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.MediaType;
+import com.iseplife.api.constants.PostState;
 import com.iseplife.api.dao.GalleryRepository;
 import com.iseplife.api.dto.view.MatchedView;
 import com.iseplife.api.entity.post.embed.media.Image;
@@ -12,7 +13,6 @@ import com.iseplife.api.entity.post.embed.media.Media;
 import com.iseplife.api.entity.post.embed.media.Video;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.constants.PublishStateEnum;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.media.image.ImageRepository;
 import com.iseplife.api.dao.media.image.MatchedRepository;
@@ -115,7 +115,7 @@ public class MediaService {
     document = mediaRepository.save(document);
 
     postService.addMediaEmbed(postId, document);
-    postService.setPublishState(postId, PublishStateEnum.PUBLISHED);
+    postService.setPublishState(postId, PostState.READY);
     return document;
   }
 
@@ -177,7 +177,7 @@ public class MediaService {
     image = mediaRepository.save(image);
 
     postService.addMediaEmbed(postID, image);
-    postService.setPublishState(postID, PublishStateEnum.PUBLISHED);
+    postService.setPublishState(postID, PostState.READY);
     return image;
   }
 

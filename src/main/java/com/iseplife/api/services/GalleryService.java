@@ -1,6 +1,6 @@
 package com.iseplife.api.services;
 
-import com.iseplife.api.constants.PublishStateEnum;
+import com.iseplife.api.constants.PostState;
 import com.iseplife.api.dao.GalleryRepository;
 import com.iseplife.api.dao.media.image.ImageRepository;
 import com.iseplife.api.dto.TempFile;
@@ -101,7 +101,7 @@ public class GalleryService {
       tempFiles.forEach(file -> {
         mediaService.addGalleryImage(file.getFile(), gallery);
       });
-      postService.setPublishState(postID, PublishStateEnum.PUBLISHED);
+      postService.setPublishState(postID, PostState.READY);
     });
 
     return gallery;

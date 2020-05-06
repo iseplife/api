@@ -224,7 +224,7 @@ public class PostService {
   }
 
   public Page<PostView> getFeedPosts(Feed feed, int page) {
-    Page<Post> posts = postRepository.findByFeedAndPublishStateOrderByPublicationDate(feed,
+    Page<Post> posts = postRepository.findByFeedAndStateOrderByPublicationDate(feed,
       PostState.READY, PageRequest.of(page, POSTS_PER_PAGE));
 
     return posts.map(post -> postFactory.entityToView(post));
@@ -243,7 +243,7 @@ public class PostService {
   }
 
   public List<PostView> getFeedPostsWaiting(Feed feed) {
-    List<Post> posts = postRepository.findByFeedAndPublishStateOrderByPublicationDate(feed, PostState.WAITING);
+    List<Post> posts = postRepository.findByFeedAndStateOrderByPublicationDate(feed, PostState.WAITING);
 
     return posts.stream().map(post -> postFactory.entityToView(post)).collect(Collectors.toList());
   }
