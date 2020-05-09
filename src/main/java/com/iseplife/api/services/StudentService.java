@@ -2,16 +2,14 @@ package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.ClubRole;
-import com.iseplife.api.constants.FeedConstant;
 import com.iseplife.api.dao.club.ClubMemberRepository;
-import com.iseplife.api.dao.feed.FeedRepository;
+import com.iseplife.api.dao.group.FeedRepository;
 import com.iseplife.api.dto.student.StudentDTO;
 import com.iseplife.api.dto.student.StudentUpdateAdminDTO;
 import com.iseplife.api.dto.student.StudentUpdateDTO;
 import com.iseplife.api.dto.student.view.StudentAdminView;
 import com.iseplife.api.dto.student.view.StudentPreview;
 import com.iseplife.api.dto.student.view.StudentPreviewAdmin;
-import com.iseplife.api.entity.Feed;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
@@ -70,7 +68,7 @@ public class StudentService {
   }
 
   public Page<StudentPreview> getAll(int page) {
-    return getAllStudent(page).map(StudentFactory::entityToPreview);
+    return getAllStudent(page).map(StudentFactory::toPreview);
   }
 
   public Page<StudentPreviewAdmin> getAllForAdmin(int page) {
@@ -83,6 +81,15 @@ public class StudentService {
       throw new IllegalArgumentException("could not find the student with id: " + id);
 
     return student.get();
+  }
+
+  public List<Student> getStudents(List<Long> ids){
+      List<Student> students = (List<Student>) studentRepository.findAllById(ids);
+
+      if(students.size() != ids.size())
+        throw new IllegalArgumentException("could not find one of the user");
+
+      return students;
   }
 
   public StudentAdminView createStudent(StudentDTO dto, MultipartFile file) {
@@ -153,29 +160,6 @@ public class StudentService {
 
   public List<Club> getPublisherClubs(Student student) {
     return clubMemberRepository.findByRoleWithInheritance(student, ClubRole.PUBLISHER);
-  }
-
-
-  public List<Feed> getFeeds(Student student, List<String> roles, List<Long> adminClub) {
-    List<Feed> feeds =
-      clubMemberRepository.findByStudentId(student.getId())
-        .stream()
-        .map(cm -> cm.getClub().getFeed())
-        .collect(Collectors.toList());
-
-    if (roles.contains("ROLE_ADMIN")) {
-      feeds.addAll(feedRepository.findAll());
-    } else {
-      List<String> names = new ArrayList<>();
-      names.add("PROMO_" + student.getPromo());
-      if (feeds.size() > 0)
-        names.add(FeedConstant.ASSOCIATION_LIFE.name());
-      if (adminClub.size() > 0) {
-        names.add(FeedConstant.ADMIN_ASSOCIATION.name());
-      }
-      feeds.addAll(feedRepository.findAllByNameIn(names));
-    }
-    return feeds;
   }
 
   public List<Role> getRoles() {

@@ -3,7 +3,7 @@ package com.iseplife.api.services;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dto.EventDTO;
 import com.iseplife.api.dto.view.EventPreviewView;
-import com.iseplife.api.entity.Feed;
+import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.dao.event.EventFactory;
@@ -13,10 +13,8 @@ import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.services.fileHandler.FileHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -67,14 +65,9 @@ public class EventService {
 
     String path = createImageEvent(image);
 
+    event.setFeed(new Feed());
     event.setImageUrl(path);
-    event = eventRepository.save(event);
-
-    Feed eventFeed = new Feed();
-    //TODO: slugify name
-    eventFeed.setName(event.getTitle());
-    event.setFeed(eventFeed);
-    return event;
+    return eventRepository.save(event);
   }
 
   private String createImageEvent(MultipartFile image) {
@@ -94,7 +87,7 @@ public class EventService {
 
   public List<EventPreviewView> getAroundDateEvents(TokenPayload token, Date date) {
     return eventRepository
-      .findAroundDate(date, token.getRoles().contains("ROLE_ADMIN"), token.getFeed())
+      .findAroundDate(date, token.getRoles().contains("ROLE_ADMIN") )
       .stream()
       .map(e -> eventFactory.entityToPreviewView(e))
       .collect(Collectors.toList());
@@ -102,13 +95,13 @@ public class EventService {
 
   public Page<EventPreviewView> getFutureEvents(TokenPayload token, Date date, int page) {
     return eventRepository
-      .findFutureEvents(token.getFeed(), token.getRoles().contains("ROLE_ADMIN"), date, PageRequest.of(page, EVENTS_PER_PAGE))
+      .findFutureEvents(token.getRoles().contains("ROLE_ADMIN"), date, PageRequest.of(page, EVENTS_PER_PAGE))
       .map(e -> eventFactory.entityToPreviewView(e));
   }
 
   public Page<EventPreviewView> getPassedEvents(TokenPayload token, Date date, int page) {
     return eventRepository
-      .findPassedEvents(token.getFeed(), token.getRoles().contains("ROLE_ADMIN"), date, PageRequest.of(page, EVENTS_PER_PAGE))
+      .findPassedEvents(token.getRoles().contains("ROLE_ADMIN"), date, PageRequest.of(page, EVENTS_PER_PAGE))
       .map(e -> eventFactory.entityToPreviewView(e));
   }
 

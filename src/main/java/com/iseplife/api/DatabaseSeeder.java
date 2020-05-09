@@ -1,11 +1,12 @@
 package com.iseplife.api;
 
 import com.google.common.collect.Sets;
-import com.iseplife.api.constants.FeedConstant;
-import com.iseplife.api.dao.feed.FeedRepository;
+import com.iseplife.api.constants.GroupType;
+import com.iseplife.api.dao.group.GroupRepository;
 import com.iseplife.api.dao.student.RoleRepository;
 import com.iseplife.api.dao.student.StudentRepository;
-import com.iseplife.api.entity.Feed;
+import com.iseplife.api.entity.Group;
+import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.Roles;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,7 +34,7 @@ class DatabaseSeeder {
   private RoleRepository roleRepository;
 
   @Autowired
-  private FeedRepository feedRepository;
+  private GroupRepository groupRepository;
 
   void seedDatabase() {
     if (isDatabaseSeeded()) {
@@ -82,16 +84,29 @@ class DatabaseSeeder {
 
     studentRepository.save(student);
 
-    /* Create main feeds */
-    List<Feed> feeds = new ArrayList<>();
-    List<String> savedFeeds = feedRepository.findAll().stream().map(Feed::getName).collect(Collectors.toList());
-    for (FeedConstant f : FeedConstant.values()) {
-      if(!savedFeeds.contains(f.name())){
-        Feed feed = new Feed();
-        feed.setName(f.name());
-        feeds.add(feed);
+    /* Create default group */
+    List<Group> groups = new ArrayList<>();
+    List<GroupType> existingTypes = groupRepository
+      .findDistinctType()
+      .stream()
+      .map(Group::getType)
+      .collect(Collectors.toList());
+
+    if(existingTypes.size() != 4)
+    {
+      for (GroupType type: GroupType.values()){
+        if(!existingTypes.contains(type) && type != GroupType.DEFAULT){
+          Group g = new Group();
+          g.setName(type.toString());
+          g.setFeed(new Feed());
+          g.setRestricted(true);
+          g.setType(type);
+
+          groups.add(g);
+        }
       }
     }
-    feedRepository.saveAll(feeds);
+
+    groupRepository.saveAll(groups);
   }
 }

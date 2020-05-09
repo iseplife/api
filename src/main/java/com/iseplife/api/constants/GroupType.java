@@ -1,7 +1,8 @@
 package com.iseplife.api.constants;
 
-public enum FeedConstant{
+public enum GroupType {
   ADMIN_ASSOCIATION,
   ASSOCIATION_LIFE,
-  ADMIN
+  ADMIN,
+  DEFAULT
 }

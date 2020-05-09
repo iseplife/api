@@ -1,6 +1,6 @@
 package com.iseplife.api.dao;
 
-import com.iseplife.api.entity.Feed;
+import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.post.embed.Gallery;
 import org.springframework.data.domain.Page;

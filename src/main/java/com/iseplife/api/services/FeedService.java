@@ -1,12 +1,14 @@
 package com.iseplife.api.services;
 
 import com.iseplife.api.dto.view.PostView;
-import com.iseplife.api.entity.Feed;
+import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.Subscription;
 import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.dao.feed.FeedRepository;
-import com.iseplife.api.dao.feed.SubscriptionRepository;
+import com.iseplife.api.dao.group.FeedRepository;
+import com.iseplife.api.dao.group.SubscriptionRepository;
 import com.iseplife.api.exceptions.IllegalArgumentException;
+import com.iseplife.api.services.fileHandler.FileHandler;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,16 +29,12 @@ public class FeedService {
   @Autowired
   private PostService postService;
 
+  @Qualifier("FileHandlerBean")
+  @Autowired
+  FileHandler fileHandler;
+
   @Autowired
   private StudentService studentService;
-
-  private Feed getFeed(String name) {
-    Feed feed = feedRepository.findByName(name);
-    if (feed != null) {
-      return feed;
-    }
-    throw new IllegalArgumentException("could not find the feed with name: " + name);
-  }
 
   public Feed getFeed(Long id) {
     Optional<Feed> feed = feedRepository.findById(id);
@@ -44,29 +42,6 @@ public class FeedService {
       throw new IllegalArgumentException("could not find the feed with id: " + id);
 
     return feed.get();
-  }
-
-  public Feed getMain() {
-    return feedRepository.findMain();
-  }
-
-  public Feed createFeed(String name) {
-    Feed feed = new Feed();
-    feed.setName(name);
-
-    feedRepository.save(feed);
-    return feed;
-  }
-
-  public void deleteFeed(String name) {
-    Feed feed = getFeed(name);
-    feedRepository.delete(feed);
-  }
-
-  @Cacheable("main-posts")
-  public Page<PostView> getMainPosts(int page) {
-    Feed main = feedRepository.findMain();
-    return postService.getFeedPosts(main, page);
   }
 
   @Cacheable("posts")
@@ -90,7 +65,7 @@ public class FeedService {
     return postService.getFeedDrafts(feed, author);
   }
 
-  public Boolean isSubscribed(Long id, Long studentID){
+  public Boolean isSubscribed(Long id, Long studentID) {
     return subscriptionRepository.findByFeedIdAndListenerId(id, studentID) != null;
   }
 
@@ -98,7 +73,7 @@ public class FeedService {
     Subscription sub = subscriptionRepository.findByFeedIdAndListenerId(id, studentID);
     if (sub != null) {
       subscriptionRepository.delete(sub);
-    }else {
+    } else {
       Student student = studentService.getStudent(studentID);
       sub = new Subscription();
       sub.setFeed(getFeed(id));

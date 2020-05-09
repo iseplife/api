@@ -9,13 +9,12 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iseplife.api.constants.ClubRole;
-import com.iseplife.api.entity.Feed;
+import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.services.ClubService;
 import com.iseplife.api.services.StudentService;
-import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -153,17 +152,12 @@ public class JwtTokenUtil {
       .map(Club::getId)
       .collect(Collectors.toList());
 
-    List<String> feeds = studentService.getFeeds(student, roles, adminClubs)
-      .stream()
-      .map(Feed::getName)
-      .collect(Collectors.toList());
 
     TokenPayload tokenPayload = new TokenPayload();
     tokenPayload.setId(student.getId());
     tokenPayload.setRoles(roles);
     tokenPayload.setClubsAdmin(adminClubs);
     tokenPayload.setClubsPublisher(publisherClubs);
-    tokenPayload.setFeed(feeds);
     return tokenPayload;
   }
 

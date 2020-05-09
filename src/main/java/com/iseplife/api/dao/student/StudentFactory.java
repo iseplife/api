@@ -56,7 +56,7 @@ public class StudentFactory {
     student.setInstagram(dto.getInstagram());
   }
 
-  public static StudentPreview entityToPreview(Student student){
+  public static StudentPreview toPreview(Student student){
     StudentPreview studentPreview = new StudentPreview();
 
     studentPreview.setId(student.getId());

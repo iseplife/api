@@ -3,7 +3,7 @@ package com.iseplife.api.services;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dto.ClubDTO;
 import com.iseplife.api.dto.view.ClubMemberView;
-import com.iseplife.api.entity.Feed;
+import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.club.ClubMember;
 import com.iseplife.api.entity.post.embed.Gallery;
@@ -18,7 +18,6 @@ import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.services.fileHandler.FileHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -67,13 +66,10 @@ public class ClubService {
     clubMember.setRole(ClubRole.SUPER_ADMIN);
     clubMember.setClub(club);
 
+    club.setFeed(new Feed());
     club.setMembers(Collections.singletonList(clubMember));
     setClubLogo(club, logo);
 
-    Feed clubFeed = new Feed();
-    //TODO: slugify name
-    clubFeed.setName(club.getName());
-    club.setFeed(clubFeed);
     return clubRepository.save(club);
   }
 

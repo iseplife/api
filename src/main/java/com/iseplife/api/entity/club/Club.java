@@ -2,7 +2,7 @@ package com.iseplife.api.entity.club;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.constants.ClubTypesEnum;
-import com.iseplife.api.entity.Feed;
+import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.post.Post;
 
