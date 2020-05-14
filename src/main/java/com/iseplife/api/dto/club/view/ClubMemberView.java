@@ -1,4 +1,4 @@
-package com.iseplife.api.dto.view;
+package com.iseplife.api.dto.club.view;
 
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.user.Student;
