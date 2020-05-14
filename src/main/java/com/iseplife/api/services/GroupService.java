@@ -50,7 +50,6 @@ public class GroupService {
   public GroupView createGroup(groupDTO dto, MultipartFile file) {
     Group group = GroupFactory.fromDTO(dto);
 
-
     if (file != null)
       fileHandler.upload(file, "", false);
 
@@ -74,19 +73,21 @@ public class GroupService {
     return GroupFactory.toView(groupRepository.save(group));
   }
 
-  public GroupView toggleArchive(Long id) {
+  public Boolean toggleArchive(Long id) {
     Group group = getGroup(id);
-    if(group.getType() != GroupType.DEFAULT) {
+    if (group.getType() != GroupType.DEFAULT)
       throw new IllegalArgumentException("This type of group cannot be archive");
-    }
+
 
     group.setArchivedAt(group.isArchived() ? null : new Date());
-    return GroupFactory.toView(groupRepository.save(group));
+    groupRepository.save(group);
+
+    return group.isArchived();
   }
 
   public void deleteGroup(Long id) {
     Group group = getGroup(id);
-    if(group.getType() != GroupType.DEFAULT) {
+    if (group.getType() != GroupType.DEFAULT) {
       throw new IllegalArgumentException("This type of group cannot be delete");
     }
 

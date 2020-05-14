@@ -1,11 +1,11 @@
 package com.iseplife.api.services;
 
+import com.iseplife.api.dao.SubscriptionRepository;
 import com.iseplife.api.dto.view.PostView;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.Subscription;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.dao.group.FeedRepository;
-import com.iseplife.api.dao.group.SubscriptionRepository;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.services.fileHandler.FileHandler;
 import org.springframework.beans.factory.annotation.Qualifier;

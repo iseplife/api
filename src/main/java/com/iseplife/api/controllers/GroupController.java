@@ -64,7 +64,7 @@ public class GroupController {
 
   @PutMapping("/{id}/archive")
   @RolesAllowed({Roles.ADMIN})
-  public GroupView toggleArchiveStatus(@PathVariable Long id) {
+  public Boolean toggleArchiveStatus(@PathVariable Long id) {
     return groupService.toggleArchive(id);
   }
 

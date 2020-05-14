@@ -130,11 +130,13 @@ public class StudentService {
     studentRepository.save(student);
   }
 
-  public StudentAdminView toggleArchiveStudent(Long id) {
+  public Boolean toggleArchiveStudent(Long id) {
     Student student = getStudent(id);
 
     student.setArchivedAt(student.isArchived() ? null : new Date());
-    return StudentFactory.entityToAdminView(studentRepository.save(student));
+    studentRepository.save(student);
+
+    return student.isArchived();
   }
 
   public Student updateStudent(StudentUpdateDTO dto, Long id) {
