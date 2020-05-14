@@ -1,7 +1,6 @@
 package com.iseplife.api.dao.club;
 
 import com.iseplife.api.entity.club.Club;
-import com.iseplife.api.entity.club.ClubMember;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.ClubRole;
 import org.springframework.data.jpa.repository.Query;
@@ -38,7 +37,5 @@ public interface ClubRepository extends CrudRepository<Club, Long> {
 
 
   List<Club> findAllByNameContainingIgnoringCase(String name);
-
-  Club findByIsAdmin(Boolean isAdmin);
 
 }

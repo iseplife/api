@@ -12,10 +12,9 @@ import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dto.view.ImportStudentResultView;
-import com.iseplife.api.dto.view.ClubMemberView;
+import com.iseplife.api.dto.club.view.ClubMemberView;
 import com.iseplife.api.dto.view.MatchedView;
 import com.iseplife.api.dto.view.PostView;
-import com.iseplife.api.dto.view.StudentWithRoleView;
 import com.iseplife.api.services.*;
 import com.iseplife.api.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,7 +132,7 @@ public class StudentController {
 
   @PutMapping("/{id}/archive")
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
-  public StudentAdminView toggleArchiveStatus(@PathVariable Long id) {
+  public Boolean toggleArchiveStatus(@PathVariable Long id) {
     return studentService.toggleArchiveStudent(id);
   }
 

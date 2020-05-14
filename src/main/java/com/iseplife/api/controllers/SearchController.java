@@ -20,16 +20,16 @@ public class SearchController {
   @Autowired
   SearchService searchService;
 
-  @GetMapping
-  @RolesAllowed({Roles.STUDENT})
-  public List<SearchItemView> globalSearch(String name, String promos, @RequestParam(defaultValue = "0") Boolean allAnswer) {
-    return searchService.globalSearch(name, promos, allAnswer);
-  }
-
   @GetMapping("/student")
   @RolesAllowed({Roles.STUDENT})
-  public List<SearchItemView> userSearch(String name, String promos, @RequestParam(defaultValue = "0") Boolean allAnswer) {
-    return searchService.searchUser(name, promos, allAnswer);
+  public List<SearchItemView> userSearchPaged(String name, String promos, @RequestParam(defaultValue = "0") Boolean allAnswer) {
+    return searchService.searchUserPaged(name, promos, allAnswer);
+  }
+
+  @GetMapping("/student/all")
+  @RolesAllowed({Roles.STUDENT})
+  public List<SearchItemView> userSearch(String name) {
+    return searchService.searchUser(name);
   }
 
   @GetMapping("/club")

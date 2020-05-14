@@ -1,6 +1,6 @@
 package com.iseplife.api.dao.post;
 
-import com.iseplife.api.entity.Feed;
+import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.PublishStateEnum;

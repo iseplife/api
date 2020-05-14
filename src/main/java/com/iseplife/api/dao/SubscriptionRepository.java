@@ -1,5 +1,5 @@
-package com.iseplife.api.dao.feed;
-;
+package com.iseplife.api.dao;
+
 import com.iseplife.api.entity.Subscription;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -9,3 +9,4 @@ public interface SubscriptionRepository extends CrudRepository<Subscription, Lon
 
   Subscription findByFeedIdAndListenerId(Long id, Long listenerID);
 }
+

@@ -1,8 +1,8 @@
 package com.iseplife.api.entity.club;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.iseplife.api.constants.ClubTypesEnum;
-import com.iseplife.api.entity.Feed;
+import com.iseplife.api.constants.ClubType;
+import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.post.Post;
 
@@ -23,23 +23,23 @@ public class Club {
   private String name;
   @Column(length = 500)
   private String description;
+  private String logoUrl;
 
   private Date archivedAt = null;
-  private Date createdAt;
-
-  @OneToOne
-  private Feed feed;
+  private Date creation;
 
   @Enumerated(EnumType.STRING)
-  private ClubTypesEnum type;
+  private ClubType type;
 
-  private String facebook;
+  @OneToOne(cascade = CascadeType.ALL)
+  private Feed feed;
+
+  @JsonIgnore
   private String facebook_token;
+  private String facebook;
   private String snapchat;
   private String instagram;
   private String website;
-  // true if it is iseplive's club.
-  private Boolean isAdmin;
 
   @JsonIgnore
   @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -52,8 +52,6 @@ public class Club {
   @JsonIgnore
   @OneToMany(mappedBy = "linkedClub", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Post> posts;
-
-  private String logoUrl;
 
   public Long getId() { return id; }
 
@@ -75,16 +73,16 @@ public class Club {
     this.description = description;
   }
 
-  public Date getCreatedAt() {
-    return createdAt;
+  public Date getCreation() {
+    return creation;
   }
 
-  public void setCreatedAt(Date createdAt) {
-    this.createdAt = createdAt;
+  public void setCreation(Date createdAt) {
+    this.creation = createdAt;
   }
 
   public boolean isArchived() {
-    return archivedAt != null;
+    return !(archivedAt == null || archivedAt.getTime() > new Date().getTime());
   }
 
   public void setArchivedAt(Date archivedAt) {
@@ -123,14 +121,6 @@ public class Club {
     this.logoUrl = logoUrl;
   }
 
-  public Boolean getAdmin() {
-    return isAdmin;
-  }
-
-  public void setAdmin(Boolean admin) {
-    isAdmin = admin;
-  }
-
   public List<Post> getPosts() {
     return posts;
   }
@@ -155,9 +145,9 @@ public class Club {
 
   public void setInstagram(String instagram) { this.instagram = instagram; }
 
-  public ClubTypesEnum getType() { return type; }
+  public ClubType getType() { return type; }
 
-  public void setType(ClubTypesEnum type) { this.type = type; }
+  public void setType(ClubType type) { this.type = type; }
 
   public Feed getFeed() {
     return feed;

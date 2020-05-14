@@ -1,6 +1,9 @@
-package com.iseplife.api.dto;
+package com.iseplife.api.dto.club;
+
+import com.iseplife.api.constants.ClubType;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Guillaume on 30/07/2017.
@@ -9,9 +12,15 @@ import java.util.Date;
 public class ClubDTO {
   private String name;
   private String description;
+  private ClubType type;
+
   private Date creation;
+
   private String website;
-  private Long adminId;
+  private String instagram;
+  private String facebook;
+
+  private List<Long> admins;
 
   public String getName() {
     return name;
@@ -45,11 +54,36 @@ public class ClubDTO {
     this.website = website;
   }
 
-  public Long getAdminId() {
-    return adminId;
+
+  public ClubType getType() {
+    return type;
   }
 
-  public void setAdminId(Long adminId) {
-    this.adminId = adminId;
+  public void setType(ClubType type) {
+    this.type = type;
+  }
+
+  public String getInstagram() {
+    return instagram;
+  }
+
+  public void setInstagram(String instagram) {
+    this.instagram = instagram;
+  }
+
+  public String getFacebook() {
+    return facebook;
+  }
+
+  public void setFacebook(String facebook) {
+    this.facebook = facebook;
+  }
+
+  public List<Long> getAdmins() {
+    return admins;
+  }
+
+  public void setAdmins(List<Long> admins) {
+    this.admins = admins;
   }
 }

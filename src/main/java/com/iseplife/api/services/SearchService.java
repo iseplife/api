@@ -33,16 +33,9 @@ public class SearchService {
   @Autowired
   SearchFactory searchFactory;
 
-  //TODO: potentially paginate results
+  //TODO: potentially paginate result
 
-  public List<SearchItemView> globalSearch(String filter, String promos, Boolean returnAll) {
-    return Stream
-            .of(searchUser(filter, promos, returnAll), searchEvent(filter, returnAll), searchClub(filter, returnAll))
-            .flatMap(Collection::stream)
-            .collect(Collectors.toList());
-  }
-
-  public List<SearchItemView> searchUser(String filter, String promos, Boolean returnAll) {
+  public List<SearchItemView> searchUserPaged(String filter, String promos, Boolean returnAll) {
 
     List<Student> students;
     if (!promos.isEmpty()) {
@@ -56,6 +49,13 @@ public class SearchService {
     return students.stream()
             .map(s -> searchFactory.entityToSearchItemView(s))
             .collect(Collectors.toList());
+  }
+
+  public List<SearchItemView> searchUser(String filter) {
+    return studentRepository.searchStudent(filter)
+      .stream()
+      .map(s -> searchFactory.entityToSearchItemView(s))
+      .collect(Collectors.toList());
   }
 
   public List<SearchItemView> searchEvent(String filter, Boolean returnAll) {

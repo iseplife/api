@@ -13,7 +13,7 @@ import com.iseplife.api.entity.post.embed.media.Video;
 import com.iseplife.api.entity.post.embed.poll.Poll;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.PublishStateEnum;
-import com.iseplife.api.entity.Feed;
+import com.iseplife.api.entity.feed.Feed;
 import org.hibernate.annotations.*;
 
 import javax.persistence.*;
@@ -54,7 +54,7 @@ public class Post implements ThreadInterface {
 
   @ManyToOne
   private Student author;
- 
+
   @JsonIgnore
   @OneToOne(cascade = CascadeType.ALL)
   private Thread thread;

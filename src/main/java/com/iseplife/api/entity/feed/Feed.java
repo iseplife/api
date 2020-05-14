@@ -1,17 +1,15 @@
-package com.iseplife.api.entity;
+package com.iseplife.api.entity.feed;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.iseplife.api.entity.Group;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.post.embed.media.Media;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.post.embed.Gallery;
-import com.iseplife.api.entity.user.Role;
-import com.iseplife.api.entity.user.Student;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 public class Feed {
@@ -20,8 +18,19 @@ public class Feed {
   @GeneratedValue
   private Long id;
 
-  @Column(unique = true)
-  private String name;
+
+  @JsonIgnore
+  @OneToOne(mappedBy = "feed")
+  private Event event;
+
+  @JsonIgnore
+  @OneToOne(mappedBy = "feed")
+  private Club club;
+
+  @JsonIgnore
+  @OneToOne(mappedBy = "feed")
+  private Group group;
+
 
   @JsonIgnore
   @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -35,32 +44,12 @@ public class Feed {
   @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<Gallery> galleries;
 
-  @JsonIgnore
-  @ManyToMany(fetch = FetchType.LAZY)
-  private Set<Student> admin;
-
-  @JsonIgnore
-  @OneToOne(mappedBy = "feed")
-  private Event event;
-
-  @JsonIgnore
-  @OneToOne(mappedBy = "feed")
-  private Club club;
-
   public Long getId() {
     return id;
   }
 
   public void setId(Long id) {
     this.id = id;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
   }
 
   public List<Post> getPosts() {
@@ -81,5 +70,14 @@ public class Feed {
 
   public Club getClub() {
     return club;
+  }
+
+
+  public Group getGroup() {
+    return group;
+  }
+
+  public void setGroup(Group group) {
+    this.group = group;
   }
 }

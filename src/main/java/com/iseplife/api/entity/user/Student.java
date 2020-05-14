@@ -6,7 +6,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -109,7 +108,7 @@ public class Student implements UserDetails {
 
   public void setRecognition(Boolean recognition) { this.recognition = recognition; }
 
-  public boolean isArchived() { return archivedAt != null; }
+  public boolean isArchived() { return !(archivedAt == null || archivedAt.getTime() > new Date().getTime()); }
 
   public void setArchivedAt(Date archivedAt) {
     this.archivedAt = archivedAt;

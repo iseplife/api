@@ -2,13 +2,13 @@ package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.EmbedType;
-import com.iseplife.api.dao.feed.FeedRepository;
+import com.iseplife.api.dao.group.FeedRepository;
 import com.iseplife.api.dao.post.*;
 import com.iseplife.api.dto.PostDTO;
 import com.iseplife.api.dto.PostUpdateDTO;
 import com.iseplife.api.dto.view.AuthorView;
 import com.iseplife.api.dto.view.PostView;
-import com.iseplife.api.entity.Feed;
+import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.post.embed.Embedable;
 import com.iseplife.api.entity.post.embed.Gallery;
@@ -25,7 +25,6 @@ import com.iseplife.api.websocket.PostMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;

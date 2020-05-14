@@ -1,9 +1,13 @@
 package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
-import com.iseplife.api.dto.ClubDTO;
-import com.iseplife.api.dto.view.ClubMemberView;
-import com.iseplife.api.entity.Feed;
+import com.iseplife.api.constants.ClubType;
+import com.iseplife.api.dao.student.StudentFactory;
+import com.iseplife.api.dto.club.ClubDTO;
+import com.iseplife.api.dto.club.view.ClubMemberView;
+import com.iseplife.api.dto.club.view.ClubView;
+import com.iseplife.api.dto.student.view.StudentPreview;
+import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.club.ClubMember;
 import com.iseplife.api.entity.post.embed.Gallery;
@@ -18,11 +22,11 @@ import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.services.fileHandler.FileHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.text.DateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,6 +36,9 @@ import java.util.stream.Collectors;
  */
 @Service
 public class ClubService {
+
+  @Autowired
+  AuthService authService;
 
   @Autowired
   ClubRepository clubRepository;
@@ -52,36 +59,56 @@ public class ClubService {
   @Autowired
   FileHandler fileHandler;
 
-  public Club createClub(ClubDTO dto, MultipartFile logo) {
-    Club club = clubFactory.dtoToEntity(dto);
-    if (dto.getAdminId() == null) {
-      throw new IllegalArgumentException("The id of the admin cannot be null");
-    }
-    Student admin = studentService.getStudent(dto.getAdminId());
-    if (admin == null) {
-      throw new IllegalArgumentException("this student id doesn't exist");
-    }
+  public Club getClub(Long id) {
+    Optional<Club> club = clubRepository.findById(id);
+    if (club.isEmpty())
+      throw new IllegalArgumentException("could not find club with id: " + id);
 
-    ClubMember clubMember = new ClubMember();
-    clubMember.setStudent(admin);
-    clubMember.setRole(ClubRole.SUPER_ADMIN);
-    clubMember.setClub(club);
-
-    club.setMembers(Collections.singletonList(clubMember));
-    setClubLogo(club, logo);
-
-    Feed clubFeed = new Feed();
-    //TODO: slugify name
-    clubFeed.setName(club.getName());
-    club.setFeed(clubFeed);
-    return clubRepository.save(club);
+    return club.get();
   }
 
-  private void setClubLogo(Club club, MultipartFile file) {
-    fileHandler.delete(club.getLogoUrl());
-    String url = fileHandler.upload(file, "/img/usr", false);
+  public ClubView createClub(ClubDTO dto) {
+    Club club = ClubFactory.fromDTO(dto, new Club());
+    if (dto.getAdmins().size() == 0)
+      throw new IllegalArgumentException("The id of the admin cannot be null");
 
-    club.setLogoUrl(url);
+    List<Student> admins = studentService.getStudents(dto.getAdmins());
+    List<ClubMember> members = new ArrayList<>();
+    admins.forEach(a -> {
+      ClubMember member = new ClubMember();
+      member.setStudent(a);
+      member.setRole(ClubRole.SUPER_ADMIN);
+      member.setClub(club);
+
+      members.add(member);
+    });
+    club.setMembers(members);
+    club.setFeed(new Feed());
+
+    return ClubFactory.toView(clubRepository.save(club));
+  }
+
+  public ClubView updateClub(Long id, ClubDTO dto) {
+    Club club = getClub(id);
+    if(!authService.hasRightOn(club))
+      throw new AuthException("You have not sufficient rights on this club (id:" + id + ")");
+
+    // Update through reference so we don't need to get return value
+    ClubFactory.fromDTO(dto, club);
+
+    return ClubFactory.toView(clubRepository.save(club));
+  }
+
+
+  public String updateLogo(Long id, MultipartFile file) {
+    Club club = getClub(id);
+
+    if(club.getLogoUrl() != null)
+      fileHandler.delete(club.getLogoUrl());
+
+    club.setLogoUrl(fileHandler.upload(file, "/img/usr", false));
+    clubRepository.save(club);
+    return club.getLogoUrl();
   }
 
   public ClubMember addMember(Long clubId, Long studentId) {
@@ -103,13 +130,7 @@ public class ClubService {
     return clubRepository.findAllByOrderByName();
   }
 
-  public Club getClub(Long id) {
-    Optional<Club> club = clubRepository.findById(id);
-    if (club.isEmpty())
-      throw new IllegalArgumentException("could not find club with id: " + id);
 
-    return club.get();
-  }
 
   public List<Student> getClubPublishers(Club club) {
     return clubMemberRepository.findClubPublishers(club, ClubRole.PUBLISHER);
@@ -119,6 +140,14 @@ public class ClubService {
     return clubRepository.findByRoleWithInheritance(student, role);
   }
 
+
+  public Boolean toggleArchiveStatus(Long id) {
+    Club club = getClub(id);
+    club.setArchivedAt(club.isArchived() ? null : new Date());
+
+    clubRepository.save(club);
+    return club.isArchived();
+  }
 
   public void deleteClub(Long id) {
     clubRepository.deleteById(id);
@@ -132,12 +161,12 @@ public class ClubService {
     return galleryService.getClubGalleries(getClub(id), page);
   }
 
-  public Set<Student> getAdmins(Long clubId) {
+  public Set<StudentPreview> getAdmins(Long clubId) {
     Club club = getClub(clubId);
     return club.getMembers()
       .stream()
       .filter(s -> s.getRole().is(ClubRole.ADMIN))
-      .map(ClubMember::getStudent)
+      .map(m -> StudentFactory.toPreview(m.getStudent()))
       .collect(Collectors.toSet());
   }
 
@@ -151,7 +180,8 @@ public class ClubService {
 
   public void addAdmin(Long clubId, Long studId) {
     ClubMember member = clubMemberRepository.findOneByStudentIdAndClubId(studId, clubId);
-    if (member == null) throw new IllegalArgumentException("the student needs to be part of the club to be an admin");
+    if (member == null)
+      throw new IllegalArgumentException("the student needs to be part of the club to be an admin");
 
     member.setRole(ClubRole.ADMIN);
     clubRepository.save(member.getClub());
@@ -163,20 +193,6 @@ public class ClubService {
     member.setRole(ClubRole.MEMBER);
 
     clubMemberRepository.save(member);
-  }
-
-  public Club updateClub(Long id, ClubDTO clubDTO, MultipartFile logo) {
-    Club club = getClub(id);
-
-    club.setName(clubDTO.getName());
-    club.setCreatedAt(clubDTO.getCreation());
-    club.setDescription(clubDTO.getDescription());
-    club.setWebsite(clubDTO.getWebsite());
-
-    if (logo != null) {
-      setClubLogo(club, logo);
-    }
-    return clubRepository.save(club);
   }
 
   public ClubMember updateMemberRole(Long member, ClubRole role, TokenPayload payload) {
@@ -219,10 +235,6 @@ public class ClubService {
       clubMemberView.setRole(cm.getRole());
       return clubMemberView;
     }).collect(Collectors.toList());
-  }
-
-  public Club getIsepLive() {
-    return clubRepository.findByIsAdmin(true);
   }
 
 }

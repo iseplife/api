@@ -1,6 +1,6 @@
 package com.iseplife.api.entity;
 
-import com.iseplife.api.entity.user.Student;
+import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.user.Student;
 
 import javax.persistence.*;

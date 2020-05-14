@@ -2,7 +2,7 @@ package com.iseplife.api.entity.post.embed;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.constants.EmbedType;
-import com.iseplife.api.entity.Feed;
+import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.post.embed.media.Image;
 
