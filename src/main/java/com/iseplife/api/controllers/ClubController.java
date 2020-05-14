@@ -1,7 +1,11 @@
 package com.iseplife.api.controllers;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
-import com.iseplife.api.dto.ClubDTO;
+import com.iseplife.api.dao.club.ClubFactory;
+import com.iseplife.api.dao.student.StudentFactory;
+import com.iseplife.api.dto.club.ClubDTO;
+import com.iseplife.api.dto.club.view.ClubView;
+import com.iseplife.api.dto.student.view.StudentPreview;
 import com.iseplife.api.dto.view.PostView;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.club.ClubMember;
@@ -46,16 +50,88 @@ public class ClubController {
 
   @GetMapping
   @RolesAllowed({Roles.STUDENT})
-  public List<Club> listClubs() {
+  public List<Club> getAllClub() {
     return clubService.getAll();
   }
 
   @PostMapping
   @RolesAllowed({Roles.ADMIN})
-  public Club createClub(@RequestParam("logo") MultipartFile logo,
-                         @RequestParam("club") String club) {
-    ClubDTO clubDTO = jsonUtils.deserialize(club, ClubDTO.class);
-    return clubService.createClub(clubDTO, logo);
+  public ClubView createClub(
+    @RequestBody ClubDTO dto
+  ) {
+    return clubService.createClub(dto);
+  }
+
+  @GetMapping("/{id}")
+  @RolesAllowed({Roles.STUDENT})
+  public ClubView getClub(@PathVariable Long id) {
+    return ClubFactory.toView(clubService.getClub(id));
+  }
+
+  @PutMapping("/{id}")
+  @RolesAllowed({Roles.STUDENT})
+  public ClubView updateClub(@PathVariable Long id, @RequestBody ClubDTO dto) {
+    return clubService.updateClub(id, dto);
+  }
+
+  @PostMapping("/{id}/logo")
+  @RolesAllowed({Roles.STUDENT})
+  public String updateLogo(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+    return clubService.updateLogo(id, file);
+  }
+
+  @PutMapping("/{id}/archive")
+  @RolesAllowed({Roles.ADMIN})
+  public Boolean toggleArchiveStatus(@PathVariable Long id) {
+    return clubService.toggleArchiveStatus(id);
+  }
+
+  @DeleteMapping("/{id}")
+  @RolesAllowed({Roles.ADMIN})
+  public void deleteClub(@PathVariable Long id) {
+    clubService.deleteClub(id);
+  }
+
+  @GetMapping("/{id}/galleries")
+  @RolesAllowed({Roles.STUDENT})
+  public Page<Gallery> getGalleries(@PathVariable Long id, @RequestParam(defaultValue = "0") int page) {
+    return clubService.getClubGalleries(id, page);
+  }
+
+  @PutMapping("/{id}/member/{student}")
+  @RolesAllowed({Roles.STUDENT})
+  public ClubMember addMember(@PathVariable Long id,
+                              @PathVariable Long student,
+                              @AuthenticationPrincipal TokenPayload auth) {
+    return clubService.addMember(id, student);
+  }
+
+  @GetMapping("/{id}/admins")
+  @RolesAllowed({Roles.STUDENT})
+  public Set<StudentPreview> getAdmins(@PathVariable Long id) {
+    return clubService.getAdmins(id);
+  }
+
+  @PutMapping("/{id}/admin/{stud}")
+  @RolesAllowed({Roles.STUDENT})
+  public void addAdmin(@PathVariable Long id,
+                       @PathVariable Long stud
+  ) {
+    clubService.addAdmin(id, stud);
+  }
+
+  @DeleteMapping("/{id}/admin/{stud}")
+  @RolesAllowed({Roles.STUDENT})
+  public void deleteAdmin(@PathVariable Long id,
+                          @PathVariable Long stud
+  ) {
+    clubService.removeAdmin(id, stud);
+  }
+
+  @GetMapping("/{id}/member")
+  @RolesAllowed({Roles.STUDENT})
+  public List<ClubMember> getMembers(@PathVariable Long id) {
+    return clubService.getMembers(id);
   }
 
   @PutMapping("/member/{member}/role/{role}")
@@ -65,7 +141,7 @@ public class ClubController {
                                      @AuthenticationPrincipal TokenPayload auth) {
     //TODO: Maybe try/catch this cast
     ClubRole roleChecked = ClubRole.valueOf(role);
-    return clubService.updateMemberRole(member, roleChecked , auth);
+    return clubService.updateMemberRole(member, roleChecked, auth);
   }
 
   @DeleteMapping("/member/{member}")
@@ -73,91 +149,6 @@ public class ClubController {
   public void deleteMember(@PathVariable Long member,
                            @AuthenticationPrincipal TokenPayload payload) {
     clubService.removeMember(member, payload);
-  }
-
-  @PutMapping("/{id}")
-  @RolesAllowed({Roles.STUDENT})
-  public Club updateClub(@PathVariable Long id,
-                         @RequestParam(value = "logo", required = false) MultipartFile logo,
-                         @RequestParam("club") String club,
-                         @AuthenticationPrincipal TokenPayload payload) {
-    ClubDTO clubDTO = jsonUtils.deserialize(club, ClubDTO.class);
-    if (hasAdminAccess(payload, id)) {
-      throw new AuthException("no rights to modify this club");
-    }
-    return clubService.updateClub(id, clubDTO, logo);
-  }
-
-  @GetMapping("/{id}")
-  @RolesAllowed({Roles.STUDENT})
-  public Club getClub(@PathVariable Long id) {
-    return clubService.getClub(id);
-  }
-
-  @GetMapping("/{id}/galleries")
-  @RolesAllowed({Roles.STUDENT})
-  public Page<Gallery> getGalleries(@PathVariable Long id, @RequestParam(defaultValue = "0") int page){
-    return clubService.getClubGalleries(id, page);
-  }
-
-
-  @DeleteMapping("/{id}")
-  @RolesAllowed({Roles.ADMIN})
-  public void deleteClub(@PathVariable Long id) {
-    clubService.deleteClub(id);
-  }
-
-  @RolesAllowed({Roles.STUDENT})
-  private boolean hasAdminAccess(TokenPayload token, Long club) {
-    if (!token.getRoles().contains(Roles.ADMIN)) {
-      return !token.getClubsAdmin().contains(club);
-    }
-    return false;
-  }
-
-  @PutMapping("/{id}/member/{student}")
-  @RolesAllowed({Roles.STUDENT})
-  public ClubMember addMember(@PathVariable Long id,
-                              @PathVariable Long student,
-                              @AuthenticationPrincipal TokenPayload auth) {
-    if (hasAdminAccess(auth, id)) {
-      throw new AuthException("no rights to modify this club");
-    }
-    return clubService.addMember(id, student);
-  }
-
-  @GetMapping("/{id}/admins")
-  @RolesAllowed({Roles.STUDENT})
-  public Set<Student> getAdmins(@PathVariable Long id) {
-    return clubService.getAdmins(id);
-  }
-
-  @PutMapping("/{id}/admin/{stud}")
-  @RolesAllowed({Roles.STUDENT})
-  public void addAdmin(@PathVariable Long id,
-                       @PathVariable Long stud,
-                       @AuthenticationPrincipal TokenPayload auth) {
-    if (hasAdminAccess(auth, id)) {
-      throw new AuthException("no rights to modify this club");
-    }
-    clubService.addAdmin(id, stud);
-  }
-
-  @DeleteMapping("/{id}/admin/{stud}")
-  @RolesAllowed({Roles.STUDENT})
-  public void deleteAdmin(@PathVariable Long id,
-                          @PathVariable Long stud,
-                          @AuthenticationPrincipal TokenPayload auth) {
-    if (hasAdminAccess(auth, id)) {
-      throw new AuthException("no rights to modify this club");
-    }
-    clubService.removeAdmin(id, stud);
-  }
-
-  @GetMapping("/{id}/member")
-  @RolesAllowed({Roles.STUDENT})
-  public List<ClubMember> getMembers(@PathVariable Long id) {
-    return clubService.getMembers(id);
   }
 
   @GetMapping("/{id}/post")
