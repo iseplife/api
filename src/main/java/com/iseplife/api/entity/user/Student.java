@@ -108,7 +108,7 @@ public class Student implements UserDetails {
 
   public void setRecognition(Boolean recognition) { this.recognition = recognition; }
 
-  public boolean isArchived() { return archivedAt != null; }
+  public boolean isArchived() { return !(archivedAt == null || archivedAt.getTime() > new Date().getTime()); }
 
   public void setArchivedAt(Date archivedAt) {
     this.archivedAt = archivedAt;

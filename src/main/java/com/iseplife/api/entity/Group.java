@@ -60,7 +60,7 @@ public class Group {
   }
 
   public Boolean isArchived() {
-    return archivedAt != null;
+    return !(archivedAt == null || archivedAt.getTime() > new Date().getTime());
   }
 
   public void setArchivedAt(Date archivedAt) {
