@@ -45,4 +45,3 @@ docker-build:
     - maven-build
   rules:
     - if: '$CI_COMMIT_REF_NAME == "master"'
-    - when: on_success
