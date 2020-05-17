@@ -6,25 +6,33 @@ variables:
   API_VERSION: v1.4
   DOCKER_DRIVER: overlay
   SPRING_PROFILES_ACTIVE: gitlab-ci
-
 cache:
   paths:
     - .m2/repository
 
+
 stages:
+  - test
   - build
   - package
 
-maven-build:
+test:
+  stage: test
   image: maven:3.6.3-jdk-11
-  stage: build
   script: "mvn package -B -V -e -fae -Pprod -DskipTests"
+  rules:
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
+
+maven-build:
+  stage: build
+  image: maven:3.6.3-jdk-11
+  script: "mvn package -B -V -e -fae -Pprod -DskipTests"
+  retry: 2
   artifacts:
     paths:
       - target/*.jar
-  only:
-    - master
-    - feature/ci
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "master"'
 
 docker-build:
   stage: package
@@ -35,5 +43,5 @@ docker-build:
     - docker push $CI_REGISTRY_IMAGE:latest
   dependencies:
     - maven-build
-  only:
-    - master
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "master"'
