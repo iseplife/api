@@ -1,5 +1,6 @@
 package com.iseplife.api.services;
 
+import com.cloudinary.utils.ObjectUtils;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.ClubType;
 import com.iseplife.api.dao.student.StudentFactory;
@@ -106,7 +107,11 @@ public class ClubService {
     if(club.getLogoUrl() != null)
       fileHandler.delete(club.getLogoUrl());
 
-    club.setLogoUrl(fileHandler.upload(file, "/img/usr", false));
+    Map params = ObjectUtils.asMap(
+      "process", "resize",
+      "sizes", ""
+    );
+    club.setLogoUrl(fileHandler.upload(file, "/img/usr", false, params));
     clubRepository.save(club);
     return club.getLogoUrl();
   }

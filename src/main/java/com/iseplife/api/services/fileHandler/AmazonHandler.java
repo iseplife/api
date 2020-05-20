@@ -6,6 +6,8 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
@@ -28,19 +30,20 @@ public class AmazonHandler extends FileHandler {
   }
 
   @Override
-  public String upload(MultipartFile file, String path, Boolean pathContainName) {
-    return upload(convertToFile(file), path, pathContainName);
+  public String upload(MultipartFile file, String path, Boolean pathContainName, Map metadata) {
+    return upload(convertToFile(file), path, pathContainName, metadata);
   }
 
   @Override
-  public String upload(File file, String path, Boolean pathContainName) {
+  public String upload(File file, String path, Boolean pathContainName, Map metadata) {
     String completePath = pathContainName ? path : path + "/" + generateRandomName(file);
-    s3client.putObject(
-      bucket,
-      completePath,
-      file
-    );
+    PutObjectRequest request = new PutObjectRequest(bucket, completePath, file);
 
+    ObjectMetadata m = new ObjectMetadata();
+    metadata.forEach(m::addUserMetadata);
+    request.setMetadata(m);
+
+    s3client.putObject(request);
     return completePath;
   }
 

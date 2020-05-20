@@ -110,7 +110,7 @@ public class MediaService {
     Document document = new Document();
     document.setCreation(new Date());
 
-    String name = fileHandler.upload(fileUploaded, "/document",false);
+    String name = fileHandler.upload(fileUploaded, "/document",false, Collections.emptyMap());
     document.setName(name);
     document.setTitle(title);
     document = mediaRepository.save(document);
@@ -169,7 +169,11 @@ public class MediaService {
     Image image = new Image();
     image.setCreation(new Date());
 
-    String name = fileHandler.upload(file, "post", false);
+    Map params = ObjectUtils.asMap(
+      "compress", "resize",
+      "size", "200x200"
+    );
+    String name = fileHandler.upload(file, "post", false, params);
     image.setName(name);
     image = mediaRepository.save(image);
 
@@ -182,7 +186,11 @@ public class MediaService {
     Image image = new Image();
     image.setGallery(gallery);
 
-    String name = fileHandler.upload(file, "img/g/" + gallery.getId(), false);
+    Map params = ObjectUtils.asMap(
+      "process", "resize",
+      "sizes", ""
+    );
+    String name = fileHandler.upload(file, "img/g/" + gallery.getId(), false, params);
     image.setName(name);
     mediaRepository.save(image);
 
@@ -194,7 +202,11 @@ public class MediaService {
     image.setGallery(gallery);
     image.setCreation(new Date());
 
-    String name = fileHandler.upload(file, "img/g/" + gallery.getId(), false);
+    Map params = ObjectUtils.asMap(
+      "process", "resize",
+      "sizes", ""
+    );
+    String name = fileHandler.upload(file, "img/g/" + gallery.getId(), false, params);
     image.setName(name);
 
     mediaRepository.save(image);

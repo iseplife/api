@@ -1,5 +1,6 @@
 package com.iseplife.api.services;
 
+import com.cloudinary.utils.ObjectUtils;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dto.EventDTO;
 import com.iseplife.api.dto.view.EventPreviewView;
@@ -71,7 +72,11 @@ public class EventService {
   }
 
   private String createImageEvent(MultipartFile image) {
-    return fileHandler.upload(image, "/img", false);
+    Map params = ObjectUtils.asMap(
+      "process", "resize",
+      "sizes", ""
+    );
+    return fileHandler.upload(image, "/img", false, params);
   }
 
   public List<EventPreviewView> getEvents() {
