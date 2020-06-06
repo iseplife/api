@@ -40,7 +40,7 @@ public class AmazonHandler extends FileHandler {
     PutObjectRequest request = new PutObjectRequest(bucket, completePath, file);
 
     ObjectMetadata m = new ObjectMetadata();
-    metadata.forEach(m::addUserMetadata);
+    metadata.forEach((k, v) -> m.addUserMetadata(k.toString(), v.toString() ));
     request.setMetadata(m);
 
     s3client.putObject(request);
