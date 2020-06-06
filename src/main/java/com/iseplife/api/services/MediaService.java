@@ -70,10 +70,12 @@ public class MediaService {
 
   private static final int PHOTOS_PER_PAGE = 30;
 
+  private static final String SIZE_COMPRESS = "768xauto";
 
-  public Media getMedia(Long id){
+
+  public Media getMedia(Long id) {
     Optional<Media> media = mediaRepository.findById(id);
-    if(media.isEmpty())
+    if (media.isEmpty())
       throw new InvalidParameterException("could not get the image with id: " + id);
 
     return media.get();
@@ -109,7 +111,7 @@ public class MediaService {
     Document document = new Document();
     document.setCreation(new Date());
 
-    String name = fileHandler.upload(fileUploaded, "/document",false, Collections.emptyMap());
+    String name = fileHandler.upload(fileUploaded, "/document", false, Collections.emptyMap());
     document.setName(name);
     document.setTitle(title);
     document = mediaRepository.save(document);
@@ -152,33 +154,49 @@ public class MediaService {
     return media.isNSFW();
   }
 
-  public boolean removeMedia(String filename){
+  public boolean removeMedia(String filename) {
     return fileHandler.delete(filename);
   }
 
 
-  /**
-   * Add a single image
-   *
-   * @param postID
-   * @param file
-   * @return
-   */
-  public Image addSingleImage(Long postID, MultipartFile file) {
-    Image image = new Image();
-    image.setCreation(new Date());
+  public void addImages(Long postID, List<MultipartFile> images) {
+    //TODO handle this part differently
+    if (images.size() > 3)
+      throw new InvalidParameterException("Can not post more than 3 images simultaneously, create a gallery if needed");
 
-    Map params = ObjectUtils.asMap(
-      "process", "resize",
-      "sizes", "200x200"
-    );
-    String name = fileHandler.upload(file, "post", false, params);
-    image.setName(name);
-    image = mediaRepository.save(image);
+    if (images.size() == 1) {
+      Image image = new Image();
+      image.setCreation(new Date());
 
-    postService.addMediaEmbed(postID, image);
+      Map params = ObjectUtils.asMap(
+        "compress", "resize",
+        "size", SIZE_COMPRESS
+      );
+      String name = fileHandler.upload(images.get(0), "post", false, params);
+      image.setName(name);
+      image = mediaRepository.save(image);
+
+      postService.addMediaEmbed(postID, image);
+    } else {
+      Gallery g = new Gallery();
+      g.setOfficial(false);
+      for (MultipartFile multipartFile : images) {
+        Image image = new Image();
+        image.setCreation(new Date());
+
+        Map params = ObjectUtils.asMap(
+          "compress", "resize",
+          "size", SIZE_COMPRESS
+        );
+        String name = fileHandler.upload(multipartFile, "post", false, params);
+        image.setName(name);
+        image = mediaRepository.save(image);
+        image.setGallery(g);
+
+      }
+      postService.addMediaEmbed(postID, g);
+    }
     postService.setPublishState(postID, PostState.READY);
-    return image;
   }
 
   public Image addGalleryImage(MultipartFile file, Gallery gallery) {

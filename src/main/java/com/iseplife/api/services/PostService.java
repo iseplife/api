@@ -95,7 +95,7 @@ public class PostService {
     post.setAuthor(authService.getLoggedUser());
     post.setLinkedClub(postDTO.getLinkedClub() != null ? clubService.getClub(postDTO.getLinkedClub()) : null);
 
-    // Author should be an admin
+    // Author should be an admin or club publisher
     if (!auth.getRoles().contains(Roles.ADMIN)) {
       if (post.getLinkedClub() != null && !auth.getClubsPublisher().contains(postDTO.getLinkedClub())) {
         throw new AuthException("not allowed to create this post");

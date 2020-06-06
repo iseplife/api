@@ -42,9 +42,8 @@ public class MediaController {
 
   @PostMapping("/image")
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
-  public Image addStandaloneImage(@RequestParam("post") Long postId,
-                                  @RequestParam("image") MultipartFile image) {
-    return mediaService.addSingleImage(postId, image);
+  public void addImages(@RequestParam("post") Long postId, @RequestParam("images") List<MultipartFile> images) {
+    mediaService.addImages(postId, images);
   }
 
   @PostMapping("/video")
