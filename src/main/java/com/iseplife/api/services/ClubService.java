@@ -1,8 +1,6 @@
 package com.iseplife.api.services;
 
-import com.cloudinary.utils.ObjectUtils;
 import com.iseplife.api.conf.jwt.TokenPayload;
-import com.iseplife.api.constants.ClubType;
 import com.iseplife.api.dao.student.StudentFactory;
 import com.iseplife.api.dto.club.ClubDTO;
 import com.iseplife.api.dto.club.view.ClubMemberView;
@@ -21,6 +19,7 @@ import com.iseplife.api.dao.club.ClubRepository;
 import com.iseplife.api.exceptions.AuthException;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.services.fileHandler.FileHandler;
+import com.iseplife.api.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
