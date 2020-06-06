@@ -21,11 +21,11 @@ public class CloudinaryHandler extends FileHandler {
     cloudinary = new Cloudinary("cloudinary://" + key + ":" + secret + "@" + bucket);
   }
 
-  public String upload(MultipartFile file, String path, Boolean pathContainName) {
-    return upload(convertToFile(file), path, pathContainName);
+  public String upload(MultipartFile file, String path, Boolean pathContainName, Map metadata) {
+    return upload(convertToFile(file), path, pathContainName, metadata);
   }
 
-  public String upload(File file, String path, Boolean pathContainName) {
+  public String upload(File file, String path, Boolean pathContainName, Map metadata) {
     Map params = ObjectUtils.asMap(
       "resource_type", "TBD",
      "public_id", "my_folder/my_name",

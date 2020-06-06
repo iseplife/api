@@ -1,5 +1,6 @@
 package com.iseplife.api.services;
 
+import com.cloudinary.utils.ObjectUtils;
 import com.iseplife.api.constants.GroupType;
 import com.iseplife.api.dao.group.GroupFactory;
 import com.iseplife.api.dao.group.GroupRepository;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -50,8 +52,14 @@ public class GroupService {
   public GroupView createGroup(groupDTO dto, MultipartFile file) {
     Group group = GroupFactory.fromDTO(dto);
 
-    if (file != null)
-      fileHandler.upload(file, "", false);
+    if (file != null){
+      Map params = ObjectUtils.asMap(
+        "process", "compress",
+        "size", "200x200"
+      );
+      group.setCover(fileHandler.upload(file, "", false, params));
+    }
+
 
     group.setAdmins(studentService.getStudents(dto.getAdmins()));
 
@@ -64,7 +72,14 @@ public class GroupService {
     group.setAdmins(studentService.getStudents(dto.getAdmins()));
 
     if (file != null) {
-      fileHandler.upload(file, "", false);
+      if(group.getCover() != null)
+        fileHandler.delete(group.getCover());
+
+      Map params = ObjectUtils.asMap(
+        "process", "compress",
+        "size", "200x200"
+      );
+      group.setCover(fileHandler.upload(file, "", false, params));
     } else if (dto.getResetCover()) {
       fileHandler.delete(group.getCover());
     }

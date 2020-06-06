@@ -18,6 +18,7 @@ import com.iseplife.api.dao.student.StudentFactory;
 import com.iseplife.api.dao.student.StudentRepository;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.services.fileHandler.FileHandler;
+import com.iseplife.api.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -116,7 +117,11 @@ public class StudentService {
   public String uploadOriginalPicture(Student student, MultipartFile image) {
     String name = student.getId() + "." + fileHandler.getFileExtension(image.getName());
 
-    return fileHandler.upload(image, originalPath + "/" + name, true);
+    Map params = ObjectUtils.asMap(
+      "process", "resize",
+      "sizes", ""
+    );
+    return fileHandler.upload(image, originalPath + "/" + name, true, params);
   }
 
   public void updateProfilePicture(Long id, MultipartFile image) {
@@ -124,8 +129,13 @@ public class StudentService {
   }
 
   private void updateProfilePicture(Student student, MultipartFile image) {
+    Map params = ObjectUtils.asMap(
+      "process", "resize",
+      "sizes", ""
+    );
+
     student.setPicture(
-      fileHandler.upload(image, defaultPath, false)
+      fileHandler.upload(image, defaultPath, false, params)
     );
     studentRepository.save(student);
   }

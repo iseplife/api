@@ -24,9 +24,9 @@ public abstract class FileHandler {
   @Value("${cloud_handler.bucket}")
   protected String bucket;
 
-  public abstract String upload(MultipartFile file, String path, Boolean pathContainName);
+  public abstract String upload(MultipartFile file, String path, Boolean pathContainName, Map metadata);
 
-  public abstract String upload(File file, String path, Boolean pathContainName);
+  public abstract String upload(File file, String path, Boolean pathContainName, Map metadata);
 
   public abstract boolean delete(String name);
 

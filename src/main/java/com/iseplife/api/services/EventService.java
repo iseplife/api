@@ -1,5 +1,6 @@
 package com.iseplife.api.services;
 
+
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dto.EventDTO;
 import com.iseplife.api.dto.view.EventPreviewView;
@@ -11,6 +12,7 @@ import com.iseplife.api.dao.event.EventRepository;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.services.fileHandler.FileHandler;
+import com.iseplife.api.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -71,7 +73,11 @@ public class EventService {
   }
 
   private String createImageEvent(MultipartFile image) {
-    return fileHandler.upload(image, "/img", false);
+    Map params = ObjectUtils.asMap(
+      "process", "resize",
+      "sizes", ""
+    );
+    return fileHandler.upload(image, "/img", false, params);
   }
 
   public List<EventPreviewView> getEvents() {
