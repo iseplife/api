@@ -107,20 +107,32 @@ public class MediaService {
     return img.get();
   }
 
-  public Document createDocument(Long postId, String title, MultipartFile fileUploaded) {
-    Document document = new Document();
-    document.setCreation(new Date());
+  public Media createMedia(MultipartFile file) {
+    String name, mime = file.getContentType().split("/")[0];
+    Media media;
+    switch (mime) {
+      case "video":
+        media = new Video();
+        name = fileHandler.upload(file, "vid", false, Collections.EMPTY_MAP);
+        break;
+      case "image":
+        media = new Image();
+        Map params = ObjectUtils.asMap(
+          "compress", "resize",
+          "size", SIZE_COMPRESS
+        );
+        name = fileHandler.upload(file, "img", false, params);
+        break;
+      default:
+        media = new Document();
+        name = fileHandler.upload(file, "doc", false, Collections.EMPTY_MAP);
+        break;
+    }
 
-    String name = fileHandler.upload(fileUploaded, "/document", false, Collections.emptyMap());
-    document.setName(name);
-    document.setTitle(title);
-    document = mediaRepository.save(document);
-
-    postService.addMediaEmbed(postId, document);
-    postService.setPublishState(postId, PostState.READY);
-    return document;
+    media.setName(name);
+    media.setCreation(new Date());
+    return media;
   }
-
 
   public Video uploadVideo(Long postId, String title, MultipartFile videoFile) {
     Video video = new Video();
@@ -168,12 +180,7 @@ public class MediaService {
       Image image = new Image();
       image.setCreation(new Date());
 
-      Map params = ObjectUtils.asMap(
-        "compress", "resize",
-        "size", SIZE_COMPRESS
-      );
-      String name = fileHandler.upload(images.get(0), "post", false, params);
-      image.setName(name);
+
       image = mediaRepository.save(image);
 
       postService.addMediaEmbed(postID, image);
