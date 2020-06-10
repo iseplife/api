@@ -107,7 +107,7 @@ public class MediaService {
     return img.get();
   }
 
-  public Media createMedia(MultipartFile file) {
+  public Media createMedia(MultipartFile file, Boolean gallery) {
     String name, mime = file.getContentType().split("/")[0];
     Media media;
     switch (mime) {
@@ -117,10 +117,16 @@ public class MediaService {
         break;
       case "image":
         media = new Image();
-        Map params = ObjectUtils.asMap(
-          "compress", "resize",
-          "size", SIZE_COMPRESS
-        );
+        Map params = gallery ?
+          ObjectUtils.asMap(
+            "process", "resize",
+            "sizes", ""
+          ) :
+          ObjectUtils.asMap(
+            "compress", "resize",
+            "size", SIZE_COMPRESS
+          );
+
         name = fileHandler.upload(file, "img", false, params);
         break;
       default:
@@ -131,32 +137,8 @@ public class MediaService {
 
     media.setName(name);
     media.setCreation(new Date());
-    return media;
+    return mediaRepository.save(media);
   }
-
-  public Video uploadVideo(Long postId, String title, MultipartFile videoFile) {
-    Video video = new Video();
-    video.setCreation(new Date());
-    video.setTitle(title);
-
-    /*
-    String name = fileHandler.upload(
-      videoFile,
-      "post",
-      ObjectUtils.asMap(
-        "async", true,
-        "eager", Collections.singletonList(new Transformation().audioCodec("aac").videoCodec("h264"))
-      ));
-      */
-    video.setName("name");
-
-
-    Video savedVideo = mediaRepository.save(video);
-    Post post = postService.addMediaEmbed(postId, video);
-
-    return savedVideo;
-  }
-
 
   public boolean toggleNSFW(Long id) {
     Media media = getImage(id);

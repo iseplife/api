@@ -12,17 +12,19 @@ import java.util.Date;
  */
 public class PostView {
   private Long id;
+  private Long thread;
+
   private Date publicationDate;
   private String description;
   private Embedable embed;
-  private Student author;
-  private Club linkedClub;
+  private AuthorView author;
+
   private Integer nbLikes;
   private Boolean isLiked;
   private Integer nbComments;
   private Boolean isPinned;
   private Boolean isPrivate;
-  private Long thread;
+
   private Boolean hasWriteAccess;
 
   public Long getId() {
@@ -51,13 +53,7 @@ public class PostView {
 
   public void setEmbed(Embedable embed) { this.embed = embed; }
 
-  public Student getAuthor() {
-    return author;
-  }
 
-  public void setAuthor(Student author) {
-    this.author = author;
-  }
 
   public Integer getNbLikes() {
     return nbLikes;
@@ -103,9 +99,6 @@ public class PostView {
 
   public void setPrivate(Boolean isPrivate) { this.isPrivate = isPrivate;  }
 
-  public Club getLinkedClub() { return linkedClub; }
-
-  public void setLinkedClub(Club linkedClub) { this.linkedClub = linkedClub; }
 
   public Long getThread() {
     return thread;
@@ -113,5 +106,13 @@ public class PostView {
 
   public void setThread(Long thread) {
     this.thread = thread;
+  }
+
+  public AuthorView getAuthor() {
+    return author;
+  }
+
+  public void setAuthor(AuthorView author) {
+    this.author = author;
   }
 }

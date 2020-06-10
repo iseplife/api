@@ -14,14 +14,15 @@ import java.util.List;
 
 @Entity
 public class Gallery implements Embedable {
-
   @Id
   @GeneratedValue
   private Long id;
 
   private String name;
 
-  private Boolean official = false;
+  private Boolean pseudo = false;
+
+  private Date creation;
 
   @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "gallery")
   private List<Image> images = new ArrayList<>();
@@ -32,8 +33,6 @@ public class Gallery implements Embedable {
 
   @ManyToOne
   private Club club;
-
-  private Date creation;
 
   public Long getId() {
     return id;
@@ -68,10 +67,6 @@ public class Gallery implements Embedable {
     return images.subList(0, Math.min(images.size(), 10));
   }
 
-  public Boolean getOfficial() { return official; }
-
-  public void setOfficial(Boolean official) { this.official = official; }
-
   public void setCreation(Date creation) {
     this.creation = creation;
   }
@@ -98,5 +93,13 @@ public class Gallery implements Embedable {
 
   public void setFeed(Feed feed){
     this.feed = feed;
+  }
+
+  public Boolean getPseudo() {
+    return pseudo;
+  }
+
+  public void setPseudo(Boolean pseudo) {
+    this.pseudo = pseudo;
   }
 }

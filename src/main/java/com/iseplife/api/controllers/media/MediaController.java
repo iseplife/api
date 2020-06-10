@@ -42,28 +42,16 @@ public class MediaController {
 
   @PostMapping
   @RolesAllowed({Roles.STUDENT})
-  public Media createMedia(@RequestParam("file") MultipartFile file){
-    return mediaService.createMedia(file);
+  public Media createMedia(
+    @RequestParam(defaultValue = "0") Boolean gallery,
+    @RequestParam("file") MultipartFile file){
+    return mediaService.createMedia(file, gallery);
   }
 
   @DeleteMapping("/{filename}")
   @RolesAllowed({Roles.ADMIN})
   public boolean deleteMedia(@PathVariable String filename) {
     return mediaService.removeMedia(filename);
-  }
-
-  @PostMapping("/image")
-  @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
-  public void addImages(@RequestParam("post") Long postId, @RequestParam("images") List<MultipartFile> images) {
-    mediaService.addImages(postId, images);
-  }
-
-  @PostMapping("/video")
-  @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
-  public Video uploadVideo(@RequestParam("name") String name,
-                           @RequestParam("post") Long postId,
-                           @RequestParam("video") MultipartFile video) {
-    return mediaService.uploadVideo(postId, name, video);
   }
 
   @PutMapping("/image/{id}/nsfw")

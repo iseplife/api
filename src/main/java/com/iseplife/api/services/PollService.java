@@ -1,7 +1,7 @@
 package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
-import com.iseplife.api.dto.media.PollCreationDTO;
+import com.iseplife.api.dto.embed.PollCreationDTO;
 import com.iseplife.api.entity.post.embed.poll.Poll;
 import com.iseplife.api.entity.post.embed.poll.PollAnswer;
 import com.iseplife.api.entity.post.embed.poll.PollVote;

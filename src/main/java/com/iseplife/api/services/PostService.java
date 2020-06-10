@@ -48,9 +48,6 @@ public class PostService {
   PostFactory postFactory;
 
   @Autowired
-  AuthorFactory authorFactory;
-
-  @Autowired
   StudentService studentService;
 
   @Autowired
@@ -102,20 +99,33 @@ public class PostService {
       }
     }
 
+    postDTO.getAttachements().forEach((type, id) -> {
+      Embedable attachement;
+      switch (type){
+        case EmbedType.GALLERY:
+          attachement = galleryService.getGallery(id);
+          break;
+        case EmbedType.POLL:
+          attachement = pollService.getPoll(id);
+          break;
+        case EmbedType.VIDEO:
+        case EmbedType.DOCUMENT:
+        case EmbedType.IMAGE:
+          attachement = mediaService.getMedia(id);
+          break;
+        default:
+          throw new IllegalArgumentException("Invalid attachments");
+      }
+      post.setEmbed(attachement);
+    });
+
     post.setFeed(feedService.getFeed(postDTO.getFeed()));
     post.setThread(new Thread());
     post.setCreationDate(new Date());
     post.setPublicationDate(postDTO.getPublicationDate());
-    post.setState(postDTO.getDraft() ?
-      PostState.DRAFT :
-      postDTO.hasAttachements() ?
-        PostState.WAITING :
-        PostState.READY
-    );
+    post.setState(postDTO.isDraft() ? PostState.DRAFT : PostState.READY);
 
-    post = postRepository.save(post);
-
-    return postFactory.entityToView(post);
+    return postFactory.entityToView(postRepository.save(post));
   }
 
   public Post updatePost(Long postID, PostUpdateDTO update) {
@@ -208,14 +218,14 @@ public class PostService {
       authorStatus.addAll(
         clubService.getAll()
           .stream()
-          .map(c -> authorFactory.entitytoView(c))
+          .map(AuthorFactory::entityToView)
           .collect(Collectors.toSet())
       );
     } else {
       authorStatus.addAll(
         studentService.getPublisherClubs(student)
           .stream()
-          .map(c -> authorFactory.entitytoView(c))
+          .map(c -> AuthorFactory.entityToView(c))
           .collect(Collectors.toSet())
       );
     }

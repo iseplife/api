@@ -4,6 +4,7 @@ import com.iseplife.api.constants.PostState;
 import com.iseplife.api.dao.GalleryRepository;
 import com.iseplife.api.dao.media.image.ImageRepository;
 import com.iseplife.api.dto.TempFile;
+import com.iseplife.api.dto.embed.GalleryDTO;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.post.embed.media.Image;
@@ -11,9 +12,12 @@ import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.exceptions.AuthException;
 import com.iseplife.api.exceptions.FileException;
 import com.iseplife.api.exceptions.IllegalArgumentException;
+import com.iseplife.api.services.fileHandler.FileHandler;
+import com.iseplife.api.utils.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -23,10 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -46,7 +47,18 @@ public class GalleryService {
   @Autowired
   MediaService mediaService;
 
+  @Autowired
+  FeedService feedService;
+
+  @Autowired
+  ClubService clubService;
+
+  @Qualifier("FileHandlerBean")
+  @Autowired
+  FileHandler fileHandler;
+
   private static final int GALLERY_PER_PAGE = 5;
+  private static final int PSEUDO_GALLERY_MAX_SIZE = 5;
 
   public Gallery getGallery(Long id) {
     Optional<Gallery> gallery = galleryRepository.findById(id);
@@ -61,7 +73,6 @@ public class GalleryService {
       .getImages();
   }
 
-
   public List<Gallery> getEventGalleries(Event event) {
     return galleryRepository.findAllByFeed(event.getFeed());
   }
@@ -70,57 +81,42 @@ public class GalleryService {
     return galleryRepository.findAllByClub(club, PageRequest.of(page, GALLERY_PER_PAGE));
   }
 
-  public Gallery createGallery(Long postID, String name, List<MultipartFile> files) {
+
+  public Gallery createGallery(GalleryDTO dto) {
     Gallery gallery = new Gallery();
-    gallery.setName(name);
-    gallery.setCreation(new Date());
+    if (dto.getPseudo() && dto.getImages().size() > PSEUDO_GALLERY_MAX_SIZE)
+      throw new IllegalArgumentException("pseudo gallery can't have more than " + PSEUDO_GALLERY_MAX_SIZE + " images");
 
-    galleryRepository.save(gallery);
-    postService.addMediaEmbed(postID, gallery);
+    if (!dto.getPseudo()) {
+      Club club = clubService.getClub(dto.getClub());
+      if (authService.hasRightOn(club))
+        throw new AuthException("You have not sufficient rights on this club (id:" + dto.getClub() + ")");
 
-    List<TempFile> tempFiles = new ArrayList<>();
-    try {
-      Path galleryTmpDirectory = Files.createTempDirectory("gallery");
-      files.forEach(f -> {
-        try {
-          File tempFile = Files.createTempFile(galleryTmpDirectory, f.getOriginalFilename(), null).toFile();
-          TempFile tempFileData = new TempFile(f.getContentType(), tempFile);
-          f.transferTo(tempFile);
-          tempFiles.add(tempFileData);
-        } catch (IOException e) {
-          LOG.error("could not create tmp image from gallery: {}", f.getOriginalFilename(), e);
-        }
-      });
-    } catch (IOException e) {
-      LOG.error("could not create tmp gallery directory", e);
-      throw new FileException("could not create tmp directory");
+      gallery.setClub(club);
+      gallery.setName(dto.getName());
     }
 
+    gallery.setCreation(new Date());
+    gallery.setPseudo(dto.getPseudo());
+    gallery.setFeed(feedService.getFeed(dto.getFeed()));
 
-    CompletableFuture.runAsync(() -> {
-      tempFiles.forEach(file -> {
-        mediaService.addGalleryImage(file.getFile(), gallery);
-      });
-      postService.setPublishState(postID, PostState.READY);
-    });
-
+    gallery.setImages((List<Image>) imageRepository.findAllById(dto.getImages()));
+    galleryRepository.save(gallery);
     return gallery;
   }
 
-  public void addImagesGallery(Long galleryID, List<MultipartFile> files) {
+  public void addImagesGallery(Long galleryID, List<Long> images) {
     Gallery gallery = getGallery(galleryID);
     if (AuthService.hasRightOn(gallery)) {
       throw new AuthException("You have not sufficient rights on this gallery (id:" + galleryID + ")");
-    }
 
-    List<Image> images = new ArrayList<>();
-    files.forEach(file ->
-      images.add(mediaService.addGalleryImage(file, gallery))
+    gallery.getImages().addAll(
+      (List<Image>) imageRepository.findAllById(images)
     );
     galleryRepository.save(gallery);
   }
 
-  public void deleteGallery(Gallery gallery){
+  public void deleteGallery(Gallery gallery) {
     gallery
       .getImages()
       .forEach(img -> mediaService.deleteMedia(img));
