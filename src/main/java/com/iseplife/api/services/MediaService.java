@@ -117,17 +117,20 @@ public class MediaService {
         break;
       case "image":
         media = new Image();
-        Map params = gallery ?
-          ObjectUtils.asMap(
-            "process", "resize",
-            "sizes", ""
-          ) :
-          ObjectUtils.asMap(
+
+        if(gallery){
+          name = fileHandler.upload(file, "img", false,
+            ObjectUtils.asMap(
+              "resize",
+              "sizes", SIZE_COMPRESS
+            ));
+        }else{
+          name = fileHandler.upload(file, "img/g", false,
+            ObjectUtils.asMap(
             "compress", "resize",
             "size", SIZE_COMPRESS
-          );
-
-        name = fileHandler.upload(file, "img", false, params);
+          ));
+        }
         break;
       default:
         media = new Document();

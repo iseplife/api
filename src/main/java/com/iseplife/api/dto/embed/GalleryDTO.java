@@ -9,12 +9,10 @@ import java.util.List;
  */
 public class GalleryDTO {
   private String name;
-  private Date creation;
   private Boolean pseudo;
   private List<Long> images;
   private Long club;
   private Long feed;
-
 
   public String getName() {
     return name;
@@ -22,14 +20,6 @@ public class GalleryDTO {
 
   public void setName(String name) {
     this.name = name;
-  }
-
-  public Date getCreation() {
-    return creation;
-  }
-
-  public void setCreation(Date creation) {
-    this.creation = creation;
   }
 
   public Boolean getPseudo() {

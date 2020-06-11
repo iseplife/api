@@ -59,10 +59,6 @@ public class Gallery implements Embedable {
     this.name = name;
   }
 
-  public Image getCoverImage() {
-    return images.size() > 0 ? images.get(0) : null;
-  }
-
   public List<Image> getPreviewImages() {
     return images.subList(0, Math.min(images.size(), 10));
   }

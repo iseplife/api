@@ -100,8 +100,15 @@ public class GalleryService {
     gallery.setPseudo(dto.getPseudo());
     gallery.setFeed(feedService.getFeed(dto.getFeed()));
 
-    gallery.setImages((List<Image>) imageRepository.findAllById(dto.getImages()));
+    Iterable<Image> images = imageRepository.findAllById(dto.getImages());
+    images.forEach(img ->{
+      if(img.getGallery() == null && img.getName().startsWith("img/g"))
+        img.setGallery(gallery);
+    });
+    gallery.setImages((List<Image>)images);
+
     galleryRepository.save(gallery);
+    imageRepository.saveAll(images);
     return gallery;
   }
 
