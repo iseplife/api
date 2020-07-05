@@ -169,8 +169,8 @@ public class MediaService {
     image.setCreation(new Date());
 
     Map params = ObjectUtils.asMap(
-      "compress", "resize",
-      "size", "200x200"
+      "process", "resize",
+      "sizes", "200x200"
     );
     String name = fileHandler.upload(file, "post", false, params);
     image.setName(name);
@@ -187,7 +187,7 @@ public class MediaService {
 
     Map params = ObjectUtils.asMap(
       "process", "resize",
-      "sizes", ""
+      "sizes", "200x200"
     );
     String name = fileHandler.upload(file, "img/g/" + gallery.getId(), false, params);
     image.setName(name);
@@ -203,7 +203,7 @@ public class MediaService {
 
     Map params = ObjectUtils.asMap(
       "process", "resize",
-      "sizes", ""
+      "sizes", "200x200"
     );
     String name = fileHandler.upload(file, "img/g/" + gallery.getId(), false, params);
     image.setName(name);

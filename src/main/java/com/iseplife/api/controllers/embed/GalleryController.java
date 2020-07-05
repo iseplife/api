@@ -18,7 +18,7 @@ public class GalleryController {
   @Autowired
   GalleryService galleryService;
 
-  @PostMapping("")
+  @PostMapping
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
   public Gallery createGallery(@RequestParam("post") Long postID,
                                @RequestParam("name") String name,

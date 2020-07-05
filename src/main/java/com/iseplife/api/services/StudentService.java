@@ -119,7 +119,7 @@ public class StudentService {
 
     Map params = ObjectUtils.asMap(
       "process", "resize",
-      "sizes", ""
+      "sizes", "200x200"
     );
     return fileHandler.upload(image, originalPath + "/" + name, true, params);
   }
