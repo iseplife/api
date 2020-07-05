@@ -31,6 +31,7 @@ public class Event {
   private String location;
   private String ticketUrl = null;
   private Float price = null;
+
   @JsonIgnore
   private Boolean published = false;
   private Boolean closed = false;
@@ -50,8 +51,8 @@ public class Event {
   private Feed feed;
 
   @JsonIgnore
-  @ManyToOne
-  private Feed target;
+  @ManyToMany
+  private List<Feed> targets;
 
   @JsonIgnore
   @OneToOne
@@ -173,14 +174,6 @@ public class Event {
     this.feed = feed;
   }
 
-  public Feed getTarget() {
-    return target;
-  }
-
-  public void setTarget(Feed target) {
-    this.target = target;
-  }
-
   public Boolean getPublished() {
     return published;
   }
@@ -195,5 +188,13 @@ public class Event {
 
   public void setClosed(Boolean closed) {
     this.closed = closed;
+  }
+
+  public List<Feed> getTargets() {
+    return targets;
+  }
+
+  public void setTargets(List<Feed> targets) {
+    this.targets = targets;
   }
 }

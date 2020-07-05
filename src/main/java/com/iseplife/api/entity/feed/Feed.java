@@ -31,7 +31,6 @@ public class Feed {
   @OneToOne(mappedBy = "feed")
   private Group group;
 
-
   @JsonIgnore
   @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<Post> posts;
@@ -72,12 +71,21 @@ public class Feed {
     return club;
   }
 
-
   public Group getGroup() {
     return group;
   }
 
   public void setGroup(Group group) {
     this.group = group;
+  }
+
+  public String getName() {
+    if (club != null)
+      return club.getName();
+    if (event != null)
+      return event.getTitle();
+    if (group != null)
+      return group.getName();
+    return null;
   }
 }
