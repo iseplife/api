@@ -44,8 +44,8 @@ public interface EventRepository extends CrudRepository<Event, Long> {
   Page<Event> findFutureEvents(Boolean admin, Date date, Pageable pageable);
 
   @Query(
-    "select e from Event e " +
-      "where lower(e.title) like %?1% "
+          "select e from Event e " +
+                  "where lower(e.title) like %?1% "
   )
-  List<Event> searchEvent(String name);
+  Page<Event> searchEvent(String name, Pageable pageable);
 }

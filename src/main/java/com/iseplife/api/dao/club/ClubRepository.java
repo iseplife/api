@@ -1,8 +1,10 @@
 package com.iseplife.api.dao.club;
 
+import com.iseplife.api.constants.ClubRole;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.constants.ClubRole;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -36,6 +38,6 @@ public interface ClubRepository extends CrudRepository<Club, Long> {
   List<Club> findByRoleWithInheritance(@Param("student") Student student, @Param("role") ClubRole role);
 
 
-  List<Club> findAllByNameContainingIgnoringCase(String name);
+  Page<Club> findAllByNameContainingIgnoringCase(String name, Pageable pageable);
 
 }
