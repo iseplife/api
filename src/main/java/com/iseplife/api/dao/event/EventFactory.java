@@ -13,7 +13,7 @@ import java.util.*;
  */
 @Component
 public class EventFactory {
-  public Event dtoToEntity(EventDTO dto) {
+  static public Event dtoToEntity(EventDTO dto) {
     Event event = new Event();
     event.setTitle(dto.getTitle());
     event.setStartsAt(dto.getStartsAt());
@@ -25,7 +25,7 @@ public class EventFactory {
     return event;
   }
 
-  public Event dtoToEntity(EventDTO dto, Event previous) {
+  static public Event dtoToEntity(EventDTO dto, Event previous) {
     Event event = new Event();
     event.setTitle(dto.getTitle() != null ? dto.getTitle() : previous.getTitle());
     event.setStartsAt(dto.getStartsAt() != null ? dto.getStartsAt() : previous.getStartsAt());
@@ -38,12 +38,12 @@ public class EventFactory {
     return event;
   }
 
-  public EventPreviewView entityToPreviewView(Event event) {
+  static public EventPreviewView entityToPreviewView(Event event) {
     EventPreviewView preview = new EventPreviewView();
     preview.setId(event.getId());
     preview.setTitle(event.getTitle());
     preview.setType(event.getType().name());
-    preview.setTarget(event.getTarget() == null ? null: event.getTarget().getName());
+    //preview.setTarget(event.getTarget() == null ? null: event.getTarget().getName());
     preview.setStartsAt(event.getStartsAt());
     preview.setEndsAt(event.getEndsAt());
     preview.setImageUrl(event.getImageUrl());

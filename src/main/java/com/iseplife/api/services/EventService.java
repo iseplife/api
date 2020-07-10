@@ -33,9 +33,6 @@ public class EventService {
   EventRepository eventRepository;
 
   @Autowired
-  EventFactory eventFactory;
-
-  @Autowired
   ClubService clubService;
 
   @Autowired
@@ -50,9 +47,8 @@ public class EventService {
 
   private final int EVENTS_PER_PAGE = 10;
 
-
   public Event createEvent(MultipartFile image, EventDTO dto) {
-    Event event = eventFactory.dtoToEntity(dto);
+    Event event;
     Club club = clubService.getClub(dto.getClubId());
     //TODO: Possibly useless because when we check rights we check club's id
     if (club == null) {
@@ -60,9 +56,9 @@ public class EventService {
     }
     if (dto.getPreviousEditionId() != null) {
       Event previous = getEvent(dto.getPreviousEditionId());
-      event = eventFactory.dtoToEntity(dto, previous);
+      event = EventFactory.dtoToEntity(dto, previous);
     } else {
-      event = eventFactory.dtoToEntity(dto);
+      event = EventFactory.dtoToEntity(dto);
     }
 
     String path = createImageEvent(image);
@@ -83,7 +79,7 @@ public class EventService {
   public List<EventPreviewView> getEvents() {
     return eventRepository.findAll()
       .stream()
-      .map(e -> eventFactory.entityToPreviewView(e))
+      .map(EventFactory::entityToPreviewView)
       .collect(Collectors.toList());
   }
 
@@ -93,22 +89,22 @@ public class EventService {
 
   public List<EventPreviewView> getAroundDateEvents(TokenPayload token, Date date) {
     return eventRepository
-      .findAroundDate(date, token.getRoles().contains("ROLE_ADMIN") )
+      .findAroundDate(date, token.getRoles().contains("ROLE_ADMIN"))
       .stream()
-      .map(e -> eventFactory.entityToPreviewView(e))
+      .map(EventFactory::entityToPreviewView)
       .collect(Collectors.toList());
   }
 
   public Page<EventPreviewView> getFutureEvents(TokenPayload token, Date date, int page) {
     return eventRepository
       .findFutureEvents(token.getRoles().contains("ROLE_ADMIN"), date, PageRequest.of(page, EVENTS_PER_PAGE))
-      .map(e -> eventFactory.entityToPreviewView(e));
+      .map(EventFactory::entityToPreviewView);
   }
 
   public Page<EventPreviewView> getPassedEvents(TokenPayload token, Date date, int page) {
     return eventRepository
       .findPassedEvents(token.getRoles().contains("ROLE_ADMIN"), date, PageRequest.of(page, EVENTS_PER_PAGE))
-      .map(e -> eventFactory.entityToPreviewView(e));
+      .map(EventFactory::entityToPreviewView);
   }
 
 
@@ -132,7 +128,7 @@ public class EventService {
 
     return event.getEvents()
       .stream()
-      .map(e -> eventFactory.entityToPreviewView(e))
+      .map(EventFactory::entityToPreviewView)
       .collect(Collectors.toList());
   }
 
@@ -152,7 +148,7 @@ public class EventService {
     }
 
     return previousEditions.stream()
-      .map(e -> eventFactory.entityToPreviewView(e))
+      .map(EventFactory::entityToPreviewView)
       .collect(Collectors.toList());
   }
 
@@ -168,7 +164,7 @@ public class EventService {
       event.setPreviousEdition(prev);
     }
     if (file != null) {
-      if(event.getImageUrl() != null){
+      if (event.getImageUrl() != null) {
         fileHandler.delete(event.getImageUrl());
       }
 
@@ -180,7 +176,7 @@ public class EventService {
 
   public void removeEvent(Long id) {
     Event event = getEvent(id);
-    if(event.getImageUrl() != null){
+    if (event.getImageUrl() != null) {
       fileHandler.delete(event.getImageUrl());
     }
     eventRepository.deleteById(id);
