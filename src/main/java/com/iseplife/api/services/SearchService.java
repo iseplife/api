@@ -25,73 +25,74 @@ import java.util.stream.Stream;
 @Service
 public class SearchService {
 
-    //TODO: potentially paginate results
-    private static final int RESULTS_PER_PAGE = 10;
-    @Autowired
-    StudentRepository studentRepository;
+  //TODO: potentially paginate results
+  private static final int RESULTS_PER_PAGE = 10;
+  @Autowired
+  StudentRepository studentRepository;
 
-    @Autowired
-    EventRepository eventRepository;
+  @Autowired
+  EventRepository eventRepository;
 
-    @Autowired
-    ClubRepository clubRepository;
+  @Autowired
+  ClubRepository clubRepository;
 
-    @Autowired
-    SearchFactory searchFactory;
+  @Autowired
+  SearchFactory searchFactory;
 
-    public Page<SearchItemView> globalSearch(String filter, Integer page, Boolean returnAll) {
-        try {
-            CompletableFuture<List<SearchItemView>> userAsync = CompletableFuture.supplyAsync(() ->
-                    searchUser(filter, "", page, returnAll).getContent()
-            );
+  public Page<SearchItemView> globalSearch(String filter, Integer page, Boolean returnAll) {
+    try {
+      CompletableFuture<List<SearchItemView>> userAsync = CompletableFuture.supplyAsync(() ->
+        searchUser(filter, "", page, returnAll).getContent()
+      );
 
-            CompletableFuture<List<SearchItemView>> eventAsync = CompletableFuture.supplyAsync(() ->
-                    searchEvent(filter, page, returnAll).getContent()
-            );
+      CompletableFuture<List<SearchItemView>> eventAsync = CompletableFuture.supplyAsync(() ->
+        searchEvent(filter, page, returnAll).getContent()
+      );
 
-            CompletableFuture<List<SearchItemView>> clubAsync = CompletableFuture.supplyAsync(() ->
-                    searchClub(filter, page, returnAll).getContent()
-            );
+      CompletableFuture<List<SearchItemView>> clubAsync = CompletableFuture.supplyAsync(() ->
+        searchClub(filter, page, returnAll).getContent()
+      );
 
-            CompletableFuture<Void> promiseAllAsync = CompletableFuture.allOf(userAsync, eventAsync, clubAsync);
+      CompletableFuture<Void> promiseAllAsync = CompletableFuture.allOf(userAsync, eventAsync, clubAsync);
 
-            promiseAllAsync.get();
+      promiseAllAsync.get();
 
-            List<SearchItemView> globalSearchToList = Stream.of(userAsync.get(), eventAsync.get(), clubAsync.get())
-                    .flatMap(Collection::stream)
-                    .collect(Collectors.toList());
+      List<SearchItemView> globalSearchToList = Stream.of(userAsync.get(), eventAsync.get(), clubAsync.get())
+        .flatMap(Collection::stream)
+        .collect(Collectors.toList());
 
-            return new PageImpl<>(globalSearchToList, PageRequest.of(page, RESULTS_PER_PAGE), globalSearchToList.size());
+      return new PageImpl<>(globalSearchToList, PageRequest.of(page, RESULTS_PER_PAGE), globalSearchToList.size());
 
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-            return null;
-        }
+    } catch (ExecutionException | InterruptedException e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  public Page<SearchItemView> searchUser(String filter, String promos, Integer page, Boolean returnAll) {
+
+    Page<Student> students;
+    if (!promos.isEmpty()) {
+      List<Integer> promoArray = Arrays.stream(promos.split(","))
+        .map(Integer::parseInt)
+        .collect(Collectors.toList());
+      students = studentRepository.searchStudent(filter, promoArray, PageRequest.of(page, RESULTS_PER_PAGE));
+    } else {
+      students = studentRepository.searchStudent(filter, PageRequest.of(page, RESULTS_PER_PAGE));
     }
 
-    public Page<SearchItemView> searchUser(String filter, String promos, Integer page, Boolean returnAll) {
+    return students.map(s -> searchFactory.entityToSearchItemView(s));
+  }
 
-        Page<Student> students;
-        if (!promos.isEmpty()) {
-            List<String> promoArray = Arrays.stream(promos.split(","))
-                    .collect(Collectors.toList());
-            students = studentRepository.searchStudent(filter, promoArray, PageRequest.of(page, RESULTS_PER_PAGE));
-        } else {
-            students = studentRepository.searchStudent(filter, PageRequest.of(page, RESULTS_PER_PAGE));
-        }
+  public Page<SearchItemView> searchEvent(String filter, int page, Boolean returnAll) {
+    Page<Event> events = eventRepository.searchEvent(filter, PageRequest.of(page, RESULTS_PER_PAGE));
 
-        return students.map(s -> searchFactory.entityToSearchItemView(s));
-    }
+    return events.map(e -> searchFactory.entityToSearchItemView(e));
+  }
 
-    public Page<SearchItemView> searchEvent(String filter, int page, Boolean returnAll) {
-        Page<Event> events = eventRepository.searchEvent(filter, PageRequest.of(page, RESULTS_PER_PAGE));
+  public Page<SearchItemView> searchClub(String filter, int page, Boolean returnAll) {
+    Page<Club> clubs = clubRepository.findAllByNameContainingIgnoringCase(filter, PageRequest.of(page, RESULTS_PER_PAGE));
 
-        return events.map(e -> searchFactory.entityToSearchItemView(e));
-    }
-
-    public Page<SearchItemView> searchClub(String filter, int page, Boolean returnAll) {
-        Page<Club> clubs = clubRepository.findAllByNameContainingIgnoringCase(filter, PageRequest.of(page, RESULTS_PER_PAGE));
-
-        return clubs.map(c -> searchFactory.entityToSearchItemView(c));
-    }
+    return clubs.map(c -> searchFactory.entityToSearchItemView(c));
+  }
 }
