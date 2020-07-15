@@ -10,6 +10,7 @@ import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.dao.event.EventFactory;
 import com.iseplife.api.dao.event.EventRepository;
 import com.iseplife.api.entity.post.embed.Gallery;
+import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.services.fileHandler.FileHandler;
 import com.iseplife.api.utils.ObjectUtils;
@@ -29,8 +30,9 @@ import java.util.stream.Collectors;
  */
 @Service
 public class EventService {
+
   @Autowired
-  EventRepository eventRepository;
+  AuthService authService;
 
   @Autowired
   ClubService clubService;
@@ -39,7 +41,7 @@ public class EventService {
   GalleryService galleryService;
 
   @Autowired
-  PostService postService;
+  EventRepository eventRepository;
 
   @Qualifier("FileHandlerBean")
   @Autowired
@@ -78,6 +80,13 @@ public class EventService {
 
   public List<EventPreviewView> getEvents() {
     return eventRepository.findAll()
+      .stream()
+      .map(EventFactory::entityToPreviewView)
+      .collect(Collectors.toList());
+  }
+
+  public List<EventPreviewView> getMonthEvents(Date date) {
+    return eventRepository.findAllInMonth(date, authService.userHasRole("ROLE_ADMIN"))
       .stream()
       .map(EventFactory::entityToPreviewView)
       .collect(Collectors.toList());
@@ -158,7 +167,7 @@ public class EventService {
     event.setTitle(eventDTO.getTitle());
     event.setDescription(eventDTO.getDescription());
     event.setLocation(eventDTO.getLocation());
-    event.setStartsAt(eventDTO.getStartsAt());
+    event.setStart(eventDTO.getStartsAt());
     if (eventDTO.getPreviousEditionId() != null) {
       Event prev = getEvent(eventDTO.getPreviousEditionId());
       event.setPreviousEdition(prev);

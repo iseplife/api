@@ -18,7 +18,6 @@ public class Feed {
   @GeneratedValue
   private Long id;
 
-
   @JsonIgnore
   @OneToOne(mappedBy = "feed")
   private Event event;

@@ -7,8 +7,8 @@ public class EventPreviewView {
   private String title;
   private String type;
   private String target;
-  private Date startsAt;
-  private Date endsAt;
+  private Date start;
+  private Date end;
   private String imageUrl;
   private Boolean published;
 
@@ -28,20 +28,20 @@ public class EventPreviewView {
     this.title = title;
   }
 
-  public Date getStartsAt() {
-    return startsAt;
+  public Date getStart() {
+    return start;
   }
 
-  public void setStartsAt(Date startsAt) {
-    this.startsAt = startsAt;
+  public void setStart(Date start) {
+    this.start = start;
   }
 
-  public Date getEndsAt() {
-    return endsAt;
+  public Date getEnd() {
+    return end;
   }
 
-  public void setEndsAt(Date endsAt) {
-    this.endsAt = endsAt;
+  public void setEnd(Date end) {
+    this.end = end;
   }
 
   public String getImageUrl() {

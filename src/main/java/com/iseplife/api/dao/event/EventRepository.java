@@ -20,8 +20,15 @@ public interface EventRepository extends CrudRepository<Event, Long> {
 
   @Query(
     "select e from Event e " +
+      "where function('MONTH', e.start) = function('MONTH', ?1) and function('YEAR', e.start) = function('YEAR', ?1) " +
+      "and (e.published = true or ?2 = true) order by e.start"
+  )
+  List<Event> findAllInMonth(Date date, Boolean admin);
+
+  @Query(
+    "select e from Event e " +
       "where (?2 = true) " +
-      "and e.startsAt <= ?3 and (e.published = true or ?2 = true) order by e.startsAt"
+      "and e.start <= ?3 and (e.published = true or ?2 = true) order by e.start"
   )
   Page<Event> findPassedEvents( Boolean admin, Date date, Pageable pageable);
 
@@ -39,7 +46,7 @@ public interface EventRepository extends CrudRepository<Event, Long> {
   @Query(
     "select e from Event e " +
       "where (?2 = true) " +
-      "and e.startsAt >= ?3  and (e.published = true or ?2 = true) order by e.startsAt"
+      "and e.start >= ?3  and (e.published = true or ?2 = true) order by e.start"
   )
   Page<Event> findFutureEvents(Boolean admin, Date date, Pageable pageable);
 

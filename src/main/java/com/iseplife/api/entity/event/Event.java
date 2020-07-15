@@ -26,8 +26,8 @@ public class Event {
   @Enumerated(EnumType.STRING)
   private EventType type;
 
-  private Date startsAt;
-  private Date endsAt;
+  private Date start;
+  private Date end;
   private String location;
   private String ticketUrl = null;
   private Float price = null;
@@ -82,12 +82,12 @@ public class Event {
     this.location = location;
   }
 
-  public Date getStartsAt() {
-    return startsAt;
+  public Date getStart() {
+    return start;
   }
 
-  public void setStartsAt(Date startsAt) {
-    this.startsAt = startsAt;
+  public void setStart(Date startsAt) {
+    this.start = startsAt;
   }
 
   public String getDescription() {
@@ -114,12 +114,12 @@ public class Event {
     this.imageUrl = imageUrl;
   }
 
-  public Date getEndsAt() {
-    return endsAt;
+  public Date getEnd() {
+    return end;
   }
 
-  public void setEndsAt(Date endsAt) {
-    this.endsAt = endsAt;
+  public void setEnd(Date endsAt) {
+    this.end = endsAt;
   }
 
   public Event getPreviousEdition() {
