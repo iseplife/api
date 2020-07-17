@@ -18,12 +18,17 @@ import java.util.List;
 public interface EventRepository extends CrudRepository<Event, Long> {
   List<Event> findAll();
 
+  // Request unoptimised as we always check if each target if it's inside user's feeds list while
   @Query(
-    "select e from Event e " +
-      "where function('MONTH', e.start) = function('MONTH', ?1) and function('YEAR', e.start) = function('YEAR', ?1) " +
-      "and (e.published = true or ?2 = true) order by e.start"
+    value = "SELECT DISTINCT e.* FROM event as e " +
+      "JOIN event_targets AS et JOIN feed AS f "+
+      "WHERE MONTH(e.start) = MONTH(?1) and YEAR(e.start) = YEAR(?1) " +
+      "AND e.id = et.event_id AND f.id = et.targets_id " +
+      "AND (?2 = true || f.id in ?3) AND (?2 = true || e.published = true)" +
+      "ORDER BY e.start",
+    nativeQuery = true
   )
-  List<Event> findAllInMonth(Date date, Boolean admin);
+  List<Event> findAllInMonth(Date date, Boolean admin, List<Long> feeds);
 
   @Query(
     "select e from Event e " +

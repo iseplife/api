@@ -62,10 +62,10 @@ public class EventController {
 
   @GetMapping("/m/{timestamp}")
   @RolesAllowed({Roles.STUDENT})
-  public  List<EventPreviewView> getMonthEvents(@PathVariable Long timestamp) {
-    return eventService.getMonthEvents(new Date(timestamp));
+  public  List<EventPreviewView> getMonthEvents(@PathVariable Long timestamp, @AuthenticationPrincipal TokenPayload token) {
+    return eventService.getMonthEvents(new Date(timestamp), token);
   }
-  
+
   @GetMapping("/t/{timestamp}")
   @RolesAllowed({Roles.STUDENT})
   public  List<EventPreviewView> getEventsAroundDate(@AuthenticationPrincipal TokenPayload auth, @PathVariable Long timestamp) {

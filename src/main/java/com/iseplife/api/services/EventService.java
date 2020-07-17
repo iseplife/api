@@ -85,8 +85,8 @@ public class EventService {
       .collect(Collectors.toList());
   }
 
-  public List<EventPreviewView> getMonthEvents(Date date) {
-    return eventRepository.findAllInMonth(date, authService.userHasRole("ROLE_ADMIN"))
+  public List<EventPreviewView> getMonthEvents(Date date, TokenPayload token) {
+    return eventRepository.findAllInMonth(date, token.getRoles().contains("ROLE_ADMIN"), token.getFeeds())
       .stream()
       .map(EventFactory::entityToPreviewView)
       .collect(Collectors.toList());
