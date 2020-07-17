@@ -8,6 +8,7 @@ import com.iseplife.api.constants.EventType;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Guillaume on 27/07/2017.
@@ -52,7 +53,7 @@ public class Event {
 
   @JsonIgnore
   @ManyToMany
-  private List<Feed> targets;
+  private Set<Feed> targets;
 
   @JsonIgnore
   @OneToOne
@@ -190,11 +191,11 @@ public class Event {
     this.closed = closed;
   }
 
-  public List<Feed> getTargets() {
+  public Set<Feed> getTargets() {
     return targets;
   }
 
-  public void setTargets(List<Feed> targets) {
+  public void setTargets(Set<Feed> targets) {
     this.targets = targets;
   }
 }

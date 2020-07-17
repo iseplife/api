@@ -3,7 +3,10 @@ package com.iseplife.api.dao.event;
 import com.iseplife.api.dto.EventDTO;
 import com.iseplife.api.dto.view.EventPreviewView;
 import com.iseplife.api.entity.event.Event;
+import com.iseplife.api.entity.feed.Feed;
 import org.springframework.stereotype.Component;
+
+import java.util.stream.Collectors;
 
 /**
  * Created by Guillaume on 01/08/2017.
@@ -41,7 +44,7 @@ public class EventFactory {
     preview.setId(event.getId());
     preview.setTitle(event.getTitle());
     preview.setType(event.getType().name());
-    //preview.setTarget(event.getTarget() == null ? null: event.getTarget().getName());
+    preview.setTargets(event.getTargets().stream().map(Feed::getId).collect(Collectors.toSet()));
     preview.setStart(event.getStart());
     preview.setEnd(event.getEnd());
     preview.setImageUrl(event.getImageUrl());

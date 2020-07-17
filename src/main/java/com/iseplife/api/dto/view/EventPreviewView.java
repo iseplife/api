@@ -1,12 +1,13 @@
 package com.iseplife.api.dto.view;
 
 import java.util.Date;
+import java.util.Set;
 
 public class EventPreviewView {
   private Long id;
   private String title;
   private String type;
-  private String target;
+  private Set<Long> targets;
   private Date start;
   private Date end;
   private String imageUrl;
@@ -52,13 +53,6 @@ public class EventPreviewView {
     this.imageUrl = imageUrl;
   }
 
-  public String getTarget() {
-    return target;
-  }
-
-  public void setTarget(String target) {
-    this.target = target;
-  }
 
   public String getType() {
     return type;
@@ -74,5 +68,13 @@ public class EventPreviewView {
 
   public void setPublished(Boolean published) {
     this.published = published;
+  }
+
+  public Set<Long> getTargets() {
+    return targets;
+  }
+
+  public void setTargets(Set<Long> targets) {
+    this.targets = targets;
   }
 }
