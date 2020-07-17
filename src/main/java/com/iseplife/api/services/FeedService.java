@@ -1,5 +1,6 @@
 package com.iseplife.api.services;
 
+import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dao.SubscriptionRepository;
 import com.iseplife.api.dto.view.PostView;
 import com.iseplife.api.entity.feed.Feed;
@@ -27,6 +28,9 @@ public class FeedService {
   private SubscriptionRepository subscriptionRepository;
 
   @Autowired
+  private AuthService authService;
+
+  @Autowired
   private PostService postService;
 
   @Qualifier("FileHandlerBean")
@@ -42,6 +46,12 @@ public class FeedService {
       throw new IllegalArgumentException("could not find the feed with id: " + id);
 
     return feed.get();
+  }
+
+  public Iterable<Feed> getUserFeed(TokenPayload token) {
+    Iterable<Feed> feeds = feedRepository.findAllById(token.getFeeds());
+
+    return feeds;
   }
 
   @Cacheable("posts")

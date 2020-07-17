@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 
@@ -61,7 +62,7 @@ public class GroupService {
     }
 
 
-    group.setAdmins(studentService.getStudents(dto.getAdmins()));
+    group.setAdmins(new HashSet<>(studentService.getStudents(dto.getAdmins())));
 
     return GroupFactory.toView(groupRepository.save(group));
   }
@@ -69,7 +70,7 @@ public class GroupService {
   public GroupView updateGroup(Long id, groupDTO dto, MultipartFile file) {
     Group group = getGroup(id);
     GroupFactory.updateFromDTO(group, dto);
-    group.setAdmins(studentService.getStudents(dto.getAdmins()));
+    group.setAdmins(new HashSet<>(studentService.getStudents(dto.getAdmins())));
 
     if (file != null) {
       if(group.getCover() != null)
@@ -83,7 +84,7 @@ public class GroupService {
     } else if (dto.getResetCover()) {
       fileHandler.delete(group.getCover());
     }
-    group.setAdmins(studentService.getStudents(dto.getAdmins()));
+    group.setAdmins(new HashSet<>(studentService.getStudents(dto.getAdmins())));
 
     return GroupFactory.toView(groupRepository.save(group));
   }

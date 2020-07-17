@@ -7,6 +7,7 @@ import com.iseplife.api.dto.group.groupDTO;
 import com.iseplife.api.dto.group.view.GroupView;
 import com.iseplife.api.dto.view.PostView;
 import com.iseplife.api.constants.Roles;
+import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.services.AuthService;
 import com.iseplife.api.services.FeedService;
 import com.iseplife.api.utils.JsonUtils;
@@ -29,6 +30,12 @@ public class FeedController {
 
   @Autowired
   AuthService authService;
+
+  @GetMapping
+  @PostMapping({Roles.STUDENT})
+  public Iterable<Feed> getUserFeed(@AuthenticationPrincipal TokenPayload token){
+    return feedService.getUserFeed(token);
+  }
 
   @GetMapping("/{id}/post")
   @RolesAllowed({Roles.STUDENT})
