@@ -9,8 +9,8 @@ import java.util.Date;
 public class EventDTO {
   private String title;
   private String location;
-  private Date startsAt;
-  private Date endsAt;
+  private Date start;
+  private Date end;
   private String description;
   private Long clubId;
   private Long previousEditionId;
@@ -34,20 +34,20 @@ public class EventDTO {
     this.location = location;
   }
 
-  public Date getStartsAt() {
-    return startsAt;
+  public Date getStart() {
+    return start;
   }
 
-  public void setStartsAt(Date startsAt) {
-    this.startsAt = startsAt;
+  public void setStart(Date start) {
+    this.start = start;
   }
 
-  public Date getEndsAt() {
-    return endsAt;
+  public Date getEnd() {
+    return end;
   }
 
-  public void setEndsAt(Date endsAt) {
-    this.endsAt = endsAt;
+  public void setEnd(Date end) {
+    this.end = end;
   }
 
   public String getDescription() {

@@ -17,8 +17,8 @@ public class EventFactory {
   static public Event dtoToEntity(EventDTO dto) {
     Event event = new Event();
     event.setTitle(dto.getTitle());
-    event.setStart(dto.getStartsAt());
-    event.setEnd(dto.getEndsAt());
+    event.setStart(dto.getStart());
+    event.setEnd(dto.getEnd());
     event.setPrice(dto.getPrice());
     event.setLocation(dto.getLocation());
     event.setDescription(dto.getDescription());
@@ -29,8 +29,8 @@ public class EventFactory {
   static public Event dtoToEntity(EventDTO dto, Event previous) {
     Event event = new Event();
     event.setTitle(dto.getTitle() != null ? dto.getTitle() : previous.getTitle());
-    event.setStart(dto.getStartsAt() != null ? dto.getStartsAt() : previous.getStart());
-    event.setEnd(dto.getEndsAt() != null ? dto.getEndsAt() : previous.getEnd());
+    event.setStart(dto.getStart() != null ? dto.getStart() : previous.getStart());
+    event.setEnd(dto.getEnd() != null ? dto.getEnd() : previous.getEnd());
     event.setPrice(dto.getPrice() != null ? dto.getPrice() : previous.getPrice());
     event.setLocation(dto.getLocation() != null ? dto.getLocation() : previous.getLocation());
     event.setDescription(dto.getDescription() != null ? dto.getDescription() : previous.getDescription());

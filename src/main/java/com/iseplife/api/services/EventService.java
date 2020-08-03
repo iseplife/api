@@ -167,7 +167,7 @@ public class EventService {
     event.setTitle(eventDTO.getTitle());
     event.setDescription(eventDTO.getDescription());
     event.setLocation(eventDTO.getLocation());
-    event.setStart(eventDTO.getStartsAt());
+    event.setStart(eventDTO.getStart());
     if (eventDTO.getPreviousEditionId() != null) {
       Event prev = getEvent(eventDTO.getPreviousEditionId());
       event.setPreviousEdition(prev);
