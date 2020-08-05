@@ -28,8 +28,8 @@ public class SearchController {
 
   @GetMapping("/student")
   @RolesAllowed({Roles.STUDENT})
-  public Page<SearchItemView> userSearch(String name, String promos, Integer page, @RequestParam(defaultValue = "0") Boolean allAnswer) {
-    return searchService.searchUser(name, promos, page, allAnswer);
+  public Page<SearchItemView> userSearch(String name, String promos, Integer page, Boolean atoz, @RequestParam(defaultValue = "0") Boolean allAnswer) {
+    return searchService.searchUser(name, promos, atoz, page, allAnswer);
   }
 
   @GetMapping("/club")
