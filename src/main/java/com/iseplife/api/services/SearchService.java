@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -42,7 +43,7 @@ public class SearchService {
   public Page<SearchItemView> globalSearch(String filter, Integer page, Boolean returnAll) {
     try {
       CompletableFuture<List<SearchItemView>> userAsync = CompletableFuture.supplyAsync(() ->
-        searchUser(filter, "", page, returnAll).getContent()
+        searchUser(filter, "", true,  page, returnAll).getContent()
       );
 
       CompletableFuture<List<SearchItemView>> eventAsync = CompletableFuture.supplyAsync(() ->
@@ -69,16 +70,21 @@ public class SearchService {
     }
   }
 
-  public Page<SearchItemView> searchUser(String filter, String promos, Integer page, Boolean returnAll) {
-
+  public Page<SearchItemView> searchUser(String filter, String promos, Boolean atoz, Integer page, Boolean returnAll) {
     Page<Student> students;
+    PageRequest pr = PageRequest.of(
+      page, RESULTS_PER_PAGE,
+      Sort.by(Sort.Direction.DESC, "promo").and(
+        Sort.by(atoz ? Sort.Direction.ASC: Sort.Direction.DESC, "lastName")
+      )
+    );
     if (!promos.isEmpty()) {
       List<Integer> promoArray = Arrays.stream(promos.split(","))
         .map(Integer::parseInt)
         .collect(Collectors.toList());
-      students = studentRepository.searchStudent(filter, promoArray, PageRequest.of(page, RESULTS_PER_PAGE));
+      students = studentRepository.searchStudent(filter, promoArray, pr);
     } else {
-      students = studentRepository.searchStudent(filter, PageRequest.of(page, RESULTS_PER_PAGE));
+      students = studentRepository.searchStudent(filter, pr);
     }
 
     return students.map(s -> searchFactory.entityToSearchItemView(s));
