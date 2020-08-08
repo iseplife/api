@@ -1,19 +1,18 @@
 package com.iseplife.api.dao.event;
 
+import com.iseplife.api.dao.club.ClubFactory;
 import com.iseplife.api.dto.EventDTO;
 import com.iseplife.api.dto.view.EventPreviewView;
+import com.iseplife.api.dto.view.EventView;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.feed.Feed;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
-/**
- * Created by Guillaume on 01/08/2017.
- * back
- */
 @Component
 public class EventFactory {
+
   static public Event dtoToEntity(EventDTO dto) {
     Event event = new Event();
     event.setTitle(dto.getTitle());
@@ -50,6 +49,29 @@ public class EventFactory {
     preview.setImageUrl(event.getImageUrl());
     preview.setPublished(event.getPublished());
     return preview;
+  }
+
+  static public EventView toView(Event event, Boolean isSubscribed){
+    EventView view = new EventView();
+    view.setId(event.getId());
+    view.setType(event.getType().name());
+    view.setTitle(event.getTitle());
+    view.setDescription(event.getDescription());
+    view.setImage(event.getImageUrl());
+
+    view.setStart(event.getStart());
+    view.setEnd(event.getEnd());
+    view.setLocation(event.getLocation());
+    view.setTicketURL(event.getTicketUrl());
+    view.setPrice(event.getPrice());
+    view.setPublished(event.getPublished());
+    view.setClosed(event.getClosed());
+
+    view.setSubscribed(isSubscribed);
+    view.setFeed(event.getFeed().getId());
+    view.setTargets(event.getTargets());
+    view.setClub(ClubFactory.toPreview(event.getClub()));
+    return view;
   }
 
 }

@@ -4,6 +4,7 @@ package com.iseplife.api.services;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dto.EventDTO;
 import com.iseplife.api.dto.view.EventPreviewView;
+import com.iseplife.api.dto.view.EventView;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
@@ -41,6 +42,9 @@ public class EventService {
   GalleryService galleryService;
 
   @Autowired
+  SubscriptionService subscriptionService;
+
+  @Autowired
   EventRepository eventRepository;
 
   @Qualifier("FileHandlerBean")
@@ -49,7 +53,7 @@ public class EventService {
 
   private final int EVENTS_PER_PAGE = 10;
 
-  public Event createEvent(MultipartFile image, EventDTO dto) {
+  public EventView createEvent(MultipartFile image, EventDTO dto) {
     Event event;
     Club club = clubService.getClub(dto.getClubId());
     //TODO: Possibly useless because when we check rights we check club's id
@@ -67,7 +71,7 @@ public class EventService {
 
     event.setFeed(new Feed());
     event.setImageUrl(path);
-    return eventRepository.save(event);
+    return EventFactory.toView(eventRepository.save(event), false);
   }
 
   private String createImageEvent(MultipartFile image) {
@@ -84,6 +88,7 @@ public class EventService {
       .map(EventFactory::entityToPreviewView)
       .collect(Collectors.toList());
   }
+
 
   public List<EventPreviewView> getMonthEvents(Date date, TokenPayload token) {
     return eventRepository.findAllInMonth(date, token.getRoles().contains("ROLE_ADMIN"), token.getFeeds())
@@ -117,12 +122,18 @@ public class EventService {
   }
 
 
-  public Event getEvent(Long id) {
+  private Event getEvent(Long id) {
     Optional<Event> event = eventRepository.findById(id);
     if (event.isEmpty())
       throw new IllegalArgumentException("could not find event with id: " + id);
 
     return event.get();
+  }
+
+  public EventView getEventView(Long id){
+    Event e = getEvent(id);
+
+    return EventFactory.toView(e, subscriptionService.isSubscribedToFeed(e.getFeed().getId()));
   }
 
   public List<Gallery> getEventGalleries(Long id) {

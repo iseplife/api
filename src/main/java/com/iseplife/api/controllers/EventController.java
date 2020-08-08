@@ -2,12 +2,15 @@ package com.iseplife.api.controllers;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
+import com.iseplife.api.dao.event.EventFactory;
 import com.iseplife.api.dto.EventDTO;
 import com.iseplife.api.dto.view.EventPreviewView;
+import com.iseplife.api.dto.view.EventView;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.exceptions.AuthException;
 import com.iseplife.api.services.EventService;
+import com.iseplife.api.services.SubscriptionService;
 import com.iseplife.api.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,7 +29,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/event")
 public class EventController {
-
   @Autowired
   EventService eventService;
 
@@ -43,9 +45,9 @@ public class EventController {
 
   @PostMapping
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
-  public Event createEvent(@RequestParam("image") MultipartFile file,
-                           @RequestParam("event") String event,
-                           @AuthenticationPrincipal TokenPayload auth) {
+  public EventView createEvent(@RequestParam("image") MultipartFile file,
+                               @RequestParam("event") String event,
+                               @AuthenticationPrincipal TokenPayload auth) {
     EventDTO eventDTO = jsonUtils.deserialize(event, EventDTO.class);
     if (hasRights(auth, eventDTO.getClubId())) {
       throw new AuthException("you are not this club's admin");
@@ -86,8 +88,8 @@ public class EventController {
 
   @GetMapping("/{id}")
   @RolesAllowed({Roles.STUDENT})
-  public Event getEvent(@PathVariable Long id) {
-    return eventService.getEvent(id);
+  public EventView getEvent(@PathVariable Long id) {
+    return eventService.getEventView(id);
   }
 
   @GetMapping("/{id}/previous")
