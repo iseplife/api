@@ -31,10 +31,7 @@ import java.util.List;
 public class EventController {
   @Autowired
   EventService eventService;
-
-  @Autowired
-  JsonUtils jsonUtils;
-
+  
   @PostMapping
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
   public EventView createEvent(@RequestBody EventDTO dto) {
@@ -47,36 +44,10 @@ public class EventController {
     return eventService.updateImage(id, file);
   }
 
-
-  @GetMapping
-  @RolesAllowed({Roles.STUDENT})
-  public List<EventPreviewView> getCurrentEvents(@AuthenticationPrincipal TokenPayload auth) {
-    return eventService.getTodayEvents(auth);
-  }
-
-
   @GetMapping("/m/{timestamp}")
   @RolesAllowed({Roles.STUDENT})
   public  List<EventPreviewView> getMonthEvents(@PathVariable Long timestamp, @AuthenticationPrincipal TokenPayload token) {
     return eventService.getMonthEvents(new Date(timestamp), token);
-  }
-
-  @GetMapping("/t/{timestamp}")
-  @RolesAllowed({Roles.STUDENT})
-  public  List<EventPreviewView> getEventsAroundDate(@AuthenticationPrincipal TokenPayload auth, @PathVariable Long timestamp) {
-    return eventService.getAroundDateEvents(auth, new Date(timestamp));
-  }
-
-  @GetMapping("/t/{timestamp}/future")
-  @RolesAllowed({Roles.STUDENT})
-  public  Page<EventPreviewView> getAllFutureEvents(@AuthenticationPrincipal TokenPayload auth, @PathVariable Long timestamp, @RequestParam(defaultValue = "0") int page) {
-    return eventService.getFutureEvents(auth, new Date(timestamp), page);
-  }
-
-  @GetMapping("/t/{timestamp}/previous")
-  @RolesAllowed({Roles.STUDENT})
-  public Page<EventPreviewView> getAllPassedEvents(@AuthenticationPrincipal TokenPayload auth, @PathVariable Long timestamp, @RequestParam(defaultValue = "0") int page) {
-    return eventService.getPassedEvents(auth, new Date(timestamp), page);
   }
 
   @GetMapping("/{id}")
