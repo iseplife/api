@@ -2,6 +2,7 @@ package com.iseplife.api.services;
 
 
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.dao.group.FeedRepository;
 import com.iseplife.api.dto.EventDTO;
 import com.iseplife.api.dto.view.EventPreviewView;
 import com.iseplife.api.dto.view.EventView;
@@ -46,6 +47,9 @@ public class EventService {
   SubscriptionService subscriptionService;
 
   @Autowired
+  FeedRepository feedRepository;
+
+  @Autowired
   EventRepository eventRepository;
 
   @Qualifier("FileHandlerBean")
@@ -54,15 +58,16 @@ public class EventService {
 
   private final int EVENTS_PER_PAGE = 10;
 
-  public EventView createEvent(EventDTO dto) {
+  public EventView createEvent(EventDTO dto, TokenPayload token) {
     Club club = clubService.getClub(dto.getClubId());
     if (club == null || AuthService.hasRightOn(club))
-      throw new AuthException("Insufficient rights for club (" + dto.getClubId()+")");
+      throw new AuthException("Insufficient rights for club (" + dto.getClubId() + ")");
 
     Event event = dto.getPreviousEditionId() == null ?
-      EventFactory.dtoToEntity(dto):
+      EventFactory.dtoToEntity(dto) :
       EventFactory.dtoToEntity(dto, getEvent(dto.getPreviousEditionId()));
 
+    event.setTargets((Set<Feed>) feedRepository.findAllById(dto.getTargets()));
     event.setFeed(new Feed());
     return EventFactory.toView(eventRepository.save(event), false);
   }
@@ -74,7 +79,7 @@ public class EventService {
       "sizes", ""
     );
 
-    if(event.getImageUrl() != null)
+    if (event.getImageUrl() != null)
       fileHandler.delete(event.getImageUrl());
 
     event.setImageUrl(fileHandler.upload(file, "/img", false, params));
@@ -132,7 +137,7 @@ public class EventService {
     return event.get();
   }
 
-  public EventView getEventView(Long id){
+  public EventView getEventView(Long id) {
     Event e = getEvent(id);
 
     return EventFactory.toView(e, subscriptionService.isSubscribedToFeed(e.getFeed().getId()));
@@ -176,7 +181,7 @@ public class EventService {
 
   public Event updateEvent(Long id, EventDTO eventDTO) {
     Event event = getEvent(id);
-    if(!AuthService.hasRightOn(event))
+    if (!AuthService.hasRightOn(event))
       throw new AuthException("You are not allowed to edit this event");
 
     event.setTitle(eventDTO.getTitle());

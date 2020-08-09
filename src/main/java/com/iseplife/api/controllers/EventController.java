@@ -31,11 +31,11 @@ import java.util.List;
 public class EventController {
   @Autowired
   EventService eventService;
-  
+
   @PostMapping
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
-  public EventView createEvent(@RequestBody EventDTO dto) {
-    return eventService.createEvent(dto);
+  public EventView createEvent(@RequestBody EventDTO dto, @AuthenticationPrincipal TokenPayload token) {
+    return eventService.createEvent(dto, token);
   }
 
   @PostMapping("/{id}/image")

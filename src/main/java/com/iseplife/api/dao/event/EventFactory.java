@@ -16,11 +16,14 @@ public class EventFactory {
   static public Event dtoToEntity(EventDTO dto) {
     Event event = new Event();
     event.setTitle(dto.getTitle());
+    event.setDescription(dto.getDescription());
     event.setStart(dto.getStart());
     event.setEnd(dto.getEnd());
     event.setPrice(dto.getPrice());
+    event.setTicketUrl(dto.getTicketUrl());
     event.setLocation(dto.getLocation());
-    event.setDescription(dto.getDescription());
+
+    event.setClosed(dto.getClosed());
     event.setPublished(dto.getPublished());
     return event;
   }

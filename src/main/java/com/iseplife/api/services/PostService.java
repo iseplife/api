@@ -2,7 +2,6 @@ package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.EmbedType;
-import com.iseplife.api.dao.group.FeedRepository;
 import com.iseplife.api.dao.post.*;
 import com.iseplife.api.dto.PostDTO;
 import com.iseplife.api.dto.PostUpdateDTO;
@@ -38,9 +37,6 @@ public class PostService {
 
   @Autowired
   ThreadRepository threadRepository;
-
-  @Autowired
-  FeedRepository feedRepository;
 
   @Autowired
   MediaRepository mediaRepository;

@@ -1,6 +1,7 @@
 package com.iseplife.api.dto;
 
 import java.util.Date;
+import java.util.Set;
 
 /**
  * Created by Guillaume on 01/08/2017.
@@ -8,15 +9,17 @@ import java.util.Date;
  */
 public class EventDTO {
   private String title;
+  private String description;
   private String location;
   private Date start;
   private Date end;
-  private String description;
   private Long clubId;
   private Long previousEditionId;
   private String ticketUrl;
   private Float price;
   private Boolean published;
+  private Boolean closed;
+  private Set<Long> targets;
 
   public String getTitle() {
     return title;
@@ -97,5 +100,21 @@ public class EventDTO {
 
   public void setPublished(Boolean published) {
     this.published = published;
+  }
+
+  public Boolean getClosed() {
+    return closed;
+  }
+
+  public void setClosed(Boolean closed) {
+    this.closed = closed;
+  }
+
+  public Set<Long> getTargets() {
+    return targets;
+  }
+
+  public void setTargets(Set<Long> targets) {
+    this.targets = targets;
   }
 }
