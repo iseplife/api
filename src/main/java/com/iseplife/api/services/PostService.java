@@ -34,9 +34,6 @@ import java.util.stream.Collectors;
 public class PostService {
 
   @Autowired
-  AuthService authService;
-
-  @Autowired
   PostRepository postRepository;
 
   @Autowired
@@ -123,7 +120,7 @@ public class PostService {
 
   public Post updatePost(Long postID, PostUpdateDTO update) {
     Post post = getPost(postID);
-    if (!authService.hasRightOn(post)) {
+    if (!AuthService.hasRightOn(post)) {
       throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");
     }
 
@@ -135,7 +132,7 @@ public class PostService {
 
   public void deletePost(Long postID) {
     Post post = getPost(postID);
-    if (!authService.hasRightOn(post)) {
+    if (!AuthService.hasRightOn(post)) {
       throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");
     }
 
@@ -153,7 +150,7 @@ public class PostService {
 
   public void togglePinnedPost(Long postID) {
     Post post = getPost(postID);
-    if (authService.hasRightOn(post) && post.getLinkedClub() != null) {
+    if (AuthService.hasRightOn(post) && post.getLinkedClub() != null) {
       throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");
     }
 

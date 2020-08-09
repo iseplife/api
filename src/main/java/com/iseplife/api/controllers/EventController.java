@@ -35,25 +35,18 @@ public class EventController {
   @Autowired
   JsonUtils jsonUtils;
 
-  private boolean hasRights(TokenPayload payload, Long clubId) {
-    if (!payload.getRoles().contains(Roles.ADMIN)) {
-      // if user is not the club admin
-      return !payload.getClubsAdmin().contains(clubId);
-    }
-    return false;
-  }
-
   @PostMapping
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
-  public EventView createEvent(@RequestParam("image") MultipartFile file,
-                               @RequestParam("event") String event,
-                               @AuthenticationPrincipal TokenPayload auth) {
-    EventDTO eventDTO = jsonUtils.deserialize(event, EventDTO.class);
-    if (hasRights(auth, eventDTO.getClubId())) {
-      throw new AuthException("you are not this club's admin");
-    }
-    return eventService.createEvent(file, eventDTO);
+  public EventView createEvent(@RequestBody EventDTO dto) {
+    return eventService.createEvent(dto);
   }
+
+  @PostMapping("/{id}/image")
+  @RolesAllowed({Roles.STUDENT})
+  public String updateLogo(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+    return eventService.updateImage(id, file);
+  }
+
 
   @GetMapping
   @RolesAllowed({Roles.STUDENT})
@@ -113,15 +106,8 @@ public class EventController {
 
   @PutMapping("/{id}")
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
-  public Event updateEvent(@PathVariable Long id,
-                           @RequestParam(value = "image", required = false) MultipartFile file,
-                           @RequestParam("event") String event,
-                           @AuthenticationPrincipal TokenPayload auth) {
-    EventDTO eventDTO = jsonUtils.deserialize(event, EventDTO.class);
-    if (hasRights(auth, eventDTO.getClubId())) {
-      throw new AuthException("you are not this club's admin");
-    }
-    return eventService.updateEvent(id, eventDTO, file);
+  public Event updateEvent(@PathVariable Long id, @RequestBody EventDTO dto) {
+    return eventService.updateEvent(id, dto);
   }
 
   @DeleteMapping("/{id}")
