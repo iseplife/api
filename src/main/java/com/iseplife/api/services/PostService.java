@@ -190,14 +190,17 @@ public class PostService {
     return postRepository.save(post);
   }
 
-  public Set<AuthorView> getAuthorizedPublish(TokenPayload auth) {
+  public Set<AuthorView> getAuthorizedPublish(TokenPayload auth, Boolean clubOnly) {
     Student student = studentService.getStudent(auth.getId());
 
     Set<AuthorView> authorStatus = new HashSet<>();
-    authorStatus.add(authorFactory.entitytoView(student));
+    if(!clubOnly)
+      authorStatus.add(authorFactory.entitytoView(student));
 
     if (auth.getRoles().contains(Roles.ADMIN)) {
-      authorStatus.add(authorFactory.admintoView());
+      if(!clubOnly)
+        authorStatus.add(authorFactory.admintoView());
+
       authorStatus.addAll(
         clubService.getAll()
           .stream()
