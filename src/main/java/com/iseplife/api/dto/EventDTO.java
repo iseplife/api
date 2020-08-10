@@ -8,12 +8,13 @@ import java.util.Set;
  * back
  */
 public class EventDTO {
+  private String type;
   private String title;
   private String description;
   private String location;
   private Date start;
   private Date end;
-  private Long clubId;
+  private Long club;
   private Long previousEditionId;
   private String ticketUrl;
   private Float price;
@@ -61,12 +62,12 @@ public class EventDTO {
     this.description = description;
   }
 
-  public Long getClubId() {
-    return clubId;
+  public Long getClub() {
+    return club;
   }
 
-  public void setClubId(Long clubId) {
-    this.clubId = clubId;
+  public void setClub(Long club) {
+    this.club = club;
   }
 
   public Long getPreviousEditionId() {
@@ -116,5 +117,13 @@ public class EventDTO {
 
   public void setTargets(Set<Long> targets) {
     this.targets = targets;
+  }
+
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
   }
 }

@@ -12,7 +12,6 @@ import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.dao.event.EventFactory;
 import com.iseplife.api.dao.event.EventRepository;
 import com.iseplife.api.entity.post.embed.Gallery;
-import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.exceptions.AuthException;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.services.fileHandler.FileHandler;
@@ -58,17 +57,21 @@ public class EventService {
 
   private final int EVENTS_PER_PAGE = 10;
 
-  public EventView createEvent(EventDTO dto, TokenPayload token) {
-    Club club = clubService.getClub(dto.getClubId());
-    if (club == null || AuthService.hasRightOn(club))
-      throw new AuthException("Insufficient rights for club (" + dto.getClubId() + ")");
+  public EventView createEvent(EventDTO dto) {
+    Club club = clubService.getClub(dto.getClub());
+    if (club == null || !AuthService.hasRightOn(club))
+      throw new AuthException("Insufficient rights for club (" + dto.getClub() + ")");
+
 
     Event event = dto.getPreviousEditionId() == null ?
       EventFactory.dtoToEntity(dto) :
       EventFactory.dtoToEntity(dto, getEvent(dto.getPreviousEditionId()));
 
-    event.setTargets((Set<Feed>) feedRepository.findAllById(dto.getTargets()));
+    event.setClub(club);
     event.setFeed(new Feed());
+    if(dto.getTargets().size() > 0)
+      event.setTargets((Set<Feed>) feedRepository.findAllById(dto.getTargets()));
+
     return EventFactory.toView(eventRepository.save(event), false);
   }
 

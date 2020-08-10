@@ -34,8 +34,8 @@ public class EventController {
 
   @PostMapping
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
-  public EventView createEvent(@RequestBody EventDTO dto, @AuthenticationPrincipal TokenPayload token) {
-    return eventService.createEvent(dto, token);
+  public EventView createEvent(@RequestBody EventDTO dto) {
+    return eventService.createEvent(dto);
   }
 
   @PostMapping("/{id}/image")
