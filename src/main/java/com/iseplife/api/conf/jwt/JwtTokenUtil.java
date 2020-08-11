@@ -152,9 +152,14 @@ public class JwtTokenUtil {
       .map(Club::getId)
       .collect(Collectors.toList());
 
+    List<Long> feeds = studentService.getFeeds(student, roles, adminClubs)
+      .stream()
+      .map(Feed::getId)
+      .collect(Collectors.toList());
 
     TokenPayload tokenPayload = new TokenPayload();
     tokenPayload.setId(student.getId());
+    tokenPayload.setFeeds(feeds);
     tokenPayload.setRoles(roles);
     tokenPayload.setClubsAdmin(adminClubs);
     tokenPayload.setClubsPublisher(publisherClubs);

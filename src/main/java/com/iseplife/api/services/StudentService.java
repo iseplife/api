@@ -3,14 +3,18 @@ package com.iseplife.api.services;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.ClubRole;
 import com.iseplife.api.dao.club.ClubMemberRepository;
+import com.iseplife.api.dao.club.ClubRepository;
 import com.iseplife.api.dao.group.FeedRepository;
+import com.iseplife.api.dao.group.GroupRepository;
 import com.iseplife.api.dto.student.StudentDTO;
 import com.iseplife.api.dto.student.StudentUpdateAdminDTO;
 import com.iseplife.api.dto.student.StudentUpdateDTO;
 import com.iseplife.api.dto.student.view.StudentAdminView;
 import com.iseplife.api.dto.student.view.StudentPreview;
 import com.iseplife.api.dto.student.view.StudentPreviewAdmin;
+import com.iseplife.api.entity.Group;
 import com.iseplife.api.entity.club.Club;
+import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.dao.student.RoleRepository;
@@ -41,6 +45,9 @@ public class StudentService {
   StudentRepository studentRepository;
 
   @Autowired
+  GroupRepository groupRepository;
+
+  @Autowired
   StudentFactory studentFactory;
 
   @Autowired
@@ -51,6 +58,9 @@ public class StudentService {
 
   @Autowired
   ClubMemberRepository clubMemberRepository;
+
+  @Autowired
+  ClubRepository clubRepository;
 
   @Qualifier("FileHandlerBean")
   @Autowired
@@ -84,13 +94,13 @@ public class StudentService {
     return student.get();
   }
 
-  public List<Student> getStudents(List<Long> ids){
-      List<Student> students = (List<Student>) studentRepository.findAllById(ids);
+  public List<Student> getStudents(List<Long> ids) {
+    List<Student> students = (List<Student>) studentRepository.findAllById(ids);
 
-      if(students.size() != ids.size())
-        throw new IllegalArgumentException("could not find one of the user");
+    if (students.size() != ids.size())
+      throw new IllegalArgumentException("could not find one of the user");
 
-      return students;
+    return students;
   }
 
   public StudentAdminView createStudent(StudentDTO dto, MultipartFile file) {
@@ -197,5 +207,20 @@ public class StudentService {
 
   public List<String> getAllPromo() {
     return studentRepository.findDistinctPromo();
+  }
+
+  public List<Feed> getFeeds(Student student, List<String> roles, List<Long> adminClub) {
+    List<Feed> feeds =
+      clubRepository.findAllStudentClub(student)
+        .stream()
+        .map(Club::getFeed)
+        .collect(Collectors.toList());
+    List<Feed> groups = groupRepository.findAllStudentGroups(student)
+      .stream()
+      .map(Group::getFeed)
+      .collect(Collectors.toList());
+
+    feeds.addAll(groups);
+    return feeds;
   }
 }

@@ -1,6 +1,7 @@
 package com.iseplife.api.dao.group;
 
 import com.iseplife.api.entity.Group;
+import com.iseplife.api.entity.user.Student;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -18,4 +19,11 @@ public interface GroupRepository extends CrudRepository<Group, Long> {
     "select distinct g.type from Group g"
   )
   List<Group> findDistinctType();
+
+
+  @Query(
+    "select g from Group g " +
+      " where ?1 member of g.members"
+  )
+  List<Group> findAllStudentGroups(Student student);
 }

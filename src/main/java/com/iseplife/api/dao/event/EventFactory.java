@@ -1,23 +1,23 @@
 package com.iseplife.api.dao.event;
 
+import com.iseplife.api.dao.club.ClubFactory;
 import com.iseplife.api.dto.EventDTO;
 import com.iseplife.api.dto.view.EventPreviewView;
+import com.iseplife.api.dto.view.EventView;
 import com.iseplife.api.entity.event.Event;
+import com.iseplife.api.entity.feed.Feed;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.stream.Collectors;
 
-/**
- * Created by Guillaume on 01/08/2017.
- * back
- */
 @Component
 public class EventFactory {
-  public Event dtoToEntity(EventDTO dto) {
+
+  static public Event dtoToEntity(EventDTO dto) {
     Event event = new Event();
     event.setTitle(dto.getTitle());
-    event.setStartsAt(dto.getStartsAt());
-    event.setEndsAt(dto.getEndsAt());
+    event.setStart(dto.getStart());
+    event.setEnd(dto.getEnd());
     event.setPrice(dto.getPrice());
     event.setLocation(dto.getLocation());
     event.setDescription(dto.getDescription());
@@ -25,11 +25,11 @@ public class EventFactory {
     return event;
   }
 
-  public Event dtoToEntity(EventDTO dto, Event previous) {
+  static public Event dtoToEntity(EventDTO dto, Event previous) {
     Event event = new Event();
     event.setTitle(dto.getTitle() != null ? dto.getTitle() : previous.getTitle());
-    event.setStartsAt(dto.getStartsAt() != null ? dto.getStartsAt() : previous.getStartsAt());
-    event.setEndsAt(dto.getEndsAt() != null ? dto.getEndsAt() : previous.getEndsAt());
+    event.setStart(dto.getStart() != null ? dto.getStart() : previous.getStart());
+    event.setEnd(dto.getEnd() != null ? dto.getEnd() : previous.getEnd());
     event.setPrice(dto.getPrice() != null ? dto.getPrice() : previous.getPrice());
     event.setLocation(dto.getLocation() != null ? dto.getLocation() : previous.getLocation());
     event.setDescription(dto.getDescription() != null ? dto.getDescription() : previous.getDescription());
@@ -38,16 +38,40 @@ public class EventFactory {
     return event;
   }
 
-  public EventPreviewView entityToPreviewView(Event event) {
+  static public EventPreviewView entityToPreviewView(Event event) {
     EventPreviewView preview = new EventPreviewView();
     preview.setId(event.getId());
     preview.setTitle(event.getTitle());
     preview.setType(event.getType().name());
-    preview.setStartsAt(event.getStartsAt());
-    preview.setEndsAt(event.getEndsAt());
+    preview.setTargets(event.getTargets().stream().map(Feed::getId).collect(Collectors.toSet()));
+    preview.setStart(event.getStart());
+    preview.setEnd(event.getEnd());
     preview.setImageUrl(event.getImageUrl());
     preview.setPublished(event.getPublished());
     return preview;
+  }
+
+  static public EventView toView(Event event, Boolean isSubscribed){
+    EventView view = new EventView();
+    view.setId(event.getId());
+    view.setType(event.getType().name());
+    view.setTitle(event.getTitle());
+    view.setDescription(event.getDescription());
+    view.setImage(event.getImageUrl());
+
+    view.setStart(event.getStart());
+    view.setEnd(event.getEnd());
+    view.setLocation(event.getLocation());
+    view.setTicketURL(event.getTicketUrl());
+    view.setPrice(event.getPrice());
+    view.setPublished(event.getPublished());
+    view.setClosed(event.getClosed());
+
+    view.setSubscribed(isSubscribed);
+    view.setFeed(event.getFeed().getId());
+    view.setTargets(event.getTargets());
+    view.setClub(ClubFactory.toPreview(event.getClub()));
+    return view;
   }
 
 }

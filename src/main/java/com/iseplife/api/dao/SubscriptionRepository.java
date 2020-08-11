@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SubscriptionRepository extends CrudRepository<Subscription, Long> {
 
+  Boolean existsSubscriptionByFeedIdAndListenerId(Long id, Long listenerID);
+
   Subscription findByFeedIdAndListenerId(Long id, Long listenerID);
 }
 

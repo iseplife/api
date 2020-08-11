@@ -25,6 +25,12 @@ public interface ClubRepository extends CrudRepository<Club, Long> {
 
   @Query("select c from Club c " +
     "join c.members m " +
+    "where m.student = :student "
+  )
+  List<Club> findAllStudentClub(Student student);
+
+  @Query("select c from Club c " +
+    "join c.members m " +
     "where m.student = :student " +
     "and m.role in :role"
   )

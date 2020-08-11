@@ -8,6 +8,7 @@ import com.iseplife.api.entity.user.Student;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "`group`")
@@ -33,7 +34,11 @@ public class Group {
 
   @JsonIgnore
   @ManyToMany(fetch = FetchType.LAZY)
-  private List<Student> admins;
+  private Set<Student> admins;
+
+  @JsonIgnore
+  @ManyToMany(fetch = FetchType.LAZY)
+  private Set<Student> members;
 
   public Long getId() {
     return id;
@@ -83,11 +88,11 @@ public class Group {
     this.feed = feed;
   }
 
-  public List<Student> getAdmins() {
+  public Set<Student> getAdmins() {
     return admins;
   }
 
-  public void setAdmins(List<Student> admins) {
+  public void setAdmins(Set<Student> admins) {
     this.admins = admins;
   }
 
@@ -97,5 +102,13 @@ public class Group {
 
   public void setType(GroupType type) {
     this.type = type;
+  }
+
+  public Set<Student> getMembers() {
+    return members;
+  }
+
+  public void setMembers(Set<Student> members) {
+    this.members = members;
   }
 }

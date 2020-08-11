@@ -8,6 +8,7 @@ import com.iseplife.api.constants.EventType;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Guillaume on 27/07/2017.
@@ -26,13 +27,15 @@ public class Event {
   @Enumerated(EnumType.STRING)
   private EventType type;
 
-  private Date startsAt;
-  private Date endsAt;
+  private Date start;
+  private Date end;
   private String location;
   private String ticketUrl = null;
   private Float price = null;
+
   @JsonIgnore
   private Boolean published = false;
+  private Boolean closed = false;
 
   @Column(columnDefinition = "TEXT")
   private String description;
@@ -49,8 +52,8 @@ public class Event {
   private Feed feed;
 
   @JsonIgnore
-  @ManyToOne
-  private Feed target;
+  @ManyToMany
+  private Set<Feed> targets;
 
   @JsonIgnore
   @OneToOne
@@ -80,12 +83,12 @@ public class Event {
     this.location = location;
   }
 
-  public Date getStartsAt() {
-    return startsAt;
+  public Date getStart() {
+    return start;
   }
 
-  public void setStartsAt(Date startsAt) {
-    this.startsAt = startsAt;
+  public void setStart(Date startsAt) {
+    this.start = startsAt;
   }
 
   public String getDescription() {
@@ -112,12 +115,12 @@ public class Event {
     this.imageUrl = imageUrl;
   }
 
-  public Date getEndsAt() {
-    return endsAt;
+  public Date getEnd() {
+    return end;
   }
 
-  public void setEndsAt(Date endsAt) {
-    this.endsAt = endsAt;
+  public void setEnd(Date endsAt) {
+    this.end = endsAt;
   }
 
   public Event getPreviousEdition() {
@@ -172,19 +175,27 @@ public class Event {
     this.feed = feed;
   }
 
-  public Feed getTarget() {
-    return target;
-  }
-
-  public void setTarget(Feed target) {
-    this.target = target;
-  }
-
   public Boolean getPublished() {
     return published;
   }
 
   public void setPublished(Boolean published) {
     this.published = published;
+  }
+
+  public Boolean getClosed() {
+    return closed;
+  }
+
+  public void setClosed(Boolean closed) {
+    this.closed = closed;
+  }
+
+  public Set<Feed> getTargets() {
+    return targets;
+  }
+
+  public void setTargets(Set<Feed> targets) {
+    this.targets = targets;
   }
 }
