@@ -38,9 +38,6 @@ import java.util.stream.Collectors;
 public class ClubService {
 
   @Autowired
-  AuthService authService;
-
-  @Autowired
   ClubRepository clubRepository;
 
   @Autowired
@@ -90,7 +87,7 @@ public class ClubService {
 
   public ClubView updateClub(Long id, ClubDTO dto) {
     Club club = getClub(id);
-    if(!authService.hasRightOn(club))
+    if(!AuthService.hasRightOn(club))
       throw new AuthException("You have not sufficient rights on this club (id:" + id + ")");
 
     // Update through reference so we don't need to get return value

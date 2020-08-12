@@ -32,58 +32,22 @@ public class EventController {
   @Autowired
   EventService eventService;
 
-  @Autowired
-  JsonUtils jsonUtils;
-
-  private boolean hasRights(TokenPayload payload, Long clubId) {
-    if (!payload.getRoles().contains(Roles.ADMIN)) {
-      // if user is not the club admin
-      return !payload.getClubsAdmin().contains(clubId);
-    }
-    return false;
-  }
-
   @PostMapping
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
-  public EventView createEvent(@RequestParam("image") MultipartFile file,
-                               @RequestParam("event") String event,
-                               @AuthenticationPrincipal TokenPayload auth) {
-    EventDTO eventDTO = jsonUtils.deserialize(event, EventDTO.class);
-    if (hasRights(auth, eventDTO.getClubId())) {
-      throw new AuthException("you are not this club's admin");
-    }
-    return eventService.createEvent(file, eventDTO);
+  public EventView createEvent(@RequestBody EventDTO dto) {
+    return eventService.createEvent(dto);
   }
 
-  @GetMapping
+  @PostMapping("/{id}/image")
   @RolesAllowed({Roles.STUDENT})
-  public List<EventPreviewView> getCurrentEvents(@AuthenticationPrincipal TokenPayload auth) {
-    return eventService.getTodayEvents(auth);
+  public String updateLogo(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+    return eventService.updateImage(id, file);
   }
-
 
   @GetMapping("/m/{timestamp}")
   @RolesAllowed({Roles.STUDENT})
   public  List<EventPreviewView> getMonthEvents(@PathVariable Long timestamp, @AuthenticationPrincipal TokenPayload token) {
     return eventService.getMonthEvents(new Date(timestamp), token);
-  }
-
-  @GetMapping("/t/{timestamp}")
-  @RolesAllowed({Roles.STUDENT})
-  public  List<EventPreviewView> getEventsAroundDate(@AuthenticationPrincipal TokenPayload auth, @PathVariable Long timestamp) {
-    return eventService.getAroundDateEvents(auth, new Date(timestamp));
-  }
-
-  @GetMapping("/t/{timestamp}/future")
-  @RolesAllowed({Roles.STUDENT})
-  public  Page<EventPreviewView> getAllFutureEvents(@AuthenticationPrincipal TokenPayload auth, @PathVariable Long timestamp, @RequestParam(defaultValue = "0") int page) {
-    return eventService.getFutureEvents(auth, new Date(timestamp), page);
-  }
-
-  @GetMapping("/t/{timestamp}/previous")
-  @RolesAllowed({Roles.STUDENT})
-  public Page<EventPreviewView> getAllPassedEvents(@AuthenticationPrincipal TokenPayload auth, @PathVariable Long timestamp, @RequestParam(defaultValue = "0") int page) {
-    return eventService.getPassedEvents(auth, new Date(timestamp), page);
   }
 
   @GetMapping("/{id}")
@@ -113,15 +77,8 @@ public class EventController {
 
   @PutMapping("/{id}")
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
-  public Event updateEvent(@PathVariable Long id,
-                           @RequestParam(value = "image", required = false) MultipartFile file,
-                           @RequestParam("event") String event,
-                           @AuthenticationPrincipal TokenPayload auth) {
-    EventDTO eventDTO = jsonUtils.deserialize(event, EventDTO.class);
-    if (hasRights(auth, eventDTO.getClubId())) {
-      throw new AuthException("you are not this club's admin");
-    }
-    return eventService.updateEvent(id, eventDTO, file);
+  public Event updateEvent(@PathVariable Long id, @RequestBody EventDTO dto) {
+    return eventService.updateEvent(id, dto);
   }
 
   @DeleteMapping("/{id}")

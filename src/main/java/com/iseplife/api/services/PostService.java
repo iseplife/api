@@ -2,7 +2,6 @@ package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.EmbedType;
-import com.iseplife.api.dao.group.FeedRepository;
 import com.iseplife.api.dao.post.*;
 import com.iseplife.api.dto.PostDTO;
 import com.iseplife.api.dto.PostUpdateDTO;
@@ -34,16 +33,10 @@ import java.util.stream.Collectors;
 public class PostService {
 
   @Autowired
-  AuthService authService;
-
-  @Autowired
   PostRepository postRepository;
 
   @Autowired
   ThreadRepository threadRepository;
-
-  @Autowired
-  FeedRepository feedRepository;
 
   @Autowired
   MediaRepository mediaRepository;
@@ -123,7 +116,7 @@ public class PostService {
 
   public Post updatePost(Long postID, PostUpdateDTO update) {
     Post post = getPost(postID);
-    if (!authService.hasRightOn(post)) {
+    if (!AuthService.hasRightOn(post)) {
       throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");
     }
 
@@ -135,7 +128,7 @@ public class PostService {
 
   public void deletePost(Long postID) {
     Post post = getPost(postID);
-    if (!authService.hasRightOn(post)) {
+    if (!AuthService.hasRightOn(post)) {
       throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");
     }
 
@@ -153,7 +146,7 @@ public class PostService {
 
   public void togglePinnedPost(Long postID) {
     Post post = getPost(postID);
-    if (authService.hasRightOn(post) && post.getLinkedClub() != null) {
+    if (AuthService.hasRightOn(post) && post.getLinkedClub() != null) {
       throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");
     }
 
@@ -197,14 +190,17 @@ public class PostService {
     return postRepository.save(post);
   }
 
-  public Set<AuthorView> getAuthorizedPublish(TokenPayload auth) {
+  public Set<AuthorView> getAuthorizedPublish(TokenPayload auth, Boolean clubOnly) {
     Student student = studentService.getStudent(auth.getId());
 
     Set<AuthorView> authorStatus = new HashSet<>();
-    authorStatus.add(authorFactory.entitytoView(student));
+    if(!clubOnly)
+      authorStatus.add(authorFactory.entitytoView(student));
 
     if (auth.getRoles().contains(Roles.ADMIN)) {
-      authorStatus.add(authorFactory.admintoView());
+      if(!clubOnly)
+        authorStatus.add(authorFactory.admintoView());
+
       authorStatus.addAll(
         clubService.getAll()
           .stream()

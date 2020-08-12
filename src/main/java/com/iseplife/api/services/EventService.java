@@ -2,6 +2,7 @@ package com.iseplife.api.services;
 
 
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.dao.group.FeedRepository;
 import com.iseplife.api.dto.EventDTO;
 import com.iseplife.api.dto.view.EventPreviewView;
 import com.iseplife.api.dto.view.EventView;
@@ -11,7 +12,7 @@ import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.dao.event.EventFactory;
 import com.iseplife.api.dao.event.EventRepository;
 import com.iseplife.api.entity.post.embed.Gallery;
-import com.iseplife.api.entity.user.Student;
+import com.iseplife.api.exceptions.AuthException;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.services.fileHandler.FileHandler;
 import com.iseplife.api.utils.ObjectUtils;
@@ -45,6 +46,9 @@ public class EventService {
   SubscriptionService subscriptionService;
 
   @Autowired
+  FeedRepository feedRepository;
+
+  @Autowired
   EventRepository eventRepository;
 
   @Qualifier("FileHandlerBean")
@@ -53,34 +57,40 @@ public class EventService {
 
   private final int EVENTS_PER_PAGE = 10;
 
-  public EventView createEvent(MultipartFile image, EventDTO dto) {
-    Event event;
-    Club club = clubService.getClub(dto.getClubId());
-    //TODO: Possibly useless because when we check rights we check club's id
-    if (club == null) {
-      throw new IllegalArgumentException("Could not find a club with id: " + dto.getClubId());
-    }
-    if (dto.getPreviousEditionId() != null) {
-      Event previous = getEvent(dto.getPreviousEditionId());
-      event = EventFactory.dtoToEntity(dto, previous);
-    } else {
-      event = EventFactory.dtoToEntity(dto);
-    }
+  public EventView createEvent(EventDTO dto) {
+    Club club = clubService.getClub(dto.getClub());
+    if (club == null || !AuthService.hasRightOn(club))
+      throw new AuthException("Insufficient rights for club (" + dto.getClub() + ")");
 
-    String path = createImageEvent(image);
 
+    Event event = dto.getPreviousEditionId() == null ?
+      EventFactory.dtoToEntity(dto) :
+      EventFactory.dtoToEntity(dto, getEvent(dto.getPreviousEditionId()));
+
+    event.setClub(club);
     event.setFeed(new Feed());
-    event.setImageUrl(path);
+    if(dto.getTargets().size() > 0)
+      event.setTargets((Set<Feed>) feedRepository.findAllById(dto.getTargets()));
+
     return EventFactory.toView(eventRepository.save(event), false);
   }
 
-  private String createImageEvent(MultipartFile image) {
+  public String updateImage(Long id, MultipartFile file) {
+    Event event = getEvent(id);
     Map params = ObjectUtils.asMap(
       "process", "resize",
       "sizes", ""
     );
-    return fileHandler.upload(image, "/img", false, params);
+
+    if (event.getImageUrl() != null)
+      fileHandler.delete(event.getImageUrl());
+
+    event.setImageUrl(fileHandler.upload(file, "/img", false, params));
+    eventRepository.save(event);
+
+    return event.getImageUrl();
   }
+
 
   public List<EventPreviewView> getEvents() {
     return eventRepository.findAll()
@@ -130,7 +140,7 @@ public class EventService {
     return event.get();
   }
 
-  public EventView getEventView(Long id){
+  public EventView getEventView(Long id) {
     Event e = getEvent(id);
 
     return EventFactory.toView(e, subscriptionService.isSubscribedToFeed(e.getFeed().getId()));
@@ -172,8 +182,10 @@ public class EventService {
       .collect(Collectors.toList());
   }
 
-  public Event updateEvent(Long id, EventDTO eventDTO, MultipartFile file) {
+  public Event updateEvent(Long id, EventDTO eventDTO) {
     Event event = getEvent(id);
+    if (!AuthService.hasRightOn(event))
+      throw new AuthException("You are not allowed to edit this event");
 
     event.setTitle(eventDTO.getTitle());
     event.setDescription(eventDTO.getDescription());
@@ -182,13 +194,6 @@ public class EventService {
     if (eventDTO.getPreviousEditionId() != null) {
       Event prev = getEvent(eventDTO.getPreviousEditionId());
       event.setPreviousEdition(prev);
-    }
-    if (file != null) {
-      if (event.getImageUrl() != null) {
-        fileHandler.delete(event.getImageUrl());
-      }
-
-      event.setImageUrl(createImageEvent(file));
     }
 
     return eventRepository.save(event);

@@ -4,7 +4,6 @@ import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.ClubRole;
 import com.iseplife.api.dao.club.ClubMemberRepository;
 import com.iseplife.api.dao.club.ClubRepository;
-import com.iseplife.api.dao.group.FeedRepository;
 import com.iseplife.api.dao.group.GroupRepository;
 import com.iseplife.api.dto.student.StudentDTO;
 import com.iseplife.api.dto.student.StudentUpdateAdminDTO;
@@ -52,9 +51,6 @@ public class StudentService {
 
   @Autowired
   RoleRepository roleRepository;
-
-  @Autowired
-  FeedRepository feedRepository;
 
   @Autowired
   ClubMemberRepository clubMemberRepository;

@@ -1,5 +1,6 @@
 package com.iseplife.api.dao.event;
 
+import com.iseplife.api.constants.EventType;
 import com.iseplife.api.dao.club.ClubFactory;
 import com.iseplife.api.dto.EventDTO;
 import com.iseplife.api.dto.view.EventPreviewView;
@@ -16,11 +17,15 @@ public class EventFactory {
   static public Event dtoToEntity(EventDTO dto) {
     Event event = new Event();
     event.setTitle(dto.getTitle());
+    event.setType(EventType.valueOf(dto.getType()));
+    event.setDescription(dto.getDescription());
     event.setStart(dto.getStart());
     event.setEnd(dto.getEnd());
     event.setPrice(dto.getPrice());
+    event.setTicketUrl(dto.getTicketUrl());
     event.setLocation(dto.getLocation());
-    event.setDescription(dto.getDescription());
+
+    event.setClosed(dto.getClosed());
     event.setPublished(dto.getPublished());
     return event;
   }

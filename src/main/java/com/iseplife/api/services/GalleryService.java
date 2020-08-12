@@ -41,9 +41,6 @@ public class GalleryService {
   ImageRepository imageRepository;
 
   @Autowired
-  AuthService authService;
-
-  @Autowired
   PostService postService;
 
   @Autowired
@@ -112,7 +109,7 @@ public class GalleryService {
 
   public void addImagesGallery(Long galleryID, List<MultipartFile> files) {
     Gallery gallery = getGallery(galleryID);
-    if (authService.hasRightOn(gallery)) {
+    if (AuthService.hasRightOn(gallery)) {
       throw new AuthException("You have not sufficient rights on this gallery (id:" + galleryID + ")");
     }
 
@@ -134,7 +131,7 @@ public class GalleryService {
 
   public void deleteImagesGallery(Long galleryID, List<Long> imagesID) {
     Gallery gallery = getGallery(galleryID);
-    if (authService.hasRightOn(gallery)) {
+    if (AuthService.hasRightOn(gallery)) {
       throw new AuthException("You have not sufficient rights on this gallery (id:" + galleryID + ")");
     }
 

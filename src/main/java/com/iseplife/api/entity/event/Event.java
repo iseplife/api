@@ -48,7 +48,7 @@ public class Event {
   @ManyToOne
   private Club club;
 
-  @OneToOne
+  @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
   private Feed feed;
 
   @JsonIgnore

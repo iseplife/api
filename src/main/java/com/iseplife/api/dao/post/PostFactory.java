@@ -14,8 +14,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class PostFactory {
 
-  @Autowired
-  AuthService authService;
 
   @Autowired
   ThreadService threadService;
@@ -45,7 +43,7 @@ public class PostFactory {
     postView.setLiked(threadService.isLiked(post.getThread()));
     postView.setPrivate(post.getPrivate());
 
-    postView.setHasWriteAccess(authService.hasRightOn(post));
+    postView.setHasWriteAccess(AuthService.hasRightOn(post));
 
     return postView;
   }

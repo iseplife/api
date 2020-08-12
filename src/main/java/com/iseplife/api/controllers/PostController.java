@@ -69,8 +69,8 @@ public class PostController {
 
   @GetMapping("/authors")
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
-  public Set<AuthorView> getAuthors(@AuthenticationPrincipal TokenPayload auth) {
-    return postService.getAuthorizedPublish(auth);
+  public Set<AuthorView> getAuthors(@RequestParam(name = "club") Boolean clubOnly, @AuthenticationPrincipal TokenPayload auth) {
+    return postService.getAuthorizedPublish(auth, clubOnly);
   }
 
   @PutMapping("/{id}/state/{state}")
