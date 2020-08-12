@@ -1,17 +1,23 @@
 package com.iseplife.api.dto.club.view;
 
-import com.iseplife.api.entity.club.Club;
-import com.iseplife.api.entity.user.Student;
+import com.iseplife.api.dto.student.view.StudentPreview;
 import com.iseplife.api.constants.ClubRole;
 
-/**
- * Created by Guillaume on 03/12/2017.
- * back
- */
+
 public class ClubMemberView {
-  private Club club;
+  private Long id;
+  private String position;
   private ClubRole role;
-  private Student member;
+  private StudentPreview member;
+  private Long parent;
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
 
   public ClubRole getRole() {
     return role;
@@ -21,19 +27,27 @@ public class ClubMemberView {
     this.role = role;
   }
 
-  public Student getMember() {
+  public StudentPreview getMember() {
     return member;
   }
 
-  public void setMember(Student member) {
+  public void setMember(StudentPreview member) {
     this.member = member;
   }
 
-  public Club getClub() {
-    return club;
+  public String getPosition() {
+    return position;
   }
 
-  public void setClub(Club club) {
-    this.club = club;
+  public void setPosition(String position) {
+    this.position = position;
+  }
+
+  public Long getParent() {
+    return parent;
+  }
+
+  public void setParent(Long parent) {
+    this.parent = parent;
   }
 }

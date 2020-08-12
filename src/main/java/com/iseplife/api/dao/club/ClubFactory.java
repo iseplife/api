@@ -25,7 +25,7 @@ public class ClubFactory {
     return club;
   }
 
-  static public ClubView toView(Club c){
+  static public ClubView toView(Club c, Boolean canEdit){
     ClubView view = new ClubView();
     view.setId(c.getId());
     view.setName(c.getName());
@@ -34,6 +34,7 @@ public class ClubFactory {
     view.setType(c.getType());
     view.setArchived(c.isArchived());
 
+    view.setCanEdit(canEdit);
     view.setFeed(c.getFeed().getId());
     view.setCreation(c.getCreation());
 

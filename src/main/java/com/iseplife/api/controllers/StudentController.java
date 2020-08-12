@@ -2,6 +2,7 @@ package com.iseplife.api.controllers;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dao.student.StudentFactory;
+import com.iseplife.api.dto.club.view.ClubMemberPreview;
 import com.iseplife.api.dto.student.StudentDTO;
 import com.iseplife.api.dto.student.StudentUpdateAdminDTO;
 import com.iseplife.api.dto.student.StudentUpdateDTO;
@@ -126,7 +127,7 @@ public class StudentController {
 
   @GetMapping("/{id}/club")
   @RolesAllowed({Roles.STUDENT})
-  public List<ClubMemberView> getClubsStudent(@PathVariable Long id) {
+  public List<ClubMemberPreview> getStudentClubs(@PathVariable Long id) {
     return clubService.getStudentClubs(id);
   }
 
@@ -150,8 +151,7 @@ public class StudentController {
 
   @PostMapping("/import")
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
-  public ImportStudentResultView importStudents(@RequestParam("csv") MultipartFile csv,
-                                                @RequestParam("images[]") List<MultipartFile> photos) {
+  public ImportStudentResultView importStudents(@RequestParam("csv") MultipartFile csv, @RequestParam("images[]") List<MultipartFile> photos) {
     return studentImportService.importStudents(csv, photos);
   }
 

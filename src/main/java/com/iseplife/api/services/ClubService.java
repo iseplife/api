@@ -1,8 +1,10 @@
 package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.dao.club.ClubMemberFactory;
 import com.iseplife.api.dao.student.StudentFactory;
 import com.iseplife.api.dto.club.ClubDTO;
+import com.iseplife.api.dto.club.view.ClubMemberPreview;
 import com.iseplife.api.dto.club.view.ClubMemberView;
 import com.iseplife.api.dto.club.view.ClubView;
 import com.iseplife.api.dto.student.view.StudentPreview;
@@ -64,6 +66,12 @@ public class ClubService {
     return club.get();
   }
 
+  public ClubView getClubView(Long id) {
+    Club club = getClub(id);
+
+    return ClubFactory.toView(club, AuthService.hasRightOn(club));
+  }
+
   public ClubView createClub(ClubDTO dto) {
     Club club = ClubFactory.fromDTO(dto, new Club());
     if (dto.getAdmins().size() == 0)
@@ -82,7 +90,7 @@ public class ClubService {
     club.setMembers(members);
     club.setFeed(new Feed());
 
-    return ClubFactory.toView(clubRepository.save(club));
+    return ClubFactory.toView(clubRepository.save(club), true);
   }
 
   public ClubView updateClub(Long id, ClubDTO dto) {
@@ -93,7 +101,7 @@ public class ClubService {
     // Update through reference so we don't need to get return value
     ClubFactory.fromDTO(dto, club);
 
-    return ClubFactory.toView(clubRepository.save(club));
+    return ClubFactory.toView(clubRepository.save(club), true);
   }
 
 
@@ -108,6 +116,27 @@ public class ClubService {
       "sizes", ""
     );
     club.setLogoUrl(fileHandler.upload(file, "/img/usr", false, params));
+    clubRepository.save(club);
+    return club.getLogoUrl();
+  }
+
+  public String updateCover(Long id, MultipartFile file) {
+    Club club = getClub(id);
+
+    if(club.getCoverUrl() != null || file == null)
+      fileHandler.delete(club.getCoverUrl());
+
+    if( file == null){
+      club.setLogoUrl(null);
+    }else {
+      Map params = ObjectUtils.asMap(
+        "process", "resize",
+        "sizes", ""
+      );
+      club.setLogoUrl(fileHandler.upload(file, "/img/usr", false, params));
+
+    }
+
     clubRepository.save(club);
     return club.getLogoUrl();
   }
@@ -227,15 +256,11 @@ public class ClubService {
     clubRepository.save(club);
   }
 
-  public List<ClubMemberView> getStudentClubs(Long id) {
-    List<ClubMember> clubMembers = clubMemberRepository.findByStudentId(id);
-    return clubMembers.stream().map(cm -> {
-      ClubMemberView clubMemberView = new ClubMemberView();
-      clubMemberView.setClub(cm.getClub());
-      clubMemberView.setMember(cm.getStudent());
-      clubMemberView.setRole(cm.getRole());
-      return clubMemberView;
-    }).collect(Collectors.toList());
+  public List<ClubMemberPreview> getStudentClubs(Long id) {
+    return clubMemberRepository.findByStudentId(id)
+      .stream()
+      .map(ClubMemberFactory::toPreview)
+      .collect(Collectors.toList());
   }
 
 }

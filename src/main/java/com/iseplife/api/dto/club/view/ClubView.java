@@ -12,6 +12,7 @@ public class ClubView {
   private ClubType type;
   private Long feed;
   private Boolean archived;
+  private Boolean canEdit;
   private Date creation;
 
   private String website;
@@ -104,5 +105,13 @@ public class ClubView {
 
   public void setCreation(Date creation) {
     this.creation = creation;
+  }
+
+  public Boolean getCanEdit() {
+    return canEdit;
+  }
+
+  public void setCanEdit(Boolean canEdit) {
+    this.canEdit = canEdit;
   }
 }

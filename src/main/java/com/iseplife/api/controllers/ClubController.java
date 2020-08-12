@@ -65,7 +65,7 @@ public class ClubController {
   @GetMapping("/{id}")
   @RolesAllowed({Roles.STUDENT})
   public ClubView getClub(@PathVariable Long id) {
-    return ClubFactory.toView(clubService.getClub(id));
+    return clubService.getClubView(id);
   }
 
   @PutMapping("/{id}")
@@ -79,6 +79,13 @@ public class ClubController {
   public String updateLogo(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
     return clubService.updateLogo(id, file);
   }
+
+  @PostMapping("/{id}/cover")
+  @RolesAllowed({Roles.STUDENT})
+  public String updateCover(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+    return clubService.updateCover(id, file);
+  }
+
 
   @PutMapping("/{id}/archive")
   @RolesAllowed({Roles.ADMIN})
