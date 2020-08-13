@@ -13,7 +13,7 @@ import java.util.Date;
 @Component
 public class SearchFactory {
 
-  public SearchItemView entityToSearchItemView(Event event) {
+  static public SearchItemView toSearchItemView(Event event) {
     SearchItemView searchItem = new SearchItemView();
     searchItem.setId(event.getId());
     searchItem.setName(event.getTitle());
@@ -26,7 +26,7 @@ public class SearchFactory {
     return searchItem;
   }
 
-  public SearchItemView entityToSearchItemView(Club club){
+  static public SearchItemView toSearchItemView(Club club){
     SearchItemView searchItem = new SearchItemView();
     searchItem.setId(club.getId());
     searchItem.setName(club.getName());
@@ -38,7 +38,7 @@ public class SearchFactory {
     return searchItem;
   }
 
-  public SearchItemView entityToSearchItemView(Student student){
+  static public SearchItemView toSearchItemView(Student student){
     SearchItemView searchItem = new SearchItemView();
     searchItem.setId(student.getId());
     searchItem.setName(student.getFirstName() + " " + student.getLastName());

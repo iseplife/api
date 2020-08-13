@@ -43,7 +43,7 @@ public class SearchService {
   public Page<SearchItemView> globalSearch(String filter, Integer page, Boolean returnAll) {
     try {
       CompletableFuture<List<SearchItemView>> userAsync = CompletableFuture.supplyAsync(() ->
-        searchUser(filter, "", true,  page, returnAll).getContent()
+        searchUser(filter, "", true,  page).getContent()
       );
 
       CompletableFuture<List<SearchItemView>> eventAsync = CompletableFuture.supplyAsync(() ->
@@ -70,7 +70,14 @@ public class SearchService {
     }
   }
 
-  public Page<SearchItemView> searchUser(String filter, String promos, Boolean atoz, Integer page, Boolean returnAll) {
+  public List<SearchItemView> searchUserAll(String name){
+    return studentRepository.searchStudent(name, true)
+      .stream()
+      .map(SearchFactory::toSearchItemView)
+      .collect(Collectors.toList());
+  }
+
+  public Page<SearchItemView> searchUser(String filter, String promos, Boolean atoz, Integer page) {
     Page<Student> students;
     PageRequest pr = PageRequest.of(
       page, RESULTS_PER_PAGE,
@@ -87,18 +94,18 @@ public class SearchService {
       students = studentRepository.searchStudent(filter, pr);
     }
 
-    return students.map(s -> searchFactory.entityToSearchItemView(s));
+    return students.map(SearchFactory::toSearchItemView);
   }
 
   public Page<SearchItemView> searchEvent(String filter, int page, Boolean returnAll) {
     Page<Event> events = eventRepository.searchEvent(filter, PageRequest.of(page, RESULTS_PER_PAGE));
 
-    return events.map(e -> searchFactory.entityToSearchItemView(e));
+    return events.map(SearchFactory::toSearchItemView);
   }
 
   public Page<SearchItemView> searchClub(String filter, int page, Boolean returnAll) {
     Page<Club> clubs = clubRepository.findAllByNameContainingIgnoringCase(filter, PageRequest.of(page, RESULTS_PER_PAGE));
 
-    return clubs.map(c -> searchFactory.entityToSearchItemView(c));
+    return clubs.map(SearchFactory::toSearchItemView);
   }
 }
