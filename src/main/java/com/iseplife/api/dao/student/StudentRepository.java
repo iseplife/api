@@ -46,7 +46,7 @@ public interface StudentRepository extends CrudRepository<Student, Long> {
   @Query(
     "select s from Student s " +
       "where lower(concat(s.firstName, ' ', s.lastName)) like %?1% " +
-      "and ((?2 = true and s.archivedAt is  null) or (?2 = false and s.archivedAt is null))"
+      "and ((?2 = true and s.archivedAt is null) or (?2 = false and s.archivedAt is null))"
   )
   List<Student> searchStudent(String name, Boolean active);
 
