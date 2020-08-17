@@ -9,6 +9,7 @@ public class ClubView {
   private String name;
   private String description;
   private String logoUrl;
+  private String coverUrl;
   private ClubType type;
   private Long feed;
   private Boolean archived;
@@ -113,5 +114,13 @@ public class ClubView {
 
   public void setCanEdit(Boolean canEdit) {
     this.canEdit = canEdit;
+  }
+
+  public String getCoverUrl() {
+    return coverUrl;
+  }
+
+  public void setCoverUrl(String coverUrl) {
+    this.coverUrl = coverUrl;
   }
 }

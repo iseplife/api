@@ -1,12 +1,23 @@
 package com.iseplife.api.dto.club;
 
-public class ClubDTO {
+import com.iseplife.api.constants.ClubType;
+
+import java.util.Date;
+import java.util.List;
+
+
+public class ClubAdminDTO {
   private String name;
   private String description;
+  private ClubType type;
+
+  private Date creation;
 
   private String website;
   private String instagram;
   private String facebook;
+
+  private List<Long> admins;
 
   public String getName() {
     return name;
@@ -24,12 +35,29 @@ public class ClubDTO {
     this.description = description;
   }
 
+  public Date getCreation() {
+    return creation;
+  }
+
+  public void setCreation(Date creation) {
+    this.creation = creation;
+  }
+
   public String getWebsite() {
     return website;
   }
 
   public void setWebsite(String website) {
     this.website = website;
+  }
+
+
+  public ClubType getType() {
+    return type;
+  }
+
+  public void setType(ClubType type) {
+    this.type = type;
   }
 
   public String getInstagram() {
@@ -48,4 +76,11 @@ public class ClubDTO {
     this.facebook = facebook;
   }
 
+  public List<Long> getAdmins() {
+    return admins;
+  }
+
+  public void setAdmins(List<Long> admins) {
+    this.admins = admins;
+  }
 }

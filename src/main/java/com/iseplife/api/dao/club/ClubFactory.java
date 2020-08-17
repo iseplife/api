@@ -1,5 +1,6 @@
 package com.iseplife.api.dao.club;
 
+import com.iseplife.api.dto.club.ClubAdminDTO;
 import com.iseplife.api.dto.club.ClubDTO;
 import com.iseplife.api.dto.club.view.ClubPreview;
 import com.iseplife.api.dto.club.view.ClubView;
@@ -13,6 +14,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class ClubFactory {
   static public Club fromDTO(ClubDTO dto, Club club) {
+    club.setName(dto.getName());
+    club.setDescription(dto.getDescription());
+
+    club.setWebsite(dto.getWebsite());
+    club.setFacebook(dto.getFacebook());
+    club.setInstagram(dto.getInstagram());
+
+    return club;
+  }
+
+  static public Club fromAdminDTO(ClubAdminDTO dto, Club club) {
     club.setType(dto.getType());
     club.setName(dto.getName());
     club.setDescription(dto.getDescription());
@@ -31,6 +43,7 @@ public class ClubFactory {
     view.setName(c.getName());
     view.setDescription(c.getDescription());
     view.setLogoUrl(c.getLogoUrl());
+    view.setCoverUrl(c.getCoverUrl());
     view.setType(c.getType());
     view.setArchived(c.isArchived());
 

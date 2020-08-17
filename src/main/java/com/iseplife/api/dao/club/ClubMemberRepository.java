@@ -28,6 +28,12 @@ public interface ClubMemberRepository extends CrudRepository<ClubMember, Long> {
   )
   List<Club> findByRoleWithInheritance(Student student, ClubRole role);
 
+  @Query("select count(cm.id) from ClubMember cm " +
+    "where cm.club = ?1 " +
+    "and cm.role = 'ADMIN' "
+  )
+  Integer findClubAdminCount(Club club);
+
   @Query("select cm.student from ClubMember cm " +
     "where cm.club = :#{#club} " +
     "and cm.role in :#{#role.getParents()}"
