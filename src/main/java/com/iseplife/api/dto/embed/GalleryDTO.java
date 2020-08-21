@@ -1,6 +1,5 @@
 package com.iseplife.api.dto.embed;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -9,7 +8,7 @@ import java.util.List;
  */
 public class GalleryDTO {
   private String name;
-  private Boolean pseudo;
+  private Boolean pseudo = true;
   private List<Long> images;
   private Long club;
   private Long feed;

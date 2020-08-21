@@ -1,19 +1,15 @@
 package com.iseplife.api.services;
 
-import com.iseplife.api.constants.PostState;
 import com.iseplife.api.dao.GalleryRepository;
 import com.iseplife.api.dao.media.image.ImageRepository;
-import com.iseplife.api.dto.TempFile;
 import com.iseplife.api.dto.embed.GalleryDTO;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.post.embed.media.Image;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.exceptions.AuthException;
-import com.iseplife.api.exceptions.FileException;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.services.fileHandler.FileHandler;
-import com.iseplife.api.utils.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +17,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 public class GalleryService {
@@ -89,7 +79,7 @@ public class GalleryService {
 
     if (!dto.getPseudo()) {
       Club club = clubService.getClub(dto.getClub());
-      if (authService.hasRightOn(club))
+      if (AuthService.hasRightOn(club))
         throw new AuthException("You have not sufficient rights on this club (id:" + dto.getClub() + ")");
 
       gallery.setClub(club);
@@ -101,11 +91,11 @@ public class GalleryService {
     gallery.setFeed(feedService.getFeed(dto.getFeed()));
 
     Iterable<Image> images = imageRepository.findAllById(dto.getImages());
-    images.forEach(img ->{
-      if(img.getGallery() == null && img.getName().startsWith("img/g"))
+    images.forEach(img -> {
+      if (img.getGallery() == null && img.getName().startsWith("img/g"))
         img.setGallery(gallery);
     });
-    gallery.setImages((List<Image>)images);
+    gallery.setImages((List<Image>) images);
 
     galleryRepository.save(gallery);
     imageRepository.saveAll(images);
@@ -114,7 +104,7 @@ public class GalleryService {
 
   public void addImagesGallery(Long galleryID, List<Long> images) {
     Gallery gallery = getGallery(galleryID);
-    if (AuthService.hasRightOn(gallery)) {
+    if (!AuthService.hasRightOn(gallery))
       throw new AuthException("You have not sufficient rights on this gallery (id:" + galleryID + ")");
 
     gallery.getImages().addAll(
@@ -122,6 +112,7 @@ public class GalleryService {
     );
     galleryRepository.save(gallery);
   }
+
 
   public void deleteGallery(Gallery gallery) {
     gallery
