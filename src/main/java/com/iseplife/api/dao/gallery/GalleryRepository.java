@@ -15,7 +15,7 @@ import java.util.List;
 @Repository
 public interface GalleryRepository extends CrudRepository<Gallery, Long> {
 
-  List<Gallery> findAllByFeedAndPseudoIsFalse(Feed feed);
+  Page<Gallery> findAllByFeedAndPseudoIsFalse(Feed feed, Pageable pageable);
 
 
   @Query("select g from Gallery g, Event e " +

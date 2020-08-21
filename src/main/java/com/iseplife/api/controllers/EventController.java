@@ -4,6 +4,7 @@ import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.event.EventFactory;
 import com.iseplife.api.dto.EventDTO;
+import com.iseplife.api.dto.gallery.view.GalleryPreview;
 import com.iseplife.api.dto.view.EventPreviewView;
 import com.iseplife.api.dto.view.EventView;
 import com.iseplife.api.entity.event.Event;
@@ -70,8 +71,8 @@ public class EventController {
 
   @GetMapping("/{id}/galleries")
   @RolesAllowed({Roles.STUDENT})
-  public List<Gallery> getGalleries(@PathVariable Long id) {
-    return eventService.getEventGalleries(id);
+  public Page<GalleryPreview> getGalleries(@PathVariable Long id, @RequestParam(defaultValue = "0") int page) {
+    return eventService.getEventGalleries(id, page);
   }
 
 

@@ -8,6 +8,7 @@ import com.iseplife.api.dto.club.ClubDTO;
 import com.iseplife.api.dto.club.ClubMemberDTO;
 import com.iseplife.api.dto.club.view.ClubMemberPreview;
 import com.iseplife.api.dto.club.view.ClubView;
+import com.iseplife.api.dto.gallery.view.GalleryPreview;
 import com.iseplife.api.dto.student.view.StudentPreview;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.club.Club;
@@ -223,7 +224,7 @@ public class ClubService {
     return clubMemberRepository.findByClubId(id);
   }
 
-  public Page<Gallery> getClubGalleries(Long id, int page) {
+  public Page<GalleryPreview> getClubGalleries(Long id, int page) {
     return galleryService.getClubGalleries(getClub(id), page);
   }
 

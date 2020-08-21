@@ -4,6 +4,7 @@ package com.iseplife.api.services;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dao.group.FeedRepository;
 import com.iseplife.api.dto.EventDTO;
+import com.iseplife.api.dto.gallery.view.GalleryPreview;
 import com.iseplife.api.dto.view.EventPreviewView;
 import com.iseplife.api.dto.view.EventView;
 import com.iseplife.api.entity.feed.Feed;
@@ -146,8 +147,8 @@ public class EventService {
     return EventFactory.toView(e, subscriptionService.isSubscribedToFeed(e.getFeed().getId()));
   }
 
-  public List<Gallery> getEventGalleries(Long id) {
-    return galleryService.getEventGalleries(getEvent(id));
+  public Page<GalleryPreview> getEventGalleries(Long id, int page) {
+    return galleryService.getEventGalleries(getEvent(id), page);
   }
 
   public List<EventPreviewView> getChildrenEvents(Long id) {

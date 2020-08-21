@@ -1,8 +1,10 @@
 package com.iseplife.api.services;
 
+import com.iseplife.api.dao.gallery.GalleryFactory;
 import com.iseplife.api.dao.gallery.GalleryRepository;
 import com.iseplife.api.dao.media.image.ImageRepository;
 import com.iseplife.api.dto.gallery.GalleryDTO;
+import com.iseplife.api.dto.gallery.view.GalleryPreview;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.post.embed.media.Image;
@@ -19,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class GalleryService {
@@ -63,12 +66,14 @@ public class GalleryService {
       .getImages();
   }
 
-  public List<Gallery> getEventGalleries(Event event) {
-    return galleryRepository.findAllByFeedAndPseudoIsFalse(event.getFeed());
+  public Page<GalleryPreview> getEventGalleries(Event event, int page) {
+    return galleryRepository.findAllByFeedAndPseudoIsFalse(event.getFeed(), PageRequest.of(page, GALLERY_PER_PAGE))
+      .map(GalleryFactory::toPreview);
   }
 
-  public Page<Gallery> getClubGalleries(Club club, int page) {
-    return galleryRepository.findAllByClub(club, PageRequest.of(page, GALLERY_PER_PAGE));
+  public Page<GalleryPreview> getClubGalleries(Club club, int page) {
+    return galleryRepository.findAllByClub(club, PageRequest.of(page, GALLERY_PER_PAGE))
+      .map(GalleryFactory::toPreview);
   }
 
 
