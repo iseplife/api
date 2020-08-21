@@ -24,6 +24,7 @@ public class Club {
   @Column(length = 500)
   private String description;
   private String logoUrl;
+  private String coverUrl;
 
   private Date archivedAt = null;
   private Date creation;
@@ -155,5 +156,13 @@ public class Club {
 
   public void setFeed(Feed feed) {
     this.feed = feed;
+  }
+
+  public String getCoverUrl() {
+    return coverUrl;
+  }
+
+  public void setCoverUrl(String coverUrl) {
+    this.coverUrl = coverUrl;
   }
 }

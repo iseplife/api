@@ -1,9 +1,12 @@
 package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.dao.club.ClubMemberFactory;
 import com.iseplife.api.dao.student.StudentFactory;
+import com.iseplife.api.dto.club.ClubAdminDTO;
 import com.iseplife.api.dto.club.ClubDTO;
-import com.iseplife.api.dto.club.view.ClubMemberView;
+import com.iseplife.api.dto.club.ClubMemberDTO;
+import com.iseplife.api.dto.club.view.ClubMemberPreview;
 import com.iseplife.api.dto.club.view.ClubView;
 import com.iseplife.api.dto.student.view.StudentPreview;
 import com.iseplife.api.entity.feed.Feed;
@@ -26,7 +29,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.text.DateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -64,8 +66,14 @@ public class ClubService {
     return club.get();
   }
 
-  public ClubView createClub(ClubDTO dto) {
-    Club club = ClubFactory.fromDTO(dto, new Club());
+  public ClubView getClubView(Long id) {
+    Club club = getClub(id);
+
+    return ClubFactory.toView(club, AuthService.hasRightOn(club));
+  }
+
+  public ClubView createClub(ClubAdminDTO dto) {
+    Club club = ClubFactory.fromAdminDTO(dto, new Club());
     if (dto.getAdmins().size() == 0)
       throw new IllegalArgumentException("The id of the admin cannot be null");
 
@@ -82,25 +90,38 @@ public class ClubService {
     club.setMembers(members);
     club.setFeed(new Feed());
 
-    return ClubFactory.toView(clubRepository.save(club));
+    return ClubFactory.toView(clubRepository.save(club), true);
   }
 
   public ClubView updateClub(Long id, ClubDTO dto) {
     Club club = getClub(id);
-    if(!AuthService.hasRightOn(club))
+    if (!AuthService.hasRightOn(club))
       throw new AuthException("You have not sufficient rights on this club (id:" + id + ")");
 
     // Update through reference so we don't need to get return value
     ClubFactory.fromDTO(dto, club);
 
-    return ClubFactory.toView(clubRepository.save(club));
+    return ClubFactory.toView(clubRepository.save(club), true);
+  }
+
+  public ClubView updateClubAdmin(Long id, ClubAdminDTO dto) {
+    Club club = getClub(id);
+    if (!AuthService.hasRightOn(club))
+      throw new AuthException("You have not sufficient rights on this club (id:" + id + ")");
+
+    // Update through reference so we don't need to get return value
+    ClubFactory.fromAdminDTO(dto, club);
+
+    return ClubFactory.toView(clubRepository.save(club), true);
   }
 
 
   public String updateLogo(Long id, MultipartFile file) {
     Club club = getClub(id);
+    if (!AuthService.hasRightOn(club))
+      throw new AuthException("You have not sufficient rights on this club (id:" + id + ")");
 
-    if(club.getLogoUrl() != null)
+    if (club.getLogoUrl() != null)
       fileHandler.delete(club.getLogoUrl());
 
     Map params = ObjectUtils.asMap(
@@ -108,6 +129,29 @@ public class ClubService {
       "sizes", ""
     );
     club.setLogoUrl(fileHandler.upload(file, "/img/usr", false, params));
+    clubRepository.save(club);
+    return club.getLogoUrl();
+  }
+
+  public String updateCover(Long id, MultipartFile file) {
+    Club club = getClub(id);
+    if (!AuthService.hasRightOn(club))
+      throw new AuthException("You have not sufficient rights on this club (id:" + id + ")");
+
+    if (club.getCoverUrl() != null || file == null)
+      fileHandler.delete(club.getCoverUrl());
+
+    if (file == null) {
+      club.setLogoUrl(null);
+    } else {
+      Map params = ObjectUtils.asMap(
+        "process", "resize",
+        "sizes", ""
+      );
+      club.setLogoUrl(fileHandler.upload(file, "/img/usr", false, params));
+
+    }
+
     clubRepository.save(club);
     return club.getLogoUrl();
   }
@@ -127,11 +171,32 @@ public class ClubService {
     return clubMemberRepository.save(clubMember);
   }
 
-  public List<Club> getAll() {
-    return clubRepository.findAllByOrderByName();
+  public ClubMember updateMember(Long id, ClubMemberDTO dto) {
+    Optional<ClubMember> optionalClubMember = clubMemberRepository.findById(id);
+    if (optionalClubMember.isEmpty())
+      throw new IllegalArgumentException("could not find club member with id: " + id);
+
+    ClubMember member = optionalClubMember.get();
+    if (!AuthService.hasRightOn(member.getClub()))
+      throw new AuthException("You have not sufficient rights on this club (id:" + id + ")");
+
+    if (member.getRole() == ClubRole.ADMIN &&
+      dto.getRole() != member.getRole() &&
+      clubMemberRepository.findClubAdminCount(member.getClub()) == 1) {
+      throw new IllegalArgumentException("Could not update member as club must have at least 1 admin");
+    }
+
+
+    member.setPosition(dto.getPosition());
+    member.setRole(dto.getRole());
+
+    return clubMemberRepository.save(member);
   }
 
 
+  public List<Club> getAll() {
+    return clubRepository.findAllByOrderByName();
+  }
 
   public List<Student> getClubPublishers(Club club) {
     return clubMemberRepository.findClubPublishers(club, ClubRole.PUBLISHER);
@@ -227,15 +292,11 @@ public class ClubService {
     clubRepository.save(club);
   }
 
-  public List<ClubMemberView> getStudentClubs(Long id) {
-    List<ClubMember> clubMembers = clubMemberRepository.findByStudentId(id);
-    return clubMembers.stream().map(cm -> {
-      ClubMemberView clubMemberView = new ClubMemberView();
-      clubMemberView.setClub(cm.getClub());
-      clubMemberView.setMember(cm.getStudent());
-      clubMemberView.setRole(cm.getRole());
-      return clubMemberView;
-    }).collect(Collectors.toList());
+  public List<ClubMemberPreview> getStudentClubs(Long id) {
+    return clubMemberRepository.findByStudentId(id)
+      .stream()
+      .map(ClubMemberFactory::toPreview)
+      .collect(Collectors.toList());
   }
 
 }

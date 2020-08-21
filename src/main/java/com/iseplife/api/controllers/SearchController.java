@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.security.RolesAllowed;
+import java.util.List;
 
 @RestController
 @RequestMapping("/search")
@@ -28,8 +29,14 @@ public class SearchController {
 
   @GetMapping("/student")
   @RolesAllowed({Roles.STUDENT})
-  public Page<SearchItemView> userSearch(String name, String promos, Integer page, Boolean atoz, @RequestParam(defaultValue = "0") Boolean allAnswer) {
-    return searchService.searchUser(name, promos, atoz, page, allAnswer);
+  public Page<SearchItemView> userSearch(String name, String promos, Integer page, Boolean atoz) {
+    return searchService.searchUser(name, promos, atoz, page);
+  }
+
+  @GetMapping("/student/all")
+  @RolesAllowed({Roles.STUDENT})
+  public List<SearchItemView> userSearchAll(String name) {
+    return searchService.searchUserAll(name);
   }
 
   @GetMapping("/club")
