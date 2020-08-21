@@ -1,4 +1,4 @@
-package com.iseplife.api.dao;
+package com.iseplife.api.dao.gallery;
 
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.club.Club;
@@ -15,7 +15,8 @@ import java.util.List;
 @Repository
 public interface GalleryRepository extends CrudRepository<Gallery, Long> {
 
-  List<Gallery> findAllByFeed(Feed feed);
+  List<Gallery> findAllByFeedAndPseudoIsFalse(Feed feed);
+
 
   @Query("select g from Gallery g, Event e " +
     "where g.feed = e.feed " +

@@ -2,8 +2,7 @@ package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.MediaType;
-import com.iseplife.api.constants.PostState;
-import com.iseplife.api.dao.GalleryRepository;
+import com.iseplife.api.dao.gallery.GalleryRepository;
 import com.iseplife.api.dto.view.MatchedView;
 import com.iseplife.api.entity.post.embed.media.Image;
 import com.iseplife.api.entity.Matched;
@@ -11,7 +10,6 @@ import com.iseplife.api.entity.post.embed.media.Document;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.post.embed.media.Media;
 import com.iseplife.api.entity.post.embed.media.Video;
-import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.media.image.ImageRepository;
@@ -31,7 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.Cacheable;
 
-import java.io.File;
 import java.security.InvalidParameterException;
 import java.util.*;
 

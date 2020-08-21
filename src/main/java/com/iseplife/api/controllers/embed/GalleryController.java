@@ -1,7 +1,7 @@
 package com.iseplife.api.controllers.embed;
 
 import com.iseplife.api.constants.Roles;
-import com.iseplife.api.dto.embed.GalleryDTO;
+import com.iseplife.api.dto.gallery.GalleryDTO;
 import com.iseplife.api.entity.post.embed.media.Image;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.services.GalleryService;

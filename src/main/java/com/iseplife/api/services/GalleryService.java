@@ -1,8 +1,8 @@
 package com.iseplife.api.services;
 
-import com.iseplife.api.dao.GalleryRepository;
+import com.iseplife.api.dao.gallery.GalleryRepository;
 import com.iseplife.api.dao.media.image.ImageRepository;
-import com.iseplife.api.dto.embed.GalleryDTO;
+import com.iseplife.api.dto.gallery.GalleryDTO;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.post.embed.media.Image;
@@ -64,7 +64,7 @@ public class GalleryService {
   }
 
   public List<Gallery> getEventGalleries(Event event) {
-    return galleryRepository.findAllByFeed(event.getFeed());
+    return galleryRepository.findAllByFeedAndPseudoIsFalse(event.getFeed());
   }
 
   public Page<Gallery> getClubGalleries(Club club, int page) {
