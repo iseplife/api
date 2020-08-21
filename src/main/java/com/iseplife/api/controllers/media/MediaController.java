@@ -44,8 +44,9 @@ public class MediaController {
   @RolesAllowed({Roles.STUDENT})
   public Media createMedia(
     @RequestParam(defaultValue = "0") Boolean gallery,
+    @RequestParam(defaultValue = "0") Boolean nsfw,
     @RequestParam("file") MultipartFile file){
-    return mediaService.createMedia(file, gallery);
+    return mediaService.createMedia(file, gallery, nsfw);
   }
 
   @DeleteMapping("/{filename}")

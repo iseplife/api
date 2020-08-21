@@ -66,6 +66,9 @@ public class PostService {
   FeedService feedService;
 
   @Autowired
+  AuthService authService;
+
+  @Autowired
   PostMessageService postMessageService;
 
   private final int POSTS_PER_PAGE = 10;
@@ -209,11 +212,11 @@ public class PostService {
 
     Set<AuthorView> authorStatus = new HashSet<>();
     if(!clubOnly)
-      authorStatus.add(authorFactory.entitytoView(student));
+      authorStatus.add(AuthorFactory.entityToView(student));
 
     if (auth.getRoles().contains(Roles.ADMIN)) {
       if(!clubOnly)
-        authorStatus.add(authorFactory.admintoView());
+        authorStatus.add(AuthorFactory.adminToView());
 
       authorStatus.addAll(
         clubService.getAll()
@@ -225,7 +228,7 @@ public class PostService {
       authorStatus.addAll(
         studentService.getPublisherClubs(student)
           .stream()
-          .map(c -> AuthorFactory.entityToView(c))
+          .map(AuthorFactory::entityToView)
           .collect(Collectors.toSet())
       );
     }

@@ -107,7 +107,7 @@ public class MediaService {
     return img.get();
   }
 
-  public Media createMedia(MultipartFile file, Boolean gallery) {
+  public Media createMedia(MultipartFile file, Boolean gallery, Boolean nsfw) {
     String name, mime = file.getContentType().split("/")[0];
     Media media;
     switch (mime) {
@@ -117,20 +117,12 @@ public class MediaService {
         break;
       case "image":
         media = new Image();
-
-        if(gallery){
-          name = fileHandler.upload(file, "img", false,
-            ObjectUtils.asMap(
-              "resize",
-              "sizes", SIZE_COMPRESS
-            ));
-        }else{
-          name = fileHandler.upload(file, "img/g", false,
-            ObjectUtils.asMap(
-            "compress", "resize",
-            "size", SIZE_COMPRESS
-          ));
-        }
+        name = fileHandler.upload(file, gallery ? "img/g" : "img", false,
+          ObjectUtils.asMap(
+            "process", "resize",
+            "sizes", SIZE_COMPRESS
+          )
+        );
         break;
       default:
         media = new Document();
@@ -139,6 +131,7 @@ public class MediaService {
     }
 
     media.setName(name);
+    media.setNSFW(nsfw);
     media.setCreation(new Date());
     return mediaRepository.save(media);
   }
@@ -155,74 +148,6 @@ public class MediaService {
     return fileHandler.delete(filename);
   }
 
-
-  public void addImages(Long postID, List<MultipartFile> images) {
-    //TODO handle this part differently
-    if (images.size() > 3)
-      throw new InvalidParameterException("Can not post more than 3 images simultaneously, create a gallery if needed");
-
-    if (images.size() == 1) {
-      Image image = new Image();
-      image.setCreation(new Date());
-
-
-      image = mediaRepository.save(image);
-
-      postService.addMediaEmbed(postID, image);
-    } else {
-      Gallery g = new Gallery();
-      g.setOfficial(false);
-      for (MultipartFile multipartFile : images) {
-        Image image = new Image();
-        image.setCreation(new Date());
-
-        Map params = ObjectUtils.asMap(
-          "compress", "resize",
-          "size", SIZE_COMPRESS
-        );
-        String name = fileHandler.upload(multipartFile, "post", false, params);
-        image.setName(name);
-        image = mediaRepository.save(image);
-        image.setGallery(g);
-
-      }
-      postService.addMediaEmbed(postID, g);
-    }
-    postService.setPublishState(postID, PostState.READY);
-  }
-
-  public Image addGalleryImage(MultipartFile file, Gallery gallery) {
-    Image image = new Image();
-    image.setGallery(gallery);
-
-    Map params = ObjectUtils.asMap(
-      "process", "resize",
-      "sizes", "200x200"
-    );
-    String name = fileHandler.upload(file, "img/g/" + gallery.getId(), false, params);
-    image.setName(name);
-    mediaRepository.save(image);
-
-    return image;
-  }
-
-  public void addGalleryImage(File file, Gallery gallery) {
-    Image image = new Image();
-    image.setGallery(gallery);
-    image.setCreation(new Date());
-
-    Map params = ObjectUtils.asMap(
-      "process", "resize",
-      "sizes", "200x200"
-    );
-    String name = fileHandler.upload(file, "img/g/" + gallery.getId(), false, params);
-    image.setName(name);
-
-    mediaRepository.save(image);
-    if (!file.delete()) {
-      LOG.error("Could not delete this temp file: {}", file.getName());
-    }
-  }
 
   void deleteMedia(Media media) {
     fileHandler.delete(media.getName());
