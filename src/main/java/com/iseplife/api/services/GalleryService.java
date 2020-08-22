@@ -5,6 +5,7 @@ import com.iseplife.api.dao.gallery.GalleryRepository;
 import com.iseplife.api.dao.media.image.ImageRepository;
 import com.iseplife.api.dto.gallery.GalleryDTO;
 import com.iseplife.api.dto.gallery.view.GalleryPreview;
+import com.iseplife.api.dto.gallery.view.GalleryView;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.post.embed.media.Image;
@@ -61,6 +62,10 @@ public class GalleryService {
     return gallery.get();
   }
 
+  public GalleryView getGalleryView(Long id) {
+    return GalleryFactory.toView(getGallery(id));
+  }
+
   public List<Image> getGalleryImages(Long id) {
     return getGallery(id)
       .getImages();
@@ -72,12 +77,12 @@ public class GalleryService {
   }
 
   public Page<GalleryPreview> getClubGalleries(Club club, int page) {
-    return galleryRepository.findAllByClub(club, PageRequest.of(page, GALLERY_PER_PAGE))
+    return galleryRepository.findAllByClubOrderByCreationDesc(club, PageRequest.of(page, GALLERY_PER_PAGE))
       .map(GalleryFactory::toPreview);
   }
 
 
-  public Gallery createGallery(GalleryDTO dto) {
+  public GalleryView createGallery(GalleryDTO dto) {
     Gallery gallery = new Gallery();
     if (dto.getPseudo() && dto.getImages().size() > PSEUDO_GALLERY_MAX_SIZE)
       throw new IllegalArgumentException("pseudo gallery can't have more than " + PSEUDO_GALLERY_MAX_SIZE + " images");
@@ -104,7 +109,7 @@ public class GalleryService {
 
     galleryRepository.save(gallery);
     imageRepository.saveAll(images);
-    return gallery;
+    return GalleryFactory.toView(gallery);
   }
 
   public void addImagesGallery(Long galleryID, List<Long> images) {

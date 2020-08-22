@@ -60,7 +60,7 @@ public class Gallery implements Embedable {
   }
 
   public List<Image> getPreviewImages() {
-    return images.subList(0, Math.min(images.size(), 10));
+    return images.subList(0, Math.min(images.size(), 5));
   }
 
   public void setCreation(Date creation) {
