@@ -30,21 +30,26 @@ public class GalleryController {
     return galleryService.getGalleryView(id);
   }
 
-  @GetMapping("/gallery/{id}/images")
+  @DeleteMapping("/{id}")
+  public Boolean deleteGallery(@PathVariable Long id) {
+    return galleryService.deleteGallery(id);
+  }
+
+  @GetMapping("/{id}/images")
   public List<Image> getGalleryImages(@PathVariable Long id) {
     return galleryService.getGalleryImages(id);
   }
 
-  @PutMapping("/gallery/{id}/images")
+  @PutMapping("/{id}/images")
   @RolesAllowed({Roles.STUDENT})
-  public void addGalleryImages(@PathVariable Long id, @RequestParam("images") List<Long> images) {
+  public void addGalleryImages(@PathVariable Long id, @RequestParam("id") List<Long> images) {
     galleryService.addImagesGallery(id, images);
   }
 
-  @PutMapping("/gallery/{id}/images/remove")
+  @DeleteMapping("/{id}/images")
   @RolesAllowed({Roles.STUDENT})
-  public void deleteGalleryImages(@RequestBody List<Long> images, @PathVariable Long id) {
-    galleryService.deleteImagesGallery(id, images);
+  public void deleteGalleryImages(@PathVariable Long id, @RequestParam("id") List<Long> images) {
+    galleryService.deleteImagesGallery(id, images );
   }
 
 }

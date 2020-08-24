@@ -46,7 +46,12 @@ public class CloudinaryHandler extends FileHandler {
     return (String) res.get("public_id");
   }
 
+  @Override
   public boolean delete(String name) {
+    return delete(name, false);
+  }
+
+  public boolean delete(String name, Boolean clean) {
     try {
       cloudinary.uploader().destroy(name, Collections.EMPTY_MAP);
       return true;

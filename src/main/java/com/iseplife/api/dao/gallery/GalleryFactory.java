@@ -4,6 +4,7 @@ import com.iseplife.api.dao.club.ClubFactory;
 import com.iseplife.api.dto.gallery.view.GalleryPreview;
 import com.iseplife.api.dto.gallery.view.GalleryView;
 import com.iseplife.api.entity.post.embed.Gallery;
+import com.iseplife.api.services.AuthService;
 
 public class GalleryFactory {
 
@@ -14,6 +15,7 @@ public class GalleryFactory {
     view.setCreation(gallery.getCreation());
     view.setImages(gallery.getImages());
     view.setClub(ClubFactory.toPreview(gallery.getClub()));
+    view.setHasRight(AuthService.hasRightOn(gallery));
 
     return view;
   }

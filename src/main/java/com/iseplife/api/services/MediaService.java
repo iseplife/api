@@ -1,5 +1,6 @@
 package com.iseplife.api.services;
 
+import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.MediaType;
 import com.iseplife.api.dao.gallery.GalleryRepository;
@@ -67,9 +68,6 @@ public class MediaService {
 
   private static final int PHOTOS_PER_PAGE = 30;
 
-  private static final String SIZE_COMPRESS = "768xauto";
-
-
   public Media getMedia(Long id) {
     Optional<Media> media = mediaRepository.findById(id);
     if (media.isEmpty())
@@ -117,7 +115,7 @@ public class MediaService {
         name = fileHandler.upload(file, gallery ? "img/g" : "img", false,
           ObjectUtils.asMap(
             "process", "resize",
-            "sizes", SIZE_COMPRESS
+            "sizes", StorageConfig.GALLERY_SIZES
           )
         );
         break;

@@ -1,5 +1,7 @@
 package com.iseplife.api.services;
 
+import com.amazonaws.services.ec2.model.Storage;
+import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dao.club.ClubMemberFactory;
 import com.iseplife.api.dao.student.StudentFactory;
@@ -127,9 +129,9 @@ public class ClubService {
 
     Map params = ObjectUtils.asMap(
       "process", "resize",
-      "sizes", ""
+      "sizes", StorageConfig.AUTHOR_SIZES
     );
-    club.setLogoUrl(fileHandler.upload(file, "/img/usr", false, params));
+    club.setLogoUrl(fileHandler.upload(file, "/img/usr/clb", false, params));
     clubRepository.save(club);
     return club.getLogoUrl();
   }

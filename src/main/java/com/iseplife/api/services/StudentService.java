@@ -1,5 +1,6 @@
 package com.iseplife.api.services;
 
+import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.ClubRole;
 import com.iseplife.api.dao.club.ClubMemberRepository;
@@ -125,19 +126,15 @@ public class StudentService {
 
     Map params = ObjectUtils.asMap(
       "process", "resize",
-      "sizes", "200x200"
+      "sizes", StorageConfig.AUTHOR_SIZES
     );
     return fileHandler.upload(image, originalPath + "/" + name, true, params);
-  }
-
-  public void updateProfilePicture(Long id, MultipartFile image) {
-    updateProfilePicture(getStudent(id), image);
   }
 
   private void updateProfilePicture(Student student, MultipartFile image) {
     Map params = ObjectUtils.asMap(
       "process", "resize",
-      "sizes", ""
+      "sizes", StorageConfig.AUTHOR_SIZES
     );
 
     student.setPicture(

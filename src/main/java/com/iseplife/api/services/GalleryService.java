@@ -22,7 +22,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class GalleryService {
@@ -89,7 +88,7 @@ public class GalleryService {
 
     if (!dto.getPseudo()) {
       Club club = clubService.getClub(dto.getClub());
-      if (AuthService.hasRightOn(club))
+      if (!AuthService.hasRightOn(club))
         throw new AuthException("You have not sufficient rights on this club (id:" + dto.getClub() + ")");
 
       gallery.setClub(club);
@@ -117,40 +116,48 @@ public class GalleryService {
     if (!AuthService.hasRightOn(gallery))
       throw new AuthException("You have not sufficient rights on this gallery (id:" + galleryID + ")");
 
-    gallery.getImages().addAll(
-      (List<Image>) imageRepository.findAllById(images)
-    );
-    galleryRepository.save(gallery);
+    Iterable<Image> medias = imageRepository.findAllById(images);
+    medias.forEach(img -> {
+        if(img.getGallery() != null)
+          throw new IllegalArgumentException("Image already in a gallery");
+
+        img.setGallery(gallery);
+    });
+
+    imageRepository.saveAll(medias);
+  }
+
+  public Boolean deleteGallery(Long id) {
+    return deleteGallery(getGallery(id));
   }
 
 
-  public void deleteGallery(Gallery gallery) {
+  public Boolean deleteGallery(Gallery gallery) {
     gallery
       .getImages()
       .forEach(img -> mediaService.deleteMedia(img));
 
     galleryRepository.delete(gallery);
+    return true;
   }
 
 
-  public void deleteImagesGallery(Long galleryID, List<Long> imagesID) {
-    Gallery gallery = getGallery(galleryID);
-    if (AuthService.hasRightOn(gallery)) {
-      throw new AuthException("You have not sufficient rights on this gallery (id:" + galleryID + ")");
-    }
+  public void deleteImagesGallery(Long id, List<Long> images) {
+    Gallery gallery = getGallery(id);
+    if (!AuthService.hasRightOn(gallery))
+      throw new AuthException("You have not sufficient rights on this gallery (id:" + gallery + ")");
 
-    long imageSize = getGalleryImages(galleryID)
+    long imageSize = gallery.getImages()
       .stream()
-      .filter(img -> imagesID.contains(img.getId()))
+      .filter(img -> images.contains(img.getId()))
       .count();
 
-    if (imagesID.size() != imageSize) {
+    if (images.size() != imageSize) {
       throw new IllegalArgumentException("images does not belong to this gallery");
     }
 
-    List<Image> images = imageRepository.findImageByIdIn(imagesID);
-    images.forEach(img -> {
-      mediaService.deleteMedia(img);
-    });
+    imageRepository.findAllById(images).forEach(img ->
+      mediaService.deleteMedia(img)
+    );
   }
 }

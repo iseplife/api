@@ -12,6 +12,7 @@ public class GalleryView {
   private Date creation;
   private List<Image> images;
   private ClubPreview club;
+  private Boolean hasRight;
 
   public Long getId() {
     return id;
@@ -51,5 +52,13 @@ public class GalleryView {
 
   public void setClub(ClubPreview club) {
     this.club = club;
+  }
+
+  public Boolean getHasRight() {
+    return hasRight;
+  }
+
+  public void setHasRight(Boolean hasRight) {
+    this.hasRight = hasRight;
   }
 }
