@@ -3,6 +3,7 @@ package com.iseplife.api.dao.group;
 import com.iseplife.api.constants.GroupType;
 import com.iseplife.api.dao.student.StudentFactory;
 import com.iseplife.api.dto.group.groupDTO;
+import com.iseplife.api.dto.group.view.GroupPreview;
 import com.iseplife.api.dto.group.view.GroupView;
 import com.iseplife.api.entity.Group;
 import com.iseplife.api.entity.feed.Feed;
@@ -42,5 +43,14 @@ public class GroupFactory {
     );
 
     return view;
+  }
+
+  static public GroupPreview toPreview(Group group){
+    GroupPreview preview = new GroupPreview();
+    preview.setId(group.getId());
+    preview.setName(group.getName());
+    preview.setCover(group.getCover());
+
+    return preview;
   }
 }

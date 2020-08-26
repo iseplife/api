@@ -20,6 +20,8 @@ public interface GroupRepository extends CrudRepository<Group, Long> {
   )
   List<Group> findDistinctType();
 
+  List<Group> findAllByMembersContains(Student student);
+
 
   @Query(
     "select g from Group g " +

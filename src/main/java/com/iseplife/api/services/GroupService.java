@@ -1,10 +1,12 @@
 package com.iseplife.api.services;
 
 import com.cloudinary.utils.ObjectUtils;
+import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.GroupType;
 import com.iseplife.api.dao.group.GroupFactory;
 import com.iseplife.api.dao.group.GroupRepository;
 import com.iseplife.api.dto.group.groupDTO;
+import com.iseplife.api.dto.group.view.GroupPreview;
 import com.iseplife.api.dto.group.view.GroupView;
 import com.iseplife.api.entity.Group;
 import com.iseplife.api.exceptions.IllegalArgumentException;
@@ -16,10 +18,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class GroupService {
@@ -48,6 +48,14 @@ public class GroupService {
     return groupRepository
       .findAll(PageRequest.of(page, RESULTS_PER_PAGE))
       .map(GroupFactory::toView);
+  }
+
+  public List<GroupPreview> getUserGroups(TokenPayload token) {
+    return groupRepository
+      .findAllByMembersContains(studentService.getStudent(token.getId()))
+      .stream()
+      .map(GroupFactory::toPreview)
+      .collect(Collectors.toList());
   }
 
   public GroupView createGroup(groupDTO dto, MultipartFile file) {
