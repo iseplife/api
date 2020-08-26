@@ -14,6 +14,7 @@ import com.iseplife.api.dao.event.EventFactory;
 import com.iseplife.api.dao.event.EventRepository;
 import com.iseplife.api.exceptions.AuthException;
 import com.iseplife.api.exceptions.IllegalArgumentException;
+import com.iseplife.api.exceptions.NotFoundException;
 import com.iseplife.api.services.fileHandler.FileHandler;
 import com.iseplife.api.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,9 @@ public class EventService {
 
   @Autowired
   SubscriptionService subscriptionService;
+
+  @Autowired
+  FeedService feedService;
 
   @Autowired
   FeedRepository feedRepository;
@@ -107,10 +111,26 @@ public class EventService {
       .collect(Collectors.toList());
   }
 
-  public List<EventPreview> getIncomingEvents(TokenPayload token){
+  public List<EventPreview> getIncomingEvents(TokenPayload token, Long feed){
+    if(feed != 0)
+      return getFeedIncomingEvents(token, feedService.getFeed(feed));
+
     return eventRepository.findIncomingEvents(
       token.getRoles().contains("ROLE_ADMIN"),
       token.getFeeds(),
+      PageRequest.of(0, EVENTS_PER_PAGE)
+    )
+      .map(EventFactory::entityToPreviewView)
+      .toList();
+  }
+
+  public List<EventPreview> getFeedIncomingEvents(TokenPayload token, Feed feed){
+    if(!AuthService.hasReadAccess(feed))
+      throw new NotFoundException("Could not find feed with id: "+ feed);
+
+    return eventRepository.findFeedIncomingEvents(
+      token.getRoles().contains("ROLE_ADMIN"),
+      feed,
       PageRequest.of(0, EVENTS_PER_PAGE)
     )
       .map(EventFactory::entityToPreviewView)

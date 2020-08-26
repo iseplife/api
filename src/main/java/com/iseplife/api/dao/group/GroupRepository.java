@@ -22,10 +22,9 @@ public interface GroupRepository extends CrudRepository<Group, Long> {
 
   List<Group> findAllByMembersContains(Student student);
 
-
   @Query(
-    "select g from Group g " +
-      " where ?1 member of g.members"
+    value = "SELECT CAST(members_id AS BINARY) from `group_members` where group_id = ?1 and members_id = ?2"
+    ,nativeQuery = true
   )
-  List<Group> findAllStudentGroups(Student student);
+  Boolean isMemberOfGroup(Long id, Long student);
 }

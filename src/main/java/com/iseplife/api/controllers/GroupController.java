@@ -57,9 +57,9 @@ public class GroupController {
   }
 
   @GetMapping("/{id}")
-  @RolesAllowed({Roles.ADMIN})
+  @RolesAllowed({Roles.STUDENT})
   public GroupView getGroup(@PathVariable Long id) {
-    return GroupFactory.toView(groupService.getGroup(id));
+    return groupService.getGroupView(id);
   }
 
   @PutMapping("/{id}")

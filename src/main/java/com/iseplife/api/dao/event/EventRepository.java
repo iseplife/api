@@ -1,6 +1,7 @@
 package com.iseplife.api.dao.event;
 
 import com.iseplife.api.entity.event.Event;
+import com.iseplife.api.entity.feed.Feed;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -41,6 +42,15 @@ public interface EventRepository extends CrudRepository<Event, Long> {
       "order by e.start"
   )
   Page<Event> findIncomingEvents(Boolean admin, List<Long> feeds, Pageable p);
+
+  @Query(
+    "select e from Event e " +
+      "where e.end >= CURRENT_TIMESTAMP " +
+      "and (?1 = true) " +
+        "or (e.published = true and ?2 member of e.targets) " +
+      "order by e.start"
+  )
+  Page<Event> findFeedIncomingEvents(Boolean admin, Feed feed, Pageable p);
 
   @Query(
     "select e from Event e " +

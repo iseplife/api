@@ -35,6 +35,7 @@ public class GroupFactory {
     view.setArchived(group.isArchived());
     view.setCover(group.getCover());
     view.setLocked(group.getType() != GroupType.DEFAULT);
+    view.setFeed(group.getFeed().getId());
     view.setAdmins(
       group.getAdmins()
         .stream()

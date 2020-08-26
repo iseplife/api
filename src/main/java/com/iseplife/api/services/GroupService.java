@@ -34,7 +34,13 @@ public class GroupService {
   @Autowired
   private StudentService studentService;
 
+
   private static final int RESULTS_PER_PAGE = 20;
+
+  private Boolean isGroupMember(Long id, Long student){
+    return groupRepository.isMemberOfGroup(id, student);
+  }
+
 
   public Group getGroup(Long id) {
     Optional<Group> group = groupRepository.findById(id);
@@ -43,6 +49,14 @@ public class GroupService {
 
     return group.get();
   }
+
+  public GroupView getGroupView(Long id) {
+    if(isGroupMember(id, AuthService.getLoggedId()))
+      return GroupFactory.toView(getGroup(id));
+
+    throw new IllegalArgumentException("could not find the group with id: " + id);
+  }
+
 
   public Page<GroupView> getAll(int page) {
     return groupRepository
@@ -69,11 +83,11 @@ public class GroupService {
       group.setCover(fileHandler.upload(file, "", false, params));
     }
 
-
     group.setAdmins(new HashSet<>(studentService.getStudents(dto.getAdmins())));
 
     return GroupFactory.toView(groupRepository.save(group));
   }
+
 
   public GroupView updateGroup(Long id, groupDTO dto, MultipartFile file) {
     Group group = getGroup(id);

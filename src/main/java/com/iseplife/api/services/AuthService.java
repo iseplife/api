@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+
 /**
  * Created by Guillaume on 13/08/2017.
  * back
@@ -67,6 +69,14 @@ public class AuthService {
     return payload.getRoles().contains(Roles.ADMIN)
       || (feed.getClub() != null && payload.getClubsPublisher().contains(feed.getClub().getId()))
       || (feed.getEvent() != null && payload.getClubsPublisher().contains(feed.getEvent().getClub().getId()));
+  }
+
+  static public boolean hasReadAccess(Feed feed) {
+    TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return payload.getRoles().contains(Roles.ADMIN)
+      || (feed.getClub() != null)
+      || (feed.getGroup() != null && payload.getFeeds().contains(feed.getId()))
+      || (feed.getEvent() != null && feed.getEvent().getTargets().stream().anyMatch(f -> payload.getFeeds().contains(f.getId())));
   }
 
   static public boolean hasRightOn(Gallery gallery) {

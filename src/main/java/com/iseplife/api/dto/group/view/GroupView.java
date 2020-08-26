@@ -11,6 +11,7 @@ public class GroupView {
   private Boolean archived;
   private Boolean locked;
   private String cover;
+  private Long feed;
   private List<StudentPreview> admins;
 
   public Long getId() {
@@ -67,5 +68,13 @@ public class GroupView {
 
   public void setLocked(Boolean locked) {
     this.locked = locked;
+  }
+
+  public Long getFeed() {
+    return feed;
+  }
+
+  public void setFeed(Long feed) {
+    this.feed = feed;
   }
 }

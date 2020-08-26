@@ -202,13 +202,13 @@ public class StudentService {
     return studentRepository.findDistinctPromo();
   }
 
-  public List<Feed> getFeeds(Student student, List<String> roles, List<Long> adminClub) {
+  public List<Feed> getFeeds(Student student) {
     List<Feed> feeds =
       clubRepository.findAllStudentClub(student)
         .stream()
         .map(Club::getFeed)
         .collect(Collectors.toList());
-    List<Feed> groups = groupRepository.findAllStudentGroups(student)
+    List<Feed> groups = groupRepository.findAllByMembersContains(student)
       .stream()
       .map(Group::getFeed)
       .collect(Collectors.toList());

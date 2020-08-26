@@ -152,7 +152,7 @@ public class JwtTokenUtil {
       .map(Club::getId)
       .collect(Collectors.toList());
 
-    List<Long> feeds = studentService.getFeeds(student, roles, adminClubs)
+    List<Long> feeds = studentService.getFeeds(student)
       .stream()
       .map(Feed::getId)
       .collect(Collectors.toList());
