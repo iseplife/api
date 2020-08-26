@@ -29,12 +29,6 @@ public class Student implements UserDetails {
   @JsonIgnore
   private Boolean recognition;
 
-  @JsonIgnore
-  @Column(unique = true)
-  private String phoneId;
-  @Column(unique = true)
-  private String phoneNumber;
-
   private String facebook;
   private String twitter;
   private String instagram;
@@ -88,20 +82,6 @@ public class Student implements UserDetails {
 
   public void setBirthDate(Date birthDate) {
     this.birthDate = birthDate;
-  }
-
-  public String getPhoneNumber() {
-    return phoneNumber;
-  }
-
-  public void setPhoneNumber(String phone_number) { this.phoneNumber = phone_number; }
-
-  public String getPhoneId() {
-    return phoneId;
-  }
-
-  public void setPhoneId(String phoneId) {
-    this.phoneId = phoneId;
   }
 
   public Boolean getRecognition() { return recognition;  }

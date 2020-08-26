@@ -6,10 +6,9 @@ import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.user.Student;
 import org.springframework.stereotype.Component;
 
-@Component
 public class AuthorFactory {
 
-  public AuthorView entitytoView(Club club) {
+  public static AuthorView entityToView(Club club) {
     AuthorView author = new AuthorView();
     author.setId(club.getId());
     author.setType(AuthorType.CLUB);
@@ -19,7 +18,7 @@ public class AuthorFactory {
     return author;
   }
 
-  public AuthorView entitytoView(Student student) {
+  public static AuthorView entityToView(Student student) {
     AuthorView author = new AuthorView();
     author.setId(student.getId());
     author.setType(AuthorType.STUDENT);
@@ -29,7 +28,7 @@ public class AuthorFactory {
     return author;
   }
 
-  public AuthorView admintoView() {
+  public static AuthorView adminToView() {
     AuthorView author = new AuthorView();
     author.setId(1L);
     author.setType(AuthorType.ADMIN);

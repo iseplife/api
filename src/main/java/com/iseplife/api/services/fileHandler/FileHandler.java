@@ -28,6 +28,7 @@ public abstract class FileHandler {
 
   public abstract String upload(File file, String path, Boolean pathContainName, Map metadata);
 
+  public abstract boolean delete(String name, Boolean clean);
   public abstract boolean delete(String name);
 
   public File convertToFile(MultipartFile file) {

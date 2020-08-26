@@ -40,19 +40,19 @@ public class MediaController {
     return mediaService.getAllGalleryGazetteVideo(page);
   }
 
-  @PostMapping("/image")
-  @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
-  public Image addStandaloneImage(@RequestParam("post") Long postId,
-                                  @RequestParam("image") MultipartFile image) {
-    return mediaService.addSingleImage(postId, image);
+  @PostMapping
+  @RolesAllowed({Roles.STUDENT})
+  public Media createMedia(
+    @RequestParam(defaultValue = "0") Boolean gallery,
+    @RequestParam(defaultValue = "0") Boolean nsfw,
+    @RequestParam("file") MultipartFile file){
+    return mediaService.createMedia(file, gallery, nsfw);
   }
 
-  @PostMapping("/video")
-  @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
-  public Video uploadVideo(@RequestParam("name") String name,
-                           @RequestParam("post") Long postId,
-                           @RequestParam("video") MultipartFile video) {
-    return mediaService.uploadVideo(postId, name, video);
+  @DeleteMapping("/{filename}")
+  @RolesAllowed({Roles.ADMIN})
+  public boolean deleteMedia(@PathVariable String filename) {
+    return mediaService.removeMedia(filename);
   }
 
   @PutMapping("/image/{id}/nsfw")
@@ -78,42 +78,4 @@ public class MediaController {
                                   @AuthenticationPrincipal TokenPayload auth) {
     mediaService.untagStudentInImage(id, student, auth);
   }
-
-
-
-
-  @PostMapping("/document")
-  @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
-  public Document createDocument(@RequestParam("post") Long postId,
-                                 @RequestParam("name") String name,
-                                 @RequestParam("document") MultipartFile document) {
-    return mediaService.createDocument(postId, name, document);
-  }
-
-//  @GetMapping(value = "/ressource/video/{filename:.+}", produces = "video/png", headers = "Accept-range: byte")
-//  public FileSystemResource streamVideo(@PathVariable String filename, HttpRange range) {
-//
-//    String baseUrl = mediaUtils.getBaseUrl();
-//    File file = new File(baseUrl + "/video/" + filename);
-//    return new FileSystemResource(file);
-//  }
-
-//  @GetMapping("/ressource/{type}/{filename:.+}")
-//  public FileSystemResource downloadRessource(@PathVariable String type, @PathVariable String filename) {
-//    String baseUrl = mediaUtils.getBaseUrl();
-//    File file = new File(baseUrl + "/" + type + "/" + filename);
-//    if (!file.exists()) {
-//      System.out.println(file.getPath());
-//      throw new NotFoundException("Cannot find this file");
-//    }
-//    ResourceHttpRequestHandler r = new ResourceHttpRequestHandler();
-//    return new FileSystemResource(file);
-//  }
-
-  @DeleteMapping("/ressource/{filename:.+}")
-  @RolesAllowed({Roles.ADMIN})
-  public boolean deleteRessource(@PathVariable String filename) {
-    return mediaService.removeMedia(filename);
-  }
-
 }

@@ -1,5 +1,7 @@
 package com.iseplife.api.services;
 
+import com.amazonaws.services.ec2.model.Storage;
+import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dao.club.ClubMemberFactory;
 import com.iseplife.api.dao.student.StudentFactory;
@@ -8,6 +10,7 @@ import com.iseplife.api.dto.club.ClubDTO;
 import com.iseplife.api.dto.club.ClubMemberDTO;
 import com.iseplife.api.dto.club.view.ClubMemberPreview;
 import com.iseplife.api.dto.club.view.ClubView;
+import com.iseplife.api.dto.gallery.view.GalleryPreview;
 import com.iseplife.api.dto.student.view.StudentPreview;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.club.Club;
@@ -126,9 +129,9 @@ public class ClubService {
 
     Map params = ObjectUtils.asMap(
       "process", "resize",
-      "sizes", ""
+      "sizes", StorageConfig.AUTHOR_SIZES
     );
-    club.setLogoUrl(fileHandler.upload(file, "/img/usr", false, params));
+    club.setLogoUrl(fileHandler.upload(file, "img/usr/clb", false, params));
     clubRepository.save(club);
     return club.getLogoUrl();
   }
@@ -148,7 +151,7 @@ public class ClubService {
         "process", "resize",
         "sizes", ""
       );
-      club.setLogoUrl(fileHandler.upload(file, "/img/usr", false, params));
+      club.setLogoUrl(fileHandler.upload(file, "img/usr", false, params));
 
     }
 
@@ -223,7 +226,7 @@ public class ClubService {
     return clubMemberRepository.findByClubId(id);
   }
 
-  public Page<Gallery> getClubGalleries(Long id, int page) {
+  public Page<GalleryPreview> getClubGalleries(Long id, int page) {
     return galleryService.getClubGalleries(getClub(id), page);
   }
 

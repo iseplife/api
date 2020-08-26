@@ -14,7 +14,7 @@ import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.post.embed.media.Media;
 import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.constants.PublishStateEnum;
+import com.iseplife.api.constants.PostState;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.media.MediaRepository;
 import com.iseplife.api.dao.student.StudentRepository;
@@ -48,9 +48,6 @@ public class PostService {
   PostFactory postFactory;
 
   @Autowired
-  AuthorFactory authorFactory;
-
-  @Autowired
   StudentService studentService;
 
   @Autowired
@@ -67,6 +64,9 @@ public class PostService {
 
   @Autowired
   FeedService feedService;
+
+  @Autowired
+  AuthService authService;
 
   @Autowired
   PostMessageService postMessageService;
@@ -92,26 +92,43 @@ public class PostService {
 
   public PostView createPost(TokenPayload auth, PostDTO postDTO) {
     Post post = postFactory.dtoToEntity(postDTO);
-    post.setAuthor(studentService.getStudent(auth.getId()));
+    post.setAuthor(authService.getLoggedUser());
     post.setLinkedClub(postDTO.getLinkedClub() != null ? clubService.getClub(postDTO.getLinkedClub()) : null);
 
-    // if creator is not an ADMIN
+    // Author should be an admin or club publisher
     if (!auth.getRoles().contains(Roles.ADMIN)) {
-      // Check if user is able to post in club's name
       if (post.getLinkedClub() != null && !auth.getClubsPublisher().contains(postDTO.getLinkedClub())) {
         throw new AuthException("not allowed to create this post");
       }
     }
 
+    postDTO.getAttachements().forEach((type, id) -> {
+      Embedable attachement;
+      switch (type){
+        case EmbedType.GALLERY:
+          attachement = galleryService.getGallery(id);
+          break;
+        case EmbedType.POLL:
+          attachement = pollService.getPoll(id);
+          break;
+        case EmbedType.VIDEO:
+        case EmbedType.DOCUMENT:
+        case EmbedType.IMAGE:
+          attachement = mediaService.getMedia(id);
+          break;
+        default:
+          throw new IllegalArgumentException("Invalid attachments");
+      }
+      post.setEmbed(attachement);
+    });
+
     post.setFeed(feedService.getFeed(postDTO.getFeed()));
     post.setThread(new Thread());
     post.setCreationDate(new Date());
-    post.setPublicationDate(postDTO.getPublicationDate() == null ? new Date() : postDTO.getPublicationDate());
-    post.setPublishState(postDTO.getDraft() ? PublishStateEnum.WAITING : null);
-    post = postRepository.save(post);
+    post.setPublicationDate(postDTO.getPublicationDate());
+    post.setState(postDTO.isDraft() ? PostState.DRAFT : PostState.READY);
 
-    postMessageService.broadcastPost(auth.getId(), post);
-    return postFactory.entityToView(post);
+    return postFactory.entityToView(postRepository.save(post));
   }
 
   public Post updatePost(Long postID, PostUpdateDTO update) {
@@ -154,9 +171,9 @@ public class PostService {
     postRepository.save(post);
   }
 
-  public void setPublishState(Long postID, PublishStateEnum state) {
+  public void setPublishState(Long postID, PostState state) {
     Post post = getPost(postID);
-    post.setPublishState(state);
+    post.setState(state);
     postRepository.save(post);
   }
 
@@ -195,23 +212,23 @@ public class PostService {
 
     Set<AuthorView> authorStatus = new HashSet<>();
     if(!clubOnly)
-      authorStatus.add(authorFactory.entitytoView(student));
+      authorStatus.add(AuthorFactory.entityToView(student));
 
     if (auth.getRoles().contains(Roles.ADMIN)) {
       if(!clubOnly)
-        authorStatus.add(authorFactory.admintoView());
+        authorStatus.add(AuthorFactory.adminToView());
 
       authorStatus.addAll(
         clubService.getAll()
           .stream()
-          .map(c -> authorFactory.entitytoView(c))
+          .map(AuthorFactory::entityToView)
           .collect(Collectors.toSet())
       );
     } else {
       authorStatus.addAll(
         studentService.getPublisherClubs(student)
           .stream()
-          .map(c -> authorFactory.entitytoView(c))
+          .map(AuthorFactory::entityToView)
           .collect(Collectors.toSet())
       );
     }
@@ -220,8 +237,8 @@ public class PostService {
   }
 
   public Page<PostView> getFeedPosts(Feed feed, int page) {
-    Page<Post> posts = postRepository.findByFeedAndPublishStateOrderByPublicationDate(feed,
-      PublishStateEnum.PUBLISHED, PageRequest.of(page, POSTS_PER_PAGE));
+    Page<Post> posts = postRepository.findByFeedAndStateOrderByPublicationDate(feed,
+      PostState.READY, PageRequest.of(page, POSTS_PER_PAGE));
 
     return posts.map(post -> postFactory.entityToView(post));
   }
@@ -239,7 +256,7 @@ public class PostService {
   }
 
   public List<PostView> getFeedPostsWaiting(Feed feed) {
-    List<Post> posts = postRepository.findByFeedAndPublishStateOrderByPublicationDate(feed, PublishStateEnum.WAITING);
+    List<Post> posts = postRepository.findByFeedAndStateOrderByPublicationDate(feed, PostState.WAITING);
 
     return posts.stream().map(post -> postFactory.entityToView(post)).collect(Collectors.toList());
   }

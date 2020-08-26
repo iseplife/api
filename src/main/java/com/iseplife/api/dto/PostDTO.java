@@ -1,18 +1,16 @@
 package com.iseplife.api.dto;
 
 import java.util.Date;
+import java.util.Map;
 
-/**
- * Created by Guillaume on 27/07/2017.
- * back
- */
 public class PostDTO {
   private Long feed;
   private String description;
-  private Date publicationDate = null;
+  private Date publicationDate = new Date();
   private Long linkedClub = null;
+  private Map<String, Long> attachements;
   private Boolean isPrivate;
-  private Boolean isDraft;
+  private Boolean isDraft = false;
 
   public String getDescription() {
     return description;
@@ -34,7 +32,7 @@ public class PostDTO {
 
   public void setLinkedClub(Long linkedClub) { this.linkedClub = linkedClub; }
 
-  public Boolean getDraft() { return isDraft; }
+  public Boolean isDraft() { return isDraft; }
 
   public void setDraft(Boolean draft) { this.isDraft = draft; }
 
@@ -52,5 +50,13 @@ public class PostDTO {
 
   public void setPublicationDate(Date publicationDate) {
     this.publicationDate = publicationDate;
+  }
+
+  public Map<String, Long> getAttachements() {
+    return attachements;
+  }
+
+  public void setAttachements(Map<String, Long> attachements) {
+    this.attachements = attachements;
   }
 }

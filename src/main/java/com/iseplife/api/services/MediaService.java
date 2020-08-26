@@ -1,8 +1,9 @@
 package com.iseplife.api.services;
 
+import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.MediaType;
-import com.iseplife.api.dao.GalleryRepository;
+import com.iseplife.api.dao.gallery.GalleryRepository;
 import com.iseplife.api.dto.view.MatchedView;
 import com.iseplife.api.entity.post.embed.media.Image;
 import com.iseplife.api.entity.Matched;
@@ -10,9 +11,7 @@ import com.iseplife.api.entity.post.embed.media.Document;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.post.embed.media.Media;
 import com.iseplife.api.entity.post.embed.media.Video;
-import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.constants.PublishStateEnum;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.media.image.ImageRepository;
 import com.iseplife.api.dao.media.image.MatchedRepository;
@@ -31,7 +30,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.Cacheable;
 
-import java.io.File;
 import java.security.InvalidParameterException;
 import java.util.*;
 
@@ -70,10 +68,9 @@ public class MediaService {
 
   private static final int PHOTOS_PER_PAGE = 30;
 
-
-  public Media getMedia(Long id){
+  public Media getMedia(Long id) {
     Optional<Media> media = mediaRepository.findById(id);
-    if(media.isEmpty())
+    if (media.isEmpty())
       throw new InvalidParameterException("could not get the image with id: " + id);
 
     return media.get();
@@ -105,44 +102,34 @@ public class MediaService {
     return img.get();
   }
 
-  public Document createDocument(Long postId, String title, MultipartFile fileUploaded) {
-    Document document = new Document();
-    document.setCreation(new Date());
+  public Media createMedia(MultipartFile file, Boolean gallery, Boolean nsfw) {
+    String name, mime = file.getContentType().split("/")[0];
+    Media media;
+    switch (mime) {
+      case "video":
+        media = new Video();
+        name = fileHandler.upload(file, "vid", false, Collections.EMPTY_MAP);
+        break;
+      case "image":
+        media = new Image();
+        name = fileHandler.upload(file, gallery ? "img/g" : "img", false,
+          ObjectUtils.asMap(
+            "process", "resize",
+            "sizes", StorageConfig.GALLERY_SIZES
+          )
+        );
+        break;
+      default:
+        media = new Document();
+        name = fileHandler.upload(file, "doc", false, Collections.EMPTY_MAP);
+        break;
+    }
 
-    String name = fileHandler.upload(fileUploaded, "/document",false, Collections.emptyMap());
-    document.setName(name);
-    document.setTitle(title);
-    document = mediaRepository.save(document);
-
-    postService.addMediaEmbed(postId, document);
-    postService.setPublishState(postId, PublishStateEnum.PUBLISHED);
-    return document;
+    media.setName(name);
+    media.setNSFW(nsfw);
+    media.setCreation(new Date());
+    return mediaRepository.save(media);
   }
-
-
-  public Video uploadVideo(Long postId, String title, MultipartFile videoFile) {
-    Video video = new Video();
-    video.setCreation(new Date());
-    video.setTitle(title);
-
-    /*
-    String name = fileHandler.upload(
-      videoFile,
-      "post",
-      ObjectUtils.asMap(
-        "async", true,
-        "eager", Collections.singletonList(new Transformation().audioCodec("aac").videoCodec("h264"))
-      ));
-      */
-    video.setName("name");
-
-
-    Video savedVideo = mediaRepository.save(video);
-    Post post = postService.addMediaEmbed(postId, video);
-
-    return savedVideo;
-  }
-
 
   public boolean toggleNSFW(Long id) {
     Media media = getImage(id);
@@ -152,67 +139,10 @@ public class MediaService {
     return media.isNSFW();
   }
 
-  public boolean removeMedia(String filename){
+  public boolean removeMedia(String filename) {
     return fileHandler.delete(filename);
   }
 
-
-  /**
-   * Add a single image
-   *
-   * @param postID
-   * @param file
-   * @return
-   */
-  public Image addSingleImage(Long postID, MultipartFile file) {
-    Image image = new Image();
-    image.setCreation(new Date());
-
-    Map params = ObjectUtils.asMap(
-      "process", "resize",
-      "sizes", "200x200"
-    );
-    String name = fileHandler.upload(file, "post", false, params);
-    image.setName(name);
-    image = mediaRepository.save(image);
-
-    postService.addMediaEmbed(postID, image);
-    postService.setPublishState(postID, PublishStateEnum.PUBLISHED);
-    return image;
-  }
-
-  public Image addGalleryImage(MultipartFile file, Gallery gallery) {
-    Image image = new Image();
-    image.setGallery(gallery);
-
-    Map params = ObjectUtils.asMap(
-      "process", "resize",
-      "sizes", "200x200"
-    );
-    String name = fileHandler.upload(file, "img/g/" + gallery.getId(), false, params);
-    image.setName(name);
-    mediaRepository.save(image);
-
-    return image;
-  }
-
-  public void addGalleryImage(File file, Gallery gallery) {
-    Image image = new Image();
-    image.setGallery(gallery);
-    image.setCreation(new Date());
-
-    Map params = ObjectUtils.asMap(
-      "process", "resize",
-      "sizes", "200x200"
-    );
-    String name = fileHandler.upload(file, "img/g/" + gallery.getId(), false, params);
-    image.setName(name);
-
-    mediaRepository.save(image);
-    if (!file.delete()) {
-      LOG.error("Could not delete this temp file: {}", file.getName());
-    }
-  }
 
   void deleteMedia(Media media) {
     fileHandler.delete(media.getName());

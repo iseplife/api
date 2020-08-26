@@ -1,16 +1,15 @@
 package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
-import com.iseplife.api.dto.media.PollCreationDTO;
+import com.iseplife.api.dto.embed.PollCreationDTO;
 import com.iseplife.api.entity.post.embed.poll.Poll;
 import com.iseplife.api.entity.post.embed.poll.PollAnswer;
 import com.iseplife.api.entity.post.embed.poll.PollVote;
 import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.constants.PublishStateEnum;
+import com.iseplife.api.constants.PostState;
 import com.iseplife.api.dao.poll.PollAnswerRepository;
 import com.iseplife.api.dao.poll.PollRepository;
 import com.iseplife.api.dao.poll.PollVoteRepository;
-import com.iseplife.api.exceptions.AuthException;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -95,7 +94,7 @@ public class PollService {
       pollAnswerRepository.save(pollAnswer);
     });
 
-    postService.setPublishState(postId, PublishStateEnum.PUBLISHED);
+    postService.setPublishState(postId, PostState.READY);
     return getPoll(saved.getId());
   }
 

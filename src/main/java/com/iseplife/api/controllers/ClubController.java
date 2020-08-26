@@ -5,6 +5,7 @@ import com.iseplife.api.dto.club.ClubAdminDTO;
 import com.iseplife.api.dto.club.ClubDTO;
 import com.iseplife.api.dto.club.ClubMemberDTO;
 import com.iseplife.api.dto.club.view.ClubView;
+import com.iseplife.api.dto.gallery.view.GalleryPreview;
 import com.iseplife.api.dto.student.view.StudentPreview;
 import com.iseplife.api.dto.view.PostView;
 import com.iseplife.api.entity.club.Club;
@@ -105,7 +106,7 @@ public class ClubController {
 
   @GetMapping("/{id}/galleries")
   @RolesAllowed({Roles.STUDENT})
-  public Page<Gallery> getGalleries(@PathVariable Long id, @RequestParam(defaultValue = "0") int page) {
+  public Page<GalleryPreview> getGalleries(@PathVariable Long id, @RequestParam(defaultValue = "0") int page) {
     return clubService.getClubGalleries(id, page);
   }
 

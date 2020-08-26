@@ -9,7 +9,6 @@ import java.util.Date;
 public class StudentUpdateDTO {
   private Long id;
   private Date birthDate;
-  private String phone;
   private String mail;
   private String address;
   private String facebook;
@@ -23,14 +22,6 @@ public class StudentUpdateDTO {
 
   public void setBirthDate(Date birthDate) {
     this.birthDate = birthDate;
-  }
-
-  public String getPhone() {
-    return phone;
-  }
-
-  public void setPhone(String phone) {
-    this.phone = phone;
   }
 
   public String getMail() {

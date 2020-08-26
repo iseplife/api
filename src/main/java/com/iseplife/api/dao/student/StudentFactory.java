@@ -24,7 +24,6 @@ public class StudentFactory {
     student.setBirthDate(dto.getBirthDate());
     student.setFirstName(dto.getFirstName());
     student.setLastName(dto.getLastName());
-    student.setPhoneNumber(dto.getPhone());
     student.setPromo(dto.getPromo());
     student.setMail(dto.getMail());
     return student;
@@ -32,7 +31,6 @@ public class StudentFactory {
 
   public void updateDtoToEntity(Student student, StudentUpdateDTO dto) {
     student.setBirthDate(dto.getBirthDate());
-    student.setPhoneNumber(dto.getPhone());
     student.setMail(dto.getMail());
 
     student.setFacebook(dto.getFacebook());
@@ -97,7 +95,6 @@ public class StudentFactory {
     studentAdmin.setPromo(student.getPromo());
     studentAdmin.setPicture(student.getPicture());
 
-    studentAdmin.setPhoneNumber(student.getPhoneNumber());
     studentAdmin.setMail(student.getMail());
 
     studentAdmin.setBirthDate(student.getBirthDate());
