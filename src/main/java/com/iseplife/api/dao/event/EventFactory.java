@@ -3,7 +3,7 @@ package com.iseplife.api.dao.event;
 import com.iseplife.api.constants.EventType;
 import com.iseplife.api.dao.club.ClubFactory;
 import com.iseplife.api.dto.EventDTO;
-import com.iseplife.api.dto.view.EventPreviewView;
+import com.iseplife.api.dto.view.EventPreview;
 import com.iseplife.api.dto.view.EventView;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.feed.Feed;
@@ -43,8 +43,8 @@ public class EventFactory {
     return event;
   }
 
-  static public EventPreviewView entityToPreviewView(Event event) {
-    EventPreviewView preview = new EventPreviewView();
+  static public EventPreview entityToPreviewView(Event event) {
+    EventPreview preview = new EventPreview();
     preview.setId(event.getId());
     preview.setTitle(event.getTitle());
     preview.setType(event.getType().name());

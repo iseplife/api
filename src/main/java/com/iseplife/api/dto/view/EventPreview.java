@@ -3,7 +3,7 @@ package com.iseplife.api.dto.view;
 import java.util.Date;
 import java.util.Set;
 
-public class EventPreviewView {
+public class EventPreview {
   private Long id;
   private String title;
   private String type;

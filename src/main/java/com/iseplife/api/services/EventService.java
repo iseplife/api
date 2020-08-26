@@ -5,14 +5,13 @@ import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dao.group.FeedRepository;
 import com.iseplife.api.dto.EventDTO;
 import com.iseplife.api.dto.gallery.view.GalleryPreview;
-import com.iseplife.api.dto.view.EventPreviewView;
+import com.iseplife.api.dto.view.EventPreview;
 import com.iseplife.api.dto.view.EventView;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.dao.event.EventFactory;
 import com.iseplife.api.dao.event.EventRepository;
-import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.exceptions.AuthException;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.services.fileHandler.FileHandler;
@@ -93,7 +92,7 @@ public class EventService {
   }
 
 
-  public List<EventPreviewView> getEvents() {
+  public List<EventPreview> getEvents() {
     return eventRepository.findAll()
       .stream()
       .map(EventFactory::entityToPreviewView)
@@ -101,35 +100,21 @@ public class EventService {
   }
 
 
-  public List<EventPreviewView> getMonthEvents(Date date, TokenPayload token) {
+  public List<EventPreview> getMonthEvents(Date date, TokenPayload token) {
     return eventRepository.findAllInMonth(date, token.getRoles().contains("ROLE_ADMIN"), token.getFeeds())
       .stream()
       .map(EventFactory::entityToPreviewView)
       .collect(Collectors.toList());
   }
 
-  public List<EventPreviewView> getTodayEvents(TokenPayload token) {
-    return getAroundDateEvents(token, new Date());
-  }
-
-  public List<EventPreviewView> getAroundDateEvents(TokenPayload token, Date date) {
-    return eventRepository
-      .findAroundDate(date, token.getRoles().contains("ROLE_ADMIN"))
-      .stream()
+  public List<EventPreview> getIncomingEvents(TokenPayload token){
+    return eventRepository.findIncomingEvents(
+      token.getRoles().contains("ROLE_ADMIN"),
+      token.getFeeds(),
+      PageRequest.of(0, EVENTS_PER_PAGE)
+    )
       .map(EventFactory::entityToPreviewView)
-      .collect(Collectors.toList());
-  }
-
-  public Page<EventPreviewView> getFutureEvents(TokenPayload token, Date date, int page) {
-    return eventRepository
-      .findFutureEvents(token.getRoles().contains("ROLE_ADMIN"), date, PageRequest.of(page, EVENTS_PER_PAGE))
-      .map(EventFactory::entityToPreviewView);
-  }
-
-  public Page<EventPreviewView> getPassedEvents(TokenPayload token, Date date, int page) {
-    return eventRepository
-      .findPassedEvents(token.getRoles().contains("ROLE_ADMIN"), date, PageRequest.of(page, EVENTS_PER_PAGE))
-      .map(EventFactory::entityToPreviewView);
+      .toList();
   }
 
 
@@ -151,7 +136,7 @@ public class EventService {
     return galleryService.getEventGalleries(getEvent(id), page);
   }
 
-  public List<EventPreviewView> getChildrenEvents(Long id) {
+  public List<EventPreview> getChildrenEvents(Long id) {
     Event event = getEvent(id);
     if (event == null) {
       throw new IllegalArgumentException("could not find event with id: " + id);
@@ -163,7 +148,7 @@ public class EventService {
       .collect(Collectors.toList());
   }
 
-  public List<EventPreviewView> getPreviousEditions(Long id) {
+  public List<EventPreview> getPreviousEditions(Long id) {
     Event event = getEvent(id);
     List<Event> previousEditions = new LinkedList<>();
     if (event == null) {
