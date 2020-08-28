@@ -5,7 +5,7 @@ import com.iseplife.api.dao.student.StudentFactory;
 import com.iseplife.api.dto.group.GroupDTO;
 import com.iseplife.api.dto.group.view.GroupPreview;
 import com.iseplife.api.dto.group.view.GroupView;
-import com.iseplife.api.entity.Group;
+import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.feed.Feed;
 
 import java.util.stream.Collectors;
@@ -36,16 +36,10 @@ public class GroupFactory {
     view.setCover(group.getCover());
     view.setLocked(group.getType() != GroupType.DEFAULT);
     view.setFeed(group.getFeed().getId());
-    view.setAdmins(
-      group.getAdmins()
-        .stream()
-        .map(StudentFactory::toPreview)
-        .collect(Collectors.toList())
-    );
     view.setMembers(
       group.getMembers()
         .stream()
-        .map(StudentFactory::toPreview)
+        .map(GroupMemberFactory::toView)
         .collect(Collectors.toList())
     );
 

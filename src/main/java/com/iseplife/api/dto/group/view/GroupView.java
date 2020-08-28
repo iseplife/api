@@ -1,7 +1,5 @@
 package com.iseplife.api.dto.group.view;
 
-import com.iseplife.api.dto.student.view.StudentPreview;
-
 import java.util.List;
 
 public class GroupView {
@@ -12,8 +10,8 @@ public class GroupView {
   private Boolean locked;
   private String cover;
   private Long feed;
-  private List<StudentPreview> admins;
-  private List<StudentPreview> members;
+  private Boolean hasRight;
+  private List<GroupMemberView> members;
 
   public Long getId() {
     return id;
@@ -29,14 +27,6 @@ public class GroupView {
 
   public void setName(String name) {
     this.name = name;
-  }
-
-  public List<StudentPreview> getAdmins() {
-    return admins;
-  }
-
-  public void setAdmins(List<StudentPreview> admins) {
-    this.admins = admins;
   }
 
   public Boolean getRestricted() {
@@ -79,11 +69,19 @@ public class GroupView {
     this.feed = feed;
   }
 
-  public List<StudentPreview> getMembers() {
+  public List<GroupMemberView> getMembers() {
     return members;
   }
 
-  public void setMembers(List<StudentPreview> members) {
+  public void setMembers(List<GroupMemberView> members) {
     this.members = members;
+  }
+
+  public Boolean getHasRight() {
+    return hasRight;
+  }
+
+  public void setHasRight(Boolean hasRight) {
+    this.hasRight = hasRight;
   }
 }

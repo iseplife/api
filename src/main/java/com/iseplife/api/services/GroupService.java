@@ -5,11 +5,13 @@ import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.GroupType;
 import com.iseplife.api.dao.group.GroupFactory;
+import com.iseplife.api.dao.group.GroupMemberRepository;
 import com.iseplife.api.dao.group.GroupRepository;
 import com.iseplife.api.dto.group.GroupDTO;
 import com.iseplife.api.dto.group.view.GroupPreview;
 import com.iseplife.api.dto.group.view.GroupView;
-import com.iseplife.api.entity.Group;
+import com.iseplife.api.entity.group.Group;
+import com.iseplife.api.entity.GroupMember;
 import com.iseplife.api.exceptions.AuthException;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.services.fileHandler.FileHandler;
@@ -29,6 +31,9 @@ public class GroupService {
   @Autowired
   GroupRepository groupRepository;
 
+  @Autowired
+  GroupMemberRepository groupMemberRepository;
+
   @Qualifier("FileHandlerBean")
   @Autowired
   FileHandler fileHandler;
@@ -38,15 +43,6 @@ public class GroupService {
 
 
   private static final int RESULTS_PER_PAGE = 20;
-
-  private Boolean isGroupMember(Long id, Long student){
-    return groupRepository.isMemberOfGroup(id, student);
-  }
-
-  private Boolean isGroupMember(Group group, Long student){
-    return group.getMembers().stream().anyMatch(m -> m.getId().equals(student));
-  }
-
 
   public Group getGroup(Long id) {
     Optional<Group> group = groupRepository.findById(id);
@@ -58,7 +54,7 @@ public class GroupService {
 
   public GroupView getGroupView(Long id) {
     Group group = getGroup(id);
-    if(isGroupMember(group, AuthService.getLoggedId()))
+    if(groupMemberRepository.isMemberOfGroup(id, AuthService.getLoggedId()))
       return GroupFactory.toView(group);
 
     throw new IllegalArgumentException("could not find the group with id: " + id);
@@ -73,7 +69,7 @@ public class GroupService {
 
   public List<GroupPreview> getUserGroups(TokenPayload token) {
     return groupRepository
-      .findAllByMembersContains(studentService.getStudent(token.getId()))
+      .findAllUserGroups(token.getId())
       .stream()
       .map(GroupFactory::toPreview)
       .collect(Collectors.toList());
@@ -90,7 +86,13 @@ public class GroupService {
       group.setCover(fileHandler.upload(file, "", false, params));
     }
 
-    group.setAdmins(new HashSet<>(studentService.getStudents(dto.getAdmins())));
+    studentService.getStudents(dto.getAdmins()).forEach(a -> {
+      GroupMember member = new GroupMember();
+      member.setAdmin(true);
+      member.setStudent(a);
+      group.getMembers().add(member);
+    });
+
 
     return GroupFactory.toView(groupRepository.save(group));
   }
@@ -99,9 +101,13 @@ public class GroupService {
   public GroupView updateGroup(Long id, GroupDTO dto) {
     Group group = getGroup(id);
     GroupFactory.updateFromDTO(group, dto);
-    group.setAdmins(new HashSet<>(studentService.getStudents(dto.getAdmins())));
 
-
+    studentService.getStudents(dto.getAdmins()).forEach(a -> {
+      GroupMember member = new GroupMember();
+      member.setAdmin(true);
+      member.setStudent(a);
+      group.getMembers().add(member);
+    });
     return GroupFactory.toView(groupRepository.save(group));
   }
 

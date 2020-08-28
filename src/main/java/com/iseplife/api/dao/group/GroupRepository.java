@@ -1,7 +1,6 @@
 package com.iseplife.api.dao.group;
 
-import com.iseplife.api.entity.Group;
-import com.iseplife.api.entity.user.Student;
+import com.iseplife.api.entity.group.Group;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -23,11 +22,10 @@ public interface GroupRepository extends CrudRepository<Group, Long> {
   )
   List<Group> findDistinctType();
 
-  List<Group> findAllByMembersContains(Student student);
-
   @Query(
-    value = "SELECT CAST(members_id AS BINARY) from `group_members` where group_id = ?1 and members_id = ?2"
-    ,nativeQuery = true
+    "select g from Group g join GroupMember gm where " +
+      "gm.student = ?1"
   )
-  Boolean isMemberOfGroup(Long id, Long student);
+  List<Group> findAllUserGroups(Long student);
+
 }

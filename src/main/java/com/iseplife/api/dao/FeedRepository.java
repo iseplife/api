@@ -1,4 +1,4 @@
-package com.iseplife.api.dao.group;
+package com.iseplife.api.dao;
 
 import com.iseplife.api.entity.feed.Feed;
 import org.springframework.data.repository.CrudRepository;

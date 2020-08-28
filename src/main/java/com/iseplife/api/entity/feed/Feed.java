@@ -1,7 +1,7 @@
 package com.iseplife.api.entity.feed;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.iseplife.api.entity.Group;
+import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.post.embed.media.Media;

@@ -12,7 +12,7 @@ import com.iseplife.api.dto.student.StudentUpdateDTO;
 import com.iseplife.api.dto.student.view.StudentAdminView;
 import com.iseplife.api.dto.student.view.StudentPreview;
 import com.iseplife.api.dto.student.view.StudentPreviewAdmin;
-import com.iseplife.api.entity.Group;
+import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.user.Role;
@@ -208,7 +208,7 @@ public class StudentService {
         .stream()
         .map(Club::getFeed)
         .collect(Collectors.toList());
-    List<Feed> groups = groupRepository.findAllByMembersContains(student)
+    List<Feed> groups = groupRepository.findAllUserGroups(student.getId())
       .stream()
       .map(Group::getFeed)
       .collect(Collectors.toList());

@@ -2,7 +2,7 @@ package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
-import com.iseplife.api.entity.Group;
+import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.feed.Feed;
@@ -12,8 +12,6 @@ import com.iseplife.api.entity.user.Student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
-import java.util.Collections;
 
 /**
  * Created by Guillaume on 13/08/2017.
@@ -83,7 +81,7 @@ public class AuthService {
   static public boolean hasRightOn(Group group) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
     return payload.getRoles().contains(Roles.ADMIN)
-      || group.getAdmins().stream().anyMatch(a -> a.getId().equals(payload.getId()));
+      || group.getMembers().stream().anyMatch(m -> m.isAdmin() && m.getStudent().getId().equals(payload.getId()));
   }
 
   static public boolean hasRightOn(Gallery gallery) {
