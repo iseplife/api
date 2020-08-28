@@ -157,7 +157,7 @@ public class StudentController {
 
   @GetMapping("/promos")
   @RolesAllowed({Roles.STUDENT})
-  public List<String> getAllPromos() {
+  public List<Integer> getAllPromos() {
     return studentService.getAllPromo();
   }
 }

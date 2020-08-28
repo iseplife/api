@@ -198,7 +198,7 @@ public class StudentService {
   }
 
 
-  public List<String> getAllPromo() {
+  public List<Integer> getAllPromo() {
     return studentRepository.findDistinctPromo();
   }
 

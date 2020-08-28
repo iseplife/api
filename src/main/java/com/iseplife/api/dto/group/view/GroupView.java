@@ -13,6 +13,7 @@ public class GroupView {
   private String cover;
   private Long feed;
   private List<StudentPreview> admins;
+  private List<StudentPreview> members;
 
   public Long getId() {
     return id;
@@ -76,5 +77,13 @@ public class GroupView {
 
   public void setFeed(Long feed) {
     this.feed = feed;
+  }
+
+  public List<StudentPreview> getMembers() {
+    return members;
+  }
+
+  public void setMembers(List<StudentPreview> members) {
+    this.members = members;
   }
 }

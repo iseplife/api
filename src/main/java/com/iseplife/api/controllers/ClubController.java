@@ -91,7 +91,6 @@ public class ClubController {
     return clubService.updateCover(id, file);
   }
 
-
   @PutMapping("/{id}/archive")
   @RolesAllowed({Roles.ADMIN})
   public Boolean toggleArchiveStatus(@PathVariable Long id) {

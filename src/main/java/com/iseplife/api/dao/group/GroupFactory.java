@@ -2,7 +2,7 @@ package com.iseplife.api.dao.group;
 
 import com.iseplife.api.constants.GroupType;
 import com.iseplife.api.dao.student.StudentFactory;
-import com.iseplife.api.dto.group.groupDTO;
+import com.iseplife.api.dto.group.GroupDTO;
 import com.iseplife.api.dto.group.view.GroupPreview;
 import com.iseplife.api.dto.group.view.GroupView;
 import com.iseplife.api.entity.Group;
@@ -12,12 +12,12 @@ import java.util.stream.Collectors;
 
 public class GroupFactory {
 
-  static public void updateFromDTO(Group group, groupDTO dto){
+  static public void updateFromDTO(Group group, GroupDTO dto){
     group.setName(dto.getName());
     group.setRestricted(dto.getRestricted());
   }
 
-  static public Group fromDTO(groupDTO dto){
+  static public Group fromDTO(GroupDTO dto){
     Group group = new Group();
     group.setName(dto.getName());
     group.setRestricted(dto.getRestricted());
@@ -38,6 +38,12 @@ public class GroupFactory {
     view.setFeed(group.getFeed().getId());
     view.setAdmins(
       group.getAdmins()
+        .stream()
+        .map(StudentFactory::toPreview)
+        .collect(Collectors.toList())
+    );
+    view.setMembers(
+      group.getMembers()
         .stream()
         .map(StudentFactory::toPreview)
         .collect(Collectors.toList())

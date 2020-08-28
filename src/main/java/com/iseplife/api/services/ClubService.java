@@ -148,11 +148,10 @@ public class ClubService {
       club.setLogoUrl(null);
     } else {
       Map params = ObjectUtils.asMap(
-        "process", "resize",
-        "sizes", ""
+        "process", "compress",
+        "sizes", StorageConfig.COVER_SIZES
       );
-      club.setLogoUrl(fileHandler.upload(file, "img/usr", false, params));
-
+      club.setLogoUrl(fileHandler.upload(file, "img/usr/1280xauto", false, params));
     }
 
     clubRepository.save(club);

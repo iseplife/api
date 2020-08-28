@@ -51,7 +51,7 @@ public class EventFactory {
     preview.setTargets(event.getTargets().stream().map(Feed::getId).collect(Collectors.toSet()));
     preview.setStart(event.getStart());
     preview.setEnd(event.getEnd());
-    preview.setImageUrl(event.getImageUrl());
+    preview.setCover(event.getImageUrl());
     preview.setPublished(event.getPublished());
     return preview;
   }
@@ -62,7 +62,7 @@ public class EventFactory {
     view.setType(event.getType().name());
     view.setTitle(event.getTitle());
     view.setDescription(event.getDescription());
-    view.setImage(event.getImageUrl());
+    view.setCover(event.getImageUrl());
 
     view.setStart(event.getStart());
     view.setEnd(event.getEnd());

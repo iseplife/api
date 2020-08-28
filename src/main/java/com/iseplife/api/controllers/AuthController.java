@@ -3,6 +3,8 @@ package com.iseplife.api.controllers;
 import com.iseplife.api.conf.jwt.JwtAuthRequest;
 import com.iseplife.api.conf.jwt.JwtTokenUtil;
 import com.iseplife.api.conf.jwt.TokenSet;
+import com.iseplife.api.dao.group.GroupRepository;
+import com.iseplife.api.dao.student.StudentRepository;
 import com.iseplife.api.dto.LDAPUserDTO;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
@@ -28,6 +30,11 @@ public class AuthController {
 
   @Autowired
   StudentService studentService;
+  @Autowired
+  StudentRepository studentRepository;
+
+  @Autowired
+  GroupRepository groupRepository;
 
   @Autowired
   LDAPService ldapService;

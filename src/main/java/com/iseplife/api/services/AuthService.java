@@ -2,6 +2,7 @@ package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
+import com.iseplife.api.entity.Group;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.feed.Feed;
@@ -77,6 +78,12 @@ public class AuthService {
       || (feed.getClub() != null)
       || (feed.getGroup() != null && payload.getFeeds().contains(feed.getId()))
       || (feed.getEvent() != null && feed.getEvent().getTargets().stream().anyMatch(f -> payload.getFeeds().contains(f.getId())));
+  }
+
+  static public boolean hasRightOn(Group group) {
+    TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return payload.getRoles().contains(Roles.ADMIN)
+      || group.getAdmins().stream().anyMatch(a -> a.getId().equals(payload.getId()));
   }
 
   static public boolean hasRightOn(Gallery gallery) {

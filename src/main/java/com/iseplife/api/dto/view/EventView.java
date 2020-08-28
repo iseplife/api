@@ -11,7 +11,7 @@ public class EventView {
   private String type;
   private String title;
   private String description;
-  private String image;
+  private String cover;
 
   private Date start;
   private Date end;
@@ -56,14 +56,6 @@ public class EventView {
 
   public void setDescription(String description) {
     this.description = description;
-  }
-
-  public String getImage() {
-    return image;
-  }
-
-  public void setImage(String image) {
-    this.image = image;
   }
 
   public Date getStart() {
@@ -152,5 +144,13 @@ public class EventView {
 
   public void setSubscribed(Boolean subscribed) {
     this.subscribed = subscribed;
+  }
+
+  public String getCover() {
+    return cover;
+  }
+
+  public void setCover(String cover) {
+    this.cover = cover;
   }
 }

@@ -10,7 +10,7 @@ public class EventPreview {
   private Set<Long> targets;
   private Date start;
   private Date end;
-  private String imageUrl;
+  private String cover;
   private Boolean published;
 
   public Long getId() {
@@ -45,15 +45,6 @@ public class EventPreview {
     this.end = end;
   }
 
-  public String getImageUrl() {
-    return imageUrl;
-  }
-
-  public void setImageUrl(String imageUrl) {
-    this.imageUrl = imageUrl;
-  }
-
-
   public String getType() {
     return type;
   }
@@ -76,5 +67,13 @@ public class EventPreview {
 
   public void setTargets(Set<Long> targets) {
     this.targets = targets;
+  }
+
+  public String getCover() {
+    return cover;
+  }
+
+  public void setCover(String cover) {
+    this.cover = cover;
   }
 }

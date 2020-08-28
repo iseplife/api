@@ -2,8 +2,7 @@ package com.iseplife.api.controllers;
 
 
 import com.iseplife.api.conf.jwt.TokenPayload;
-import com.iseplife.api.dao.group.GroupFactory;
-import com.iseplife.api.dto.group.groupDTO;
+import com.iseplife.api.dto.group.GroupDTO;
 import com.iseplife.api.dto.group.view.GroupPreview;
 import com.iseplife.api.dto.group.view.GroupView;
 import com.iseplife.api.constants.Roles;
@@ -52,7 +51,7 @@ public class GroupController {
     @RequestParam(name="form") String form,
     @RequestParam(name="file", required = false) MultipartFile file
   ) {
-    groupDTO dto = jsonUtils.deserialize(form, groupDTO.class);
+    GroupDTO dto = jsonUtils.deserialize(form, GroupDTO.class);
     return groupService.createGroup(dto, file);
   }
 
@@ -64,14 +63,16 @@ public class GroupController {
 
   @PutMapping("/{id}")
   @RolesAllowed({Roles.ADMIN})
-  public GroupView updateGroup(
-    @PathVariable Long id,
-    @RequestParam(name="form") String form,
-    @RequestParam(name="file", required = false) MultipartFile file
-  ) {
-    groupDTO dto = jsonUtils.deserialize(form, groupDTO.class);
-    return groupService.updateGroup(id, dto, file);
+  public GroupView updateGroup(@PathVariable Long id, @RequestBody GroupDTO dto) {
+    return groupService.updateGroup(id, dto);
   }
+
+  @PostMapping("/{id}/cover")
+  @RolesAllowed({Roles.STUDENT})
+  public String updateCover(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+    return groupService.updateCover(id, file);
+  }
+
 
   @PutMapping("/{id}/archive")
   @RolesAllowed({Roles.ADMIN})

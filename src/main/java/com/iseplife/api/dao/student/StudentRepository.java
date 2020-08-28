@@ -67,6 +67,8 @@ public interface StudentRepository extends CrudRepository<Student, Long> {
   @Query(
     "select distinct s.promo from Student s order by s.promo desc"
   )
-  List<String> findDistinctPromo();
+  List<Integer> findDistinctPromo();
+
+  List<Student> findAllByPromo(Integer promo);
 
 }

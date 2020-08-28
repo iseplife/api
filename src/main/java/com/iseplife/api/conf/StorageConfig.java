@@ -19,6 +19,7 @@ public class StorageConfig implements WebMvcConfigurer {
   public static final String GALLERY_SIZES = "autox140;autox200;1280xauto";
   public static final String POST_SIZES = "160xauto;768xauto;1280xauto";
   public static final String AUTHOR_SIZES = "140x140;50x50";
+  public static final String COVER_SIZES = "1280xauto";
 
   @Bean("FileHandlerBean")
   @ConditionalOnProperty(

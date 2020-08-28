@@ -9,11 +9,14 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
 public interface GroupRepository extends CrudRepository<Group, Long> {
   Page<Group> findAll(Pageable page);
+
+  Optional<Group> findOneByName(String name);
 
   @Query(
     "select distinct g.type from Group g"
