@@ -23,8 +23,8 @@ public interface GroupRepository extends CrudRepository<Group, Long> {
   List<Group> findDistinctType();
 
   @Query(
-    "select g from Group g join GroupMember gm where " +
-      "gm.student = ?1"
+    "select g from Group g join g.members gm where " +
+      "gm.student.id = ?1"
   )
   List<Group> findAllUserGroups(Long student);
 
