@@ -4,6 +4,7 @@ import com.iseplife.api.constants.SearchItem;
 import com.iseplife.api.dto.view.SearchItemView;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
+import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.user.Student;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +24,16 @@ public class SearchFactory {
 
     // Status is false when event is passed
     searchItem.setStatus(!event.getEnd().before(new Date()));
+    return searchItem;
+  }
+
+  static public SearchItemView toSearchItemView(Group group){
+    SearchItemView searchItem = new SearchItemView();
+    searchItem.setId(group.getId());
+    searchItem.setName(group.getName());
+
+    searchItem.setType(SearchItem.GROUP);
+    searchItem.setStatus(!group.isArchived());
     return searchItem;
   }
 
