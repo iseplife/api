@@ -2,7 +2,7 @@ package com.iseplife.api.services;
 
 
 import com.iseplife.api.conf.jwt.TokenPayload;
-import com.iseplife.api.dao.FeedRepository;
+import com.iseplife.api.dao.feed.FeedRepository;
 import com.iseplife.api.dto.EventDTO;
 import com.iseplife.api.dto.gallery.view.GalleryPreview;
 import com.iseplife.api.dto.view.EventPreview;

@@ -10,10 +10,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Created by Guillaume on 27/07/2017.
- * back
- */
 @Entity
 public class Event {
 
@@ -33,8 +29,7 @@ public class Event {
   private String ticketUrl = null;
   private Float price = null;
 
-  @JsonIgnore
-  private Boolean published = false;
+  private Date published = new Date();
   private Boolean closed = false;
 
   @Column(columnDefinition = "TEXT")
@@ -175,11 +170,11 @@ public class Event {
     this.feed = feed;
   }
 
-  public Boolean getPublished() {
+  public Date getPublished() {
     return published;
   }
 
-  public void setPublished(Boolean published) {
+  public void setPublished(Date published) {
     this.published = published;
   }
 

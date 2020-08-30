@@ -9,6 +9,7 @@ import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.feed.Feed;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.stream.Collectors;
 
 @Component
@@ -52,7 +53,7 @@ public class EventFactory {
     preview.setStart(event.getStart());
     preview.setEnd(event.getEnd());
     preview.setCover(event.getImageUrl());
-    preview.setPublished(event.getPublished());
+    preview.setPublished(event.getPublished().after(new Date()));
     return preview;
   }
 

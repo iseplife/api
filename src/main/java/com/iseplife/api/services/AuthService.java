@@ -81,7 +81,7 @@ public class AuthService {
   static public boolean hasRightOn(Group group) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
     return payload.getRoles().contains(Roles.ADMIN)
-      || group.getMembers().stream().anyMatch(m -> m.isAdmin() && m.getStudent().getId().equals(payload.getId()));
+      || group.getMembers().stream().anyMatch(m -> m.getStudent().getId().equals(payload.getId()) && m.isAdmin());
   }
 
   static public boolean hasRightOn(Gallery gallery) {

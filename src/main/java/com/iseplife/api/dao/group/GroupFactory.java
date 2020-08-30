@@ -7,6 +7,7 @@ import com.iseplife.api.dto.group.view.GroupPreview;
 import com.iseplife.api.dto.group.view.GroupView;
 import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.feed.Feed;
+import com.iseplife.api.services.AuthService;
 
 import java.util.stream.Collectors;
 
@@ -36,6 +37,7 @@ public class GroupFactory {
     view.setCover(group.getCover());
     view.setLocked(group.getType() != GroupType.DEFAULT);
     view.setFeed(group.getFeed().getId());
+    view.setHasRight(AuthService.hasRightOn(group));
     view.setMembers(
       group.getMembers()
         .stream()

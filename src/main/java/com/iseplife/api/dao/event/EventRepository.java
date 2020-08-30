@@ -24,7 +24,7 @@ public interface EventRepository extends CrudRepository<Event, Long> {
     "select distinct e from Event e left join e.targets t " +
       "where FUNCTION('MONTH', e.start) = FUNCTION('MONTH', ?1) and FUNCTION('YEAR', e.start) = function('YEAR', ?1) " +
       "and (?2 = true) or (" +
-      "e.published = true " +
+      "e.published < current_time " +
       "and (e.targets is empty or e.closed = false or t.id in ?3)" +
       ") " +
       "order by e.start"
@@ -36,7 +36,7 @@ public interface EventRepository extends CrudRepository<Event, Long> {
     "select e from Event e left join e.targets t " +
       "where e.end >= CURRENT_TIMESTAMP " +
       "and (?1 = true) or (" +
-        "e.published = true " +
+        "e.published < current_time " +
         "and (e.targets is empty or e.closed = false or t.id in ?2)" +
       ") " +
       "order by e.start"
@@ -47,16 +47,16 @@ public interface EventRepository extends CrudRepository<Event, Long> {
     "select e from Event e " +
       "where e.end >= CURRENT_TIMESTAMP " +
       "and (?1 = true) " +
-      "or (e.published = true and ?2 member of e.targets) " +
+      "or (e.published < current_time and ?2 member of e.targets) " +
       "order by e.start"
   )
   Page<Event> findFeedIncomingEvents(Boolean admin, Feed feed, Pageable p);
 
   @Query(
-    "select e from Event e left join e.targets t " +
+    "select e from Event e join e.targets t " +
       "where lower(e.title) like %?1% " +
       "and (?2 = true) or (" +
-        "e.published = true " +
+        "e.published < current_time " +
         "and (e.targets is empty or e.closed = false or t.id in ?2)" +
       ") "
   )

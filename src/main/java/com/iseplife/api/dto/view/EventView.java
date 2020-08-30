@@ -18,7 +18,7 @@ public class EventView {
   private String location;
   private String ticketURL = null;
   private Float price = null;
-  private Boolean published = false;
+  private Date published = new Date();
   private Boolean closed = false;
   private Boolean subscribed;
 
@@ -98,11 +98,11 @@ public class EventView {
     this.price = price;
   }
 
-  public Boolean getPublished() {
+  public Date getPublished() {
     return published;
   }
 
-  public void setPublished(Boolean published) {
+  public void setPublished(Date published) {
     this.published = published;
   }
 
