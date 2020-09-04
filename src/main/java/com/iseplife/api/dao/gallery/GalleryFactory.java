@@ -14,7 +14,7 @@ public class GalleryFactory {
     view.setName(gallery.getName());
     view.setCreation(gallery.getCreation());
     view.setImages(gallery.getImages());
-    view.setClub(ClubFactory.toPreview(gallery.getClub()));
+    view.setClub(gallery.getClub() == null ? null : ClubFactory.toPreview(gallery.getClub()));
     view.setHasRight(AuthService.hasRightOn(gallery));
 
     return view;
@@ -24,7 +24,7 @@ public class GalleryFactory {
     GalleryPreview preview = new GalleryPreview();
     preview.setId(gallery.getId());
     preview.setName(gallery.getName());
-    preview.setPreview(gallery.getPreviewImages());
+    preview.setPreview(gallery.getPreview());
 
     return preview;
   }

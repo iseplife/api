@@ -151,7 +151,7 @@ public class ClubService {
         "process", "compress",
         "sizes", StorageConfig.COVER_SIZES
       );
-      club.setLogoUrl(fileHandler.upload(file, "img/usr/1280xauto", false, params));
+      club.setLogoUrl(fileHandler.upload(file, "img/usr/clb/1280xauto", false, params));
     }
 
     clubRepository.save(club);

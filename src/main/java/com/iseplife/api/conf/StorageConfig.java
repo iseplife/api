@@ -9,15 +9,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 
-/**
- * Created by Guillaume on 18/08/2017.
- * back
- */
 @Configuration
 public class StorageConfig implements WebMvcConfigurer {
 
   public static final String GALLERY_SIZES = "autox140;autox200;1280xauto";
-  public static final String POST_SIZES = "160xauto;768xauto;1280xauto";
+  public static final String POST_SIZES = "autox300;1280xauto";
   public static final String AUTHOR_SIZES = "140x140;50x50";
   public static final String COVER_SIZES = "1280xauto";
 
