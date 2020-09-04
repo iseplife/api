@@ -3,11 +3,14 @@ package com.iseplife.api.services;
 import com.iseplife.api.dao.gallery.GalleryFactory;
 import com.iseplife.api.dao.gallery.GalleryRepository;
 import com.iseplife.api.dao.media.image.ImageRepository;
+import com.iseplife.api.dao.post.PostRepository;
 import com.iseplife.api.dto.gallery.GalleryDTO;
 import com.iseplife.api.dto.gallery.view.GalleryPreview;
 import com.iseplife.api.dto.gallery.view.GalleryView;
+import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
+import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.post.embed.media.Image;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.exceptions.AuthException;
@@ -35,7 +38,13 @@ public class GalleryService {
   ImageRepository imageRepository;
 
   @Autowired
+  PostRepository postRepository;
+
+  @Autowired
   PostService postService;
+
+  @Autowired
+  StudentService studentService;
 
   @Autowired
   MediaService mediaService;
@@ -86,6 +95,10 @@ public class GalleryService {
     if (dto.getPseudo() && dto.getImages().size() > PSEUDO_GALLERY_MAX_SIZE)
       throw new IllegalArgumentException("pseudo gallery can't have more than " + PSEUDO_GALLERY_MAX_SIZE + " images");
 
+
+    gallery.setCreation(new Date());
+    gallery.setPseudo(dto.getPseudo());
+    gallery.setFeed(feedService.getFeed(dto.getFeed()));
     if (!dto.getPseudo()) {
       Club club = clubService.getClub(dto.getClub());
       if (!AuthService.hasRightOn(club))
@@ -93,11 +106,9 @@ public class GalleryService {
 
       gallery.setClub(club);
       gallery.setName(dto.getName());
+      gallery.setDescription(dto.getDescription());
     }
 
-    gallery.setCreation(new Date());
-    gallery.setPseudo(dto.getPseudo());
-    gallery.setFeed(feedService.getFeed(dto.getFeed()));
     galleryRepository.save(gallery);
 
     Iterable<Image> images = imageRepository.findAllById(dto.getImages());
@@ -106,6 +117,19 @@ public class GalleryService {
         img.setGallery(gallery);
     });
     imageRepository.saveAll(images);
+    if(!dto.getPseudo() && dto.getGeneratePost()){
+      Post post = new Post();
+      post.setFeed(gallery.getFeed());
+      post.setThread(new Thread());
+      post.setDescription(gallery.getDescription());
+      post.setEmbed(gallery);
+      post.setAuthor(studentService.getStudent(AuthService.getLoggedId()));
+      post.setLinkedClub(gallery.getClub());
+      post.setCreationDate(new Date());
+
+      postRepository.save(post);
+    }
+
     return GalleryFactory.toView(gallery);
   }
 

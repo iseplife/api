@@ -2,13 +2,12 @@ package com.iseplife.api.dto.gallery;
 
 import java.util.List;
 
-/**
- * Created by Guillaume on 01/08/2017.
- * back
- */
+
 public class GalleryDTO {
   private String name;
+  private String description;
   private Boolean pseudo = true;
+  private Boolean generatePost = false;
   private List<Long> images;
   private Long club;
   private Long feed;
@@ -51,5 +50,21 @@ public class GalleryDTO {
 
   public void setFeed(Long feed) {
     this.feed = feed;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public Boolean getGeneratePost() {
+    return generatePost;
+  }
+
+  public void setGeneratePost(Boolean generatePost) {
+    this.generatePost = generatePost;
   }
 }

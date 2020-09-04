@@ -20,6 +20,8 @@ public class Gallery implements Embedable {
 
   private String name;
 
+  private String description;
+
   private Boolean pseudo = false;
 
   private Date creation;
@@ -98,5 +100,13 @@ public class Gallery implements Embedable {
 
   public void setPseudo(Boolean pseudo) {
     this.pseudo = pseudo;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
   }
 }

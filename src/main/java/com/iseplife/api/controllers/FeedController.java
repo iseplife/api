@@ -32,6 +32,12 @@ public class FeedController {
     return feedService.getUserFeed(token);
   }
 
+  @GetMapping("/main/post")
+  @RolesAllowed({Roles.STUDENT})
+  public Page<PostView> getMainFeedPosts(@RequestParam(defaultValue = "0") int page){
+    return feedService.getMainFeedPosts(page);
+  }
+
   @GetMapping("/{id}/post")
   @RolesAllowed({Roles.STUDENT})
   public Page<PostView> getFeedPosts(@PathVariable Long id, @RequestParam(defaultValue = "0") int page) {
