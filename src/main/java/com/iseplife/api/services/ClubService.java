@@ -131,7 +131,7 @@ public class ClubService {
       "process", "resize",
       "sizes", StorageConfig.AUTHOR_SIZES
     );
-    club.setLogoUrl(fileHandler.upload(file, "img/usr/clb", false, params));
+    club.setLogoUrl(fileHandler.upload(file, StorageConfig.PATH.get("club_avatar"), false, params));
     clubRepository.save(club);
     return club.getLogoUrl();
   }
@@ -151,7 +151,7 @@ public class ClubService {
         "process", "compress",
         "sizes", StorageConfig.COVER_SIZES
       );
-      club.setLogoUrl(fileHandler.upload(file, "img/usr/clb/1280xauto", false, params));
+      club.setLogoUrl(fileHandler.upload(file, StorageConfig.PATH.get("club_cover"), false, params));
     }
 
     clubRepository.save(club);

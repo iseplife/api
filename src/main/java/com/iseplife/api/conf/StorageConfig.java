@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.Map;
+
 
 @Configuration
 public class StorageConfig implements WebMvcConfigurer {
@@ -16,6 +18,19 @@ public class StorageConfig implements WebMvcConfigurer {
   public static final String POST_SIZES = "autox300;1280xauto";
   public static final String AUTHOR_SIZES = "140x140;50x50";
   public static final String COVER_SIZES = "1280xauto";
+
+
+  public static final Map<String, String> PATH = Map.of(
+    "video", "vid",
+    "document", "doc",
+    "post", "img",
+    "user_avatar", "img/usr",
+    "club_avatar", "img/usr/clb",
+    "club_cover", "img/usr/clb",
+    "feed_cover", "img/1280xauto",
+    "gallery", "img/g"
+  );
+
 
   @Bean("FileHandlerBean")
   @ConditionalOnProperty(

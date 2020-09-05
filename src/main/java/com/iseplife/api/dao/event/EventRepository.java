@@ -60,5 +60,5 @@ public interface EventRepository extends CrudRepository<Event, Long> {
         "and (e.targets is empty or e.closed = false or t.id in ?2)" +
       ") "
   )
-  Page<Event> searchEvent(String name, Boolean admin, List feed, Pageable pageable);
+  Page<Event> searchEvent(String name, Boolean admin, List<Long> feed, Pageable pageable);
 }

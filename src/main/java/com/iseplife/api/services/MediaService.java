@@ -32,6 +32,7 @@ import springfox.documentation.annotations.Cacheable;
 
 import java.security.InvalidParameterException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 
 @Service
@@ -108,19 +109,19 @@ public class MediaService {
     switch (mime) {
       case "video":
         media = new Video();
-        name = fileHandler.upload(file, "vid", false, Collections.EMPTY_MAP);
+        name = fileHandler.upload(file, StorageConfig.PATH.get("video"), false, Collections.EMPTY_MAP);
         break;
       case "image":
         media = new Image();
         if (gallery) {
-          name = fileHandler.upload(file, "img/g", false,
+          name = fileHandler.upload(file, StorageConfig.PATH.get("gallery"), false,
             ObjectUtils.asMap(
               "process", "resize",
               "sizes", StorageConfig.GALLERY_SIZES
             )
           );
         } else {
-          name = fileHandler.upload(file, "img", false,
+          name = fileHandler.upload(file, StorageConfig.PATH.get("post"), false,
             ObjectUtils.asMap(
               "process", "compress",
               "sizes", StorageConfig.POST_SIZES
@@ -130,7 +131,7 @@ public class MediaService {
         break;
       default:
         media = new Document();
-        name = fileHandler.upload(file, "doc", false, Collections.EMPTY_MAP);
+        name = fileHandler.upload(file, StorageConfig.PATH.get("document"), false, Collections.EMPTY_MAP);
         break;
     }
 

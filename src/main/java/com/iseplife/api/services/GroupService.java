@@ -81,9 +81,9 @@ public class GroupService {
     if (file != null){
       Map params = ObjectUtils.asMap(
         "process", "compress",
-        "sizes", "200x200"
+        "sizes", StorageConfig.COVER_SIZES
       );
-      group.setCover(fileHandler.upload(file, "", false, params));
+      group.setCover(fileHandler.upload(file, StorageConfig.PATH.get("feed_cover"), false, params));
     }
 
     studentService.getStudents(dto.getAdmins()).forEach(a -> {
@@ -122,11 +122,11 @@ public class GroupService {
     if (cover == null) {
       group.setCover(null);
     }else {
-      Map params = com.iseplife.api.utils.ObjectUtils.asMap(
+      Map params = ObjectUtils.asMap(
         "process", "compress",
         "sizes", StorageConfig.COVER_SIZES
       );
-      group.setCover(fileHandler.upload(cover, "img/usr/1280xauto", false, params));
+      group.setCover(fileHandler.upload(cover, StorageConfig.PATH.get("feed_cover"), false, params));
     }
 
     groupRepository.save(group);

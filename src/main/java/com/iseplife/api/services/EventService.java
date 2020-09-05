@@ -1,6 +1,7 @@
 package com.iseplife.api.services;
 
 
+import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dao.feed.FeedRepository;
 import com.iseplife.api.dto.EventDTO;
@@ -82,14 +83,14 @@ public class EventService {
   public String updateImage(Long id, MultipartFile file) {
     Event event = getEvent(id);
     Map params = ObjectUtils.asMap(
-      "process", "resize",
-      "sizes", ""
+      "process", "compress",
+      "sizes", StorageConfig.COVER_SIZES
     );
 
     if (event.getImageUrl() != null)
       fileHandler.delete(event.getImageUrl());
 
-    event.setImageUrl(fileHandler.upload(file, "/img", false, params));
+    event.setImageUrl(fileHandler.upload(file, StorageConfig.PATH.get("feed_cover"), false, params));
     eventRepository.save(event);
 
     return event.getImageUrl();

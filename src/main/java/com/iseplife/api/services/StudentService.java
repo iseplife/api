@@ -25,7 +25,6 @@ import com.iseplife.api.services.fileHandler.FileHandler;
 import com.iseplife.api.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -34,10 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Created by Guillaume on 30/07/2017.
- * back
- */
+
 @Service
 public class StudentService {
 
@@ -62,12 +58,6 @@ public class StudentService {
   @Qualifier("FileHandlerBean")
   @Autowired
   FileHandler fileHandler;
-
-  @Value("${storage.image.student.default}")
-  protected String defaultPath;
-
-  @Value("${storage.image.student.original}")
-  protected String originalPath;
 
   private static final int RESULTS_PER_PAGE = 20;
 
@@ -128,7 +118,7 @@ public class StudentService {
       "process", "resize",
       "sizes", StorageConfig.AUTHOR_SIZES
     );
-    return fileHandler.upload(image, originalPath + "/" + name, true, params);
+    return fileHandler.upload(image, StorageConfig.PATH.get("user_original") + "/" + name, true, params);
   }
 
   private void updateProfilePicture(Student student, MultipartFile image) {
@@ -138,7 +128,7 @@ public class StudentService {
     );
 
     student.setPicture(
-      fileHandler.upload(image, defaultPath, false, params)
+      fileHandler.upload(image, StorageConfig.PATH.get("user_avatar"), false, params)
     );
     studentRepository.save(student);
   }
