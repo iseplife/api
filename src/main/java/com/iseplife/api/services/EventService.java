@@ -17,7 +17,6 @@ import com.iseplife.api.exceptions.AuthException;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.exceptions.NotFoundException;
 import com.iseplife.api.services.fileHandler.FileHandler;
-import com.iseplife.api.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -82,15 +81,15 @@ public class EventService {
 
   public String updateImage(Long id, MultipartFile file) {
     Event event = getEvent(id);
-    Map params = ObjectUtils.asMap(
+    Map params = Map.of(
       "process", "compress",
-      "sizes", StorageConfig.COVER_SIZES
+      "sizes", StorageConfig.MEDIAS_CONF.get("feed_cover").sizes
     );
 
     if (event.getImageUrl() != null)
       fileHandler.delete(event.getImageUrl());
 
-    event.setImageUrl(fileHandler.upload(file, StorageConfig.PATH.get("feed_cover"), false, params));
+    event.setImageUrl(fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("feed_cover").path, false, params));
     eventRepository.save(event);
 
     return event.getImageUrl();

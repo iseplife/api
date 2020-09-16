@@ -1,5 +1,7 @@
 package com.iseplife.api.services;
 
+import com.iseplife.api.constants.EmbedType;
+import com.iseplife.api.constants.PostState;
 import com.iseplife.api.dao.gallery.GalleryFactory;
 import com.iseplife.api.dao.gallery.GalleryRepository;
 import com.iseplife.api.dao.media.image.ImageRepository;
@@ -126,6 +128,7 @@ public class GalleryService {
       post.setAuthor(studentService.getStudent(AuthService.getLoggedId()));
       post.setLinkedClub(gallery.getClub());
       post.setCreationDate(new Date());
+      post.setState(PostState.READY);
 
       postRepository.save(post);
     }
@@ -155,9 +158,15 @@ public class GalleryService {
 
 
   public Boolean deleteGallery(Gallery gallery) {
+    if (!AuthService.hasRightOn(gallery))
+      throw new AuthException("You have not sufficient rights on this gallery (id:" + gallery + ")");
+
     gallery
       .getImages()
       .forEach(img -> mediaService.deleteMedia(img));
+    gallery.setImages(null);
+    List<Post> p = postRepository.findAllByEmbed(gallery.getId(), EmbedType.GALLERY);
+    postRepository.deleteAll(p);
 
     galleryRepository.delete(gallery);
     return true;
@@ -173,6 +182,8 @@ public class GalleryService {
       .stream()
       .filter(img -> images.contains(img.getId()))
       .count();
+
+
 
     if (images.size() != imageSize) {
       throw new IllegalArgumentException("images does not belong to this gallery");

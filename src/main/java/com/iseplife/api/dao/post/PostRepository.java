@@ -1,7 +1,9 @@
 package com.iseplife.api.dao.post;
 
+import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.post.Post;
+import com.iseplife.api.entity.post.embed.Embedable;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.PostState;
 import org.springframework.data.domain.Page;
@@ -31,6 +33,9 @@ public interface PostRepository extends CrudRepository<Post, Long> {
   List<Post> findFeedDrafts(Feed feed, Student author);
 
   List<Post> findByFeedAndIsPinnedIsTrue(Feed feed);
+
+  @Query(value = "select * from post as p where embed_id = ?1 and embed_type = ?2", nativeQuery = true)
+  List<Post> findAllByEmbed(Long id, String type);
 
   Page<Post> findByAuthorIdOrderByCreationDateDesc(Long author_id, Pageable pageable);
 

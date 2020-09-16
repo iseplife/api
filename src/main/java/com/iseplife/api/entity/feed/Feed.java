@@ -27,19 +27,19 @@ public class Feed {
   private Club club;
 
   @JsonIgnore
-  @OneToOne(mappedBy = "feed")
+  @OneToOne(mappedBy = "feed", orphanRemoval = true)
   private Group group;
 
   @JsonIgnore
-  @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   private List<Post> posts;
 
   @JsonIgnore
-  @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   private List<Media> media;
 
   @JsonIgnore
-  @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   private List<Gallery> galleries;
 
   public Long getId() {

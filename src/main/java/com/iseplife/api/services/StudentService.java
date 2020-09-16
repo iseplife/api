@@ -22,7 +22,6 @@ import com.iseplife.api.dao.student.StudentFactory;
 import com.iseplife.api.dao.student.StudentRepository;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.services.fileHandler.FileHandler;
-import com.iseplife.api.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -114,21 +113,21 @@ public class StudentService {
   public String uploadOriginalPicture(Student student, MultipartFile image) {
     String name = student.getId() + "." + fileHandler.getFileExtension(image.getName());
 
-    Map params = ObjectUtils.asMap(
+    Map params = Map.of(
       "process", "resize",
-      "sizes", StorageConfig.AUTHOR_SIZES
+      "sizes", StorageConfig.MEDIAS_CONF.get("user_original")
     );
-    return fileHandler.upload(image, StorageConfig.PATH.get("user_original") + "/" + name, true, params);
+    return fileHandler.upload(image, StorageConfig.MEDIAS_CONF.get("user_original") + "/" + name, true, params);
   }
 
   private void updateProfilePicture(Student student, MultipartFile image) {
-    Map params = ObjectUtils.asMap(
+    Map params = Map.of(
       "process", "resize",
-      "sizes", StorageConfig.AUTHOR_SIZES
+      "sizes", StorageConfig.MEDIAS_CONF.get("user_avatar").sizes
     );
 
     student.setPicture(
-      fileHandler.upload(image, StorageConfig.PATH.get("user_avatar"), false, params)
+      fileHandler.upload(image, StorageConfig.MEDIAS_CONF.get("user_avatar").path, false, params)
     );
     studentRepository.save(student);
   }

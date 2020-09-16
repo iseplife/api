@@ -1,6 +1,5 @@
 package com.iseplife.api.services;
 
-import com.cloudinary.utils.ObjectUtils;
 import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.GroupType;
@@ -79,11 +78,11 @@ public class GroupService {
     Group group = GroupFactory.fromDTO(dto);
 
     if (file != null){
-      Map params = ObjectUtils.asMap(
+      Map params = Map.of(
         "process", "compress",
-        "sizes", StorageConfig.COVER_SIZES
+        "sizes", StorageConfig.MEDIAS_CONF.get("feed_cover").sizes
       );
-      group.setCover(fileHandler.upload(file, StorageConfig.PATH.get("feed_cover"), false, params));
+      group.setCover(fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("feed_cover").path, false, params));
     }
 
     studentService.getStudents(dto.getAdmins()).forEach(a -> {
@@ -122,11 +121,11 @@ public class GroupService {
     if (cover == null) {
       group.setCover(null);
     }else {
-      Map params = ObjectUtils.asMap(
+      Map params = Map.of(
         "process", "compress",
-        "sizes", StorageConfig.COVER_SIZES
+        "sizes", StorageConfig.MEDIAS_CONF.get("feed_cover").sizes
       );
-      group.setCover(fileHandler.upload(cover, StorageConfig.PATH.get("feed_cover"), false, params));
+      group.setCover(fileHandler.upload(cover, StorageConfig.MEDIAS_CONF.get("feed_cover").path, false, params));
     }
 
     groupRepository.save(group);

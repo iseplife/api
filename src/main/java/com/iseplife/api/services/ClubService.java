@@ -1,6 +1,5 @@
 package com.iseplife.api.services;
 
-import com.amazonaws.services.ec2.model.Storage;
 import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dao.club.ClubMemberFactory;
@@ -15,7 +14,6 @@ import com.iseplife.api.dto.student.view.StudentPreview;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.club.ClubMember;
-import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.ClubRole;
 import com.iseplife.api.constants.Roles;
@@ -25,7 +23,6 @@ import com.iseplife.api.dao.club.ClubRepository;
 import com.iseplife.api.exceptions.AuthException;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.services.fileHandler.FileHandler;
-import com.iseplife.api.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -127,11 +124,11 @@ public class ClubService {
     if (club.getLogoUrl() != null)
       fileHandler.delete(club.getLogoUrl());
 
-    Map params = ObjectUtils.asMap(
+    Map params = Map.of(
       "process", "resize",
-      "sizes", StorageConfig.AUTHOR_SIZES
+      "sizes", StorageConfig.MEDIAS_CONF.get("club_avatar").sizes
     );
-    club.setLogoUrl(fileHandler.upload(file, StorageConfig.PATH.get("club_avatar"), false, params));
+    club.setLogoUrl(fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("club_avatar").path, false, params));
     clubRepository.save(club);
     return club.getLogoUrl();
   }
@@ -147,11 +144,11 @@ public class ClubService {
     if (file == null) {
       club.setLogoUrl(null);
     } else {
-      Map params = ObjectUtils.asMap(
+      Map params = Map.of(
         "process", "compress",
-        "sizes", StorageConfig.COVER_SIZES
+        "sizes", StorageConfig.MEDIAS_CONF.get("club_cover").sizes
       );
-      club.setLogoUrl(fileHandler.upload(file, StorageConfig.PATH.get("club_cover"), false, params));
+      club.setLogoUrl(fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("club_cover").path, false, params));
     }
 
     clubRepository.save(club);

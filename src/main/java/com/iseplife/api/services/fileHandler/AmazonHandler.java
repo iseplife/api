@@ -6,12 +6,14 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.*;
+import com.iseplife.api.conf.StorageConfig;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 public class AmazonHandler extends FileHandler {
 
@@ -48,23 +50,34 @@ public class AmazonHandler extends FileHandler {
 
   @Override
   public boolean delete(String fullPath) {
-    return delete(fullPath, false);
+    return delete(fullPath, true);
   }
 
   @Override
-  public boolean delete(String fullPath, Boolean clean) {
-    s3client.deleteObject(bucket, fullPath);
+  public boolean delete(String key, Boolean clean) {
+    s3client.deleteObject(bucket, key);
 
-    // Clean deletion search for all thumbnail of images
-    // CAREFUL ! This process can be very long when a lot of images are present in the bucket
+    // Clean deletion search for generated thumbnails
     if (clean) {
-      int pivot = fullPath.lastIndexOf("/");
-      String path = fullPath.substring(0, pivot);
-      ObjectListing listing = s3client.listObjects(bucket, path);
-      listing.getObjectSummaries().forEach(o -> {
-        if (o.getKey().endsWith(fullPath.substring(pivot + 1))) {
-          s3client.deleteObject(bucket, o.getKey());
+      CompletableFuture.runAsync(() -> {
+        int index = key.lastIndexOf("/");
+        String rootPath = key.substring(0, index);
+        String filename = key.substring(index+1);
+
+        boolean containSize = rootPath.matches("/(?!autoxauto)(\\d+|auto)x(\\d+|auto)$");
+        if (!containSize) {
+          for (Map.Entry<String, StorageConfig.MediaConf> entry : StorageConfig.MEDIAS_CONF.entrySet()) {
+            if (rootPath.equals(entry.getValue().path)) {
+              String[] sizes = entry.getValue().sizes.split(";");
+              for (String size : sizes) {
+                s3client.deleteObject(bucket, rootPath + "/" + size + "/" + filename);
+              }
+              break;
+            }
+          }
         }
+
+
       });
     }
     return true;
