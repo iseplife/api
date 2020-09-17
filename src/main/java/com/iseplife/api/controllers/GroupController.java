@@ -73,6 +73,23 @@ public class GroupController {
     return groupService.updateCover(id, file);
   }
 
+  @DeleteMapping("/{id}/member/{member}")
+  @RolesAllowed({Roles.STUDENT})
+  public Boolean removeMember(@PathVariable Long id, @PathVariable Long member) {
+    return groupService.removeMember(id, member);
+  }
+
+  @PostMapping("/{id}/member/{member}/promote")
+  @RolesAllowed({Roles.STUDENT})
+  public Boolean promoteMember(@PathVariable Long id, @PathVariable Long member) {
+    return groupService.promoteMember(id, member);
+  }
+
+  @PostMapping("/{id}/member/{member}/demote")
+  @RolesAllowed({Roles.STUDENT})
+  public Boolean demoteMember(@PathVariable Long id, @PathVariable Long member) {
+    return groupService.demoteMember(id, member);
+  }
 
   @PutMapping("/{id}/archive")
   @RolesAllowed({Roles.ADMIN})

@@ -1,6 +1,7 @@
 package com.iseplife.api.dao.group;
 
 import com.iseplife.api.entity.GroupMember;
+import com.iseplife.api.entity.group.Group;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
@@ -13,4 +14,12 @@ public interface GroupMemberRepository extends CrudRepository<GroupMember, Long>
       "m.student.id = ?2"
   )
   Boolean isMemberOfGroup(Long id, Long student);
+
+
+  @Query(
+    "select count(m) from GroupMember m " +
+      "where m.group = ?1 and " +
+      "m.admin = true "
+  )
+  Integer findGroupAdminCount(Group group);
 }
