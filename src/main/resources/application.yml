@@ -24,18 +24,6 @@ cloud_handler:
   api_secret: ${CLOUD_API_SECRET:}
   bucket: iseplife
 
-storage:
-  image:
-    default: "img"
-    feed:
-      default: "img/f"
-      gallery: "g"
-    student:
-      default: "img/usr"
-      original: "img/usr/original"
-  video: "vid"
-  document: "doc"
-
 jwt:
   secret: 1jmhvPXhI40vqAnm
   refreshSecret: fIH3ZmRmqH2LT6vH

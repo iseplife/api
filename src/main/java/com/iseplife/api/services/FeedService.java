@@ -1,12 +1,12 @@
 package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
-import com.iseplife.api.dao.SubscriptionRepository;
+import com.iseplife.api.dao.feed.SubscriptionRepository;
 import com.iseplife.api.dto.view.PostView;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.Subscription;
 import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.dao.group.FeedRepository;
+import com.iseplife.api.dao.feed.FeedRepository;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.services.fileHandler.FileHandler;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -52,6 +52,12 @@ public class FeedService {
     Iterable<Feed> feeds = feedRepository.findAllById(token.getFeeds());
 
     return feeds;
+  }
+
+  @Cacheable("main-posts")
+  public Page<PostView> getMainFeedPosts(int page) {
+    Feed feed = getFeed(1L);
+    return postService.getFeedPosts(feed, page);
   }
 
   @Cacheable("posts")

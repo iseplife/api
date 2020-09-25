@@ -11,14 +11,14 @@ public class EventView {
   private String type;
   private String title;
   private String description;
-  private String image;
+  private String cover;
 
   private Date start;
   private Date end;
   private String location;
   private String ticketURL = null;
   private Float price = null;
-  private Boolean published = false;
+  private Date published = new Date();
   private Boolean closed = false;
   private Boolean subscribed;
 
@@ -56,14 +56,6 @@ public class EventView {
 
   public void setDescription(String description) {
     this.description = description;
-  }
-
-  public String getImage() {
-    return image;
-  }
-
-  public void setImage(String image) {
-    this.image = image;
   }
 
   public Date getStart() {
@@ -106,11 +98,11 @@ public class EventView {
     this.price = price;
   }
 
-  public Boolean getPublished() {
+  public Date getPublished() {
     return published;
   }
 
-  public void setPublished(Boolean published) {
+  public void setPublished(Date published) {
     this.published = published;
   }
 
@@ -152,5 +144,13 @@ public class EventView {
 
   public void setSubscribed(Boolean subscribed) {
     this.subscribed = subscribed;
+  }
+
+  public String getCover() {
+    return cover;
+  }
+
+  public void setCover(String cover) {
+    this.cover = cover;
   }
 }

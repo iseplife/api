@@ -19,7 +19,6 @@ import com.iseplife.api.dao.media.MediaRepository;
 import com.iseplife.api.dao.post.PostRepository;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.services.fileHandler.FileHandler;
-import com.iseplife.api.utils.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +31,7 @@ import springfox.documentation.annotations.Cacheable;
 
 import java.security.InvalidParameterException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 
 @Service
@@ -108,20 +108,29 @@ public class MediaService {
     switch (mime) {
       case "video":
         media = new Video();
-        name = fileHandler.upload(file, "vid", false, Collections.EMPTY_MAP);
+        name = fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("video").path, false, Collections.EMPTY_MAP);
         break;
       case "image":
         media = new Image();
-        name = fileHandler.upload(file, gallery ? "img/g" : "img", false,
-          ObjectUtils.asMap(
-            "process", "resize",
-            "sizes", StorageConfig.GALLERY_SIZES
-          )
-        );
+        if (gallery) {
+          name = fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("gallery").path, false,
+            Map.of(
+              "process", "resize",
+              "sizes", StorageConfig.MEDIAS_CONF.get("gallery").sizes
+            )
+          );
+        } else {
+          name = fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("post").path, false,
+            Map.of(
+              "process", "compress",
+              "sizes", StorageConfig.MEDIAS_CONF.get("post").sizes
+            )
+          );
+        }
         break;
       default:
         media = new Document();
-        name = fileHandler.upload(file, "doc", false, Collections.EMPTY_MAP);
+        name = fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("document").path, false, Collections.EMPTY_MAP);
         break;
     }
 
@@ -145,7 +154,8 @@ public class MediaService {
 
 
   void deleteMedia(Media media) {
-    fileHandler.delete(media.getName());
+    String name = media.getName();
+    fileHandler.delete(name);
     mediaRepository.delete(media);
   }
 

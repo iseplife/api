@@ -1,7 +1,8 @@
-package com.iseplife.api.entity;
+package com.iseplife.api.entity.group;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.constants.GroupType;
+import com.iseplife.api.entity.GroupMember;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.user.Student;
 
@@ -33,12 +34,8 @@ public class Group {
   private Feed feed;
 
   @JsonIgnore
-  @ManyToMany(fetch = FetchType.LAZY)
-  private Set<Student> admins;
-
-  @JsonIgnore
-  @ManyToMany(fetch = FetchType.LAZY)
-  private Set<Student> members;
+  @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<GroupMember> members;
 
   public Long getId() {
     return id;
@@ -88,14 +85,6 @@ public class Group {
     this.feed = feed;
   }
 
-  public Set<Student> getAdmins() {
-    return admins;
-  }
-
-  public void setAdmins(Set<Student> admins) {
-    this.admins = admins;
-  }
-
   public GroupType getType() {
     return type;
   }
@@ -104,11 +93,11 @@ public class Group {
     this.type = type;
   }
 
-  public Set<Student> getMembers() {
+  public List<GroupMember> getMembers() {
     return members;
   }
 
-  public void setMembers(Set<Student> members) {
+  public void setMembers(List<GroupMember> members) {
     this.members = members;
   }
 }

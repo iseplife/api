@@ -2,7 +2,7 @@ package com.iseplife.api.dto.group;
 
 import java.util.List;
 
-public class groupDTO {
+public class GroupDTO {
   private String name;
   private Boolean restricted;
   private List<Long> admins;

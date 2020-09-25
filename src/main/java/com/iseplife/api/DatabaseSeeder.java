@@ -5,7 +5,7 @@ import com.iseplife.api.constants.GroupType;
 import com.iseplife.api.dao.group.GroupRepository;
 import com.iseplife.api.dao.student.RoleRepository;
 import com.iseplife.api.dao.student.StudentRepository;
-import com.iseplife.api.entity.Group;
+import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;

@@ -20,17 +20,21 @@ public class Gallery implements Embedable {
 
   private String name;
 
+  private String description;
+
   private Boolean pseudo = false;
 
   private Date creation;
 
+  @JsonIgnore
   @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "gallery")
   private List<Image> images = new ArrayList<>();
 
-  @ManyToOne
   @JsonIgnore
+  @ManyToOne
   private Feed feed;
 
+  @JsonIgnore
   @ManyToOne
   private Club club;
 
@@ -42,7 +46,6 @@ public class Gallery implements Embedable {
     this.id = id;
   }
 
-  @JsonIgnore
   public List<Image> getImages() {
     return images;
   }
@@ -59,7 +62,7 @@ public class Gallery implements Embedable {
     this.name = name;
   }
 
-  public List<Image> getPreviewImages() {
+  public List<Image> getPreview() {
     return images.subList(0, Math.min(images.size(), 5));
   }
 
@@ -97,5 +100,13 @@ public class Gallery implements Embedable {
 
   public void setPseudo(Boolean pseudo) {
     this.pseudo = pseudo;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
   }
 }

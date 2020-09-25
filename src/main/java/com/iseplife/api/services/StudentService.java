@@ -12,7 +12,7 @@ import com.iseplife.api.dto.student.StudentUpdateDTO;
 import com.iseplife.api.dto.student.view.StudentAdminView;
 import com.iseplife.api.dto.student.view.StudentPreview;
 import com.iseplife.api.dto.student.view.StudentPreviewAdmin;
-import com.iseplife.api.entity.Group;
+import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.user.Role;
@@ -22,10 +22,8 @@ import com.iseplife.api.dao.student.StudentFactory;
 import com.iseplife.api.dao.student.StudentRepository;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.services.fileHandler.FileHandler;
-import com.iseplife.api.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -34,10 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Created by Guillaume on 30/07/2017.
- * back
- */
+
 @Service
 public class StudentService {
 
@@ -62,12 +57,6 @@ public class StudentService {
   @Qualifier("FileHandlerBean")
   @Autowired
   FileHandler fileHandler;
-
-  @Value("${storage.image.student.default}")
-  protected String defaultPath;
-
-  @Value("${storage.image.student.original}")
-  protected String originalPath;
 
   private static final int RESULTS_PER_PAGE = 20;
 
@@ -124,21 +113,21 @@ public class StudentService {
   public String uploadOriginalPicture(Student student, MultipartFile image) {
     String name = student.getId() + "." + fileHandler.getFileExtension(image.getName());
 
-    Map params = ObjectUtils.asMap(
+    Map params = Map.of(
       "process", "resize",
-      "sizes", StorageConfig.AUTHOR_SIZES
+      "sizes", StorageConfig.MEDIAS_CONF.get("user_original")
     );
-    return fileHandler.upload(image, originalPath + "/" + name, true, params);
+    return fileHandler.upload(image, StorageConfig.MEDIAS_CONF.get("user_original") + "/" + name, true, params);
   }
 
   private void updateProfilePicture(Student student, MultipartFile image) {
-    Map params = ObjectUtils.asMap(
+    Map params = Map.of(
       "process", "resize",
-      "sizes", StorageConfig.AUTHOR_SIZES
+      "sizes", StorageConfig.MEDIAS_CONF.get("user_avatar").sizes
     );
 
     student.setPicture(
-      fileHandler.upload(image, defaultPath, false, params)
+      fileHandler.upload(image, StorageConfig.MEDIAS_CONF.get("user_avatar").path, false, params)
     );
     studentRepository.save(student);
   }
@@ -198,17 +187,17 @@ public class StudentService {
   }
 
 
-  public List<String> getAllPromo() {
+  public List<Integer> getAllPromo() {
     return studentRepository.findDistinctPromo();
   }
 
-  public List<Feed> getFeeds(Student student, List<String> roles, List<Long> adminClub) {
+  public List<Feed> getFeeds(Student student) {
     List<Feed> feeds =
       clubRepository.findAllStudentClub(student)
         .stream()
         .map(Club::getFeed)
         .collect(Collectors.toList());
-    List<Feed> groups = groupRepository.findAllStudentGroups(student)
+    List<Feed> groups = groupRepository.findAllUserGroups(student.getId())
       .stream()
       .map(Group::getFeed)
       .collect(Collectors.toList());

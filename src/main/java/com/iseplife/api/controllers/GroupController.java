@@ -1,8 +1,9 @@
 package com.iseplife.api.controllers;
 
 
-import com.iseplife.api.dao.group.GroupFactory;
-import com.iseplife.api.dto.group.groupDTO;
+import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.dto.group.GroupDTO;
+import com.iseplife.api.dto.group.view.GroupPreview;
 import com.iseplife.api.dto.group.view.GroupView;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.services.AuthService;
@@ -10,10 +11,12 @@ import com.iseplife.api.services.GroupService;
 import com.iseplife.api.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.security.RolesAllowed;
+import java.util.List;
 
 
 @RestController
@@ -35,32 +38,41 @@ public class GroupController {
     return groupService.getAll(page);
   }
 
+  @GetMapping("/me")
+  @RolesAllowed({Roles.STUDENT})
+  public List<GroupPreview> getUserGroups(@AuthenticationPrincipal TokenPayload token) {
+    return groupService.getUserGroups(token);
+  }
+
+
   @PostMapping
   @RolesAllowed({Roles.ADMIN})
   public GroupView createGroup(
     @RequestParam(name="form") String form,
     @RequestParam(name="file", required = false) MultipartFile file
   ) {
-    groupDTO dto = jsonUtils.deserialize(form, groupDTO.class);
+    GroupDTO dto = jsonUtils.deserialize(form, GroupDTO.class);
     return groupService.createGroup(dto, file);
   }
 
   @GetMapping("/{id}")
-  @RolesAllowed({Roles.ADMIN})
+  @RolesAllowed({Roles.STUDENT})
   public GroupView getGroup(@PathVariable Long id) {
-    return GroupFactory.toView(groupService.getGroup(id));
+    return groupService.getGroupView(id);
   }
 
   @PutMapping("/{id}")
   @RolesAllowed({Roles.ADMIN})
-  public GroupView updateGroup(
-    @PathVariable Long id,
-    @RequestParam(name="form") String form,
-    @RequestParam(name="file", required = false) MultipartFile file
-  ) {
-    groupDTO dto = jsonUtils.deserialize(form, groupDTO.class);
-    return groupService.updateGroup(id, dto, file);
+  public GroupView updateGroup(@PathVariable Long id, @RequestBody GroupDTO dto) {
+    return groupService.updateGroup(id, dto);
   }
+
+  @PostMapping("/{id}/cover")
+  @RolesAllowed({Roles.STUDENT})
+  public String updateCover(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+    return groupService.updateCover(id, file);
+  }
+
 
   @PutMapping("/{id}/archive")
   @RolesAllowed({Roles.ADMIN})

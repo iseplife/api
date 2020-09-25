@@ -3,12 +3,13 @@ package com.iseplife.api.dao.event;
 import com.iseplife.api.constants.EventType;
 import com.iseplife.api.dao.club.ClubFactory;
 import com.iseplife.api.dto.EventDTO;
-import com.iseplife.api.dto.view.EventPreviewView;
+import com.iseplife.api.dto.view.EventPreview;
 import com.iseplife.api.dto.view.EventView;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.feed.Feed;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.stream.Collectors;
 
 @Component
@@ -43,16 +44,16 @@ public class EventFactory {
     return event;
   }
 
-  static public EventPreviewView entityToPreviewView(Event event) {
-    EventPreviewView preview = new EventPreviewView();
+  static public EventPreview entityToPreviewView(Event event) {
+    EventPreview preview = new EventPreview();
     preview.setId(event.getId());
     preview.setTitle(event.getTitle());
     preview.setType(event.getType().name());
     preview.setTargets(event.getTargets().stream().map(Feed::getId).collect(Collectors.toSet()));
     preview.setStart(event.getStart());
     preview.setEnd(event.getEnd());
-    preview.setImageUrl(event.getImageUrl());
-    preview.setPublished(event.getPublished());
+    preview.setCover(event.getImageUrl());
+    preview.setPublished(event.getPublished().after(new Date()));
     return preview;
   }
 
@@ -62,7 +63,7 @@ public class EventFactory {
     view.setType(event.getType().name());
     view.setTitle(event.getTitle());
     view.setDescription(event.getDescription());
-    view.setImage(event.getImageUrl());
+    view.setCover(event.getImageUrl());
 
     view.setStart(event.getStart());
     view.setEnd(event.getEnd());

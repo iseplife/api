@@ -2,6 +2,7 @@ package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
+import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.feed.Feed;
@@ -67,6 +68,20 @@ public class AuthService {
     return payload.getRoles().contains(Roles.ADMIN)
       || (feed.getClub() != null && payload.getClubsPublisher().contains(feed.getClub().getId()))
       || (feed.getEvent() != null && payload.getClubsPublisher().contains(feed.getEvent().getClub().getId()));
+  }
+
+  static public boolean hasReadAccess(Feed feed) {
+    TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return payload.getRoles().contains(Roles.ADMIN)
+      || (feed.getClub() != null)
+      || (feed.getGroup() != null && payload.getFeeds().contains(feed.getId()))
+      || (feed.getEvent() != null && feed.getEvent().getTargets().stream().anyMatch(f -> payload.getFeeds().contains(f.getId())));
+  }
+
+  static public boolean hasRightOn(Group group) {
+    TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return payload.getRoles().contains(Roles.ADMIN)
+      || group.getMembers().stream().anyMatch(m -> m.getStudent().getId().equals(payload.getId()) && m.isAdmin());
   }
 
   static public boolean hasRightOn(Gallery gallery) {
