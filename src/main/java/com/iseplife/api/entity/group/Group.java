@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.constants.GroupType;
 import com.iseplife.api.entity.GroupMember;
 import com.iseplife.api.entity.feed.Feed;
+import com.iseplife.api.entity.feed.Feedable;
 import com.iseplife.api.entity.user.Student;
 
 import javax.persistence.*;
@@ -13,7 +14,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "`group`")
-public class Group {
+public class Group implements Feedable {
   @Id
   @GeneratedValue
   private Long id;
