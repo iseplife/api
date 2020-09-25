@@ -149,7 +149,7 @@ public class EventService {
   public EventView getEventView(Long id) {
     Event e = getEvent(id);
 
-    return EventFactory.toView(e, subscriptionService.isSubscribedToFeed(e.getFeed().getId()));
+    return EventFactory.toView(e, feedService.isSubscribedToFeed(e));
   }
 
   public Page<GalleryPreview> getEventGalleries(Long id, int page) {
@@ -158,9 +158,6 @@ public class EventService {
 
   public List<EventPreview> getChildrenEvents(Long id) {
     Event event = getEvent(id);
-    if (event == null) {
-      throw new IllegalArgumentException("could not find event with id: " + id);
-    }
 
     return event.getEvents()
       .stream()
@@ -171,9 +168,7 @@ public class EventService {
   public List<EventPreview> getPreviousEditions(Long id) {
     Event event = getEvent(id);
     List<Event> previousEditions = new LinkedList<>();
-    if (event == null) {
-      throw new IllegalArgumentException("could not find event with id: " + id);
-    }
+
 
     //Only return the 5 last edition
     for (int i = 0; i < 5; i++) {

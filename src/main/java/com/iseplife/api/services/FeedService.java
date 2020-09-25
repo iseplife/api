@@ -5,6 +5,7 @@ import com.iseplife.api.dao.feed.SubscriptionRepository;
 import com.iseplife.api.dto.view.PostView;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.Subscription;
+import com.iseplife.api.entity.feed.Feedable;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.dao.feed.FeedRepository;
 import com.iseplife.api.exceptions.IllegalArgumentException;
@@ -81,8 +82,12 @@ public class FeedService {
     return postService.getFeedDrafts(feed, author);
   }
 
-  public Boolean isSubscribed(Long id, Long studentID) {
-    return subscriptionRepository.findByFeedIdAndListenerId(id, studentID) != null;
+  public Boolean isSubscribedToFeed(Long id, Long studentID) {
+    return subscriptionRepository.existsSubscriptionByFeedIdAndListenerId(id, studentID);
+  }
+
+  public Boolean isSubscribedToFeed(Feedable feedable) {
+    return isSubscribedToFeed(feedable.getFeed().getId(), AuthService.getLoggedId());
   }
 
   public void toggleSubscription(Long id, Long studentID) {
