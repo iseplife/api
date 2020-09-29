@@ -1,21 +1,17 @@
 package com.iseplife.api.services;
 
-import com.iseplife.api.dto.view.ImportStudentResultView;
-import com.iseplife.api.entity.user.Role;
-import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.student.StudentRepository;
+import com.iseplife.api.entity.user.Role;
+import com.iseplife.api.entity.user.Student;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Guillaume on 22/10/2017.
@@ -24,111 +20,30 @@ import java.util.*;
 @Service
 public class StudentImportService {
 
-  private final Logger LOG = LoggerFactory.getLogger(StudentImportService.class);
+    private final Logger LOG = LoggerFactory.getLogger(StudentImportService.class);
 
-  @Autowired
-  StudentService studentService;
+    @Autowired
+    StudentService studentService;
 
-  @Autowired
-  StudentRepository studentRepository;
+    @Autowired
+    StudentRepository studentRepository;
 
-  public ImportStudentResultView importStudents(MultipartFile csv, List<MultipartFile> photos) {
+    public Student importStudents(Student newStudent, MultipartFile file) {
 
-    ImportStudentResultView res = new ImportStudentResultView();
+        Role studentRole = studentService.getRole(Roles.STUDENT);
+        Set<Role> roles = new HashSet<>();
+        roles.add(studentRole);
 
-    // Map of studentID : Student
-    Map<Long, Student> students = new HashMap<>();
-    try {
-      String line;
-      InputStream is = csv.getInputStream();
-      BufferedReader br = new BufferedReader(new InputStreamReader(is));
-      int lineNum = 0;
-
-      Role studentRole = studentService.getRole(Roles.STUDENT);
-      Set<Role> roles = new HashSet<>();
-      roles.add(studentRole);
-      while ((line = br.readLine()) != null) {
-        String csvSeparator = ",";
-        String[] cols = line.split(csvSeparator);
-        int csvNumColumns = 4;
-        if (lineNum != 0 && cols.length == csvNumColumns) {
-          String firstname = cols[0];
-          String lastname = cols[1];
-          Long studentId = Long.parseLong(cols[2]);
-          Integer promo = Integer.parseInt(cols[3]);
-
-          Student student = new Student();
-          student.setId(studentId);
-          student.setFirstName(firstname);
-          student.setLastName(lastname);
-          student.setPromo(promo);
-          student.setRoles(roles);
-
-          students.put(studentId, student);
+        Student student = new Student();
+        student.setId(newStudent.getId());
+        student.setFirstName(newStudent.getFirstName());
+        student.setLastName(newStudent.getLastName());
+        student.setPromo(newStudent.getPromo());
+        student.setRoles(roles);
+        if (file != null) {
+            studentService.addProfilePicture(newStudent.getId(), file);
         }
-
-        lineNum++;
-      }
-
-      res = createStudents(photos, students);
-
-
-    } catch (IOException e) {
-      LOG.error(e.getMessage(), e);
+        return student;
     }
-    return res;
-  }
-
-  private ImportStudentResultView createStudents(List<MultipartFile> photos, Map<Long, Student> students) {
-    ImportStudentResultView res = new ImportStudentResultView();
-    res.setPhotosSent(photos.size());
-    res.setStudentsSent(students.size());
-
-    List<Student> studentsToCreate = new ArrayList<>();
-    Map<Long, MultipartFile> photosToAdd = new HashMap<>();
-
-    for (MultipartFile photo : photos) {
-      String fullname = photo.getOriginalFilename();
-      Long idIsep = Long.parseLong(fullname.split("\\.")[0]);
-      photosToAdd.put(idIsep, photo);
-    }
-
-    students.forEach((e, s) -> {
-      Student student = studentService.getStudent(e);
-      // student already exist
-      if (student != null) {
-        res.incrAlreadyImported();
-        // add image if not present
-        if (student.getPicture() == null) {
-          // check if photo can be added
-          if (photosToAdd.get(student.getId()) != null) {
-            studentService.addProfilePicture(student.getId(), photosToAdd.get(student.getId()));
-            res.incrPhotoAdded();
-            res.incrStudentPhotoNotMatched();
-          }
-        }
-      } else { // if user doesn't exist
-
-        // check photo exist
-//        if (photosToAdd.get(s.getStudentId()) != null) {
-        studentsToCreate.add(s);
-        res.incrImport();
-//        } else {
-//          res.incrStudentPhotoNotMatched();
-//        }
-      }
-    });
-
-    studentRepository.saveAll(studentsToCreate);
-    // add photo to new students
-    for (Student s : studentsToCreate) {
-      if (photosToAdd.get(s.getId()) != null) {
-        studentService.addProfilePicture(s.getId(), photosToAdd.get(s.getId()));
-        res.incrPhotoAdded();
-      }
-    }
-
-    return res;
-  }
 
 }
