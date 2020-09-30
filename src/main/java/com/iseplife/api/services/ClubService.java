@@ -181,7 +181,8 @@ public class ClubService {
 
     if (member.getRole() == ClubRole.ADMIN &&
       dto.getRole() != member.getRole() &&
-      clubMemberRepository.findClubAdminCount(member.getClub()) == 1) {
+      clubMemberRepository.findClubAdminCount(member.getClub()) == 1)
+    {
       throw new IllegalArgumentException("Could not update member as club must have at least 1 admin");
     }
 

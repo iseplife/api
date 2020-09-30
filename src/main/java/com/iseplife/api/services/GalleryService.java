@@ -182,12 +182,8 @@ public class GalleryService {
       .stream()
       .filter(img -> images.contains(img.getId()))
       .count();
-
-
-
-    if (images.size() != imageSize) {
+    if (images.size() != imageSize)
       throw new IllegalArgumentException("images does not belong to this gallery");
-    }
 
     imageRepository.findAllById(images).forEach(img ->
       mediaService.deleteMedia(img)

@@ -51,6 +51,14 @@ public class GroupService {
     return group.get();
   }
 
+  public GroupMember getGroupMember(Long id) {
+    Optional<GroupMember> member = groupMemberRepository.findById(id);
+    if (member.isEmpty())
+      throw new IllegalArgumentException("could not find the group member with id: " + id);
+
+    return member.get();
+  }
+
   public GroupView getGroupView(Long id) {
     Group group = getGroup(id);
     if(groupMemberRepository.isMemberOfGroup(id, AuthService.getLoggedId()))
@@ -151,6 +159,43 @@ public class GroupService {
     }
 
     groupRepository.delete(group);
+  }
+
+
+  public Boolean promoteMember(Long id, Long member){
+    GroupMember groupMember = getGroupMember(member);
+    if(!AuthService.hasRightOn(groupMember.getGroup()))
+      throw new AuthException("You have not sufficient rights on this group (id:" + id + ")");
+
+    groupMember.setAdmin(true);
+    groupMemberRepository.save(groupMember);
+
+    return true;
+  }
+
+  public Boolean demoteMember(Long id, Long member){
+    GroupMember groupMember = getGroupMember(member);
+    if(!AuthService.hasRightOn(groupMember.getGroup()))
+      throw new AuthException("You have not sufficient rights on this group (id:" + id + ")");
+
+    if(groupMember.isAdmin() && groupMemberRepository.findGroupAdminCount(groupMember.getGroup()) < 1)
+      throw new IllegalArgumentException("Could not demote member as group must have at least 1 admin");
+
+    groupMember.setAdmin(false);
+    groupMemberRepository.save(groupMember);
+    return true;
+  }
+
+  public Boolean removeMember(Long id, Long member){
+    GroupMember groupMember = getGroupMember(member);
+    if(!AuthService.hasRightOn(groupMember.getGroup()))
+      throw new AuthException("You have not sufficient rights on this group (id:" + id + ")");
+
+    if(groupMember.isAdmin() && groupMemberRepository.findGroupAdminCount(groupMember.getGroup()) < 1)
+      throw new IllegalArgumentException("Could not delete member as group must have at least 1 admin");
+
+    groupMemberRepository.delete(groupMember);
+    return true;
   }
 
 }
