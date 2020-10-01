@@ -8,6 +8,7 @@ import com.iseplife.api.entity.Subscription;
 import com.iseplife.api.entity.feed.Feedable;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.dao.feed.FeedRepository;
+import com.iseplife.api.exceptions.AuthException;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.services.fileHandler.FileHandler;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -90,10 +91,15 @@ public class FeedService {
     return isSubscribedToFeed(feedable.getFeed().getId(), AuthService.getLoggedId());
   }
 
-  public void toggleSubscription(Long id, Long studentID) {
-    Subscription sub = subscriptionRepository.findByFeedIdAndListenerId(id, studentID);
+  public Boolean toggleSubscription(Long id, Long studentID) {
+    Feed feed = getFeed(id);
+    if(!AuthService.hasReadAccess(feed))
+      throw new AuthException("You have not sufficient rights on this feed (id:" + id + ")");
+
+    Subscription sub = subscriptionRepository.findByFeedIdAndListenerId(feed.getId(), studentID);
     if (sub != null) {
       subscriptionRepository.delete(sub);
+      return false;
     } else {
       Student student = studentService.getStudent(studentID);
       sub = new Subscription();
@@ -101,6 +107,7 @@ public class FeedService {
       sub.setListener(student);
 
       subscriptionRepository.save(sub);
+      return true;
     }
   }
 }
