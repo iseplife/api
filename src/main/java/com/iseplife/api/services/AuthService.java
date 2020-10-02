@@ -57,53 +57,53 @@ public class AuthService {
 
   static public boolean hasRightOn(Post post) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-    return payload.getRoles().contains(Roles.ADMIN)
-      || post.getAuthor().getId().equals(payload.getId())
-      || payload.getClubsPublisher().contains(post.getLinkedClub().getId())
-      || hasRightOn(post.getFeed());
+    return userHasRole(Roles.ADMIN)
+            || post.getAuthor().getId().equals(payload.getId())
+            || payload.getClubsPublisher().contains(post.getLinkedClub().getId())
+            || hasRightOn(post.getFeed());
   }
 
   static public boolean hasRightOn(Feed feed) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-    return payload.getRoles().contains(Roles.ADMIN)
-      || (feed.getClub() != null && payload.getClubsPublisher().contains(feed.getClub().getId()))
-      || (feed.getEvent() != null && payload.getClubsPublisher().contains(feed.getEvent().getClub().getId()));
+    return userHasRole(Roles.ADMIN)
+            || (feed.getClub() != null && payload.getClubsPublisher().contains(feed.getClub().getId()))
+            || (feed.getEvent() != null && payload.getClubsPublisher().contains(feed.getEvent().getClub().getId()));
   }
 
   static public boolean hasReadAccess(Feed feed) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-    return payload.getRoles().contains(Roles.ADMIN)
-      || (feed.getClub() != null)
-      || (feed.getGroup() != null && payload.getFeeds().contains(feed.getId()))
-      || (feed.getEvent() != null && feed.getEvent().getTargets().stream().anyMatch(f -> payload.getFeeds().contains(f.getId())));
+    return userHasRole(Roles.ADMIN)
+            || (feed.getClub() != null)
+            || (feed.getGroup() != null && payload.getFeeds().contains(feed.getId()))
+            || (feed.getEvent() != null && feed.getEvent().getTargets().stream().anyMatch(f -> payload.getFeeds().contains(f.getId())));
   }
 
   static public boolean hasRightOn(Group group) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-    return payload.getRoles().contains(Roles.ADMIN)
-      || group.getMembers().stream().anyMatch(m -> m.getStudent().getId().equals(payload.getId()) && m.isAdmin());
+    return userHasRole(Roles.ADMIN)
+            || group.getMembers().stream().anyMatch(m -> m.getStudent().getId().equals(payload.getId()) && m.isAdmin());
   }
 
   static public boolean hasRightOn(Gallery gallery) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-    return payload.getRoles().contains(Roles.ADMIN)
-      || payload.getClubsPublisher().contains(gallery.getClub().getId());
+    return userHasRole(Roles.ADMIN)
+            || payload.getClubsPublisher().contains(gallery.getClub().getId());
   }
 
   static public boolean hasRightOn(Club club) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-    return payload.getRoles().contains(Roles.ADMIN)
-      || payload.getClubsAdmin().contains(club.getId());
+    return userHasRole(Roles.ADMIN)
+            || payload.getClubsAdmin().contains(club.getId());
   }
 
   static public boolean hasRightOn(Event event) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-    return payload.getRoles().contains(Roles.ADMIN)
-      || payload.getClubsPublisher().contains(event.getClub().getId())
-      || payload.getClubsAdmin().contains(event.getClub().getId());
+    return userHasRole(Roles.ADMIN)
+            || payload.getClubsPublisher().contains(event.getClub().getId())
+            || payload.getClubsAdmin().contains(event.getClub().getId());
   }
 
-  public boolean userHasRole(String role) {
+  public static boolean userHasRole(String role) {
     return ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getRoles().contains(role);
   }
 }
