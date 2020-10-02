@@ -47,9 +47,6 @@ public class StudentController {
   StudentImportService studentImportService;
 
   @Autowired
-  AuthService authService;
-
-  @Autowired
   MediaService mediaService;
 
   @Autowired
@@ -114,7 +111,7 @@ public class StudentController {
   @GetMapping("/{id}/post")
   @RolesAllowed({Roles.STUDENT})
   public Page<PostView> getPostsStudent(@PathVariable Long id, @RequestParam(defaultValue = "0") int page) {
-    return postService.getPostsAuthor(id, authService.isUserAnonymous(), page);
+    return postService.getPostsAuthor(id, AuthService.isUserAnonymous(), page);
   }
 
   @GetMapping("/{id}/photo")
