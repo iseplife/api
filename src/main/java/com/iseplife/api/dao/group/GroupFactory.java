@@ -27,7 +27,7 @@ public class GroupFactory {
     return group;
   }
 
-  static public GroupView toView(Group group) {
+  static public GroupView toView(Group group, Boolean isSubscribed) {
     GroupView view = new GroupView();
 
     view.setId(group.getId());
@@ -38,6 +38,7 @@ public class GroupFactory {
     view.setLocked(group.getType() != GroupType.DEFAULT);
     view.setFeed(group.getFeed().getId());
     view.setHasRight(AuthService.hasRightOn(group));
+    view.setSubscribed(isSubscribed);
     view.setMembers(
       group.getMembers()
         .stream()

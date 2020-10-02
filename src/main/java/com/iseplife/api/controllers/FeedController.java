@@ -65,12 +65,12 @@ public class FeedController {
   @GetMapping("/{id}/subscribe")
   @RolesAllowed({Roles.STUDENT})
   public Boolean isFeedSubscribed(@PathVariable Long id, @AuthenticationPrincipal TokenPayload auth){
-    return feedService.isSubscribed(id, auth.getId());
+    return feedService.isSubscribedToFeed(id, auth.getId());
   }
 
   @PostMapping("/{id}/subscribe")
   @RolesAllowed({Roles.STUDENT})
-  public void toggleFeedSubscription(@PathVariable Long id, @AuthenticationPrincipal TokenPayload auth){
-    feedService.toggleSubscription(id, auth.getId());
+  public Boolean toggleFeedSubscription(@PathVariable Long id, @AuthenticationPrincipal TokenPayload auth){
+    return feedService.toggleSubscription(id, auth.getId());
   }
 }

@@ -12,7 +12,7 @@ public class SubscriptionService {
   @Autowired
   AuthService authService;
 
-  public Boolean isSubscribedToFeed(Long id){
-    return subscriptionRepository.existsSubscriptionByFeedIdAndListenerId(id, authService.getLoggedId());
+  public Boolean isSubscribedToFeed(Long feed){
+    return subscriptionRepository.existsSubscriptionByFeedIdAndListenerId(feed, AuthService.getLoggedId());
   }
 }

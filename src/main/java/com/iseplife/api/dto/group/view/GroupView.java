@@ -11,6 +11,7 @@ public class GroupView {
   private String cover;
   private Long feed;
   private Boolean hasRight;
+  private Boolean subscribed;
   private List<GroupMemberView> members;
 
   public Long getId() {
@@ -83,5 +84,13 @@ public class GroupView {
 
   public void setHasRight(Boolean hasRight) {
     this.hasRight = hasRight;
+  }
+
+  public Boolean getSubscribed() {
+    return subscribed;
+  }
+
+  public void setSubscribed(Boolean subscribed) {
+    this.subscribed = subscribed;
   }
 }

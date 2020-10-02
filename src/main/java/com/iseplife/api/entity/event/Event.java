@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.constants.EventType;
+import com.iseplife.api.entity.feed.Feedable;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-public class Event {
+public class Event implements Feedable {
 
   @Id
   @GeneratedValue

@@ -15,6 +15,7 @@ public class ClubView {
   private Boolean archived;
   private Boolean canEdit;
   private Date creation;
+  private Boolean subscribed;
 
   private String website;
   private String facebook;
@@ -122,5 +123,13 @@ public class ClubView {
 
   public void setCoverUrl(String coverUrl) {
     this.coverUrl = coverUrl;
+  }
+
+  public Boolean getSubscribed() {
+    return subscribed;
+  }
+
+  public void setSubscribed(Boolean subscribed) {
+    this.subscribed = subscribed;
   }
 }

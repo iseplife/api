@@ -40,6 +40,9 @@ public class GroupService {
   @Autowired
   private StudentService studentService;
 
+  @Autowired
+  private FeedService feedService;
+
 
   private static final int RESULTS_PER_PAGE = 20;
 
@@ -62,16 +65,16 @@ public class GroupService {
   public GroupView getGroupView(Long id) {
     Group group = getGroup(id);
     if(groupMemberRepository.isMemberOfGroup(id, AuthService.getLoggedId()))
-      return GroupFactory.toView(group);
+      return GroupFactory.toView(group, feedService.isSubscribedToFeed(group));
 
     throw new IllegalArgumentException("could not find the group with id: " + id);
   }
 
 
-  public Page<GroupView> getAll(int page) {
+  public Page<GroupPreview> getAll(int page) {
     return groupRepository
       .findAll(PageRequest.of(page, RESULTS_PER_PAGE))
-      .map(GroupFactory::toView);
+      .map(GroupFactory::toPreview);
   }
 
   public List<GroupPreview> getUserGroups(TokenPayload token) {
@@ -101,7 +104,7 @@ public class GroupService {
     });
 
 
-    return GroupFactory.toView(groupRepository.save(group));
+    return GroupFactory.toView(groupRepository.save(group), false);
   }
 
 
@@ -115,7 +118,7 @@ public class GroupService {
       member.setStudent(a);
       group.getMembers().add(member);
     });
-    return GroupFactory.toView(groupRepository.save(group));
+    return GroupFactory.toView(groupRepository.save(group), feedService.isSubscribedToFeed(group));
   }
 
   public String updateCover(Long id, MultipartFile cover){

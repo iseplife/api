@@ -37,7 +37,7 @@ public class ClubFactory {
     return club;
   }
 
-  static public ClubView toView(Club c, Boolean canEdit){
+  static public ClubView toView(Club c, Boolean canEdit, Boolean isSubscribed){
     ClubView view = new ClubView();
     view.setId(c.getId());
     view.setName(c.getName());
@@ -50,6 +50,7 @@ public class ClubFactory {
     view.setCanEdit(canEdit);
     view.setFeed(c.getFeed().getId());
     view.setCreation(c.getCreation());
+    view.setSubscribed(isSubscribed);
 
     view.setInstagram(c.getInstagram());
     view.setFacebook(c.getFacebook());

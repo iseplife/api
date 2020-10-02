@@ -52,6 +52,9 @@ public class ClubService {
   StudentService studentService;
 
   @Autowired
+  FeedService feedService;
+
+  @Autowired
   GalleryService galleryService;
 
   @Qualifier("FileHandlerBean")
@@ -69,7 +72,11 @@ public class ClubService {
   public ClubView getClubView(Long id) {
     Club club = getClub(id);
 
-    return ClubFactory.toView(club, AuthService.hasRightOn(club));
+    return ClubFactory.toView(
+      club,
+      AuthService.hasRightOn(club),
+      feedService.isSubscribedToFeed(club)
+    );
   }
 
   public ClubView createClub(ClubAdminDTO dto) {
@@ -90,7 +97,11 @@ public class ClubService {
     club.setMembers(members);
     club.setFeed(new Feed());
 
-    return ClubFactory.toView(clubRepository.save(club), true);
+    return ClubFactory.toView(
+      clubRepository.save(club),
+      true,
+      feedService.isSubscribedToFeed(club)
+    );
   }
 
   public ClubView updateClub(Long id, ClubDTO dto) {
@@ -101,7 +112,11 @@ public class ClubService {
     // Update through reference so we don't need to get return value
     ClubFactory.fromDTO(dto, club);
 
-    return ClubFactory.toView(clubRepository.save(club), true);
+    return ClubFactory.toView(
+      clubRepository.save(club),
+      true,
+      feedService.isSubscribedToFeed(club)
+    );
   }
 
   public ClubView updateClubAdmin(Long id, ClubAdminDTO dto) {
@@ -112,7 +127,11 @@ public class ClubService {
     // Update through reference so we don't need to get return value
     ClubFactory.fromAdminDTO(dto, club);
 
-    return ClubFactory.toView(clubRepository.save(club), true);
+    return ClubFactory.toView(
+      clubRepository.save(club),
+      true,
+      feedService.isSubscribedToFeed(club)
+    );
   }
 
 

@@ -34,7 +34,7 @@ public class GroupController {
 
   @GetMapping
   @RolesAllowed({Roles.ADMIN})
-  public Page<GroupView> getAll(@RequestParam(defaultValue = "0") int page) {
+  public Page<GroupPreview> getAll(@RequestParam(defaultValue = "0") int page) {
     return groupService.getAll(page);
   }
 

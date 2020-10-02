@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.constants.ClubType;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.event.Event;
+import com.iseplife.api.entity.feed.Feedable;
 import com.iseplife.api.entity.post.Post;
 
 import javax.persistence.*;
@@ -15,7 +16,7 @@ import java.util.List;
  * back
  */
 @Entity
-public class Club {
+public class Club implements Feedable {
   @Id
   @GeneratedValue
   private Long id;
