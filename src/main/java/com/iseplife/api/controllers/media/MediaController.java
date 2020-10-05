@@ -43,10 +43,11 @@ public class MediaController {
   @PostMapping
   @RolesAllowed({Roles.STUDENT})
   public Media createMedia(
-    @RequestParam(defaultValue = "0") Boolean gallery,
+    @RequestParam(defaultValue = "0") Integer club,
     @RequestParam(defaultValue = "0") Boolean nsfw,
-    @RequestParam("file") MultipartFile file){
-    return mediaService.createMedia(file, gallery, nsfw);
+    @RequestParam("file") MultipartFile file
+  ){
+    return mediaService.createMedia(file, club, nsfw);
   }
 
   @DeleteMapping("/{filename}")

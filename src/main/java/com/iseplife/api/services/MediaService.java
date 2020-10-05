@@ -3,8 +3,12 @@ package com.iseplife.api.services;
 import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.MediaType;
+import com.iseplife.api.dao.club.ClubRepository;
 import com.iseplife.api.dao.gallery.GalleryRepository;
+import com.iseplife.api.dao.student.StudentRepository;
 import com.iseplife.api.dto.view.MatchedView;
+import com.iseplife.api.entity.Author;
+import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.post.embed.media.Image;
 import com.iseplife.api.entity.Matched;
 import com.iseplife.api.entity.post.embed.media.Document;
@@ -18,6 +22,7 @@ import com.iseplife.api.dao.media.image.MatchedRepository;
 import com.iseplife.api.dao.media.MediaRepository;
 import com.iseplife.api.dao.post.PostRepository;
 import com.iseplife.api.exceptions.IllegalArgumentException;
+import com.iseplife.api.exceptions.MediaMaxUploadException;
 import com.iseplife.api.services.fileHandler.FileHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,8 +35,13 @@ import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.Cacheable;
 
 import java.security.InvalidParameterException;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.Period;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 
 @Service
@@ -55,10 +65,19 @@ public class MediaService {
   GalleryRepository galleryRepository;
 
   @Autowired
+  StudentRepository studentRepository;
+
+  @Autowired
+  ClubRepository clubRepository;
+
+  @Autowired
   PostService postService;
 
   @Autowired
   StudentService studentService;
+
+  @Autowired
+  ClubService clubService;
 
   @Qualifier("FileHandlerBean")
   @Autowired
@@ -102,42 +121,78 @@ public class MediaService {
     return img.get();
   }
 
-  public Media createMedia(MultipartFile file, Boolean gallery, Boolean nsfw) {
-    String name, mime = file.getContentType().split("/")[0];
-    Media media;
-    switch (mime) {
-      case "video":
-        media = new Video();
-        name = fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("video").path, false, Collections.EMPTY_MAP);
-        break;
-      case "image":
-        media = new Image();
-        if (gallery) {
-          name = fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("gallery").path, false,
-            Map.of(
-              "process", "resize",
-              "sizes", StorageConfig.MEDIAS_CONF.get("gallery").sizes
-            )
-          );
-        } else {
-          name = fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("post").path, false,
-            Map.of(
-              "process", "compress",
-              "sizes", StorageConfig.MEDIAS_CONF.get("post").sizes
-            )
-          );
-        }
-        break;
-      default:
-        media = new Document();
-        name = fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("document").path, false, Collections.EMPTY_MAP);
-        break;
+
+  private Boolean isAllowedToCreateMedia(Author author) {
+    boolean isStudent = author instanceof Student;
+
+    if (Duration.between(author.getMediaCooldown().toInstant(), Instant.now()).toHours() > 24) {
+      author.setMediaCooldown(new Date());
+      if (isStudent) {
+        author.setMediaCounter(StorageConfig.DAILY_USER_MEDIA);
+        studentRepository.save((Student) author);
+      } else {
+        author.setMediaCounter(StorageConfig.DAILY_CLUB_MEDIA);
+        clubRepository.save((Club) author);
+      }
+
+      return true;
+    } else if (author.getMediaCounter() > 0) {
+      author.setMediaCounter(author.getMediaCounter() - 1);
+      if (isStudent)
+        studentRepository.save((Student) author);
+      else
+        clubRepository.save((Club) author);
+
+      return true;
     }
 
-    media.setName(name);
-    media.setNSFW(nsfw);
-    media.setCreation(new Date());
-    return mediaRepository.save(media);
+    return false;
+  }
+
+  public Media createMedia(MultipartFile file, Integer club, Boolean nsfw) {
+    Author author = club > 0 ?
+      clubService.getClub(club) :
+      studentService.getStudent(AuthService.getLoggedId());
+
+    if (isAllowedToCreateMedia(author)) {
+      String name, mime = file.getContentType().split("/")[0];
+      Media media;
+      switch (mime) {
+        case "video":
+          media = new Video();
+          name = fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("video").path, false, Collections.EMPTY_MAP);
+          break;
+        case "image":
+          media = new Image();
+          if (author instanceof Club) {
+            name = fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("gallery").path, false,
+              Map.of(
+                "process", "resize",
+                "sizes", StorageConfig.MEDIAS_CONF.get("gallery").sizes
+              )
+            );
+          } else {
+            name = fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("post").path, false,
+              Map.of(
+                "process", "compress",
+                "sizes", StorageConfig.MEDIAS_CONF.get("post").sizes
+              )
+            );
+          }
+          break;
+        default:
+          media = new Document();
+          name = fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("document").path, false, Collections.EMPTY_MAP);
+          break;
+      }
+
+      media.setName(name);
+      media.setNSFW(nsfw);
+      media.setCreation(new Date());
+      return mediaRepository.save(media);
+    }
+
+    throw new MediaMaxUploadException("You've reached your maximum daily upload");
   }
 
   public boolean toggleNSFW(Long id) {

@@ -1,6 +1,7 @@
 package com.iseplife.api.entity.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.iseplife.api.entity.Author;
 import com.iseplife.api.entity.Subscription;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-public class Student implements UserDetails {
+public class Student implements UserDetails, Author {
 
   @Id
   @Column(unique = true)
@@ -36,6 +37,9 @@ public class Student implements UserDetails {
 
   @JsonIgnore
   private Boolean allowNotifications = false;
+
+  private Integer mediaCounter;
+  private Date mediaCooldown;
 
   private String picture;
 
@@ -213,5 +217,25 @@ public class Student implements UserDetails {
 
   public void setPicture(String picture) {
     this.picture = picture;
+  }
+
+  @Override
+  public Integer getMediaCounter() {
+    return mediaCounter;
+  }
+
+  @Override
+  public void setMediaCounter(Integer mediaCounter) {
+    this.mediaCounter = mediaCounter;
+  }
+
+  @Override
+  public Date getMediaCooldown() {
+    return mediaCooldown;
+  }
+
+  @Override
+  public void setMediaCooldown(Date mediaCooldown) {
+    this.mediaCooldown = mediaCooldown;
   }
 }
