@@ -21,6 +21,7 @@ import com.iseplife.api.dao.media.image.ImageRepository;
 import com.iseplife.api.dao.media.image.MatchedRepository;
 import com.iseplife.api.dao.media.MediaRepository;
 import com.iseplife.api.dao.post.PostRepository;
+import com.iseplife.api.exceptions.AuthException;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.exceptions.MediaMaxUploadException;
 import com.iseplife.api.services.fileHandler.FileHandler;
@@ -124,6 +125,9 @@ public class MediaService {
 
   private Boolean isAllowedToCreateMedia(Author author) {
     boolean isStudent = author instanceof Student;
+    if(!isStudent && !AuthService.hasRightOn((Club) author))
+      throw new AuthException("You have not sufficient rights on this club (id:" + author.getId() + ")");
+
 
     if (Duration.between(author.getMediaCooldown().toInstant(), Instant.now()).toHours() > 24) {
       author.setMediaCooldown(new Date());
@@ -149,10 +153,13 @@ public class MediaService {
     return false;
   }
 
-  public Media createMedia(MultipartFile file, Integer club, Boolean nsfw) {
+  public Media createMedia(MultipartFile file, Long club, Boolean gallery, Boolean nsfw) {
     Author author = club > 0 ?
       clubService.getClub(club) :
       studentService.getStudent(AuthService.getLoggedId());
+
+    if(gallery && club <= 0)
+      throw new IllegalArgumentException("Club need to be specified when creating a gallery image");
 
     if (isAllowedToCreateMedia(author)) {
       String name, mime = file.getContentType().split("/")[0];
@@ -164,7 +171,7 @@ public class MediaService {
           break;
         case "image":
           media = new Image();
-          if (author instanceof Club) {
+          if (gallery) {
             name = fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("gallery").path, false,
               Map.of(
                 "process", "resize",
