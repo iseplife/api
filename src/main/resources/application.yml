@@ -18,19 +18,25 @@ logging:
   level:
     com.iseplife.api: INFO
 
+
+
+media_daily:
+  club: ${CLUB_MEDIA_LIMIT:2000}
+  user: ${USER_MEDIA_LIMIT:15}
+
 cloud_handler:
-  name: ${CLOUD_NAME:aws}
-  api_key:  ${CLOUD_API_KEY:}
+  name:       ${CLOUD_NAME:aws}
+  api_key:    ${CLOUD_API_KEY:}
   api_secret: ${CLOUD_API_SECRET:}
-  bucket: iseplife
+  bucket:     iseplife
 
 jwt:
-  secret: 1jmhvPXhI40vqAnm
-  refreshSecret: fIH3ZmRmqH2LT6vH
-  tokenDuration: 600              # 10 min
-  refreshTokenDuration: 604800    # 7 jours
-  issuer: iseplife
+  secret:               ${JWT_SECRET:1jmhvPXhI40vqAnm}
+  refreshSecret:        ${JWT_REFRESH_SECRET:fIH3ZmRmqH2LT6vH}
+  tokenDuration:        ${JWT_TOKEN_DURATION:600}                 # default: 10 min
+  refreshTokenDuration: ${JWT_REFRESH_TOKEN_DURATION:604800}      # default: 7 days
+  issuer:               iseplife
 
 auth:
+  enable:   ${ENABLE_ROOT:true}
   password: ${ROOT_PASS:password}
-  enable: true

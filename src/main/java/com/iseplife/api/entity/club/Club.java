@@ -2,6 +2,7 @@ package com.iseplife.api.entity.club;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.constants.ClubType;
+import com.iseplife.api.entity.Author;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.feed.Feedable;
@@ -16,7 +17,7 @@ import java.util.List;
  * back
  */
 @Entity
-public class Club implements Feedable {
+public class Club implements Feedable, Author {
   @Id
   @GeneratedValue
   private Long id;
@@ -42,6 +43,9 @@ public class Club implements Feedable {
   private String snapchat;
   private String instagram;
   private String website;
+
+  private Integer mediaCounter;
+  private Date mediaCooldown;
 
   @JsonIgnore
   @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -165,5 +169,25 @@ public class Club implements Feedable {
 
   public void setCoverUrl(String coverUrl) {
     this.coverUrl = coverUrl;
+  }
+
+  @Override
+  public Integer getMediaCounter() {
+    return mediaCounter;
+  }
+
+  @Override
+  public void setMediaCounter(Integer mediaCounter) {
+    this.mediaCounter = mediaCounter;
+  }
+
+  @Override
+  public Date getMediaCooldown() {
+    return mediaCooldown;
+  }
+
+  @Override
+  public void setMediaCooldown(Date mediaCooldown) {
+    this.mediaCooldown = mediaCooldown;
   }
 }
