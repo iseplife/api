@@ -129,7 +129,7 @@ public class MediaService {
       throw new AuthException("You have not sufficient rights on this club (id:" + author.getId() + ")");
 
 
-    if (Duration.between(author.getMediaCooldown().toInstant(), Instant.now()).toHours() > 24) {
+    if (author.getMediaCooldown() == null || Duration.between(author.getMediaCooldown().toInstant(), Instant.now()).toHours() > 24) {
       author.setMediaCooldown(new Date());
       if (isStudent) {
         author.setMediaCounter(StorageConfig.DAILY_USER_MEDIA);

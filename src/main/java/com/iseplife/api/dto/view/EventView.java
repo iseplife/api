@@ -21,6 +21,7 @@ public class EventView {
   private Date published = new Date();
   private Boolean closed = false;
   private Boolean subscribed;
+  private Boolean hasRight;
 
   private ClubPreview club;
   private Set<Feed> targets;
@@ -152,5 +153,13 @@ public class EventView {
 
   public void setCover(String cover) {
     this.cover = cover;
+  }
+
+  public Boolean getHasRight() {
+    return hasRight;
+  }
+
+  public void setHasRight(Boolean hasRight) {
+    this.hasRight = hasRight;
   }
 }
