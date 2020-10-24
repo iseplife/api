@@ -34,20 +34,21 @@ public interface EventRepository extends CrudRepository<Event, Long> {
 
   @Query(
     "select e from Event e left join e.targets t " +
-      "where e.end >= CURRENT_TIMESTAMP " +
-      "and (?1 = true) or (" +
+      "where e.start >= CURRENT_TIMESTAMP " +
+      "and ((?1 = true) or (" +
         "e.published < current_time " +
         "and (e.targets is empty or e.closed = false or t.id in ?2)" +
-      ") " +
+      ")) " +
       "order by e.start"
   )
   Page<Event> findIncomingEvents(Boolean admin, List<Long> feeds, Pageable p);
 
   @Query(
     "select e from Event e " +
-      "where e.end >= CURRENT_TIMESTAMP " +
-      "and (?1 = true) " +
-      "or (e.published < current_time and ?2 member of e.targets) " +
+      "where e.start >= CURRENT_TIMESTAMP " +
+      "and ((?1 = true) " +
+        "or (e.published < current_time and ?2 member of e.targets) " +
+      ")" +
       "order by e.start"
   )
   Page<Event> findFeedIncomingEvents(Boolean admin, Feed feed, Pageable p);

@@ -3,8 +3,10 @@ package com.iseplife.api.controllers;
 import com.iseplife.api.conf.jwt.JwtAuthRequest;
 import com.iseplife.api.conf.jwt.JwtTokenUtil;
 import com.iseplife.api.conf.jwt.TokenSet;
+import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.group.GroupMemberRepository;
 import com.iseplife.api.dao.group.GroupRepository;
+import com.iseplife.api.dao.student.RoleRepository;
 import com.iseplife.api.dao.student.StudentRepository;
 import com.iseplife.api.dto.LDAPUserDTO;
 import com.iseplife.api.entity.user.Role;
@@ -33,6 +35,12 @@ public class AuthController {
   StudentService studentService;
 
   @Autowired
+  StudentRepository studentRepository;
+
+  @Autowired
+  RoleRepository roleRepository;
+
+  @Autowired
   LDAPService ldapService;
 
   @Value("${auth.password}")
@@ -47,6 +55,9 @@ public class AuthController {
     if (passwordEnable) {
       if (authRequest.getUsername().equals("admin") && authRequest.getPassword().equals(defaultPassword)) {
         return jwtTokenUtil.generateToken(studentService.getStudent(1L));
+      }
+      if (authRequest.getUsername().equals("test") && authRequest.getPassword().equals(defaultPassword)) {
+        return jwtTokenUtil.generateToken(studentService.getStudent(10552L));
       }
     }
 
