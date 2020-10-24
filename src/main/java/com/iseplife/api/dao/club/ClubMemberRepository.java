@@ -23,7 +23,7 @@ public interface ClubMemberRepository extends CrudRepository<ClubMember, Long> {
   List<ClubMember> findByStudentId(Long student_id);
 
   @Query("select cm.club from ClubMember cm " +
-    "where cm.student.id = :#{#student} " +
+    "where cm.student.id = :#{#student.id} " +
     "and cm.role in :#{#role.getParents()}"
   )
   List<Club> findByRoleWithInheritance(Student student, ClubRole role);
@@ -35,7 +35,7 @@ public interface ClubMemberRepository extends CrudRepository<ClubMember, Long> {
   Integer findClubAdminCount(Club club);
 
   @Query("select cm.student from ClubMember cm " +
-    "where cm.club = :#{#club} " +
+    "where cm.club.id = :#{#club.id} " +
     "and cm.role in :#{#role.getParents()}"
   )
   List<Student> findClubPublishers(Club club, ClubRole role);

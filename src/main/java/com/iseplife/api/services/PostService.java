@@ -209,10 +209,7 @@ public class PostService {
 
   public Set<AuthorView> getAuthorizedPublish(TokenPayload auth, Boolean clubOnly) {
     Student student = studentService.getStudent(auth.getId());
-
     Set<AuthorView> authorStatus = new HashSet<>();
-    if(!clubOnly)
-      authorStatus.add(AuthorFactory.entityToView(student));
 
     if (auth.getRoles().contains(Roles.ADMIN)) {
       if(!clubOnly)
