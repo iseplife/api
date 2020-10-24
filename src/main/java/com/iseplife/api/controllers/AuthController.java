@@ -48,6 +48,9 @@ public class AuthController {
       if (authRequest.getUsername().equals("admin") && authRequest.getPassword().equals(defaultPassword)) {
         return jwtTokenUtil.generateToken(studentService.getStudent(1L));
       }
+      if (authRequest.getUsername().equals("test") && authRequest.getPassword().equals(defaultPassword)) {
+        return jwtTokenUtil.generateToken(studentService.getStudent(10552L));
+      }
     }
 
     LDAPUserDTO user = ldapService.retrieveUser(authRequest.getUsername(), authRequest.getPassword());
