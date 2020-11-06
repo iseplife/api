@@ -1,6 +1,4 @@
 package com.iseplife.api.services;
-
-import com.iseplife.api.dto.CASAuthentificationDTO;
 import com.iseplife.api.dto.CASUserDTO;
 import com.iseplife.api.exceptions.AuthException;
 import com.iseplife.api.exceptions.CASServiceException;
@@ -46,19 +44,21 @@ public class CASService {
         .body(BodyInserters.fromFormData(form))
         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
         .exchange()
-        .flatMap(clientResponse ->
-          clientResponse.bodyToMono(CASAuthentificationDTO.class).flatMap(body -> {
-            if (body == null || body.getResult() == 0)
-              return Mono.error(new AuthException("User not found"));
-
+        .flatMap(clientResponse -> {
             ResponseCookie CASCookie = clientResponse.cookies().getFirst("lemonldap");
-            if (CASCookie != null)
-              return Mono.error(new AuthException("CAS cookie has been missing from the response"));
+            if (CASCookie == null) {
+              LOG.error("CAS cookie (lemonldap) not found");
+              return Mono.error(new AuthException("User not found"));
+            }
 
             return accessUser(CASCookie);
           })
-        )
         .block();
+
+      if(response == null){
+        LOG.warn("CAS user's information not accessed");
+        throw new AuthException("CAS user's information not accessed");
+      }
 
       return response;
     } catch (WebClientException e) {

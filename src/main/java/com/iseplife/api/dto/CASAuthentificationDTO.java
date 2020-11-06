@@ -2,9 +2,11 @@ package com.iseplife.api.dto;
 
 public class CASAuthentificationDTO {
 
+  private String id = null;
+
   private Integer result;
-  private String error;
-  private String id;
+  private Integer error;
+
 
   public Integer getResult() {
     return result;
@@ -14,11 +16,11 @@ public class CASAuthentificationDTO {
     this.result = result;
   }
 
-  public String getError() {
+  public Integer getError() {
     return error;
   }
 
-  public void setError(String error) {
+  public void setError(Integer error) {
     this.error = error;
   }
 
