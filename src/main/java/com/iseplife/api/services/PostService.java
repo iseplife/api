@@ -66,7 +66,7 @@ public class PostService {
   FeedService feedService;
 
   @Autowired
-  AuthService authService;
+  SecurityService securityService;
 
   @Autowired
   PostMessageService postMessageService;
@@ -92,7 +92,7 @@ public class PostService {
 
   public PostView createPost(TokenPayload auth, PostDTO postDTO) {
     Post post = postFactory.dtoToEntity(postDTO);
-    post.setAuthor(authService.getLoggedUser());
+    post.setAuthor(securityService.getLoggedUser());
     post.setLinkedClub(postDTO.getLinkedClub() != null ? clubService.getClub(postDTO.getLinkedClub()) : null);
 
     // Author should be an admin or club publisher
@@ -133,7 +133,7 @@ public class PostService {
 
   public Post updatePost(Long postID, PostUpdateDTO update) {
     Post post = getPost(postID);
-    if (!AuthService.hasRightOn(post)) {
+    if (!SecurityService.hasRightOn(post)) {
       throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");
     }
 
@@ -145,7 +145,7 @@ public class PostService {
 
   public void deletePost(Long postID) {
     Post post = getPost(postID);
-    if (!AuthService.hasRightOn(post)) {
+    if (!SecurityService.hasRightOn(post)) {
       throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");
     }
 
@@ -163,7 +163,7 @@ public class PostService {
 
   public void togglePinnedPost(Long postID) {
     Post post = getPost(postID);
-    if (AuthService.hasRightOn(post) && post.getLinkedClub() != null) {
+    if (SecurityService.hasRightOn(post) && post.getLinkedClub() != null) {
       throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");
     }
 

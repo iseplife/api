@@ -5,7 +5,7 @@ import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dto.view.PostView;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.entity.feed.Feed;
-import com.iseplife.api.services.AuthService;
+import com.iseplife.api.services.SecurityService;
 import com.iseplife.api.services.FeedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,7 +24,7 @@ public class FeedController {
   private FeedService feedService;
 
   @Autowired
-  AuthService authService;
+  SecurityService securityService;
 
   @GetMapping
   @PostMapping({Roles.STUDENT})
@@ -59,7 +59,7 @@ public class FeedController {
   @GetMapping("/{id}/post/draft")
   @RolesAllowed({Roles.STUDENT})
   public List<PostView> getClubPostDraft(@PathVariable Long id) {
-    return feedService.getFeedDrafts(id, authService.getLoggedUser());
+    return feedService.getFeedDrafts(id, securityService.getLoggedUser());
   }
 
   @GetMapping("/{id}/subscribe")

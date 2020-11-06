@@ -2,13 +2,9 @@ package com.iseplife.api.controllers.media;
 
 import com.amazonaws.services.dynamodbv2.xspec.B;
 import com.iseplife.api.conf.jwt.TokenPayload;
-import com.iseplife.api.entity.post.embed.media.Image;
 import com.iseplife.api.entity.Matched;
-import com.iseplife.api.entity.post.embed.media.Document;
 import com.iseplife.api.entity.post.embed.media.Media;
-import com.iseplife.api.entity.post.embed.media.Video;
 import com.iseplife.api.constants.Roles;
-import com.iseplife.api.services.AuthService;
 import com.iseplife.api.services.ClubService;
 import com.iseplife.api.services.MediaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +22,6 @@ public class MediaController {
   @Autowired
   MediaService mediaService;
 
-  @Autowired
-  AuthService authService;
 
   @Autowired
   ClubService clubService;

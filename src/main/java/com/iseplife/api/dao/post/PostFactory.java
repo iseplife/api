@@ -42,7 +42,7 @@ public class PostFactory {
     postView.setLiked(threadService.isLiked(post.getThread()));
     postView.setPrivate(post.getPrivate());
 
-    postView.setHasWriteAccess(AuthService.hasRightOn(post));
+    postView.setHasWriteAccess(SecurityService.hasRightOn(post));
 
     return postView;
   }

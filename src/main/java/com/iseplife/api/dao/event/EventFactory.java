@@ -7,7 +7,7 @@ import com.iseplife.api.dto.view.EventPreview;
 import com.iseplife.api.dto.view.EventView;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.feed.Feed;
-import com.iseplife.api.services.AuthService;
+import com.iseplife.api.services.SecurityService;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -77,7 +77,7 @@ public class EventFactory {
     view.setSubscribed(isSubscribed);
     view.setFeed(event.getFeed().getId());
     view.setTargets(event.getTargets());
-    view.setHasRight(AuthService.hasRightOn(event));
+    view.setHasRight(SecurityService.hasRightOn(event));
     view.setClub(ClubFactory.toPreview(event.getClub()));
     return view;
   }

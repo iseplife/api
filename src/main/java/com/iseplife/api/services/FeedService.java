@@ -29,8 +29,6 @@ public class FeedService {
   @Autowired
   private SubscriptionRepository subscriptionRepository;
 
-  @Autowired
-  private AuthService authService;
 
   @Autowired
   private PostService postService;
@@ -88,12 +86,12 @@ public class FeedService {
   }
 
   public Boolean isSubscribedToFeed(Feedable feedable) {
-    return isSubscribedToFeed(feedable.getFeed().getId(), AuthService.getLoggedId());
+    return isSubscribedToFeed(feedable.getFeed().getId(), SecurityService.getLoggedId());
   }
 
   public Boolean toggleSubscription(Long id, Long studentID) {
     Feed feed = getFeed(id);
-    if(!AuthService.hasReadAccess(feed))
+    if(!SecurityService.hasReadAccess(feed))
       throw new AuthException("You have not sufficient rights on this feed (id:" + id + ")");
 
     Subscription sub = subscriptionRepository.findByFeedIdAndListenerId(feed.getId(), studentID);
