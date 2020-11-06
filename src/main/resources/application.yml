@@ -39,4 +39,5 @@ jwt:
 
 auth:
   enable:   ${ENABLE_ROOT:true}
+  autoGeneration: ${AUTO_GEN:true}
   password: ${ROOT_PASS:password}

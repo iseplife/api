@@ -1,18 +1,18 @@
 package com.iseplife.api.dto;
 
 public class CASUserDTO {
-    Integer numero;
+    Long numero;
     String nom;
     String prenom;
     String mail;
     String login;
     String titre;
 
-  public Integer getNumero() {
+  public Long getNumero() {
     return numero;
   }
 
-  public void setNumero(Integer numero) {
+  public void setNumero(Long numero) {
     this.numero = numero;
   }
 

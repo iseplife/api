@@ -52,7 +52,7 @@ public class CASService {
               return Mono.error(new AuthException("User not found"));
 
             ResponseCookie CASCookie = clientResponse.cookies().getFirst("lemonldap");
-            if (CASCookie == null)
+            if (CASCookie != null)
               return Mono.error(new AuthException("CAS cookie has been missing from the response"));
 
             return accessUser(CASCookie);
