@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 public class EventService {
 
   @Autowired
-  AuthService authService;
+  SecurityService securityService;
 
   @Autowired
   ClubService clubService;
@@ -63,7 +63,7 @@ public class EventService {
 
   public EventView createEvent(EventDTO dto) {
     Club club = clubService.getClub(dto.getClub());
-    if (club == null || !AuthService.hasRightOn(club))
+    if (club == null || !SecurityService.hasRightOn(club))
       throw new AuthException("Insufficient rights for club (" + dto.getClub() + ")");
 
 
@@ -125,7 +125,7 @@ public class EventService {
   }
 
   public List<EventPreview> getFeedIncomingEvents(TokenPayload token, Feed feed){
-    if(!AuthService.hasReadAccess(feed))
+    if(!SecurityService.hasReadAccess(feed))
       throw new NotFoundException("Could not find feed with id: "+ feed);
 
     return eventRepository.findFeedIncomingEvents(
@@ -185,7 +185,7 @@ public class EventService {
 
   public Event updateEvent(Long id, EventDTO eventDTO) {
     Event event = getEvent(id);
-    if (!AuthService.hasRightOn(event))
+    if (!SecurityService.hasRightOn(event))
       throw new AuthException("You are not allowed to edit this event");
 
     event.setTitle(eventDTO.getTitle());

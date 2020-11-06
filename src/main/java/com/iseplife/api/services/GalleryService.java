@@ -103,7 +103,7 @@ public class GalleryService {
     gallery.setFeed(feedService.getFeed(dto.getFeed()));
     if (!dto.getPseudo()) {
       Club club = clubService.getClub(dto.getClub());
-      if (!AuthService.hasRightOn(club))
+      if (!SecurityService.hasRightOn(club))
         throw new AuthException("You have not sufficient rights on this club (id:" + dto.getClub() + ")");
 
       gallery.setClub(club);
@@ -125,7 +125,7 @@ public class GalleryService {
       post.setThread(new Thread());
       post.setDescription(gallery.getDescription());
       post.setEmbed(gallery);
-      post.setAuthor(studentService.getStudent(AuthService.getLoggedId()));
+      post.setAuthor(studentService.getStudent(SecurityService.getLoggedId()));
       post.setLinkedClub(gallery.getClub());
       post.setCreationDate(new Date());
       post.setState(PostState.READY);
@@ -138,7 +138,7 @@ public class GalleryService {
 
   public void addImagesGallery(Long galleryID, List<Long> images) {
     Gallery gallery = getGallery(galleryID);
-    if (!AuthService.hasRightOn(gallery))
+    if (!SecurityService.hasRightOn(gallery))
       throw new AuthException("You have not sufficient rights on this gallery (id:" + galleryID + ")");
 
     Iterable<Image> medias = imageRepository.findAllById(images);
@@ -158,7 +158,7 @@ public class GalleryService {
 
 
   public Boolean deleteGallery(Gallery gallery) {
-    if (!AuthService.hasRightOn(gallery))
+    if (!SecurityService.hasRightOn(gallery))
       throw new AuthException("You have not sufficient rights on this gallery (id:" + gallery + ")");
 
     gallery
@@ -175,7 +175,7 @@ public class GalleryService {
 
   public void deleteImagesGallery(Long id, List<Long> images) {
     Gallery gallery = getGallery(id);
-    if (!AuthService.hasRightOn(gallery))
+    if (!SecurityService.hasRightOn(gallery))
       throw new AuthException("You have not sufficient rights on this gallery (id:" + gallery + ")");
 
     long imageSize = gallery.getImages()

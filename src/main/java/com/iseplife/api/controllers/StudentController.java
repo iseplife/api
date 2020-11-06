@@ -10,6 +10,10 @@ import com.iseplife.api.dto.student.StudentUpdateDTO;
 import com.iseplife.api.dto.student.view.StudentAdminView;
 import com.iseplife.api.dto.student.view.StudentPreview;
 import com.iseplife.api.dto.student.view.StudentPreviewAdmin;
+import com.iseplife.api.entity.user.Role;
+import com.iseplife.api.entity.user.Student;
+import com.iseplife.api.constants.Roles;
+import com.iseplife.api.dto.view.ImportStudentResultView;
 import com.iseplife.api.dto.view.MatchedView;
 import com.iseplife.api.dto.view.PostView;
 import com.iseplife.api.entity.user.Role;
@@ -45,6 +49,9 @@ public class StudentController {
 
   @Autowired
   StudentImportService studentImportService;
+
+  @Autowired
+  SecurityService securityService;
 
   @Autowired
   MediaService mediaService;

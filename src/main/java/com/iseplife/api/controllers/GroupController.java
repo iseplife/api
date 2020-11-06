@@ -6,7 +6,7 @@ import com.iseplife.api.dto.group.GroupDTO;
 import com.iseplife.api.dto.group.view.GroupPreview;
 import com.iseplife.api.dto.group.view.GroupView;
 import com.iseplife.api.constants.Roles;
-import com.iseplife.api.services.AuthService;
+import com.iseplife.api.services.SecurityService;
 import com.iseplife.api.services.GroupService;
 import com.iseplife.api.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ public class GroupController {
   JsonUtils jsonUtils;
 
   @Autowired
-  AuthService authService;
+  SecurityService securityService;
 
   @GetMapping
   @RolesAllowed({Roles.ADMIN})

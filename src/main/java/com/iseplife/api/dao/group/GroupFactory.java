@@ -1,13 +1,12 @@
 package com.iseplife.api.dao.group;
 
 import com.iseplife.api.constants.GroupType;
-import com.iseplife.api.dao.student.StudentFactory;
 import com.iseplife.api.dto.group.GroupDTO;
 import com.iseplife.api.dto.group.view.GroupPreview;
 import com.iseplife.api.dto.group.view.GroupView;
 import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.feed.Feed;
-import com.iseplife.api.services.AuthService;
+import com.iseplife.api.services.SecurityService;
 
 import java.util.stream.Collectors;
 
@@ -37,7 +36,7 @@ public class GroupFactory {
     view.setCover(group.getCover());
     view.setLocked(group.getType() != GroupType.DEFAULT);
     view.setFeed(group.getFeed().getId());
-    view.setHasRight(AuthService.hasRightOn(group));
+    view.setHasRight(SecurityService.hasRightOn(group));
     view.setSubscribed(isSubscribed);
     view.setMembers(
       group.getMembers()

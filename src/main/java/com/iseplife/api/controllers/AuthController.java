@@ -8,10 +8,12 @@ import com.iseplife.api.dao.group.GroupMemberRepository;
 import com.iseplife.api.dao.group.GroupRepository;
 import com.iseplife.api.dao.student.RoleRepository;
 import com.iseplife.api.dao.student.StudentRepository;
+import com.iseplife.api.dto.CASUserDTO;
 import com.iseplife.api.dto.LDAPUserDTO;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.exceptions.AuthException;
+import com.iseplife.api.services.CASService;
 import com.iseplife.api.services.LDAPService;
 import com.iseplife.api.services.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +45,9 @@ public class AuthController {
   @Autowired
   LDAPService ldapService;
 
+  @Autowired
+  CASService casService;
+
   @Value("${auth.password}")
   String defaultPassword;
 
@@ -61,14 +66,8 @@ public class AuthController {
       }
     }
 
-    LDAPUserDTO user = ldapService.retrieveUser(authRequest.getUsername(), authRequest.getPassword());
-    if (user != null) {
-      Student ldapStudent = studentService.getStudent(Long.parseLong(user.getEmployeeNumber()));
-      if (ldapStudent == null || ldapStudent.isArchived()) {
-        throw new AuthException("User not found");
-      }
-      return jwtTokenUtil.generateToken(ldapStudent);
-    }
+    CASUserDTO user = casService.identifyToCAS(authRequest.getUsername(), authRequest.getPassword());
+
 
     throw new AuthException("User not found");
   }

@@ -123,7 +123,7 @@ public class GroupService {
 
   public String updateCover(Long id, MultipartFile cover){
     Group group = getGroup(id);
-    if (!AuthService.hasRightOn(group))
+    if (!SecurityService.hasRightOn(group))
       throw new AuthException("You have not sufficient rights on this group (id:" + id + ")");
 
     if (group.getCover() != null)

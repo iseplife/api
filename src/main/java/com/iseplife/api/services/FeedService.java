@@ -30,7 +30,7 @@ public class FeedService {
   private SubscriptionRepository subscriptionRepository;
 
   @Autowired
-  private AuthService authService;
+  private SecurityService securityService;
 
   @Autowired
   private PostService postService;

@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
  * back
  */
 @Service
-public class AuthService {
+public class SecurityService {
 
   @Autowired
   StudentService studentService;

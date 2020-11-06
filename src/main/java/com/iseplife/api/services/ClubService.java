@@ -106,7 +106,7 @@ public class ClubService {
 
   public ClubView updateClub(Long id, ClubDTO dto) {
     Club club = getClub(id);
-    if (!AuthService.hasRightOn(club))
+    if (!SecurityService.hasRightOn(club))
       throw new AuthException("You have not sufficient rights on this club (id:" + id + ")");
 
     // Update through reference so we don't need to get return value
@@ -121,7 +121,7 @@ public class ClubService {
 
   public ClubView updateClubAdmin(Long id, ClubAdminDTO dto) {
     Club club = getClub(id);
-    if (!AuthService.hasRightOn(club))
+    if (!SecurityService.hasRightOn(club))
       throw new AuthException("You have not sufficient rights on this club (id:" + id + ")");
 
     // Update through reference so we don't need to get return value
@@ -137,7 +137,7 @@ public class ClubService {
 
   public String updateLogo(Long id, MultipartFile file) {
     Club club = getClub(id);
-    if (!AuthService.hasRightOn(club))
+    if (!SecurityService.hasRightOn(club))
       throw new AuthException("You have not sufficient rights on this club (id:" + id + ")");
 
     if (club.getLogoUrl() != null)
@@ -154,7 +154,7 @@ public class ClubService {
 
   public String updateCover(Long id, MultipartFile file) {
     Club club = getClub(id);
-    if (!AuthService.hasRightOn(club))
+    if (!SecurityService.hasRightOn(club))
       throw new AuthException("You have not sufficient rights on this club (id:" + id + ")");
 
     if (club.getCoverUrl() != null || file == null)
@@ -195,7 +195,7 @@ public class ClubService {
       throw new IllegalArgumentException("could not find club member with id: " + id);
 
     ClubMember member = optionalClubMember.get();
-    if (!AuthService.hasRightOn(member.getClub()))
+    if (!SecurityService.hasRightOn(member.getClub()))
       throw new AuthException("You have not sufficient rights on this club (id:" + id + ")");
 
     if (member.getRole() == ClubRole.ADMIN &&

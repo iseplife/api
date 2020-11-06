@@ -1,16 +1,16 @@
 package com.iseplife.api.dto;
 
-public class CASResponseDTO {
+public class CASAuthentificationDTO {
 
-  private Boolean result;
+  private Integer result;
   private String error;
   private String id;
 
-  public Boolean getResult() {
+  public Integer getResult() {
     return result;
   }
 
-  public void setResult(Boolean result) {
+  public void setResult(Integer result) {
     this.result = result;
   }
 

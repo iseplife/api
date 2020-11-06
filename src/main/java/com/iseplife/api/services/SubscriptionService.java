@@ -10,9 +10,9 @@ public class SubscriptionService {
   SubscriptionRepository subscriptionRepository;
 
   @Autowired
-  AuthService authService;
+  SecurityService securityService;
 
-  public Boolean isSubscribedToFeed(Long feed){
-    return subscriptionRepository.existsSubscriptionByFeedIdAndListenerId(feed, AuthService.getLoggedId());
+  public Boolean isSubscribedToFeed(Long id){
+    return subscriptionRepository.existsSubscriptionByFeedIdAndListenerId(id, securityService.getLoggedId());
   }
 }

@@ -38,7 +38,7 @@ public class PollService {
   StudentService studentService;
 
   @Autowired
-  AuthService authService;
+  SecurityService securityService;
 
   @Autowired
   PostService postService;

@@ -2,7 +2,6 @@ package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
-import com.iseplife.api.constants.ThreadType;
 import com.iseplife.api.dao.media.image.ImageRepository;
 import com.iseplife.api.dao.post.*;
 import com.iseplife.api.dto.CommentDTO;
@@ -25,7 +24,7 @@ import java.util.stream.Collectors;
 public class ThreadService {
 
   @Autowired
-  AuthService authService;
+  SecurityService securityService;
 
   @Autowired
   ThreadRepository threadRepository;
@@ -71,7 +70,7 @@ public class ThreadService {
   }
 
   public Boolean isLiked(Thread thread){
-    return likeRepository.existsByThread_IdAndStudent_Id(thread.getId(), authService.getLoggedUser().getId());
+    return likeRepository.existsByThread_IdAndStudent_Id(thread.getId(), securityService.getLoggedUser().getId());
   }
 
   public Boolean isLiked(Object entity) {
