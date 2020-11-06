@@ -1,4 +1,6 @@
 package com.iseplife.api.services;
+
+import com.iseplife.api.dto.CASAuthentificationDTO;
 import com.iseplife.api.dto.CASUserDTO;
 import com.iseplife.api.exceptions.AuthException;
 import com.iseplife.api.exceptions.CASServiceException;
@@ -44,20 +46,29 @@ public class CASService {
         .body(BodyInserters.fromFormData(form))
         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
         .exchange()
-        .flatMap(clientResponse -> {
+        .flatMap(clientResponse -> clientResponse.bodyToMono(String.class).flatMap(json -> {
+            /*
+             * We parse manually as the wrong content-type header is given when authentification failed
+             * (Content-Type	application/javascript)
+             */
+            CASAuthentificationDTO body = jsonUtils.deserialize(json, CASAuthentificationDTO.class);
+            if (body == null || body.getResult() == 0)
+              return Mono.error(new AuthException("Authentification failed"));
+
             ResponseCookie CASCookie = clientResponse.cookies().getFirst("lemonldap");
             if (CASCookie == null) {
               LOG.error("CAS cookie (lemonldap) not found");
-              return Mono.error(new AuthException("User not found"));
+              return Mono.error(new AuthException("CAS cookie has been missing from the response"));
             }
 
             return accessUser(CASCookie);
           })
+        )
         .block();
 
       if(response == null){
         LOG.warn("CAS user's information not accessed");
-        throw new AuthException("CAS user's information not accessed");
+        throw new AuthException("Authentification failed");
       }
 
       return response;
