@@ -38,11 +38,7 @@ import springfox.documentation.annotations.Cacheable;
 import java.security.InvalidParameterException;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.Period;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-
-import static java.time.temporal.ChronoUnit.DAYS;
 
 
 @Service
@@ -125,7 +121,7 @@ public class MediaService {
 
   private Boolean isAllowedToCreateMedia(Author author) {
     boolean isStudent = author instanceof Student;
-    if(!isStudent && !AuthService.hasRightOn((Club) author))
+    if(!isStudent && !SecurityService.hasRightOn((Club) author))
       throw new AuthException("You have not sufficient rights on this club (id:" + author.getId() + ")");
 
 
@@ -156,7 +152,7 @@ public class MediaService {
   public Media createMedia(MultipartFile file, Long club, Boolean gallery, Boolean nsfw) {
     Author author = club > 0 ?
       clubService.getClub(club) :
-      studentService.getStudent(AuthService.getLoggedId());
+      studentService.getStudent(SecurityService.getLoggedId());
 
     if(gallery && club <= 0)
       throw new IllegalArgumentException("Club need to be specified when creating a gallery image");

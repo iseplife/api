@@ -64,7 +64,7 @@ public class GroupService {
 
   public GroupView getGroupView(Long id) {
     Group group = getGroup(id);
-    if(groupMemberRepository.isMemberOfGroup(id, AuthService.getLoggedId()))
+    if(groupMemberRepository.isMemberOfGroup(id, SecurityService.getLoggedId()))
       return GroupFactory.toView(group, feedService.isSubscribedToFeed(group));
 
     throw new IllegalArgumentException("could not find the group with id: " + id);
@@ -167,7 +167,7 @@ public class GroupService {
 
   public Boolean promoteMember(Long id, Long member){
     GroupMember groupMember = getGroupMember(member);
-    if(!AuthService.hasRightOn(groupMember.getGroup()))
+    if(!SecurityService.hasRightOn(groupMember.getGroup()))
       throw new AuthException("You have not sufficient rights on this group (id:" + id + ")");
 
     groupMember.setAdmin(true);
@@ -178,7 +178,7 @@ public class GroupService {
 
   public Boolean demoteMember(Long id, Long member){
     GroupMember groupMember = getGroupMember(member);
-    if(!AuthService.hasRightOn(groupMember.getGroup()))
+    if(!SecurityService.hasRightOn(groupMember.getGroup()))
       throw new AuthException("You have not sufficient rights on this group (id:" + id + ")");
 
     if(groupMember.isAdmin() && groupMemberRepository.findGroupAdminCount(groupMember.getGroup()) < 1)
@@ -191,7 +191,7 @@ public class GroupService {
 
   public Boolean removeMember(Long id, Long member){
     GroupMember groupMember = getGroupMember(member);
-    if(!AuthService.hasRightOn(groupMember.getGroup()))
+    if(!SecurityService.hasRightOn(groupMember.getGroup()))
       throw new AuthException("You have not sufficient rights on this group (id:" + id + ")");
 
     if(groupMember.isAdmin() && groupMemberRepository.findGroupAdminCount(groupMember.getGroup()) < 1)

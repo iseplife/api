@@ -8,7 +8,6 @@ import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.constants.PostState;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dto.view.PostView;
-import com.iseplife.api.services.SecurityService;
 import com.iseplife.api.services.PostService;
 import com.iseplife.api.services.StudentService;
 import com.iseplife.api.services.ThreadService;
@@ -32,9 +31,6 @@ public class PostController {
 
   @Autowired
   StudentService studentService;
-
-  @Autowired
-  SecurityService securityService;
 
   @PostMapping
   @RolesAllowed({Roles.STUDENT})

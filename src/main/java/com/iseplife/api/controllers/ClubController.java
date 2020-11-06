@@ -11,12 +11,7 @@ import com.iseplife.api.dto.student.view.StudentPreview;
 import com.iseplife.api.dto.view.PostView;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.club.ClubMember;
-<<<<<<< master
-import com.iseplife.api.services.AuthService;
-=======
-import com.iseplife.api.constants.Roles;
 import com.iseplife.api.services.SecurityService;
->>>>>>> feat(auth): set up CAS connection
 import com.iseplife.api.services.ClubService;
 import com.iseplife.api.services.PostService;
 import com.iseplife.api.utils.JsonUtils;
@@ -45,12 +40,6 @@ public class ClubController {
   PostService postService;
 
   @Autowired
-<<<<<<< master
-=======
-  SecurityService securityService;
-
-  @Autowired
->>>>>>> feat(auth): set up CAS connection
   JsonUtils jsonUtils;
 
   @GetMapping
@@ -150,10 +139,7 @@ public class ClubController {
   @GetMapping("/{id}/post")
   @RolesAllowed({Roles.STUDENT})
   public Page<PostView> getPosts(@PathVariable Long id, @RequestParam(defaultValue = "0") int page) {
-<<<<<<< master
-    return postService.getPostsAuthor(id, AuthService.isUserAnonymous(), page);
-=======
-    return postService.getPostsAuthor(id, securityService.isUserAnonymous(), page);
->>>>>>> feat(auth): set up CAS connection
+    return postService.getPostsAuthor(id, SecurityService.isUserAnonymous(), page);
+
   }
 }

@@ -35,9 +35,6 @@ import java.util.stream.Collectors;
 public class EventService {
 
   @Autowired
-  SecurityService securityService;
-
-  @Autowired
   ClubService clubService;
 
   @Autowired

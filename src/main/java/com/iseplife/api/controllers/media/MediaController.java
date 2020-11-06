@@ -5,7 +5,6 @@ import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.entity.Matched;
 import com.iseplife.api.entity.post.embed.media.Media;
 import com.iseplife.api.constants.Roles;
-import com.iseplife.api.services.SecurityService;
 import com.iseplife.api.services.ClubService;
 import com.iseplife.api.services.MediaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +22,6 @@ public class MediaController {
   @Autowired
   MediaService mediaService;
 
-  @Autowired
-  SecurityService securityService;
 
   @Autowired
   ClubService clubService;

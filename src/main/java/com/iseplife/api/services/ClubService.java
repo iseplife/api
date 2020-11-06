@@ -74,7 +74,7 @@ public class ClubService {
 
     return ClubFactory.toView(
       club,
-      AuthService.hasRightOn(club),
+      SecurityService.hasRightOn(club),
       feedService.isSubscribedToFeed(club)
     );
   }

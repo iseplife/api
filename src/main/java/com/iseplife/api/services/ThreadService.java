@@ -24,9 +24,6 @@ import java.util.stream.Collectors;
 public class ThreadService {
 
   @Autowired
-  SecurityService securityService;
-
-  @Autowired
   ThreadRepository threadRepository;
 
   @Autowired
@@ -43,6 +40,9 @@ public class ThreadService {
 
   @Autowired
   StudentService studentService;
+
+  @Autowired
+  SecurityService securityService;
 
   @Autowired
   CommentFactory commentFactory;

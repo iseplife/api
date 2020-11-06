@@ -12,12 +12,8 @@ import com.iseplife.api.dto.student.view.StudentPreview;
 import com.iseplife.api.dto.student.view.StudentPreviewAdmin;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.constants.Roles;
-import com.iseplife.api.dto.view.ImportStudentResultView;
 import com.iseplife.api.dto.view.MatchedView;
 import com.iseplife.api.dto.view.PostView;
-import com.iseplife.api.entity.user.Role;
-import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.services.*;
 import com.iseplife.api.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,9 +45,6 @@ public class StudentController {
 
   @Autowired
   StudentImportService studentImportService;
-
-  @Autowired
-  SecurityService securityService;
 
   @Autowired
   MediaService mediaService;
@@ -118,7 +111,7 @@ public class StudentController {
   @GetMapping("/{id}/post")
   @RolesAllowed({Roles.STUDENT})
   public Page<PostView> getPostsStudent(@PathVariable Long id, @RequestParam(defaultValue = "0") int page) {
-    return postService.getPostsAuthor(id, AuthService.isUserAnonymous(), page);
+    return postService.getPostsAuthor(id, SecurityService.isUserAnonymous(), page);
   }
 
   @GetMapping("/{id}/photo")
