@@ -14,11 +14,12 @@ spring:
 server:
   port: 8080
 
+app:
+  name: "iseplife-api"
+  version: "@project.version@"
 logging:
   level:
     com.iseplife.api: INFO
-
-
 
 media_daily:
   club: ${CLUB_MEDIA_LIMIT:2000}
