@@ -3,7 +3,6 @@ package com.iseplife.api.controllers;
 import com.iseplife.api.conf.jwt.JwtAuthRequest;
 import com.iseplife.api.conf.jwt.JwtTokenUtil;
 import com.iseplife.api.conf.jwt.TokenSet;
-import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.student.RoleRepository;
 import com.iseplife.api.dto.CASUserDTO;
 import com.iseplife.api.entity.user.Role;
@@ -17,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 
 
@@ -31,14 +29,14 @@ public class AuthController {
   JwtTokenUtil jwtTokenUtil;
 
   @Autowired
+  CASService casService;
+
+  @Autowired
   StudentService studentService;
 
   @Autowired
   RoleRepository roleRepository;
 
-
-  @Autowired
-  CASService casService;
 
   @Value("${auth.password}")
   String defaultPassword;
@@ -51,16 +49,12 @@ public class AuthController {
 
   @PostMapping
   public TokenSet getToken(@RequestBody JwtAuthRequest authRequest) {
-    // TODO: replace with correct auth, currently only for testing
-    if (passwordEnable) {
-      if (authRequest.getUsername().equals("admin") && authRequest.getPassword().equals(defaultPassword)) {
-        return jwtTokenUtil.generateToken(studentService.getStudent(1L));
-      }
-      if (authRequest.getUsername().equals("test") && authRequest.getPassword().equals(defaultPassword)) {
-        return jwtTokenUtil.generateToken(studentService.getStudent(10552L));
-      }
-    }
-
+    if (
+      passwordEnable &&
+      authRequest.getUsername().equals("admin") &&
+      authRequest.getPassword().equals(defaultPassword)
+    ) return jwtTokenUtil.generateToken(studentService.getStudent(1L));
+    
     CASUserDTO user = casService.identifyToCAS(authRequest.getUsername(), authRequest.getPassword());
     Student student;
     try {
@@ -69,18 +63,15 @@ public class AuthController {
       if (autoGeneration) {
         LOG.info("User {} {} not found but pass authentification, creating account", user.getPrenom(), user.getPrenom());
         student = new Student();
-
-        student.setId(user.getNumero());
-        student.setFirstName(user.getPrenom());
-        student.setLastName(user.getNom());
-        student.setMail(user.getMail());
-
-        String[] titre = user.getTitre().split("-");
-        student.setPromo(Integer.valueOf(titre[2]));
-        student.setRoles(Collections.singleton(roleRepository.findByRole(Roles.STUDENT)));
+        studentService.hydrateStudent(student, user);
       }else {
         throw new AuthException("Identified User not found");
       }
+    }
+
+    if(student.getLastConnection() == null){
+      LOG.info("First connection for user {}, hydrating account", student.getId());
+      studentService.hydrateStudent(student, user);
     }
 
     if (student.isArchived())

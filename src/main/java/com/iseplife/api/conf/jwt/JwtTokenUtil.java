@@ -9,6 +9,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iseplife.api.constants.ClubRole;
+import com.iseplife.api.dao.student.StudentRepository;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.user.Student;
@@ -38,6 +39,9 @@ import java.util.stream.Collectors;
 public class JwtTokenUtil {
 
   private static final Logger LOG = LoggerFactory.getLogger(JwtTokenUtil.class);
+
+  @Autowired
+  StudentRepository studentRepository;
 
   @Autowired
   StudentService studentService;
@@ -82,6 +86,9 @@ public class JwtTokenUtil {
     TokenPayload tokenPayload = generatePayload(student);
     String token = generateToken(tokenPayload);
     String refreshToken = generateRefreshToken(tokenPayload);
+
+    student.setLastConnection(new Date());
+    studentRepository.save(student);
     return new TokenSet(token, refreshToken);
   }
 
@@ -159,6 +166,7 @@ public class JwtTokenUtil {
 
     TokenPayload tokenPayload = new TokenPayload();
     tokenPayload.setId(student.getId());
+    tokenPayload.setLastConnection(student.getLastConnection());
     tokenPayload.setFeeds(feeds);
     tokenPayload.setRoles(roles);
     tokenPayload.setClubsAdmin(adminClubs);

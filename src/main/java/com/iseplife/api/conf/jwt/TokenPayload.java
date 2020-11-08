@@ -1,5 +1,6 @@
 package com.iseplife.api.conf.jwt;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -9,6 +10,7 @@ import java.util.List;
 public class TokenPayload {
   private Long id;
 
+  private Date lastConnection;
   private List<String> roles;
   private List<Long> clubsAdmin;
   private List<Long> clubsPublisher;
@@ -61,5 +63,13 @@ public class TokenPayload {
 
   public void setFeeds(List<Long> feeds) {
     this.feeds = feeds;
+  }
+
+  public Date getLastConnection() {
+    return lastConnection;
+  }
+
+  public void setLastConnection(Date lastConnection) {
+    this.lastConnection = lastConnection;
   }
 }
