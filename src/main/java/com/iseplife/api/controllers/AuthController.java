@@ -51,10 +51,10 @@ public class AuthController {
   public TokenSet getToken(@RequestBody JwtAuthRequest authRequest) {
     if (
       passwordEnable &&
-      authRequest.getUsername().equals("admin") &&
-      authRequest.getPassword().equals(defaultPassword)
+        authRequest.getUsername().equals("admin") &&
+        authRequest.getPassword().equals(defaultPassword)
     ) return jwtTokenUtil.generateToken(studentService.getStudent(1L));
-    
+
     CASUserDTO user = casService.identifyToCAS(authRequest.getUsername(), authRequest.getPassword());
     Student student;
     try {
@@ -64,12 +64,12 @@ public class AuthController {
         LOG.info("User {} {} not found but pass authentification, creating account", user.getPrenom(), user.getPrenom());
         student = new Student();
         studentService.hydrateStudent(student, user);
-      }else {
+      } else {
         throw new AuthException("Identified User not found");
       }
     }
 
-    if(student.getLastConnection() == null){
+    if (student.getLastConnection() == null) {
       LOG.info("First connection for user {}, hydrating account", student.getId());
       studentService.hydrateStudent(student, user);
     }

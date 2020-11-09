@@ -98,7 +98,9 @@ public class StudentService {
 
     String[] titre = user.getTitre().split("-");
     student.setPromo(Integer.valueOf(titre[2]));
-    student.setRoles(Collections.singleton(roleRepository.findByRole(Roles.STUDENT)));
+
+    if(student.getRoles().size() == 0)
+      student.setRoles(Collections.singleton(roleRepository.findByRole(Roles.STUDENT)));
 
     studentRepository.save(student);
   }
