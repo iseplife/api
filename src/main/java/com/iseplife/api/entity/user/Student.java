@@ -21,6 +21,7 @@ public class Student implements UserDetails, Author {
 
   private Integer promo;
   private Date archivedAt;
+  private Date lastConnection;
 
   private String firstName;
   private String lastName;
@@ -237,5 +238,13 @@ public class Student implements UserDetails, Author {
   @Override
   public void setMediaCooldown(Date mediaCooldown) {
     this.mediaCooldown = mediaCooldown;
+  }
+
+  public Date getLastConnection() {
+    return lastConnection;
+  }
+
+  public void setLastConnection(Date lastConnection) {
+    this.lastConnection = lastConnection;
   }
 }

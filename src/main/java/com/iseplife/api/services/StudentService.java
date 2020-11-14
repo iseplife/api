@@ -3,9 +3,11 @@ package com.iseplife.api.services;
 import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.ClubRole;
+import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.club.ClubMemberRepository;
 import com.iseplife.api.dao.club.ClubRepository;
 import com.iseplife.api.dao.group.GroupRepository;
+import com.iseplife.api.dto.CASUserDTO;
 import com.iseplife.api.dto.student.StudentDTO;
 import com.iseplife.api.dto.student.StudentUpdateAdminDTO;
 import com.iseplife.api.dto.student.StudentUpdateDTO;
@@ -87,6 +89,20 @@ public class StudentService {
       throw new IllegalArgumentException("could not find one of the user");
 
     return students;
+  }
+
+  public void hydrateStudent(Student student, CASUserDTO user){
+    student.setFirstName(user.getPrenom());
+    student.setLastName(user.getNom());
+    student.setMail(user.getMail());
+
+    String[] titre = user.getTitre().split("-");
+    student.setPromo(Integer.valueOf(titre[2]));
+
+    if(student.getRoles().size() == 0)
+      student.setRoles(Collections.singleton(roleRepository.findByRole(Roles.STUDENT)));
+
+    studentRepository.save(student);
   }
 
   public StudentAdminView createStudent(StudentDTO dto, MultipartFile file) {
