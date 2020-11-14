@@ -7,7 +7,10 @@ import com.iseplife.api.dto.club.view.ClubMemberPreview;
 import com.iseplife.api.dto.student.StudentDTO;
 import com.iseplife.api.dto.student.StudentUpdateAdminDTO;
 import com.iseplife.api.dto.student.StudentUpdateDTO;
-import com.iseplife.api.dto.student.view.*;
+import com.iseplife.api.dto.student.view.StudentAdminView;
+import com.iseplife.api.dto.student.view.StudentPreview;
+import com.iseplife.api.dto.student.view.StudentPreviewAdmin;
+import com.iseplife.api.dto.student.view.StudentView;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.dto.view.MatchedView;
@@ -53,8 +56,14 @@ public class StudentController {
 
   @GetMapping("/me")
   @RolesAllowed({Roles.STUDENT})
-  public StudentView getLoggedStudent(@AuthenticationPrincipal TokenPayload auth) {
-    return StudentFactory.toView(studentService.getStudent(auth.getId()));
+  public StudentPreview getLoggedStudentPreview() {
+    return studentService.getLoggedStudentPreview();
+  }
+
+  @GetMapping("/me/full")
+  @RolesAllowed({Roles.STUDENT})
+  public StudentView getLoggedStudent() {
+    return studentService.getLoggedStudent();
   }
 
   @GetMapping("/{id}")

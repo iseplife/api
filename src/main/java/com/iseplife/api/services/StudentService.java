@@ -14,6 +14,7 @@ import com.iseplife.api.dto.student.StudentUpdateDTO;
 import com.iseplife.api.dto.student.view.StudentAdminView;
 import com.iseplife.api.dto.student.view.StudentPreview;
 import com.iseplife.api.dto.student.view.StudentPreviewAdmin;
+import com.iseplife.api.dto.student.view.StudentView;
 import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.feed.Feed;
@@ -80,6 +81,18 @@ public class StudentService {
       throw new IllegalArgumentException("could not find the student with id: " + id);
 
     return student.get();
+  }
+
+  public StudentPreview getLoggedStudentPreview() {
+    Student student = getStudent(SecurityService.getLoggedId());
+
+    return StudentFactory.toPreview(student);
+  }
+
+  public StudentView getLoggedStudent() {
+    Student student = getStudent(SecurityService.getLoggedId());
+
+    return StudentFactory.toView(student);
   }
 
   public List<Student> getStudents(List<Long> ids) {

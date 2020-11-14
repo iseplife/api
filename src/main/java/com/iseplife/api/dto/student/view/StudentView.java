@@ -43,6 +43,14 @@ public class StudentView {
     this.promo = promo;
   }
 
+  public String getPicture() {
+    return picture;
+  }
+
+  public void setPicture(String picture) {
+    this.picture = picture;
+  }
+
   public Date getArchivedAt() {
     return archivedAt;
   }
@@ -145,13 +153,5 @@ public class StudentView {
 
   public void setRoles(List<String> roles) {
     this.roles = roles;
-  }
-
-  public String getPicture() {
-    return picture;
-  }
-
-  public void setPicture(String picture) {
-    this.picture = picture;
   }
 }

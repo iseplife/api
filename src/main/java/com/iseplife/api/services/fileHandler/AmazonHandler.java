@@ -54,11 +54,11 @@ public class AmazonHandler extends FileHandler {
   }
 
   @Override
-  public boolean delete(String key, Boolean clean) {
+  public boolean delete(String key, Boolean deleteAllSizes) {
     s3client.deleteObject(bucket, key);
 
     // Clean deletion search for generated thumbnails
-    if (clean) {
+    if (deleteAllSizes) {
       CompletableFuture.runAsync(() -> {
         int index = key.lastIndexOf("/");
         String rootPath = key.substring(0, index);
