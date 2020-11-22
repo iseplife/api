@@ -71,7 +71,7 @@ public class StudentService {
   }
 
   public Page<StudentPreviewAdmin> getAllForAdmin(int page) {
-    return getAllStudent(page).map(StudentFactory::entityToPreviewAdmin);
+    return getAllStudent(page).map(StudentFactory::toPreviewAdmin);
   }
 
   public Student getStudent(Long id) {
@@ -115,7 +115,7 @@ public class StudentService {
     if (file != null)
       student.setPicture(uploadOriginalPicture(student, file));
 
-    return StudentFactory.entityToAdminView(
+    return StudentFactory.toAdminView(
       studentRepository.save(student)
     );
   }
@@ -199,7 +199,7 @@ public class StudentService {
     Set<Role> roles = roleRepository.findAllByRoleIn(dto.getRoles());
     student.setRoles(roles);
 
-    return StudentFactory.entityToAdminView(studentRepository.save(student));
+    return StudentFactory.toAdminView(studentRepository.save(student));
   }
 
 

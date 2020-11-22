@@ -7,9 +7,7 @@ import com.iseplife.api.dto.club.view.ClubMemberPreview;
 import com.iseplife.api.dto.student.StudentDTO;
 import com.iseplife.api.dto.student.StudentUpdateAdminDTO;
 import com.iseplife.api.dto.student.StudentUpdateDTO;
-import com.iseplife.api.dto.student.view.StudentAdminView;
-import com.iseplife.api.dto.student.view.StudentPreview;
-import com.iseplife.api.dto.student.view.StudentPreviewAdmin;
+import com.iseplife.api.dto.student.view.*;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.dto.view.MatchedView;
@@ -76,26 +74,26 @@ public class StudentController {
 
   @GetMapping("/me")
   @RolesAllowed({Roles.STUDENT})
-  public Student getLoggedStudent(@AuthenticationPrincipal TokenPayload auth) {
-    return studentService.getStudent(auth.getId());
+  public StudentView getLoggedStudent(@AuthenticationPrincipal TokenPayload auth) {
+    return StudentFactory.toView(studentService.getStudent(auth.getId()));
   }
 
   @GetMapping("/{id}")
   @RolesAllowed({Roles.STUDENT})
-  public Student getStudent(@PathVariable Long id) {
-    return studentService.getStudent(id);
+  public StudentOverview getStudent(@PathVariable Long id) {
+    return StudentFactory.toOverview(studentService.getStudent(id));
   }
 
   @GetMapping("/{id}/admin")
   @RolesAllowed({Roles.ADMIN})
   public StudentAdminView getStudentAdmin(@PathVariable Long id) {
-    return StudentFactory.entityToAdminView(studentService.getStudent(id));
+    return StudentFactory.toAdminView(studentService.getStudent(id));
   }
 
   @PutMapping
   @RolesAllowed({Roles.STUDENT})
-  public Student updateStudent(@AuthenticationPrincipal TokenPayload auth, @RequestBody StudentUpdateDTO dto) {
-    return studentService.updateStudent(dto, auth.getId());
+  public StudentView updateStudent(@AuthenticationPrincipal TokenPayload auth, @RequestBody StudentUpdateDTO dto) {
+    return StudentFactory.toView(studentService.updateStudent(dto, auth.getId()));
   }
 
   @PutMapping("/admin")
@@ -146,9 +144,9 @@ public class StudentController {
 
   @PostMapping("/import")
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
-  public Student importStudents(@ModelAttribute Student student, @RequestParam(value = "file",
+  public StudentAdminView importStudents(@ModelAttribute Student student, @RequestParam(value = "file",
           required = false) MultipartFile file) {
-    return studentImportService.importStudents(student, file);
+    return StudentFactory.toAdminView(studentImportService.importStudents(student, file));
   }
 
   @GetMapping("/promos")
