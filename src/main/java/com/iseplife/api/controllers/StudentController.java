@@ -7,9 +7,7 @@ import com.iseplife.api.dto.club.view.ClubMemberPreview;
 import com.iseplife.api.dto.student.StudentDTO;
 import com.iseplife.api.dto.student.StudentUpdateAdminDTO;
 import com.iseplife.api.dto.student.StudentUpdateDTO;
-import com.iseplife.api.dto.student.view.StudentAdminView;
-import com.iseplife.api.dto.student.view.StudentPreview;
-import com.iseplife.api.dto.student.view.StudentPreviewAdmin;
+import com.iseplife.api.dto.student.view.*;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.dto.view.MatchedView;
@@ -52,60 +50,17 @@ public class StudentController {
   @Autowired
   JsonUtils jsonUtils;
 
-  @GetMapping
-  @RolesAllowed({Roles.ADMIN})
-  public Page<StudentPreview> getAllStudents(@RequestParam(defaultValue = "0") int page) {
-    return studentService.getAll(page);
-  }
-
-  @GetMapping("/admin")
-  @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
-  public Page<StudentPreviewAdmin> getAllStudentsAdmin(@RequestParam(defaultValue = "0") int page) {
-    return studentService.getAllForAdmin(page);
-  }
-
-  @PostMapping
-  @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
-  public StudentAdminView createStudent(
-    @RequestParam(name="form") String form,
-    @RequestParam(name="file", required = false) MultipartFile file
-  ) {
-    StudentDTO dto = jsonUtils.deserialize(form, StudentDTO.class);
-    return studentService.createStudent(dto, file);
-  }
 
   @GetMapping("/me")
   @RolesAllowed({Roles.STUDENT})
-  public Student getLoggedStudent(@AuthenticationPrincipal TokenPayload auth) {
-    return studentService.getStudent(auth.getId());
+  public StudentView getLoggedStudent(@AuthenticationPrincipal TokenPayload auth) {
+    return StudentFactory.toView(studentService.getStudent(auth.getId()));
   }
 
   @GetMapping("/{id}")
   @RolesAllowed({Roles.STUDENT})
-  public Student getStudent(@PathVariable Long id) {
-    return studentService.getStudent(id);
-  }
-
-  @GetMapping("/{id}/admin")
-  @RolesAllowed({Roles.ADMIN})
-  public StudentAdminView getStudentAdmin(@PathVariable Long id) {
-    return StudentFactory.entityToAdminView(studentService.getStudent(id));
-  }
-
-  @PutMapping
-  @RolesAllowed({Roles.STUDENT})
-  public Student updateStudent(@AuthenticationPrincipal TokenPayload auth, @RequestBody StudentUpdateDTO dto) {
-    return studentService.updateStudent(dto, auth.getId());
-  }
-
-  @PutMapping("/admin")
-  @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
-  public StudentAdminView updateStudentAdmin(
-    @RequestParam(name="form") String form,
-    @RequestParam(name="file", required = false) MultipartFile file
-  ) {
-    StudentUpdateAdminDTO dto = jsonUtils.deserialize(form, StudentUpdateAdminDTO.class);
-    return studentService.updateStudentAdmin(dto, file);
+  public StudentOverview getStudent(@PathVariable Long id) {
+    return StudentFactory.toOverview(studentService.getStudent(id));
   }
 
   @GetMapping("/{id}/post")
@@ -132,23 +87,41 @@ public class StudentController {
     return studentService.toggleArchiveStudent(id);
   }
 
-  @PutMapping("/notification")
-  @RolesAllowed({Roles.STUDENT})
-  public void toggleNotification(@AuthenticationPrincipal TokenPayload auth) {
-    studentService.toggleNotifications(auth);
-  }
-
   @GetMapping("/{id}/roles")
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
   public Set<Role> getStudentRoles(@PathVariable Long id) {
     return studentService.getStudentRoles(id);
   }
 
+  @PostMapping
+  @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
+  public StudentAdminView createStudent(@RequestParam StudentDTO dto) {
+    return studentService.createStudent(dto);
+  }
+
+  @GetMapping("/admin")
+  @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
+  public Page<StudentPreviewAdmin> getAllStudentsAdmin(@RequestParam(defaultValue = "0") int page) {
+    return studentService.getAllForAdmin(page);
+  }
+
+  @GetMapping("/{id}/admin")
+  @RolesAllowed({Roles.ADMIN})
+  public StudentAdminView getStudentAdmin(@PathVariable Long id) {
+    return StudentFactory.toAdminView(studentService.getStudent(id));
+  }
+
+  @PutMapping("/{id}/admin")
+  @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
+  public StudentAdminView updateStudentAdmin(@PathVariable Long id, @RequestBody StudentUpdateAdminDTO dto) {
+    return studentService.updateStudentAdmin(id, dto);
+  }
+
   @PostMapping("/import")
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
-  public Student importStudents(@ModelAttribute Student student, @RequestParam(value = "file",
+  public StudentAdminView importStudents(@ModelAttribute Student student, @RequestParam(value = "file",
           required = false) MultipartFile file) {
-    return studentImportService.importStudents(student, file);
+    return StudentFactory.toAdminView(studentImportService.importStudents(student, file));
   }
 
   @GetMapping("/promos")

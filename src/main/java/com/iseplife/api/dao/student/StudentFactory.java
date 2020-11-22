@@ -3,9 +3,7 @@ package com.iseplife.api.dao.student;
 import com.iseplife.api.dto.student.StudentDTO;
 import com.iseplife.api.dto.student.StudentUpdateAdminDTO;
 import com.iseplife.api.dto.student.StudentUpdateDTO;
-import com.iseplife.api.dto.student.view.StudentAdminView;
-import com.iseplife.api.dto.student.view.StudentPreview;
-import com.iseplife.api.dto.student.view.StudentPreviewAdmin;
+import com.iseplife.api.dto.student.view.*;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
 import org.springframework.stereotype.Component;
@@ -66,7 +64,35 @@ public class StudentFactory {
     return studentPreview;
   }
 
-  public static StudentPreviewAdmin entityToPreviewAdmin(Student student){
+
+  public static StudentView toView(Student student){
+    StudentView view = new StudentView();
+
+    view.setId(student.getId());
+    view.setFirstName(student.getFirstName());
+    view.setLastName(student.getLastName());
+    view.setPromo(student.getPromo());
+    view.setPicture(student.getPicture());
+
+    view.setBirthDate(student.getBirthDate());
+    view.setFacebook(student.getFacebook());
+    view.setTwitter(student.getTwitter());
+    view.setInstagram(student.getInstagram());
+
+    view.setNotification(student.getAllowNotifications());
+    view.setRecognition(student.getRecognition());
+
+    view.setRoles(
+      student.getRoles()
+        .stream()
+        .map(Role::getRole)
+        .collect(Collectors.toList())
+    );
+
+    return view;
+  }
+
+  public static StudentPreviewAdmin toPreviewAdmin(Student student){
     StudentPreviewAdmin studentPreviewAdmin = new StudentPreviewAdmin();
 
     studentPreviewAdmin.setId(student.getId());
@@ -85,7 +111,7 @@ public class StudentFactory {
     return studentPreviewAdmin;
   }
 
-  public static StudentAdminView entityToAdminView(Student student){
+  public static StudentAdminView toAdminView(Student student){
     StudentAdminView studentAdmin = new StudentAdminView();
 
     studentAdmin.setId(student.getId());
@@ -111,6 +137,26 @@ public class StudentFactory {
     );
 
     return studentAdmin;
+  }
+
+  public static StudentOverview toOverview(Student student){
+    StudentOverview overview = new StudentOverview();
+
+    overview.setId(student.getId());
+    overview.setPromo(student.getPromo());
+    overview.setPicture(student.getPicture());
+
+    overview.setFirstName(student.getFirstName());
+    overview.setLastName(student.getLastName());
+
+    overview.setMail(student.getMail());
+
+    overview.setFacebook(student.getFacebook());
+    overview.setTwitter(student.getTwitter());
+    overview.setSnapchat(student.getSnapchat());
+    overview.setInstagram(student.getInstagram());
+
+    return overview;
   }
 
 }

@@ -71,7 +71,7 @@ public class StudentService {
   }
 
   public Page<StudentPreviewAdmin> getAllForAdmin(int page) {
-    return getAllStudent(page).map(StudentFactory::entityToPreviewAdmin);
+    return getAllStudent(page).map(StudentFactory::toPreviewAdmin);
   }
 
   public Student getStudent(Long id) {
@@ -105,17 +105,14 @@ public class StudentService {
     studentRepository.save(student);
   }
 
-  public StudentAdminView createStudent(StudentDTO dto, MultipartFile file) {
+  public StudentAdminView createStudent(StudentDTO dto) {
     if (studentRepository.existsById(dto.getId()))
       throw new IllegalArgumentException("Student already exist with this id (" + dto.getId() + ")");
 
     Student student = studentFactory.dtoToEntity(dto);
     student.setRoles(roleRepository.findAllByRoleIn(dto.getRoles()));
 
-    if (file != null)
-      student.setPicture(uploadOriginalPicture(student, file));
-
-    return StudentFactory.entityToAdminView(
+    return StudentFactory.toAdminView(
       studentRepository.save(student)
     );
   }
@@ -186,20 +183,14 @@ public class StudentService {
     return roleRepository.findAll();
   }
 
-  public StudentAdminView updateStudentAdmin(StudentUpdateAdminDTO dto, MultipartFile file) {
-    Student student = getStudent(dto.getId());
+  public StudentAdminView updateStudentAdmin(Long id, StudentUpdateAdminDTO dto) {
+    Student student = getStudent(id);
     studentFactory.updateAdminDtoToEntity(student, dto);
-
-    if (file != null) {
-      updateProfilePicture(student, file);
-    } else if (dto.getResetPicture()) {
-      fileHandler.delete(student.getPicture());
-    }
 
     Set<Role> roles = roleRepository.findAllByRoleIn(dto.getRoles());
     student.setRoles(roles);
 
-    return StudentFactory.entityToAdminView(studentRepository.save(student));
+    return StudentFactory.toAdminView(studentRepository.save(student));
   }
 
 
