@@ -50,27 +50,6 @@ public class StudentController {
   @Autowired
   JsonUtils jsonUtils;
 
-  @GetMapping
-  @RolesAllowed({Roles.ADMIN})
-  public Page<StudentPreview> getAllStudents(@RequestParam(defaultValue = "0") int page) {
-    return studentService.getAll(page);
-  }
-
-  @GetMapping("/admin")
-  @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
-  public Page<StudentPreviewAdmin> getAllStudentsAdmin(@RequestParam(defaultValue = "0") int page) {
-    return studentService.getAllForAdmin(page);
-  }
-
-  @PostMapping
-  @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
-  public StudentAdminView createStudent(
-    @RequestParam(name="form") String form,
-    @RequestParam(name="file", required = false) MultipartFile file
-  ) {
-    StudentDTO dto = jsonUtils.deserialize(form, StudentDTO.class);
-    return studentService.createStudent(dto, file);
-  }
 
   @GetMapping("/me")
   @RolesAllowed({Roles.STUDENT})
@@ -82,23 +61,6 @@ public class StudentController {
   @RolesAllowed({Roles.STUDENT})
   public StudentOverview getStudent(@PathVariable Long id) {
     return StudentFactory.toOverview(studentService.getStudent(id));
-  }
-
-  @GetMapping("/{id}/admin")
-  @RolesAllowed({Roles.ADMIN})
-  public StudentAdminView getStudentAdmin(@PathVariable Long id) {
-    return StudentFactory.toAdminView(studentService.getStudent(id));
-  }
-
-
-  @PutMapping("/admin")
-  @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
-  public StudentAdminView updateStudentAdmin(
-    @RequestParam(name="form") String form,
-    @RequestParam(name="file", required = false) MultipartFile file
-  ) {
-    StudentUpdateAdminDTO dto = jsonUtils.deserialize(form, StudentUpdateAdminDTO.class);
-    return studentService.updateStudentAdmin(dto, file);
   }
 
   @GetMapping("/{id}/post")
@@ -129,6 +91,30 @@ public class StudentController {
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
   public Set<Role> getStudentRoles(@PathVariable Long id) {
     return studentService.getStudentRoles(id);
+  }
+
+  @PostMapping
+  @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
+  public StudentAdminView createStudent(@RequestParam StudentDTO dto) {
+    return studentService.createStudent(dto);
+  }
+
+  @GetMapping("/admin")
+  @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
+  public Page<StudentPreviewAdmin> getAllStudentsAdmin(@RequestParam(defaultValue = "0") int page) {
+    return studentService.getAllForAdmin(page);
+  }
+
+  @GetMapping("/{id}/admin")
+  @RolesAllowed({Roles.ADMIN})
+  public StudentAdminView getStudentAdmin(@PathVariable Long id) {
+    return StudentFactory.toAdminView(studentService.getStudent(id));
+  }
+
+  @PutMapping("/{id}/admin")
+  @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
+  public StudentAdminView updateStudentAdmin(@PathVariable Long id, @RequestBody StudentUpdateAdminDTO dto) {
+    return studentService.updateStudentAdmin(id, dto);
   }
 
   @PostMapping("/import")
