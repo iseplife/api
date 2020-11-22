@@ -90,11 +90,6 @@ public class StudentController {
     return StudentFactory.toAdminView(studentService.getStudent(id));
   }
 
-  @PutMapping
-  @RolesAllowed({Roles.STUDENT})
-  public StudentView updateStudent(@AuthenticationPrincipal TokenPayload auth, @RequestBody StudentUpdateDTO dto) {
-    return StudentFactory.toView(studentService.updateStudent(dto, auth.getId()));
-  }
 
   @PutMapping("/admin")
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
@@ -128,12 +123,6 @@ public class StudentController {
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
   public Boolean toggleArchiveStatus(@PathVariable Long id) {
     return studentService.toggleArchiveStudent(id);
-  }
-
-  @PutMapping("/notification")
-  @RolesAllowed({Roles.STUDENT})
-  public void toggleNotification(@AuthenticationPrincipal TokenPayload auth) {
-    studentService.toggleNotifications(auth);
   }
 
   @GetMapping("/{id}/roles")
