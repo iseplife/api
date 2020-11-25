@@ -4,6 +4,7 @@ public class StudentOverview {
   private Long id;
   private String picture;
   private Integer promo;
+  private Boolean archived;
 
   private String firstName;
   private String lastName;
@@ -93,5 +94,13 @@ public class StudentOverview {
 
   public void setSnapchat(String snapchat) {
     this.snapchat = snapchat;
+  }
+
+  public Boolean getArchived() {
+    return archived;
+  }
+
+  public void setArchived(Boolean archived) {
+    this.archived = archived;
   }
 }

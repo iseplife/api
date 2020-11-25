@@ -1,8 +1,10 @@
 package com.iseplife.api.entity.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.iseplife.api.constants.Language;
 import com.iseplife.api.entity.Author;
 import com.iseplife.api.entity.Subscription;
+import com.sun.istack.NotNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -28,20 +30,21 @@ public class Student implements UserDetails, Author {
   private String mail;
   private Date birthDate;
 
-  @JsonIgnore
-  private Boolean recognition;
 
   private String facebook;
   private String twitter;
   private String instagram;
   private String snapchat;
 
-  @JsonIgnore
-  private Boolean allowNotifications = false;
+  private Boolean recognition = false;
+  private Boolean notification = false;
+  private Language language = Language.FR;
 
   private Integer mediaCounter;
   private Date mediaCooldown;
 
+  @NotNull
+  private Boolean hasDefaultPicture = false;
   private String picture;
 
   @ManyToMany(fetch = FetchType.EAGER)
@@ -183,12 +186,12 @@ public class Student implements UserDetails, Author {
     this.twitter = twitter;
   }
 
-  public Boolean getAllowNotifications() {
-    return allowNotifications;
+  public Boolean getNotification() {
+    return notification;
   }
 
-  public void setAllowNotifications(Boolean allowNotifications) {
-    this.allowNotifications = allowNotifications;
+  public void setNotification(Boolean allowNotifications) {
+    this.notification = allowNotifications;
   }
 
   public String getSnapchat() {
@@ -246,5 +249,21 @@ public class Student implements UserDetails, Author {
 
   public void setLastConnection(Date lastConnection) {
     this.lastConnection = lastConnection;
+  }
+
+  public Language getLanguage() {
+    return language;
+  }
+
+  public void setLanguage(Language language) {
+    this.language = language;
+  }
+
+  public Boolean getHasDefaultPicture() {
+    return hasDefaultPicture;
+  }
+
+  public void setHasDefaultPicture(Boolean hasDefaultPicture) {
+    this.hasDefaultPicture = hasDefaultPicture;
   }
 }
