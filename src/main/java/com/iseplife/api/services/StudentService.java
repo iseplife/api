@@ -199,8 +199,9 @@ public class StudentService {
 
   public String uploadOriginalPicture(String previousPicture, MultipartFile image) {
     Map params = Map.of(
-      "process", "resize",
-      "sizes", StorageConfig.MEDIAS_CONF.get("user_original")
+      "process", "compress",
+      "sizes", StorageConfig.MEDIAS_CONF.get("user_original"),
+      "dest_ext", "jpeg"
     );
     return previousPicture == null ?
       fileHandler.upload(
@@ -219,8 +220,9 @@ public class StudentService {
 
   private String uploadPicture(String previousPicture, MultipartFile image) {
     Map params = Map.of(
-      "process", "resize",
-      "sizes", StorageConfig.MEDIAS_CONF.get("user_avatar").sizes
+      "process", "compress",
+      "sizes", StorageConfig.MEDIAS_CONF.get("user_avatar").sizes,
+        "dest_ext", "jpeg"
     );
 
     // If picture is undefined then the unique picture identifier has never been generated (or lost) and need to be created
@@ -234,7 +236,8 @@ public class StudentService {
       fileHandler.upload(
         image,
         StorageConfig.MEDIAS_CONF.get("user_avatar").path + "/" + MediaUtils.extractFilename(previousPicture),
-        true, params
+        true,
+        params
       );
 
   }

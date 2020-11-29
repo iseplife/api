@@ -70,7 +70,7 @@ public class StudentController {
     return StudentFactory.toOverview(studentService.getStudent(id));
   }
 
-  @PutMapping("/me/picture")
+  @PostMapping("/me/picture")
   @RolesAllowed({Roles.STUDENT})
   public StudentPictures updatePicture(@RequestBody MultipartFile file) {
     return studentService.updateProfilePicture(SecurityService.getLoggedId(), file);
