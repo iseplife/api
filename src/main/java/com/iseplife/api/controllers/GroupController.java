@@ -65,7 +65,7 @@ public class GroupController {
 
   @PostMapping("/{id}/cover")
   @RolesAllowed({Roles.STUDENT})
-  public String updateCover(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+  public String updateCover(@PathVariable Long id, @RequestParam(value = "file") MultipartFile file) {
     return groupService.updateCover(id, file);
   }
 

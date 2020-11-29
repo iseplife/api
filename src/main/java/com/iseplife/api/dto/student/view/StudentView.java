@@ -8,7 +8,7 @@ public class StudentView {
   private Long id;
 
   private Integer promo;
-  private String picture;
+  private StudentPictures pictures;
   private Date archivedAt;
   private Date lastConnection;
 
@@ -147,11 +147,11 @@ public class StudentView {
     this.roles = roles;
   }
 
-  public String getPicture() {
-    return picture;
+  public StudentPictures getPictures() {
+    return pictures;
   }
 
-  public void setPicture(String picture) {
-    this.picture = picture;
+  public void setPictures(StudentPictures pictures) {
+    this.pictures = pictures;
   }
 }

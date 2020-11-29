@@ -5,6 +5,7 @@ import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.student.StudentFactory;
 import com.iseplife.api.dto.club.view.ClubMemberPreview;
 import com.iseplife.api.dto.student.StudentDTO;
+import com.iseplife.api.dto.student.StudentSettingsDTO;
 import com.iseplife.api.dto.student.StudentUpdateAdminDTO;
 import com.iseplife.api.dto.student.StudentUpdateDTO;
 import com.iseplife.api.dto.student.view.*;
@@ -53,14 +54,32 @@ public class StudentController {
 
   @GetMapping("/me")
   @RolesAllowed({Roles.STUDENT})
-  public StudentView getLoggedStudent(@AuthenticationPrincipal TokenPayload auth) {
-    return StudentFactory.toView(studentService.getStudent(auth.getId()));
+  public StudentPreview getLoggedStudentPreview() {
+    return studentService.getLoggedStudentPreview();
+  }
+
+  @GetMapping("/me/full")
+  @RolesAllowed({Roles.STUDENT})
+  public StudentView getLoggedStudent() {
+    return studentService.getLoggedStudent();
   }
 
   @GetMapping("/{id}")
   @RolesAllowed({Roles.STUDENT})
   public StudentOverview getStudent(@PathVariable Long id) {
     return StudentFactory.toOverview(studentService.getStudent(id));
+  }
+
+  @PostMapping("/me/picture")
+  @RolesAllowed({Roles.STUDENT})
+  public StudentPictures updatePicture(@RequestBody MultipartFile file) {
+    return studentService.updateProfilePicture(SecurityService.getLoggedId(), file);
+  }
+
+  @PatchMapping("/me/setting")
+  @RolesAllowed({Roles.STUDENT})
+  public void updateSetting(@RequestBody StudentSettingsDTO dto) {
+    studentService.updateSettings(dto);
   }
 
   @GetMapping("/{id}/post")
@@ -93,6 +112,9 @@ public class StudentController {
     return studentService.getStudentRoles(id);
   }
 
+
+
+
   @PostMapping
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
   public StudentAdminView createStudent(@RequestParam StudentDTO dto) {
@@ -115,6 +137,18 @@ public class StudentController {
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
   public StudentAdminView updateStudentAdmin(@PathVariable Long id, @RequestBody StudentUpdateAdminDTO dto) {
     return studentService.updateStudentAdmin(id, dto);
+  }
+
+  @PutMapping("/{id}/admin/picture")
+  @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
+  public StudentPictures updateAdminPicture(@PathVariable Long id, @RequestBody MultipartFile file) {
+    return studentService.updateProfilePicture(id, file);
+  }
+
+  @PutMapping("/{id}/picture/original")
+  @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
+  public StudentPictures updateOriginalPicture(@PathVariable Long id, @RequestBody MultipartFile file) {
+    return studentService.updateOriginalPicture(id, file);
   }
 
   @PostMapping("/import")

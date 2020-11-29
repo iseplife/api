@@ -41,7 +41,7 @@ public class StudentImportService {
         student.setPromo(newStudent.getPromo());
         student.setRoles(roles);
         if (file != null) {
-            studentService.addProfilePicture(newStudent.getId(), file);
+            student.setPicture(studentService.uploadOriginalPicture(null, file));
         }
         return student;
     }

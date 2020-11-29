@@ -1,11 +1,13 @@
 package com.iseplife.api.dao.student;
 
+import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.dto.student.StudentDTO;
 import com.iseplife.api.dto.student.StudentUpdateAdminDTO;
 import com.iseplife.api.dto.student.StudentUpdateDTO;
 import com.iseplife.api.dto.student.view.*;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
+import com.iseplife.api.utils.MediaUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
@@ -72,14 +74,30 @@ public class StudentFactory {
     view.setFirstName(student.getFirstName());
     view.setLastName(student.getLastName());
     view.setPromo(student.getPromo());
-    view.setPicture(student.getPicture());
+
+    StudentPictures pictures;
+    if(MediaUtils.isOriginalPicture(student.getPicture())){
+      pictures = new StudentPictures(
+        student.getPicture(),
+        null
+      );
+    }else {
+      pictures = new StudentPictures(
+        student.getHasDefaultPicture() ?
+          StorageConfig.MEDIAS_CONF.get("user_original").path + "/" + MediaUtils.extractFilename(student.getPicture()):
+          null,
+        student.getPicture()
+      );
+    }
+    view.setPictures(pictures);
+
 
     view.setBirthDate(student.getBirthDate());
     view.setFacebook(student.getFacebook());
     view.setTwitter(student.getTwitter());
     view.setInstagram(student.getInstagram());
 
-    view.setNotification(student.getAllowNotifications());
+    view.setNotification(student.getNotification());
     view.setRecognition(student.getRecognition());
 
     view.setRoles(
@@ -145,6 +163,7 @@ public class StudentFactory {
     overview.setId(student.getId());
     overview.setPromo(student.getPromo());
     overview.setPicture(student.getPicture());
+    overview.setArchived(student.isArchived());
 
     overview.setFirstName(student.getFirstName());
     overview.setLastName(student.getLastName());

@@ -9,11 +9,10 @@ import com.iseplife.api.dao.club.ClubRepository;
 import com.iseplife.api.dao.group.GroupRepository;
 import com.iseplife.api.dto.CASUserDTO;
 import com.iseplife.api.dto.student.StudentDTO;
+import com.iseplife.api.dto.student.StudentSettingsDTO;
 import com.iseplife.api.dto.student.StudentUpdateAdminDTO;
 import com.iseplife.api.dto.student.StudentUpdateDTO;
-import com.iseplife.api.dto.student.view.StudentAdminView;
-import com.iseplife.api.dto.student.view.StudentPreview;
-import com.iseplife.api.dto.student.view.StudentPreviewAdmin;
+import com.iseplife.api.dto.student.view.*;
 import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.feed.Feed;
@@ -24,6 +23,8 @@ import com.iseplife.api.dao.student.StudentFactory;
 import com.iseplife.api.dao.student.StudentRepository;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import com.iseplife.api.services.fileHandler.FileHandler;
+import com.iseplife.api.utils.MediaUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -82,6 +83,18 @@ public class StudentService {
     return student.get();
   }
 
+  public StudentPreview getLoggedStudentPreview() {
+    Student student = getStudent(SecurityService.getLoggedId());
+
+    return StudentFactory.toPreview(student);
+  }
+
+  public StudentView getLoggedStudent() {
+    Student student = getStudent(SecurityService.getLoggedId());
+
+    return StudentFactory.toView(student);
+  }
+
   public List<Student> getStudents(List<Long> ids) {
     List<Student> students = (List<Student>) studentRepository.findAllById(ids);
 
@@ -91,7 +104,7 @@ public class StudentService {
     return students;
   }
 
-  public void hydrateStudent(Student student, CASUserDTO user){
+  public void hydrateStudent(Student student, CASUserDTO user) {
     student.setFirstName(user.getPrenom());
     student.setLastName(user.getNom());
     student.setMail(user.getMail());
@@ -99,9 +112,17 @@ public class StudentService {
     String[] titre = user.getTitre().split("-");
     student.setPromo(Integer.valueOf(titre[2]));
 
-    if(student.getRoles().size() == 0)
+    if (student.getRoles().size() == 0)
       student.setRoles(Collections.singleton(roleRepository.findByRole(Roles.STUDENT)));
 
+    studentRepository.save(student);
+  }
+
+  public void updateSettings(StudentSettingsDTO settingDTO) {
+    ModelMapper mapper = new ModelMapper();
+    Student student = getStudent(SecurityService.getLoggedId());
+
+    mapper.map(settingDTO, student);
     studentRepository.save(student);
   }
 
@@ -117,32 +138,108 @@ public class StudentService {
     );
   }
 
-  void addProfilePicture(Long studentId, MultipartFile image) {
+
+  public StudentPictures updateOriginalPicture(Long studentId, MultipartFile image) {
     Student student = getStudent(studentId);
-    updateProfilePicture(student, image);
-    studentRepository.save(student);
+    String filename = MediaUtils.extractFilename(student.getPicture());
+
+    if (image == null) {
+      fileHandler.delete(
+        StorageConfig.MEDIAS_CONF.get("user_original").path + "/" + filename
+      );
+      if (MediaUtils.isOriginalPicture(student.getPicture()))
+        student.setPicture(null);
+
+    } else {
+      // We don't have to delete previous picture has the name won't changes then the new pictures will override the old one
+      uploadOriginalPicture(student.getPicture(), image);
+    }
+
+    return image == null ?
+      new StudentPictures(
+        null,
+        student.getPicture()
+      ) :
+      new StudentPictures(
+        StorageConfig.MEDIAS_CONF.get("user_original").path + "/" + filename,
+        StorageConfig.MEDIAS_CONF.get("user_avatar").path + "/" + filename
+      );
   }
 
-  public String uploadOriginalPicture(Student student, MultipartFile image) {
-    String name = student.getId() + "." + fileHandler.getFileExtension(image.getName());
+  public StudentPictures updateProfilePicture(Long studentId, MultipartFile image) {
+    Student student = getStudent(studentId);
+    if (image == null) {
+      fileHandler.delete(student.getPicture());
 
-    Map params = Map.of(
-      "process", "resize",
-      "sizes", StorageConfig.MEDIAS_CONF.get("user_original")
-    );
-    return fileHandler.upload(image, StorageConfig.MEDIAS_CONF.get("user_original") + "/" + name, true, params);
+      // If student has default picture set it back otherwise picture is null
+      student.setPicture(
+        student.getHasDefaultPicture() ?
+          StorageConfig.MEDIAS_CONF.get("user_original").path + "/" + MediaUtils.extractFilename(student.getPicture()) :
+          null
+      );
+    } else {
+      // We don't have to delete previous picture has the name won't changes then the new pictures will override the old one
+      student.setPicture(
+        uploadPicture(student.getPicture(), image)
+      );
+    }
+
+    return image == null ?
+      new StudentPictures(
+        student.getPicture(),
+        null
+      ) :
+      new StudentPictures(
+        student.getHasDefaultPicture() ?
+          StorageConfig.MEDIAS_CONF.get("user_original").path + "/" + MediaUtils.extractFilename(student.getPicture()) :
+          null,
+        student.getPicture()
+      );
   }
 
-  private void updateProfilePicture(Student student, MultipartFile image) {
+  public String uploadOriginalPicture(String previousPicture, MultipartFile image) {
     Map params = Map.of(
-      "process", "resize",
-      "sizes", StorageConfig.MEDIAS_CONF.get("user_avatar").sizes
+      "process", "compress",
+      "sizes", StorageConfig.MEDIAS_CONF.get("user_original"),
+      "dest_ext", "jpeg"
+    );
+    return previousPicture == null ?
+      fileHandler.upload(
+        image,
+        StorageConfig.MEDIAS_CONF.get("user_original").path,
+        false,
+        params
+      ) :
+      fileHandler.upload(
+        image,
+        StorageConfig.MEDIAS_CONF.get("user_original").path + "/" + MediaUtils.extractFilename(previousPicture),
+        true,
+        params
+      );
+  }
+
+  private String uploadPicture(String previousPicture, MultipartFile image) {
+    Map params = Map.of(
+      "process", "compress",
+      "sizes", StorageConfig.MEDIAS_CONF.get("user_avatar").sizes,
+        "dest_ext", "jpeg"
     );
 
-    student.setPicture(
-      fileHandler.upload(image, StorageConfig.MEDIAS_CONF.get("user_avatar").path, false, params)
-    );
-    studentRepository.save(student);
+    // If picture is undefined then the unique picture identifier has never been generated (or lost) and need to be created
+    return previousPicture == null ?
+      fileHandler.upload(
+        image,
+        StorageConfig.MEDIAS_CONF.get("user_avatar").path,
+        false,
+        params
+      ) :
+      fileHandler.upload(
+        image,
+        StorageConfig.MEDIAS_CONF.get("user_avatar").path + "/" + MediaUtils.extractFilename(previousPicture),
+        true,
+        params
+      );
+
   }
 
   public Boolean toggleArchiveStudent(Long id) {
@@ -166,7 +263,7 @@ public class StudentService {
 
   public void toggleNotifications(TokenPayload tokenPayload) {
     Student student = getStudent(tokenPayload.getId());
-    student.setAllowNotifications(!student.getAllowNotifications());
+    student.setNotification(!student.getNotification());
     studentRepository.save(student);
   }
 
