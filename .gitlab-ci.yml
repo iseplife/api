@@ -1,19 +1,16 @@
-image: docker:latest
+image: docker:19.03.0
 services:
-  - docker:dind
+  - docker:19.03-dind
 
 variables:
   API_VERSION: v1.4
   DOCKER_DRIVER: overlay
   SPRING_PROFILES_ACTIVE: gitlab-ci
+
+
 cache:
   paths:
     - .m2/repository
-
-before_script:
-  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-  - docker login -u $DOCKER_LOGIN -p $DOCKER_TOKEN
-
 
 stages:
   - test
@@ -40,6 +37,9 @@ maven-build:
 
 docker-build:
   stage: package
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker login -u $DOCKER_LOGIN -p $DOCKER_TOKEN
   script:
     - docker build -t $CI_REGISTRY_IMAGE:$API_VERSION -t $CI_REGISTRY_IMAGE:latest .
     - docker push $CI_REGISTRY_IMAGE:$API_VERSION
