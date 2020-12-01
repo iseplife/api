@@ -1,7 +1,9 @@
 package com.iseplife.api.controllers.embed;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.dao.poll.PollFactory;
 import com.iseplife.api.dto.embed.PollCreationDTO;
+import com.iseplife.api.dto.embed.view.PollView;
 import com.iseplife.api.entity.post.embed.poll.Poll;
 import com.iseplife.api.entity.post.embed.poll.PollVote;
 import com.iseplife.api.constants.Roles;
@@ -13,10 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.security.RolesAllowed;
 import java.util.List;
 
-/**
- * Created by Guillaume on 31/07/2017.
- * back
- */
+
 @RestController
 @RequestMapping("/poll")
 public class PollController {
@@ -25,16 +24,10 @@ public class PollController {
   PollService pollService;
 
   @GetMapping("/{id}")
-  public Poll getPoll(@PathVariable Long id) {
-    return pollService.getPoll(id);
+  public PollView getPoll(@PathVariable Long id) {
+    return PollFactory.toView(pollService.getPoll(id));
   }
 
-  /**
-   * Check if poll has been answered
-   *
-   * @param id
-   * @return
-   */
   @GetMapping("/{id}/vote")
   @RolesAllowed({Roles.STUDENT})
   public List<PollVote> getVote(@PathVariable Long id, @AuthenticationPrincipal TokenPayload auth) {
@@ -60,7 +53,7 @@ public class PollController {
 
   @PostMapping
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
-  public Poll createPoll(@RequestParam("post") Long postId, @RequestBody PollCreationDTO dto) {
-    return pollService.createPoll(postId, dto);
+  public PollView createPoll(@RequestBody PollCreationDTO dto) {
+    return pollService.createPoll(dto);
   }
 }

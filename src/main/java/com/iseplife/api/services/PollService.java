@@ -1,19 +1,22 @@
 package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.dao.poll.PollFactory;
 import com.iseplife.api.dto.embed.PollCreationDTO;
+import com.iseplife.api.dto.embed.view.PollView;
 import com.iseplife.api.entity.post.embed.poll.Poll;
-import com.iseplife.api.entity.post.embed.poll.PollAnswer;
+import com.iseplife.api.entity.post.embed.poll.PollChoice;
 import com.iseplife.api.entity.post.embed.poll.PollVote;
 import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.constants.PostState;
-import com.iseplife.api.dao.poll.PollAnswerRepository;
+import com.iseplife.api.dao.poll.PollChoiceRepository;
 import com.iseplife.api.dao.poll.PollRepository;
 import com.iseplife.api.dao.poll.PollVoteRepository;
 import com.iseplife.api.exceptions.IllegalArgumentException;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +32,7 @@ public class PollService {
   PollRepository pollRepository;
 
   @Autowired
-  PollAnswerRepository pollAnswerRepository;
+  PollChoiceRepository pollChoiceRepository;
 
   @Autowired
   PollVoteRepository pollVoteRepository;
@@ -41,10 +44,18 @@ public class PollService {
   @Autowired
   PostService postService;
 
+  public Poll getPoll(Long pollId) {
+    Optional<Poll> poll = pollRepository.findById(pollId);
+    if(poll.isEmpty())
+      throw new IllegalArgumentException("Could not find this poll (id:" + pollId + ")");
+
+    return poll.get();
+  }
+
   public void addVote(Long pollId, Long pollAnswId, Long studentId) {
     Poll poll = getPoll(pollId);
 
-    if (!poll.getMultiAnswers()) {
+    if (!poll.getMultiple()) {
       List<PollVote> voteList = pollVoteRepository.findByAnswer_Poll_IdAndStudent_Id(pollId, studentId).stream()
         .filter(votes -> !votes.getAnswer().getId().equals(pollAnswId))
         .collect(Collectors.toList());
@@ -55,7 +66,7 @@ public class PollService {
       throw new IllegalArgumentException("This answer has already been chosen");
     }
 
-    Optional<PollAnswer> pollAnswer = pollAnswerRepository.findById(pollAnswId);
+    Optional<PollChoice> pollAnswer = pollChoiceRepository.findById(pollAnswId);
     if(pollAnswer.isEmpty())
       throw new IllegalArgumentException("Unknown answer");
 
@@ -66,43 +77,30 @@ public class PollService {
     pollVoteRepository.save(pollVote);
   }
 
-  private boolean checkHasEnded(Date date) {
-   return date.before(new Date());
-  }
 
   private boolean checkIsAnswered(Long answerId, Long userid) {
     return pollVoteRepository.findByAnswer_IdAndStudent_Id(answerId, userid) != null;
   }
 
-  public Poll createPoll(Long postId, PollCreationDTO pollDTO) {
-    // Create poll
+  public PollView createPoll(PollCreationDTO dto) {
+    ModelMapper mapper = new ModelMapper();
     Poll poll = new Poll();
-    poll.setName(pollDTO.getTitle());
-    poll.setEndDate(pollDTO.getEndDate());
-    poll.setMultiAnswers(pollDTO.getMultiAnswers());
-    Poll saved = pollRepository.save(poll);
 
-    postService.addMediaEmbed(postId, saved);
+    mapper.map(dto, poll);
 
-    // Add answers
-    pollDTO.getAnswers().forEach(q -> {
-      PollAnswer pollAnswer = new PollAnswer();
-      pollAnswer.setPoll(saved);
-      pollAnswer.setContent(q);
-      pollAnswerRepository.save(pollAnswer);
+
+    poll.setChoices(new ArrayList<>());
+    dto.getChoices().forEach(q -> {
+      PollChoice pollChoice = new PollChoice();
+      pollChoice.setContent(q);
+
+      poll.getChoices().add(pollChoice);
     });
 
-    postService.setPublishState(postId, PostState.READY);
-    return getPoll(saved.getId());
+    return PollFactory.toView(pollRepository.save(poll));
   }
 
-  public Poll getPoll(Long pollId) {
-    Optional<Poll> poll = pollRepository.findById(pollId);
-    if(poll.isEmpty())
-      throw new IllegalArgumentException("Could not find this poll (id:" + pollId + ")");
 
-    return poll.get();
-  }
 
   public List<PollVote> getUserVotes(Long pollId) {
     return pollVoteRepository.findByAnswer_Poll_Id(pollId);
@@ -114,7 +112,7 @@ public class PollService {
 
   public void removeVote(Long id, Long answerId, TokenPayload auth) {
     Poll poll = getPoll(id);
-    if (checkHasEnded(poll.getEndDate())) {
+    if (poll.getEndsAt().before(new Date())) {
       throw new IllegalArgumentException("you cannot vote for this poll anymore");
     }
     PollVote vote = pollVoteRepository.findByAnswer_IdAndStudent_Id(answerId, auth.getId());

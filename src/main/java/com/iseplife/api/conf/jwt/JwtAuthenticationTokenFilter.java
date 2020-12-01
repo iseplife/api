@@ -20,6 +20,7 @@ import java.io.IOException;
  */
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
+
   private final Logger LOG = LoggerFactory.getLogger(JwtAuthenticationTokenFilter.class);
 
   @Autowired

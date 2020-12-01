@@ -233,6 +233,12 @@ public class PostService {
     return authorStatus;
   }
 
+  public Page<PostView> getMainPosts(int page) {
+    Page<Post> posts = postRepository.findMainPostsByState(PostState.READY, PageRequest.of(page, POSTS_PER_PAGE));
+
+    return posts.map(post -> postFactory.entityToView(post));
+  }
+
   public Page<PostView> getFeedPosts(Feed feed, int page) {
     Page<Post> posts = postRepository.findByFeedAndStateOrderByPublicationDate(feed,
       PostState.READY, PageRequest.of(page, POSTS_PER_PAGE));

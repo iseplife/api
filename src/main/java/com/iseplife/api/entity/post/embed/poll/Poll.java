@@ -13,15 +13,18 @@ public class Poll implements Embedable {
   @GeneratedValue
   private Long id;
 
-  private String name;
-  private Date endDate;
-  private Boolean isMultiAnswers;
+  private String title;
+  private Date endsAt;
+  private Boolean multiple;
+  private Boolean anonymous;
+
 
   @OneToMany(mappedBy = EmbedType.POLL, cascade = CascadeType.ALL)
-  private List<PollAnswer> answers;
+  private List<PollChoice> choices;
 
   private Date creation;
 
+  @Override
   public Long getId() {
     return id;
   }
@@ -30,44 +33,52 @@ public class Poll implements Embedable {
     this.id = id;
   }
 
-  public String getName() {
-    return name;
+  public String getTitle() {
+    return title;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setTitle(String title) {
+    this.title = title;
   }
 
-  public List<PollAnswer> getAnswers() {
-    return answers;
+  public Date getEndsAt() {
+    return endsAt;
   }
 
-  public void setAnswers(List<PollAnswer> answers) {
-    this.answers = answers;
+  public void setEndsAt(Date endsAt) {
+    this.endsAt = endsAt;
   }
 
-  public Date getEndDate() {
-    return endDate;
+  public Boolean getMultiple() {
+    return multiple;
   }
 
-  public void setEndDate(Date endDate) {
-    this.endDate = endDate;
+  public void setMultiple(Boolean multiple) {
+    this.multiple = multiple;
   }
 
-  public Boolean getMultiAnswers() {
-    return isMultiAnswers;
+  public Boolean getAnonymous() {
+    return anonymous;
   }
 
-  public void setMultiAnswers(Boolean multiAnswers) {
-    isMultiAnswers = multiAnswers;
+  public void setAnonymous(Boolean anonymous) {
+    this.anonymous = anonymous;
   }
 
-  public void setCreation(Date creation) {
-    this.creation = creation;
+  public List<PollChoice> getChoices() {
+    return choices;
+  }
+
+  public void setChoices(List<PollChoice> answers) {
+    this.choices = answers;
   }
 
   public Date getCreation() {
     return creation;
+  }
+
+  public void setCreation(Date creation) {
+    this.creation = creation;
   }
 
   public String getEmbedType(){
