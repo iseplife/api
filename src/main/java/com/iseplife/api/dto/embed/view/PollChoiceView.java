@@ -6,7 +6,7 @@ public class PollChoiceView {
   private Long id;
   private String content;
   private Integer votesNumber;
-  private List<String> voters;
+  private List<Long> voters;
 
   public Long getId() {
     return id;
@@ -32,11 +32,11 @@ public class PollChoiceView {
     this.votesNumber = votesNumber;
   }
 
-  public List<String> getVoters() {
+  public List<Long> getVoters() {
     return voters;
   }
 
-  public void setVoters(List<String> voters) {
+  public void setVoters(List<Long> voters) {
     this.voters = voters;
   }
 

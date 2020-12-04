@@ -3,9 +3,11 @@ package com.iseplife.api.dao.poll;
 import com.iseplife.api.dto.embed.view.PollChoiceView;
 import com.iseplife.api.dto.embed.view.PollView;
 import com.iseplife.api.entity.post.embed.poll.Poll;
+import com.iseplife.api.services.SecurityService;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -30,8 +32,13 @@ public class PollFactory {
       choiceView.setVotesNumber(option.getVotesNb());
       choiceView.setContent(option.getContent());
 
-      if(!poll.getAnonymous())
+
+      if (!poll.getAnonymous()) {
         choiceView.setVoters(option.getVoters());
+      } else if (poll.getAnonymous() && option.getVoters().contains(SecurityService.getLoggedId())) {
+        choiceView.setVoters(Collections.singletonList(SecurityService.getLoggedId()));
+      }
+
 
       choices.add(choiceView);
     });

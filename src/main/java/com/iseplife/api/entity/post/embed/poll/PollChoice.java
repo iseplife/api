@@ -53,9 +53,9 @@ public class PollChoice {
     return votes.size();
   }
 
-  public List<String> getVoters() {
+  public List<Long> getVoters() {
     return votes.stream()
-      .map(v -> v.getStudent().getFirstName() + " " + v.getStudent().getLastName())
+      .map(PollVote::getStudentId)
       .collect(Collectors.toList());
   }
 

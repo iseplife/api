@@ -1,7 +1,7 @@
 package com.iseplife.api.dao.post;
 
-import com.iseplife.api.dto.PostDTO;
-import com.iseplife.api.dto.view.PostView;
+import com.iseplife.api.dto.post.PostDTO;
+import com.iseplife.api.dto.post.view.PostView;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,9 @@ public class PostFactory {
     postView.setPinned(post.getPinned());
     postView.setNbComments(post.getComments().size());
 
-    postView.setEmbed(post.getEmbed());
+    postView.setEmbed(
+      EmbedFactory.toView(post.getEmbed())
+    );
 
     postView.setThread(post.getThread().getId());
     postView.setAuthor(AuthorFactory.entityToView(post.getAuthor()));
