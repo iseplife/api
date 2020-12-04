@@ -30,8 +30,8 @@ public class ThreadController {
 
   @PutMapping("/{id}/like")
   @RolesAllowed({Roles.STUDENT})
-  public void toggleLike(@PathVariable Long id, @AuthenticationPrincipal TokenPayload auth) {
-    threadService.toggleLike(id, auth.getId());
+  public Boolean toggleLike(@PathVariable Long id, @AuthenticationPrincipal TokenPayload auth) {
+    return threadService.toggleLike(id, auth.getId());
   }
 
   @GetMapping("/{id}/comment")

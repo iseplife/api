@@ -78,17 +78,21 @@ public class ThreadService {
     return isLiked(thread);
   }
 
-  public void toggleLike(Long threadID, Long studentID) {
+  public Boolean toggleLike(Long threadID, Long studentID) {
    Like like = likeRepository.findOneByThreadIdAndStudentId(threadID, studentID);
 
    //TODO: check permissions
     if (like != null) {
       likeRepository.delete(like);
+
+      return false;
     } else {
       like = new Like();
       like.setStudent(studentService.getStudent(studentID));
       like.setThread(getThread(threadID));
       likeRepository.save(like);
+
+      return true;
     }
   }
 

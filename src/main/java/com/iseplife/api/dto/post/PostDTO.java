@@ -1,4 +1,4 @@
-package com.iseplife.api.dto;
+package com.iseplife.api.dto.post;
 
 import java.util.Date;
 import java.util.Map;

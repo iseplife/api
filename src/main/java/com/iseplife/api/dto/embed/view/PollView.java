@@ -1,9 +1,11 @@
 package com.iseplife.api.dto.embed.view;
 
+import com.iseplife.api.dto.post.view.EmbedView;
+
 import java.util.Date;
 import java.util.List;
 
-public class PollView {
+public class PollView extends EmbedView {
   private Long id;
 
   private String title;

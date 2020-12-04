@@ -1,8 +1,6 @@
-package com.iseplife.api.dto.view;
+package com.iseplife.api.dto.post.view;
 
-import com.iseplife.api.entity.club.Club;
-import com.iseplife.api.entity.post.embed.Embedable;
-import com.iseplife.api.entity.user.Student;
+import com.iseplife.api.dto.view.AuthorView;
 
 import java.util.Date;
 
@@ -16,7 +14,7 @@ public class PostView {
 
   private Date publicationDate;
   private String description;
-  private Embedable embed;
+  private EmbedView embed;
   private AuthorView author;
 
   private Integer nbLikes;
@@ -47,11 +45,11 @@ public class PostView {
     this.description = description;
   }
 
-  public Embedable getEmbed() {
+  public EmbedView getEmbed() {
     return embed;
   }
 
-  public void setEmbed(Embedable embed) { this.embed = embed; }
+  public void setEmbed(EmbedView embed) { this.embed = embed; }
 
 
 

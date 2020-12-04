@@ -1,10 +1,11 @@
 package com.iseplife.api.dto.gallery.view;
 
+import com.iseplife.api.dto.post.view.EmbedView;
 import com.iseplife.api.entity.post.embed.media.Image;
 
 import java.util.List;
 
-public class GalleryPreview {
+public class GalleryPreview extends EmbedView {
   private Long id;
   private String name;
   private List<Image> preview;

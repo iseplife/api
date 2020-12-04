@@ -8,7 +8,7 @@ import com.iseplife.api.dto.club.ClubMemberDTO;
 import com.iseplife.api.dto.club.view.ClubView;
 import com.iseplife.api.dto.gallery.view.GalleryPreview;
 import com.iseplife.api.dto.student.view.StudentPreview;
-import com.iseplife.api.dto.view.PostView;
+import com.iseplife.api.dto.post.view.PostView;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.club.ClubMember;
 import com.iseplife.api.services.SecurityService;
