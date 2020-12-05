@@ -3,6 +3,7 @@ package com.iseplife.api.dao.poll;
 import com.iseplife.api.dto.embed.view.PollChoiceView;
 import com.iseplife.api.dto.embed.view.PollView;
 import com.iseplife.api.entity.post.embed.poll.Poll;
+import com.iseplife.api.entity.post.embed.poll.PollChoice;
 import com.iseplife.api.services.SecurityService;
 import org.springframework.stereotype.Component;
 
@@ -26,24 +27,37 @@ public class PollFactory {
 
     List<PollChoiceView> choices = new ArrayList<>();
     poll.getChoices().forEach(option -> {
-      PollChoiceView choiceView = new PollChoiceView();
-
-      choiceView.setId(option.getId());
-      choiceView.setVotesNumber(option.getVotesNb());
-      choiceView.setContent(option.getContent());
-
-
-      if (!poll.getAnonymous()) {
-        choiceView.setVoters(option.getVoters());
-      } else if (poll.getAnonymous() && option.getVoters().contains(SecurityService.getLoggedId())) {
-        choiceView.setVoters(Collections.singletonList(SecurityService.getLoggedId()));
-      }
-
-
-      choices.add(choiceView);
+      choices.add(poll.getAnonymous() ? toAnonymousView(option): toView(option));
     });
     view.setChoices(choices);
 
     return view;
   }
+
+  static public PollChoiceView toView(PollChoice choice) {
+    PollChoiceView choiceView = new PollChoiceView();
+
+    choiceView.setId(choice.getId());
+    choiceView.setVotesNumber(choice.getVotesNb());
+    choiceView.setContent(choice.getContent());
+
+    choiceView.setVoters(choice.getVoters());
+
+    return choiceView;
+  }
+
+  static public PollChoiceView toAnonymousView(PollChoice choice) {
+    PollChoiceView anonymousChoiceView = new PollChoiceView();
+
+    anonymousChoiceView.setId(choice.getId());
+    anonymousChoiceView.setVotesNumber(choice.getVotesNb());
+    anonymousChoiceView.setContent(choice.getContent());
+
+    anonymousChoiceView.setVoters(choice.getVoters());
+    if (choice.getVoters().contains(SecurityService.getLoggedId())) {
+      anonymousChoiceView.setVoters(Collections.singletonList(SecurityService.getLoggedId()));
+    }
+    return anonymousChoiceView;
+  }
+
 }

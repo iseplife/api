@@ -13,6 +13,7 @@ import com.iseplife.api.entity.post.embed.Embedable;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.post.embed.media.Media;
+import com.iseplife.api.entity.post.embed.poll.Poll;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.PostState;
 import com.iseplife.api.constants.Roles;
@@ -92,6 +93,12 @@ public class PostService {
 
   public PostView createPost(TokenPayload auth, PostDTO postDTO) {
     Post post = postFactory.dtoToEntity(postDTO);
+    Feed feed = feedService.getFeed(postDTO.getFeed());
+
+    if(!SecurityService.hasRightOn(feed))
+      throw new AuthException("You are not allow to create a post here");
+
+    post.setFeed(feed);
     post.setAuthor(securityService.getLoggedUser());
     post.setLinkedClub(postDTO.getLinkedClub() != null ? clubService.getClub(postDTO.getLinkedClub()) : null);
 
@@ -109,7 +116,7 @@ public class PostService {
           attachement = galleryService.getGallery(id);
           break;
         case EmbedType.POLL:
-          attachement = pollService.getPoll(id);
+          attachement = pollService.bindPollToPost(id, feed);
           break;
         case EmbedType.VIDEO:
         case EmbedType.DOCUMENT:
@@ -122,7 +129,7 @@ public class PostService {
       post.setEmbed(attachement);
     });
 
-    post.setFeed(feedService.getFeed(postDTO.getFeed()));
+
     post.setThread(new Thread());
     post.setCreationDate(new Date());
     post.setPublicationDate(postDTO.getPublicationDate());

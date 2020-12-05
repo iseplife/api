@@ -137,16 +137,17 @@ public class EventService {
 
   private Event getEvent(Long id) {
     Optional<Event> event = eventRepository.findById(id);
-    if (event.isEmpty())
+
+    if (event.isEmpty() || !SecurityService.hasReadAccessOn(event.get()))
       throw new IllegalArgumentException("could not find event with id: " + id);
 
     return event.get();
   }
 
   public EventView getEventView(Long id) {
-    Event e = getEvent(id);
+    Event event = getEvent(id);
 
-    return EventFactory.toView(e, feedService.isSubscribedToFeed(e));
+    return EventFactory.toView(event, feedService.isSubscribedToFeed(event));
   }
 
   public Page<GalleryPreview> getEventGalleries(Long id, int page) {

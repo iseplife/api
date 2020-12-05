@@ -1,6 +1,8 @@
 package com.iseplife.api.entity.post.embed.poll;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.constants.EmbedType;
+import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.post.embed.Embedable;
 
 import javax.persistence.*;
@@ -21,6 +23,10 @@ public class Poll implements Embedable {
 
   @OneToMany(mappedBy = EmbedType.POLL, cascade = CascadeType.ALL)
   private List<PollChoice> choices;
+
+  @ManyToOne
+  @JsonIgnore
+  private Feed feed;
 
   private Date creation;
 
@@ -83,5 +89,13 @@ public class Poll implements Embedable {
 
   public String getEmbedType(){
     return EmbedType.POLL;
+  }
+
+  public Feed getFeed() {
+    return feed;
+  }
+
+  public void setFeed(Feed feed) {
+    this.feed = feed;
   }
 }

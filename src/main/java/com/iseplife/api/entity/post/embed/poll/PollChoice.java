@@ -21,7 +21,7 @@ public class PollChoice {
   @ManyToOne
   private Poll poll;
 
-  @OneToMany(mappedBy = "answer", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "choice", cascade = CascadeType.ALL)
   private List<PollVote> votes = new ArrayList<>();
 
   public Long getId() {

@@ -3,8 +3,10 @@ package com.iseplife.api.controllers.embed;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dao.poll.PollFactory;
 import com.iseplife.api.dto.embed.PollCreationDTO;
+import com.iseplife.api.dto.embed.view.PollChoiceView;
 import com.iseplife.api.dto.embed.view.PollView;
 import com.iseplife.api.entity.post.embed.poll.Poll;
+import com.iseplife.api.entity.post.embed.poll.PollChoice;
 import com.iseplife.api.entity.post.embed.poll.PollVote;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.services.PollService;
@@ -25,30 +27,7 @@ public class PollController {
 
   @GetMapping("/{id}")
   public PollView getPoll(@PathVariable Long id) {
-    return PollFactory.toView(pollService.getPoll(id));
-  }
-
-  @GetMapping("/{id}/vote")
-  @RolesAllowed({Roles.STUDENT})
-  public List<PollVote> getVote(@PathVariable Long id, @AuthenticationPrincipal TokenPayload auth) {
-    return pollService.getVote(id, auth.getId());
-  }
-
-  @GetMapping("/{id}/vote/all")
-  public List<PollVote> getAllVotes(@PathVariable Long id, @AuthenticationPrincipal TokenPayload auth) { //TODO
-    return pollService.getUserVotes(id);
-  }
-
-  @PutMapping("/{id}/answer/{answerId}") // add student
-  @RolesAllowed({Roles.STUDENT})
-  public void vote(@PathVariable Long id, @PathVariable Long answerId, @AuthenticationPrincipal TokenPayload auth) {
-    pollService.addVote(id, answerId, auth.getId());
-  }
-
-  @DeleteMapping("/{id}/answer/{answerId}") // remove student
-  @RolesAllowed({Roles.STUDENT})
-  public void unvote(@PathVariable Long id, @PathVariable Long answerId, @AuthenticationPrincipal TokenPayload auth) {
-    pollService.removeVote(id, answerId, auth);
+    return pollService.getPollView(id);
   }
 
   @PostMapping
@@ -56,4 +35,22 @@ public class PollController {
   public PollView createPoll(@RequestBody PollCreationDTO dto) {
     return pollService.createPoll(dto);
   }
+
+  @PostMapping("/{id}/choice/{choiceId}") // add student
+  @RolesAllowed({Roles.STUDENT})
+  public void vote(@PathVariable Long id, @PathVariable Long choiceId, @AuthenticationPrincipal TokenPayload auth) {
+    pollService.addVote(id, choiceId, auth.getId());
+  }
+
+  @DeleteMapping("/{id}/choice/{choiceId}") // remove student
+  @RolesAllowed({Roles.STUDENT})
+  public void unvote(@PathVariable Long id, @PathVariable Long choiceId, @AuthenticationPrincipal TokenPayload auth) {
+    pollService.removeVote(id, choiceId, auth.getId());
+  }
+
+  @GetMapping("/{id}/vote")
+  public List<PollChoiceView> getPollVotes(@PathVariable Long id) {
+    return pollService.getPollVotes(id);
+  }
+
 }
