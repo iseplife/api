@@ -40,7 +40,7 @@ public class PostFactory {
     );
 
     postView.setThread(post.getThread().getId());
-    postView.setAuthor(AuthorFactory.entityToView(post.getAuthor()));
+    postView.setAuthor(AuthorFactory.toView(post.getAuthor()));
     postView.setLiked(threadService.isLiked(post.getThread()));
     postView.setPrivate(post.getPrivate());
 

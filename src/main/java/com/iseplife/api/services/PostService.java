@@ -224,14 +224,14 @@ public class PostService {
       authorStatus.addAll(
         clubService.getAll()
           .stream()
-          .map(AuthorFactory::entityToView)
+          .map(AuthorFactory::toView)
           .collect(Collectors.toSet())
       );
     } else {
       authorStatus.addAll(
         studentService.getPublisherClubs(student)
           .stream()
-          .map(AuthorFactory::entityToView)
+          .map(AuthorFactory::toView)
           .collect(Collectors.toSet())
       );
     }

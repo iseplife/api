@@ -11,7 +11,7 @@ import java.util.Date;
 @DiscriminatorValue(MediaType.VIDEO)
 public class Video extends Media {
   private String title;
-  private String poster;
+  private String thumbnail;
 
   private Integer views = 0;
 
@@ -36,12 +36,12 @@ public class Video extends Media {
     this.views = views;
   }
 
-  public String getPoster() {
-    return poster;
+  public String getThumbnail() {
+    return thumbnail;
   }
 
-  public void setPoster(String poster) {
-    this.poster = poster;
+  public void setThumbnail(String poster) {
+    this.thumbnail = poster;
   }
 
   public String getEmbedType(){
