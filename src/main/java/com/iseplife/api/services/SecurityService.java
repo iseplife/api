@@ -8,10 +8,13 @@ import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.post.embed.Gallery;
+import com.iseplife.api.entity.post.embed.poll.Poll;
 import com.iseplife.api.entity.user.Student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 /**
  * Created by Guillaume on 13/08/2017.
@@ -70,6 +73,18 @@ public class SecurityService {
             || (feed.getEvent() != null && payload.getClubsPublisher().contains(feed.getEvent().getClub().getId()));
   }
 
+  static public boolean hasRightOn(Poll poll) {
+    TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return userHasRole(Roles.ADMIN)
+      || payload.getFeeds().contains(poll.getFeed().getId());
+  }
+
+  static public boolean hasReadAccess(Poll poll) {
+    TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return userHasRole(Roles.ADMIN)
+    || payload.getFeeds().contains(poll.getFeed().getId());
+  }
+
   static public boolean hasReadAccess(Feed feed) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
     return userHasRole(Roles.ADMIN)
@@ -101,6 +116,13 @@ public class SecurityService {
     return userHasRole(Roles.ADMIN)
             || payload.getClubsPublisher().contains(event.getClub().getId())
             || payload.getClubsAdmin().contains(event.getClub().getId());
+  }
+
+  static public boolean hasReadAccessOn(Event event) {
+    TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return userHasRole(Roles.ADMIN)
+      || event.getTargets().size() == 0
+      || event.getTargets().stream().anyMatch(f -> payload.getFeeds().contains(f.getId()));
   }
 
   public static boolean userHasRole(String role) {

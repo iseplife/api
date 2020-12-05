@@ -18,7 +18,7 @@ public class PollVote {
   private Student student;
 
   @ManyToOne
-  private PollAnswer answer;
+  private PollChoice choice;
 
   public Long getId() {
     return id;
@@ -40,11 +40,11 @@ public class PollVote {
     this.student = student;
   }
 
-  public PollAnswer getAnswer() {
-    return answer;
+  public PollChoice getChoice() {
+    return choice;
   }
 
-  public void setAnswer(PollAnswer answer) {
-    this.answer = answer;
+  public void setChoice(PollChoice choice) {
+    this.choice = choice;
   }
 }

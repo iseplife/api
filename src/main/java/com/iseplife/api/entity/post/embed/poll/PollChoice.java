@@ -3,6 +3,7 @@ package com.iseplife.api.entity.post.embed.poll;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,7 +12,7 @@ import java.util.stream.Collectors;
  * back
  */
 @Entity
-public class PollAnswer {
+public class PollChoice {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
@@ -20,8 +21,8 @@ public class PollAnswer {
   @ManyToOne
   private Poll poll;
 
-  @OneToMany(mappedBy = "answer", cascade = CascadeType.ALL)
-  private List<PollVote> votes;
+  @OneToMany(mappedBy = "choice", cascade = CascadeType.ALL)
+  private List<PollVote> votes = new ArrayList<>();
 
   public Long getId() {
     return id;
@@ -54,7 +55,7 @@ public class PollAnswer {
 
   public List<Long> getVoters() {
     return votes.stream()
-      .map(v -> v.getStudent().getId())
+      .map(PollVote::getStudentId)
       .collect(Collectors.toList());
   }
 

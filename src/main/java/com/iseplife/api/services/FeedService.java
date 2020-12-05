@@ -2,7 +2,7 @@ package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dao.feed.SubscriptionRepository;
-import com.iseplife.api.dto.view.PostView;
+import com.iseplife.api.dto.post.view.PostView;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.Subscription;
 import com.iseplife.api.entity.feed.Feedable;

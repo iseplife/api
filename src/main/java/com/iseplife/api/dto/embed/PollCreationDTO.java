@@ -3,15 +3,12 @@ package com.iseplife.api.dto.embed;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by Guillaume on 31/07/2017.
- * back
- */
 public class PollCreationDTO {
   private String title;
-  private List<String> answers;
-  private Date endDate;
-  private Boolean isMultiAnswers;
+  private List<String> choices;
+  private Date endsAt;
+  private Boolean multiple;
+  private Boolean anonymous;
 
   public String getTitle() {
     return title;
@@ -21,27 +18,35 @@ public class PollCreationDTO {
     this.title = title;
   }
 
-  public List<String> getAnswers() {
-    return answers;
+  public List<String> getChoices() {
+    return choices;
   }
 
-  public void setAnswers(List<String> answers) {
-    this.answers = answers;
+  public void setChoices(List<String> choices) {
+    this.choices = choices;
   }
 
-  public Boolean getMultiAnswers() {
-    return isMultiAnswers;
+  public Date getEndsAt() {
+    return endsAt;
   }
 
-  public void setMultiAnswers(Boolean multiAnswers) {
-    isMultiAnswers = multiAnswers;
+  public void setEndsAt(Date endsAt) {
+    this.endsAt = endsAt;
   }
 
-  public Date getEndDate() {
-    return endDate;
+  public Boolean getMultiple() {
+    return multiple;
   }
 
-  public void setEndDate(Date endDate) {
-    this.endDate = endDate;
+  public void setMultiple(Boolean multiple) {
+    this.multiple = multiple;
+  }
+
+  public Boolean getAnonymous() {
+    return anonymous;
+  }
+
+  public void setAnonymous(Boolean anonymous) {
+    this.anonymous = anonymous;
   }
 }

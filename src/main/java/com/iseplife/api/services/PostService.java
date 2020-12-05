@@ -3,10 +3,10 @@ package com.iseplife.api.services;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.dao.post.*;
-import com.iseplife.api.dto.PostDTO;
+import com.iseplife.api.dto.post.PostDTO;
 import com.iseplife.api.dto.PostUpdateDTO;
 import com.iseplife.api.dto.view.AuthorView;
-import com.iseplife.api.dto.view.PostView;
+import com.iseplife.api.dto.post.view.PostView;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.post.embed.Embedable;
@@ -92,6 +92,12 @@ public class PostService {
 
   public PostView createPost(TokenPayload auth, PostDTO postDTO) {
     Post post = postFactory.dtoToEntity(postDTO);
+    Feed feed = feedService.getFeed(postDTO.getFeed());
+
+    if(!SecurityService.hasRightOn(feed))
+      throw new AuthException("You are not allow to create a post here");
+
+    post.setFeed(feed);
     post.setAuthor(securityService.getLoggedUser());
     post.setLinkedClub(postDTO.getLinkedClub() != null ? clubService.getClub(postDTO.getLinkedClub()) : null);
 
@@ -109,7 +115,7 @@ public class PostService {
           attachement = galleryService.getGallery(id);
           break;
         case EmbedType.POLL:
-          attachement = pollService.getPoll(id);
+          attachement = pollService.bindPollToPost(id, feed);
           break;
         case EmbedType.VIDEO:
         case EmbedType.DOCUMENT:
@@ -122,7 +128,7 @@ public class PostService {
       post.setEmbed(attachement);
     });
 
-    post.setFeed(feedService.getFeed(postDTO.getFeed()));
+
     post.setThread(new Thread());
     post.setCreationDate(new Date());
     post.setPublicationDate(postDTO.getPublicationDate());
@@ -233,8 +239,14 @@ public class PostService {
     return authorStatus;
   }
 
+  public Page<PostView> getMainPosts(int page) {
+    Page<Post> posts = postRepository.findMainPostsByState(PostState.READY, PageRequest.of(page, POSTS_PER_PAGE));
+
+    return posts.map(post -> postFactory.entityToView(post));
+  }
+
   public Page<PostView> getFeedPosts(Feed feed, int page) {
-    Page<Post> posts = postRepository.findByFeedAndStateOrderByPublicationDate(feed,
+    Page<Post> posts = postRepository.findByFeedAndStateOrderByPublicationDateDesc(feed,
       PostState.READY, PageRequest.of(page, POSTS_PER_PAGE));
 
     return posts.map(post -> postFactory.entityToView(post));
@@ -253,7 +265,7 @@ public class PostService {
   }
 
   public List<PostView> getFeedPostsWaiting(Feed feed) {
-    List<Post> posts = postRepository.findByFeedAndStateOrderByPublicationDate(feed, PostState.WAITING);
+    List<Post> posts = postRepository.findByFeedAndStateOrderByPublicationDateDesc(feed, PostState.WAITING);
 
     return posts.stream().map(post -> postFactory.entityToView(post)).collect(Collectors.toList());
   }

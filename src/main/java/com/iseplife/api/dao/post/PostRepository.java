@@ -1,9 +1,7 @@
 package com.iseplife.api.dao.post;
 
-import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.post.Post;
-import com.iseplife.api.entity.post.embed.Embedable;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.PostState;
 import org.springframework.data.domain.Page;
@@ -19,10 +17,18 @@ public interface PostRepository extends CrudRepository<Post, Long> {
 
   List<Post> findAll();
 
-  Page<Post> findByFeedAndStateOrderByPublicationDate(Feed feed, PostState state, Pageable pageable);
+  @Query(
+    "select p from Post p "+
+      "where p.feed.id = 1 or p.isPrivate = false " +
+      "and p.state = ?1 " +
+      "order by p.publicationDate"
+  )
+  Page<Post> findMainPostsByState(PostState state,Pageable pageable);
+
+  Page<Post> findByFeedAndStateOrderByPublicationDateDesc(Feed feed, PostState state, Pageable pageable);
 
 
-  List<Post> findByFeedAndStateOrderByPublicationDate(Feed feed, PostState state);
+  List<Post> findByFeedAndStateOrderByPublicationDateDesc(Feed feed, PostState state);
 
   @Query(
     "select p from Post p "+
