@@ -115,13 +115,13 @@ public class PollService {
 
     mapper.map(dto, poll);
 
-    poll.setCreation(new Date(
+    poll.setCreation(new Date());
 
-    ));
     poll.setChoices(new ArrayList<>());
     dto.getChoices().forEach(q -> {
       PollChoice pollChoice = new PollChoice();
       pollChoice.setContent(q);
+      pollChoice.setPoll(poll);
 
       poll.getChoices().add(pollChoice);
     });

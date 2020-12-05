@@ -36,13 +36,13 @@ public class PollController {
     return pollService.createPoll(dto);
   }
 
-  @PostMapping("/{id}/choice/{choiceId}") // add student
+  @PostMapping("/{id}/choice/{choiceId}")
   @RolesAllowed({Roles.STUDENT})
   public void vote(@PathVariable Long id, @PathVariable Long choiceId, @AuthenticationPrincipal TokenPayload auth) {
     pollService.addVote(id, choiceId, auth.getId());
   }
 
-  @DeleteMapping("/{id}/choice/{choiceId}") // remove student
+  @DeleteMapping("/{id}/choice/{choiceId}")
   @RolesAllowed({Roles.STUDENT})
   public void unvote(@PathVariable Long id, @PathVariable Long choiceId, @AuthenticationPrincipal TokenPayload auth) {
     pollService.removeVote(id, choiceId, auth.getId());

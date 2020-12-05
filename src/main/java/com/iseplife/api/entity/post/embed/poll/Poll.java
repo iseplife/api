@@ -21,7 +21,7 @@ public class Poll implements Embedable {
   private Boolean anonymous;
 
 
-  @OneToMany(mappedBy = EmbedType.POLL, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy="poll", cascade = CascadeType.ALL)
   private List<PollChoice> choices;
 
   @ManyToOne

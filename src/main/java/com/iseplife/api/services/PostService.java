@@ -13,7 +13,6 @@ import com.iseplife.api.entity.post.embed.Embedable;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.post.embed.media.Media;
-import com.iseplife.api.entity.post.embed.poll.Poll;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.PostState;
 import com.iseplife.api.constants.Roles;
@@ -247,7 +246,7 @@ public class PostService {
   }
 
   public Page<PostView> getFeedPosts(Feed feed, int page) {
-    Page<Post> posts = postRepository.findByFeedAndStateOrderByPublicationDate(feed,
+    Page<Post> posts = postRepository.findByFeedAndStateOrderByPublicationDateDesc(feed,
       PostState.READY, PageRequest.of(page, POSTS_PER_PAGE));
 
     return posts.map(post -> postFactory.entityToView(post));
@@ -266,7 +265,7 @@ public class PostService {
   }
 
   public List<PostView> getFeedPostsWaiting(Feed feed) {
-    List<Post> posts = postRepository.findByFeedAndStateOrderByPublicationDate(feed, PostState.WAITING);
+    List<Post> posts = postRepository.findByFeedAndStateOrderByPublicationDateDesc(feed, PostState.WAITING);
 
     return posts.stream().map(post -> postFactory.entityToView(post)).collect(Collectors.toList());
   }

@@ -25,10 +25,10 @@ public interface PostRepository extends CrudRepository<Post, Long> {
   )
   Page<Post> findMainPostsByState(PostState state,Pageable pageable);
 
-  Page<Post> findByFeedAndStateOrderByPublicationDate(Feed feed, PostState state, Pageable pageable);
+  Page<Post> findByFeedAndStateOrderByPublicationDateDesc(Feed feed, PostState state, Pageable pageable);
 
 
-  List<Post> findByFeedAndStateOrderByPublicationDate(Feed feed, PostState state);
+  List<Post> findByFeedAndStateOrderByPublicationDateDesc(Feed feed, PostState state);
 
   @Query(
     "select p from Post p "+
