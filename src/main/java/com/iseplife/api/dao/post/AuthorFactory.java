@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 public class AuthorFactory {
 
-  public static AuthorView entityToView(Club club) {
+  public static AuthorView toView(Club club) {
     AuthorView author = new AuthorView();
     author.setId(club.getId());
     author.setType(AuthorType.CLUB);
@@ -18,7 +18,7 @@ public class AuthorFactory {
     return author;
   }
 
-  public static AuthorView entityToView(Student student) {
+  public static AuthorView toView(Student student) {
     AuthorView author = new AuthorView();
     author.setId(student.getId());
     author.setType(AuthorType.STUDENT);

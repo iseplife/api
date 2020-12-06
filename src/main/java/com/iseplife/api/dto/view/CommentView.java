@@ -1,25 +1,20 @@
 package com.iseplife.api.dto.view;
 
-import com.iseplife.api.entity.post.Like;
-import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.entity.post.Like;
-import com.iseplife.api.entity.user.Student;
 
 import java.util.Date;
-import java.util.List;
-import java.util.Set;
 
-/**
- * Created by Guillaume on 16/08/2017.
- * back
- */
 public class CommentView {
   private Long id;
-  private Student student;
+  private Long thread;
+  private AuthorView author;
   private Date creation;
   private String message;
-  private List<Like> likes;
-  private boolean isLiked;
+  private Integer likes;
+  private Integer comments;
+  private Boolean liked;
+  private Date lastEdition;
+  private Boolean hasWriteAccess;
+
 
   public Long getId() {
     return id;
@@ -29,12 +24,20 @@ public class CommentView {
     this.id = id;
   }
 
-  public Student getStudent() {
-    return student;
+  public Long getThread() {
+    return thread;
   }
 
-  public void setStudent(Student student) {
-    this.student = student;
+  public void setThread(Long thread) {
+    this.thread = thread;
+  }
+
+  public AuthorView getAuthor() {
+    return author;
+  }
+
+  public void setAuthor(AuthorView author) {
+    this.author = author;
   }
 
   public Date getCreation() {
@@ -53,19 +56,43 @@ public class CommentView {
     this.message = message;
   }
 
-  public List<Like> getLikes() {
+  public Integer getLikes() {
     return likes;
   }
 
-  public void setLikes(List<Like> likes) {
+  public void setLikes(Integer likes) {
     this.likes = likes;
   }
 
-  public boolean isLiked() {
-    return isLiked;
+  public Integer getComments() {
+    return comments;
   }
 
-  public void setLiked(boolean liked) {
-    isLiked = liked;
+  public void setComments(Integer comments) {
+    this.comments = comments;
+  }
+
+  public Boolean getLiked() {
+    return liked;
+  }
+
+  public void setLiked(Boolean liked) {
+    this.liked = liked;
+  }
+
+  public Date getLastEdition() {
+    return lastEdition;
+  }
+
+  public void setLastEdition(Date lastEdition) {
+    this.lastEdition = lastEdition;
+  }
+
+  public Boolean getHasWriteAccess() {
+    return hasWriteAccess;
+  }
+
+  public void setHasWriteAccess(Boolean hasWriteAccess) {
+    this.hasWriteAccess = hasWriteAccess;
   }
 }

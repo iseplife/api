@@ -6,6 +6,7 @@ import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.feed.Feed;
+import com.iseplife.api.entity.post.Comment;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.post.embed.poll.Poll;
@@ -64,6 +65,14 @@ public class SecurityService {
             || post.getAuthor().getId().equals(payload.getId())
             || payload.getClubsPublisher().contains(post.getLinkedClub().getId())
             || hasRightOn(post.getFeed());
+  }
+
+  static public boolean hasRightOn(Comment comment) {
+    TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return userHasRole(Roles.ADMIN)
+      || comment.getStudent().getId().equals(payload.getId())
+      || payload.getClubsPublisher().contains(comment.getAsClub().getId())
+      || hasRightOn(comment.getParentThread().getFeed());
   }
 
   static public boolean hasRightOn(Feed feed) {
