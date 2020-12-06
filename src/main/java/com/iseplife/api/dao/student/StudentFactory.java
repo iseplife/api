@@ -54,7 +54,24 @@ public class StudentFactory {
     student.setInstagram(dto.getInstagram());
   }
 
-  public static StudentPreview toPreview(Student student){
+
+  public static StudentPictures toPictures(String picture, Boolean hasDefaultPicture) {
+    if (MediaUtils.isOriginalPicture(picture)) {
+      return new StudentPictures(
+        picture,
+        null
+      );
+    } else {
+      return new StudentPictures(
+        hasDefaultPicture ?
+          StorageConfig.MEDIAS_CONF.get("user_original").path + "/" + MediaUtils.extractFilename(picture) :
+          null,
+        picture
+      );
+    }
+  }
+
+  public static StudentPreview toPreview(Student student) {
     StudentPreview studentPreview = new StudentPreview();
 
     studentPreview.setId(student.getId());
@@ -67,7 +84,7 @@ public class StudentFactory {
   }
 
 
-  public static StudentView toView(Student student){
+  public static StudentView toView(Student student) {
     StudentView view = new StudentView();
 
     view.setId(student.getId());
@@ -75,21 +92,8 @@ public class StudentFactory {
     view.setLastName(student.getLastName());
     view.setPromo(student.getPromo());
 
-    StudentPictures pictures;
-    if(MediaUtils.isOriginalPicture(student.getPicture())){
-      pictures = new StudentPictures(
-        student.getPicture(),
-        null
-      );
-    }else {
-      pictures = new StudentPictures(
-        student.getHasDefaultPicture() ?
-          StorageConfig.MEDIAS_CONF.get("user_original").path + "/" + MediaUtils.extractFilename(student.getPicture()):
-          null,
-        student.getPicture()
-      );
-    }
-    view.setPictures(pictures);
+
+    view.setPictures(toPictures(student.getPicture(), student.getHasDefaultPicture()));
 
 
     view.setBirthDate(student.getBirthDate());
@@ -110,7 +114,7 @@ public class StudentFactory {
     return view;
   }
 
-  public static StudentPreviewAdmin toPreviewAdmin(Student student){
+  public static StudentPreviewAdmin toPreviewAdmin(Student student) {
     StudentPreviewAdmin studentPreviewAdmin = new StudentPreviewAdmin();
 
     studentPreviewAdmin.setId(student.getId());
@@ -129,7 +133,7 @@ public class StudentFactory {
     return studentPreviewAdmin;
   }
 
-  public static StudentAdminView toAdminView(Student student){
+  public static StudentAdminView toAdminView(Student student) {
     StudentAdminView studentAdmin = new StudentAdminView();
 
     studentAdmin.setId(student.getId());
@@ -137,7 +141,7 @@ public class StudentFactory {
     studentAdmin.setFirstName(student.getFirstName());
     studentAdmin.setLastName(student.getLastName());
     studentAdmin.setPromo(student.getPromo());
-    studentAdmin.setPicture(student.getPicture());
+    studentAdmin.setPictures(toPictures(student.getPicture(), student.getHasDefaultPicture()));
 
     studentAdmin.setMail(student.getMail());
 
@@ -157,7 +161,7 @@ public class StudentFactory {
     return studentAdmin;
   }
 
-  public static StudentOverview toOverview(Student student){
+  public static StudentOverview toOverview(Student student) {
     StudentOverview overview = new StudentOverview();
 
     overview.setId(student.getId());

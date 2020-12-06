@@ -1,6 +1,5 @@
 package com.iseplife.api.controllers.media;
 
-import com.amazonaws.services.dynamodbv2.xspec.B;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.entity.Matched;
 import com.iseplife.api.entity.post.embed.media.Media;
@@ -44,12 +43,6 @@ public class MediaController {
     @RequestParam("file") MultipartFile file
   ){
     return mediaService.createMedia(file, club, gallery,  nsfw);
-  }
-
-  @DeleteMapping("/{filename}")
-  @RolesAllowed({Roles.ADMIN})
-  public boolean deleteMedia(@PathVariable String filename) {
-    return mediaService.removeMedia(filename);
   }
 
   @PutMapping("/image/{id}/nsfw")
