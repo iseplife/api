@@ -4,13 +4,16 @@ import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.media.image.ImageRepository;
 import com.iseplife.api.dao.post.*;
-import com.iseplife.api.dto.CommentDTO;
+import com.iseplife.api.dto.thread.CommentDTO;
+import com.iseplife.api.dto.thread.CommentEditDTO;
 import com.iseplife.api.dto.view.CommentView;
 import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.ThreadInterface;
+import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.post.Comment;
 import com.iseplife.api.entity.post.Like;
 import com.iseplife.api.exceptions.AuthException;
+import com.iseplife.api.exceptions.CommentMaxDepthException;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,11 +48,14 @@ public class ThreadService {
   SecurityService securityService;
 
   @Autowired
+  ClubService clubService;
+
+  @Autowired
   CommentFactory commentFactory;
 
   private Thread getThread(Long id) {
     Optional<Thread> thread = threadRepository.findById(id);
-    if (thread.isEmpty())
+    if (thread.isEmpty() || !SecurityService.hasReadAccess(thread.get().getFeed()))
       throw new IllegalArgumentException("Could not find a thread with id: " + id);
 
     return thread.get();
@@ -57,7 +63,7 @@ public class ThreadService {
 
   private Thread getThread(Object entityThread) {
     if (entityThread instanceof ThreadInterface)
-      entityThread = ((ThreadInterface) entityThread).getThread();
+      return ((ThreadInterface) entityThread).getThread();
     else if (entityThread instanceof Thread)
       return (Thread) entityThread;
 
@@ -69,7 +75,7 @@ public class ThreadService {
     return thread.getLikes();
   }
 
-  public Boolean isLiked(Thread thread){
+  public Boolean isLiked(Thread thread) {
     return likeRepository.existsByThread_IdAndStudent_Id(thread.getId(), securityService.getLoggedUser().getId());
   }
 
@@ -79,9 +85,9 @@ public class ThreadService {
   }
 
   public Boolean toggleLike(Long threadID, Long studentID) {
-   Like like = likeRepository.findOneByThreadIdAndStudentId(threadID, studentID);
+    Like like = likeRepository.findOneByThreadIdAndStudentId(threadID, studentID);
 
-   //TODO: check permissions
+    //TODO: check permissions
     if (like != null) {
       likeRepository.delete(like);
 
@@ -100,34 +106,55 @@ public class ThreadService {
     Thread thread = getThread(threadID);
     return thread.getComments()
       .stream()
-      .map(c -> commentFactory.entityToView(c))
+      .map(c -> commentFactory.toView(c))
       .collect(Collectors.toList());
   }
 
-  public Comment comment(Long threadID, CommentDTO dto, Long studentID) {
-    Comment comment = new Comment();
-    comment.setThread(getThread(threadID));
-    comment.setMessage(dto.getMessage());
-    comment.setStudent(studentService.getStudent(studentID));
-    comment.setCreation(new Date());
-
-    return commentRepository.save(comment);
+  private Boolean canCommentOnThread(Thread thread){
+    if(thread.getComment() != null){
+      return thread.getComment().getParentThread().getComment() == null;
+    }
+    return true;
   }
 
-  public Comment editComment(Long comID, CommentDTO dto, Long studentID) {
+  public CommentView comment(Long threadID, CommentDTO dto, Long studentID) {
+    Thread thread = getThread(threadID);
+
+    if (!canCommentOnThread(thread))
+      throw new CommentMaxDepthException("Comment max depth reached (1)");
+
+    Comment comment = new Comment();
+    comment.setParentThread(thread);
+    comment.setThread(new Thread());
+    comment.setMessage(dto.getMessage());
+    comment.setStudent(studentService.getStudent(studentID));
+
+    if (dto.getAsClub() != null) {
+      Club club = clubService.getClub(dto.getAsClub());
+
+      if (!SecurityService.hasRightOn(club))
+        throw new AuthException("You are not allowed to comment as this club (id:" + club.getId() + ")");
+
+      comment.setAsClub(club);
+    }
+
+    return commentFactory.toView(commentRepository.save(comment));
+  }
+
+  public CommentView editComment(Long id, Long comID, CommentEditDTO dto) {
     Optional<Comment> optional = commentRepository.findById(comID);
 
     if (optional.isEmpty())
       throw new IllegalArgumentException("could not find this comment");
 
     Comment comment = optional.get();
-    if (!comment.getStudent().getId().equals(studentID)) {
+    if (!SecurityService.hasRightOn(comment))
       throw new AuthException("you cannot edit this comment");
-    }
 
     comment.setMessage(dto.getMessage());
     comment.setLastEdition(new Date());
-    return commentRepository.save(comment);
+
+    return commentFactory.toView(commentRepository.save(comment));
   }
 
   public void deleteComment(Long comID, TokenPayload auth) {

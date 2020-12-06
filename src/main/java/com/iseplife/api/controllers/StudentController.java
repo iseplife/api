@@ -142,6 +142,15 @@ public class StudentController {
     return studentService.updateProfilePicture(id, file);
   }
 
+
+  @DeleteMapping("/{id}/admin/picture/custom")
+  @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
+  public StudentPictures deleteCustomPicture(@PathVariable Long id) {
+    return studentService.updateProfilePicture(id, null);
+  }
+
+
+
   @PutMapping("/{id}/picture/original")
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
   public StudentPictures updateOriginalPicture(@PathVariable Long id, @RequestBody MultipartFile file) {

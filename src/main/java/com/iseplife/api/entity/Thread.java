@@ -1,6 +1,7 @@
 package com.iseplife.api.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.post.Comment;
 import com.iseplife.api.entity.post.Like;
 import com.iseplife.api.entity.post.Post;
@@ -59,6 +60,9 @@ public class Thread {
     return post;
   }
 
+  {
+  }
+
   public void setPost(Post post) {
     this.post = post;
   }
@@ -69,6 +73,15 @@ public class Thread {
 
   public void setComment(Comment comment) {
     this.comment = comment;
+  }
+
+  public Feed getFeed() {
+    if (post != null) {
+      return post.getFeed();
+    } else {
+      return comment.getParentThread().getFeed();
+    }
+
   }
 
 }

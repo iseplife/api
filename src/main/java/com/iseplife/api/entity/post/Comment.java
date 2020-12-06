@@ -3,6 +3,7 @@ package com.iseplife.api.entity.post;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.ThreadInterface;
+import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.exceptions.CommentMaxDepthException;
 
@@ -19,18 +20,19 @@ public class Comment implements ThreadInterface {
   @ManyToOne
   private Thread parentThread;
 
-  @OneToOne
+  @OneToOne(cascade = CascadeType.ALL)
   private Thread thread;
 
   @ManyToOne
   private Student student;
 
-  private Date creation;
+  @ManyToOne
+  private Club asClub;
+
+  private Date creation = new Date();
 
   private Date lastEdition;
 
-  @ManyToOne
-  private Comment parent;
 
   @Column(length = 500)
   private String message;
@@ -75,11 +77,7 @@ public class Comment implements ThreadInterface {
 
   @Override
   public void setThread(Thread thread) {
-    if(parentThread.getComment() == null){
-      this.thread = thread;
-    }else {
-      throw new CommentMaxDepthException("Comment max depth reached (1)");
-    }
+    this.thread = thread;
   }
 
   public Date getCreation() {
@@ -102,11 +100,11 @@ public class Comment implements ThreadInterface {
     return thread.getLikes();
   }
 
-  public Comment getParent() {
-    return parent;
+  public Club getAsClub() {
+    return asClub;
   }
 
-  public void setParent(Comment parent) {
-    this.parent = parent;
+  public void setAsClub(Club asClub) {
+    this.asClub = asClub;
   }
 }
