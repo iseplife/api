@@ -5,6 +5,8 @@ import com.iseplife.api.entity.group.Group;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.List;
+
 public interface GroupMemberRepository extends CrudRepository<GroupMember, Long> {
 
   @Query(
@@ -15,6 +17,7 @@ public interface GroupMemberRepository extends CrudRepository<GroupMember, Long>
   )
   Boolean isMemberOfGroup(Long id, Long student);
 
+  List<GroupMember> findByGroup_Id(Long groupId);
 
   @Query(
     "select count(m) from GroupMember m " +

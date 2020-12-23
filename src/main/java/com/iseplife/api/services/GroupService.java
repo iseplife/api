@@ -4,9 +4,13 @@ import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.GroupType;
 import com.iseplife.api.dao.group.GroupFactory;
+import com.iseplife.api.dao.group.GroupMemberFactory;
 import com.iseplife.api.dao.group.GroupMemberRepository;
 import com.iseplife.api.dao.group.GroupRepository;
 import com.iseplife.api.dto.group.GroupDTO;
+import com.iseplife.api.dto.group.GroupMemberDTO;
+import com.iseplife.api.dto.group.view.GroupAdminView;
+import com.iseplife.api.dto.group.view.GroupMemberView;
 import com.iseplife.api.dto.group.view.GroupPreview;
 import com.iseplife.api.dto.group.view.GroupView;
 import com.iseplife.api.entity.group.Group;
@@ -54,6 +58,13 @@ public class GroupService {
     return group.get();
   }
 
+  public List<GroupMemberView> getGroupMembers(Long id) {
+    return groupMemberRepository.findByGroup_Id(id)
+      .stream()
+      .map(GroupMemberFactory::toView)
+      .collect(Collectors.toList());
+  }
+
   public GroupMember getGroupMember(Long id) {
     Optional<GroupMember> member = groupMemberRepository.findById(id);
     if (member.isEmpty())
@@ -64,7 +75,7 @@ public class GroupService {
 
   public GroupView getGroupView(Long id) {
     Group group = getGroup(id);
-    if(groupMemberRepository.isMemberOfGroup(id, SecurityService.getLoggedId()))
+    if (groupMemberRepository.isMemberOfGroup(id, SecurityService.getLoggedId()))
       return GroupFactory.toView(group, feedService.isSubscribedToFeed(group));
 
     throw new IllegalArgumentException("could not find the group with id: " + id);
@@ -85,10 +96,10 @@ public class GroupService {
       .collect(Collectors.toList());
   }
 
-  public GroupView createGroup(GroupDTO dto, MultipartFile file) {
+  public GroupAdminView createGroup(GroupDTO dto, MultipartFile file) {
     Group group = GroupFactory.fromDTO(dto);
 
-    if (file != null){
+    if (file != null) {
       Map params = Map.of(
         "process", "compress",
         "sizes", StorageConfig.MEDIAS_CONF.get("feed_cover").sizes
@@ -104,11 +115,11 @@ public class GroupService {
     });
 
 
-    return GroupFactory.toView(groupRepository.save(group), false);
+    return GroupFactory.toAdminView(groupRepository.save(group));
   }
 
 
-  public GroupView updateGroup(Long id, GroupDTO dto) {
+  public GroupAdminView updateGroup(Long id, GroupDTO dto) {
     Group group = getGroup(id);
     GroupFactory.updateFromDTO(group, dto);
 
@@ -118,10 +129,10 @@ public class GroupService {
       member.setStudent(a);
       group.getMembers().add(member);
     });
-    return GroupFactory.toView(groupRepository.save(group), feedService.isSubscribedToFeed(group));
+    return GroupFactory.toAdminView(groupRepository.save(group));
   }
 
-  public String updateCover(Long id, MultipartFile cover){
+  public String updateCover(Long id, MultipartFile cover) {
     Group group = getGroup(id);
     if (!SecurityService.hasRightOn(group))
       throw new AuthException("You have not sufficient rights on this group (id:" + id + ")");
@@ -131,7 +142,7 @@ public class GroupService {
 
     if (cover == null) {
       group.setCover(null);
-    }else {
+    } else {
       Map params = Map.of(
         "process", "compress",
         "sizes", StorageConfig.MEDIAS_CONF.get("feed_cover").sizes
@@ -165,9 +176,9 @@ public class GroupService {
   }
 
 
-  public Boolean promoteMember(Long id, Long member){
+  public Boolean promoteMember(Long id, Long member) {
     GroupMember groupMember = getGroupMember(member);
-    if(!SecurityService.hasRightOn(groupMember.getGroup()))
+    if (!SecurityService.hasRightOn(groupMember.getGroup()))
       throw new AuthException("You have not sufficient rights on this group (id:" + id + ")");
 
     groupMember.setAdmin(true);
@@ -176,12 +187,12 @@ public class GroupService {
     return true;
   }
 
-  public Boolean demoteMember(Long id, Long member){
+  public Boolean demoteMember(Long id, Long member) {
     GroupMember groupMember = getGroupMember(member);
-    if(!SecurityService.hasRightOn(groupMember.getGroup()))
+    if (!SecurityService.hasRightOn(groupMember.getGroup()))
       throw new AuthException("You have not sufficient rights on this group (id:" + id + ")");
 
-    if(groupMember.isAdmin() && groupMemberRepository.findGroupAdminCount(groupMember.getGroup()) < 1)
+    if (groupMember.isAdmin() && groupMemberRepository.findGroupAdminCount(groupMember.getGroup()) < 1)
       throw new IllegalArgumentException("Could not demote member as group must have at least 1 admin");
 
     groupMember.setAdmin(false);
@@ -189,12 +200,25 @@ public class GroupService {
     return true;
   }
 
-  public Boolean removeMember(Long id, Long member){
-    GroupMember groupMember = getGroupMember(member);
-    if(!SecurityService.hasRightOn(groupMember.getGroup()))
+  public GroupMemberView addMember(Long id, GroupMemberDTO dto) {
+    Group group = getGroup(id);
+    if (!SecurityService.hasRightOn(group))
       throw new AuthException("You have not sufficient rights on this group (id:" + id + ")");
 
-    if(groupMember.isAdmin() && groupMemberRepository.findGroupAdminCount(groupMember.getGroup()) < 1)
+    GroupMember member = new GroupMember();
+    member.setAdmin(false);
+    member.setStudent(studentService.getStudent(dto.getStudentId()));
+    member.setGroup(group);
+
+    return GroupMemberFactory.toView(groupMemberRepository.save(member));
+  }
+
+  public Boolean removeMember(Long id, Long member) {
+    GroupMember groupMember = getGroupMember(member);
+    if (!SecurityService.hasRightOn(groupMember.getGroup()))
+      throw new AuthException("You have not sufficient rights on this group (id:" + id + ")");
+
+    if (groupMember.isAdmin() && groupMemberRepository.findGroupAdminCount(groupMember.getGroup()) < 1)
       throw new IllegalArgumentException("Could not delete member as group must have at least 1 admin");
 
     groupMemberRepository.delete(groupMember);

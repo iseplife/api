@@ -2,8 +2,10 @@ package com.iseplife.api.dao.group;
 
 import com.iseplife.api.constants.GroupType;
 import com.iseplife.api.dto.group.GroupDTO;
+import com.iseplife.api.dto.group.view.GroupAdminView;
 import com.iseplife.api.dto.group.view.GroupPreview;
 import com.iseplife.api.dto.group.view.GroupView;
+import com.iseplife.api.entity.GroupMember;
 import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.services.SecurityService;
@@ -34,13 +36,26 @@ public class GroupFactory {
     view.setRestricted(group.isRestricted());
     view.setArchived(group.isArchived());
     view.setCover(group.getCover());
-    view.setLocked(group.getType() != GroupType.DEFAULT);
     view.setFeed(group.getFeed().getId());
     view.setHasRight(SecurityService.hasRightOn(group));
     view.setSubscribed(isSubscribed);
-    view.setMembers(
+
+    return view;
+  }
+
+  static public GroupAdminView toAdminView(Group group) {
+    GroupAdminView view = new GroupAdminView();
+
+    view.setId(group.getId());
+    view.setName(group.getName());
+    view.setRestricted(group.isRestricted());
+    view.setArchived(group.isArchived());
+    view.setCover(group.getCover());
+    view.setLocked(group.getType() != GroupType.DEFAULT);
+    view.setAdmins(
       group.getMembers()
         .stream()
+        .filter(GroupMember::isAdmin)
         .map(GroupMemberFactory::toView)
         .collect(Collectors.toList())
     );
