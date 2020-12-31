@@ -2,8 +2,7 @@ package com.iseplife.api.dto.media.view;
 
 public class VideoView extends MediaView {
   private String title;
-  private String thumbnail;
-  private Long view;
+  private Integer views;
 
   public String getTitle() {
     return title;
@@ -13,19 +12,11 @@ public class VideoView extends MediaView {
     this.title = title;
   }
 
-  public String getThumbnail() {
-    return thumbnail;
+  public Integer getViews() {
+    return views;
   }
 
-  public void setThumbnail(String thumbnail) {
-    this.thumbnail = thumbnail;
-  }
-
-  public Long getView() {
-    return view;
-  }
-
-  public void setView(Long view) {
-    this.view = view;
+  public void setViews(Integer views) {
+    this.views = views;
   }
 }

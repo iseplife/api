@@ -21,9 +21,9 @@ logging:
   level:
     com.iseplife.api: INFO
 
-media_daily:
-  club: ${CLUB_MEDIA_LIMIT:2000}
-  user: ${USER_MEDIA_LIMIT:15}
+media_limit:
+  club:       ${CLUB_MEDIA_LIMIT:2000}
+  user:       ${USER_MEDIA_LIMIT:15}
 
 cloud_handler:
   name:       ${CLOUD_NAME:aws}
