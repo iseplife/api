@@ -3,6 +3,9 @@ package com.iseplife.api.controllers;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dto.group.GroupDTO;
+import com.iseplife.api.dto.group.GroupMemberDTO;
+import com.iseplife.api.dto.group.view.GroupAdminView;
+import com.iseplife.api.dto.group.view.GroupMemberView;
 import com.iseplife.api.dto.group.view.GroupPreview;
 import com.iseplife.api.dto.group.view.GroupView;
 import com.iseplife.api.constants.Roles;
@@ -43,7 +46,7 @@ public class GroupController {
 
   @PostMapping
   @RolesAllowed({Roles.ADMIN})
-  public GroupView createGroup(
+  public GroupAdminView createGroup(
     @RequestParam(name="form") String form,
     @RequestParam(name="file", required = false) MultipartFile file
   ) {
@@ -59,7 +62,7 @@ public class GroupController {
 
   @PutMapping("/{id}")
   @RolesAllowed({Roles.ADMIN})
-  public GroupView updateGroup(@PathVariable Long id, @RequestBody GroupDTO dto) {
+  public GroupAdminView updateGroup(@PathVariable Long id, @RequestBody GroupDTO dto) {
     return groupService.updateGroup(id, dto);
   }
 
@@ -67,6 +70,19 @@ public class GroupController {
   @RolesAllowed({Roles.STUDENT})
   public String updateCover(@PathVariable Long id, @RequestParam(value = "file") MultipartFile file) {
     return groupService.updateCover(id, file);
+  }
+
+
+  @GetMapping("/{id}/member")
+  @RolesAllowed({Roles.STUDENT})
+  public List<GroupMemberView> getClubMembers(@PathVariable Long id) {
+    return groupService.getGroupMembers(id);
+  }
+
+  @PostMapping("/{id}/member")
+  @RolesAllowed({Roles.STUDENT})
+  public GroupMemberView addMember(@PathVariable Long id, @RequestBody GroupMemberDTO dto) {
+    return groupService.addMember(id, dto);
   }
 
   @DeleteMapping("/{id}/member/{member}")
