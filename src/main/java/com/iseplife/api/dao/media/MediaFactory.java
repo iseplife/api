@@ -20,9 +20,7 @@ public class MediaFactory {
         Video video = (Video) media;
         view = new VideoView();
         ((VideoView) view).setTitle(video.getTitle());
-        ((VideoView) view).setThumbnail(video.getThumbnail());
-        ((VideoView) view).setTitle(video.getTitle());
-
+        ((VideoView) view).setViews(video.getViews());
         break;
       case EmbedType.DOCUMENT:
         Document document = (Document) media;

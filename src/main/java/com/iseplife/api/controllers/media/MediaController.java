@@ -4,7 +4,6 @@ import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.entity.Matched;
 import com.iseplife.api.entity.post.embed.media.Media;
 import com.iseplife.api.constants.Roles;
-import com.iseplife.api.services.ClubService;
 import com.iseplife.api.services.MediaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,10 +19,6 @@ import java.util.List;
 public class MediaController {
   @Autowired
   MediaService mediaService;
-
-
-  @Autowired
-  ClubService clubService;
 
   @GetMapping
   public Page<Media> getAllMedia(@RequestParam(defaultValue = "0") int page,

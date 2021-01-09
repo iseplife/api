@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,12 @@ import java.util.*;
 public class MediaService {
 
   private final Logger LOG = LoggerFactory.getLogger(MediaService.class);
+
+  @Value("${media_limit.club}")
+  private Integer DAILY_CLUB_MEDIA;
+
+  @Value("${media_limit.user}")
+  private Integer DAILY_USER_MEDIA;
 
   @Autowired
   MediaRepository mediaRepository;
@@ -121,17 +128,16 @@ public class MediaService {
 
   private Boolean isAllowedToCreateMedia(Author author) {
     boolean isStudent = author instanceof Student;
-    if(!isStudent && !SecurityService.hasRightOn((Club) author))
+    if (!isStudent && !SecurityService.hasRightOn((Club) author))
       throw new AuthException("You have not sufficient rights on this club (id:" + author.getId() + ")");
-
 
     if (author.getMediaCooldown() == null || Duration.between(author.getMediaCooldown().toInstant(), Instant.now()).toHours() > 24) {
       author.setMediaCooldown(new Date());
       if (isStudent) {
-        author.setMediaCounter(StorageConfig.DAILY_USER_MEDIA);
+        author.setMediaCounter(DAILY_USER_MEDIA);
         studentRepository.save((Student) author);
       } else {
-        author.setMediaCounter(StorageConfig.DAILY_CLUB_MEDIA);
+        author.setMediaCounter(DAILY_CLUB_MEDIA);
         clubRepository.save((Club) author);
       }
 
@@ -154,7 +160,7 @@ public class MediaService {
       clubService.getClub(club) :
       studentService.getStudent(SecurityService.getLoggedId());
 
-    if(gallery && club <= 0)
+    if (gallery && club <= 0)
       throw new IllegalArgumentException("Club need to be specified when creating a gallery image");
 
     if (isAllowedToCreateMedia(author)) {
