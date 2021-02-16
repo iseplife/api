@@ -3,7 +3,8 @@ package com.iseplife.api.dto.group.view;
 public class GroupPreview {
   private Long id;
   private String name;
-  private String cover;
+  private Boolean restricted;
+  private Boolean archived;
 
   public Long getId() {
     return id;
@@ -21,11 +22,20 @@ public class GroupPreview {
     this.name = name;
   }
 
-  public String getCover() {
-    return cover;
+
+  public Boolean getRestricted() {
+    return restricted;
   }
 
-  public void setCover(String cover) {
-    this.cover = cover;
+  public void setRestricted(Boolean restricted) {
+    this.restricted = restricted;
+  }
+
+  public Boolean getArchived() {
+    return archived;
+  }
+
+  public void setArchived(Boolean archived) {
+    this.archived = archived;
   }
 }
