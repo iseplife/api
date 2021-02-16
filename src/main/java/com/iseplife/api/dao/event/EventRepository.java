@@ -11,10 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by Guillaume on 01/08/2017.
- * back
- */
+
 @Repository
 public interface EventRepository extends CrudRepository<Event, Long> {
   List<Event> findAll();
@@ -56,10 +53,10 @@ public interface EventRepository extends CrudRepository<Event, Long> {
   @Query(
     "select e from Event e join e.targets t " +
       "where lower(e.title) like %?1% " +
-      "and (?2 = true) or (" +
+      "and ((?2 = true) or (" +
         "e.published < current_time " +
         "and (e.targets is empty or e.closed = false or t.id in ?2)" +
-      ") "
+      ")) "
   )
   Page<Event> searchEvent(String name, Boolean admin, List<Long> feed, Pageable pageable);
 }
