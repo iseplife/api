@@ -54,7 +54,7 @@ public class EventFactory {
     preview.setStart(event.getStart());
     preview.setEnd(event.getEnd());
     preview.setCover(event.getImageUrl());
-    preview.setPublished(event.getPublished().after(new Date()));
+    preview.setPublished(event.getPublished().before(new Date()));
     return preview;
   }
 
