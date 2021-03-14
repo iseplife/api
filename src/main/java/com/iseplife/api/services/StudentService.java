@@ -83,17 +83,6 @@ public class StudentService {
     return student.get();
   }
 
-  public StudentPreview getLoggedStudentPreview() {
-    Student student = getStudent(SecurityService.getLoggedId());
-
-    return StudentFactory.toPreview(student);
-  }
-
-  public StudentView getLoggedStudent() {
-    Student student = getStudent(SecurityService.getLoggedId());
-
-    return StudentFactory.toView(student);
-  }
 
   public List<Student> getStudents(List<Long> ids) {
     List<Student> students = (List<Student>) studentRepository.findAllById(ids);

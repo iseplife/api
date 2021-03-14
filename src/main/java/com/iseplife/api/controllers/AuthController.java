@@ -1,6 +1,7 @@
 package com.iseplife.api.controllers;
 
 import com.iseplife.api.conf.jwt.JwtAuthRequest;
+import com.iseplife.api.conf.jwt.JwtRefreshRequest;
 import com.iseplife.api.conf.jwt.JwtTokenUtil;
 import com.iseplife.api.conf.jwt.TokenSet;
 import com.iseplife.api.dao.student.RoleRepository;
@@ -78,6 +79,11 @@ public class AuthController {
       throw new AuthException("User archived");
 
     return jwtTokenUtil.generateToken(student);
+  }
+
+  @PostMapping("/refresh")
+  public TokenSet getRefreshedTokens(@RequestBody JwtRefreshRequest request) {
+    return jwtTokenUtil.refreshWithToken(request.getRefreshToken());
   }
 
   @GetMapping("/roles")

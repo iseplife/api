@@ -77,7 +77,7 @@ public class JwtTokenUtil {
         .build(); //Reusable verifier instance
       return verifier.verify(token);
     } catch (JWTVerificationException e) {
-      LOG.error("could not decode token", e);
+        LOG.error("could not decode token", e);
     }
     throw new JWTVerificationException("invalid token");
   }
@@ -121,13 +121,14 @@ public class JwtTokenUtil {
    * @return a set of new tokens
    * @throws JWTVerificationException
    */
-  TokenSet refreshWithToken(String token) throws JWTVerificationException {
+  public TokenSet refreshWithToken(String token) throws JWTVerificationException {
     try {
       DecodedJWT decodedJWT = JWT.decode(token);
       Long id = decodedJWT.getClaim(CLAIM_USER_ID).asLong();
       Student student = studentService.getStudent(id);
       TokenPayload tokenPayload = generatePayload(student);
       String secret = generateRefreshSecret(tokenPayload);
+
       if (secret != null) {
         Algorithm algorithm = Algorithm.HMAC256(secret);
         JWTVerifier verifier = JWT.require(algorithm)

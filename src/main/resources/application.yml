@@ -34,7 +34,7 @@ cloud_handler:
 jwt:
   secret:               ${JWT_SECRET:1jmhvPXhI40vqAnm}
   refreshSecret:        ${JWT_REFRESH_SECRET:fIH3ZmRmqH2LT6vH}
-  tokenDuration:        ${JWT_TOKEN_DURATION:600}                 # default: 10 min
+  tokenDuration:        ${JWT_TOKEN_DURATION:60}                 # default: 10 min
   refreshTokenDuration: ${JWT_REFRESH_TOKEN_DURATION:604800}      # default: 7 days
   issuer:               iseplife
 
