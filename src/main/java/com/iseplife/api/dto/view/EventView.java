@@ -16,6 +16,7 @@ public class EventView {
   private Date start;
   private Date end;
   private String location;
+  private Float[] coordinates;
   private String ticketURL = null;
   private Float price = null;
   private Date published = new Date();
@@ -161,5 +162,13 @@ public class EventView {
 
   public void setHasRight(Boolean hasRight) {
     this.hasRight = hasRight;
+  }
+
+  public Float[] getCoordinates() {
+    return coordinates;
+  }
+
+  public void setCoordinates(Float[] coordinates) {
+    this.coordinates = coordinates;
   }
 }

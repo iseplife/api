@@ -27,6 +27,7 @@ public class Event implements Feedable {
   private Date start;
   private Date end;
   private String location;
+  private String coordinates;
   private String ticketUrl = null;
   private Float price = null;
 
@@ -193,5 +194,13 @@ public class Event implements Feedable {
 
   public void setTargets(Set<Feed> targets) {
     this.targets = targets;
+  }
+
+  public String getCoordinates() {
+    return coordinates;
+  }
+
+  public void setCoordinates(String coordinates) {
+    this.coordinates = coordinates;
   }
 }
