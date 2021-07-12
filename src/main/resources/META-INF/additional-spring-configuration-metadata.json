@@ -1,8 +1,85 @@
 {
-	"properties": [
-		{
-			"name": "jwt.secret",
-			"type": "java.lang.String",
-			"description": "Description for jwt.secret."
-		}
-] }
+  "properties": [
+    {
+      "name": "app.name",
+      "type": "java.lang.String",
+      "description": "Application's name."
+    },
+    {
+      "name": "app.version",
+      "type": "java.lang.String",
+      "description": "Application's version."
+    },
+    {
+      "name": "media_limit.club",
+      "type": "java.lang.Integer",
+      "description": "Maximum object's daily upload allowed by a club."
+    },
+    {
+      "name": "media_limit.user",
+      "type": "java.lang.Integer",
+      "description": "Maximum object's daily upload allowed by an user."
+    },
+    {
+      "name": "storage.name",
+      "type": "java.lang.String",
+      "description": "Cloud handler's name, only aws or cloudinary are currently supported."
+    },
+    {
+      "name": "storage.api-key",
+      "type": "java.lang.String",
+      "description": "Cloud solution API's key."
+    },
+    {
+      "name": "storage.api-secret",
+      "type": "java.lang.String",
+      "description": "Cloud solution Secret API's key."
+    },
+    {
+      "name": "storage.bucket",
+      "type": "java.lang.String",
+      "defaultValue": "iseplife",
+      "description": "Cloud bucket's name where all data will be stored."
+    },
+    {
+      "name": "jwt.secret",
+      "type": "java.lang.String",
+      "description": "Secret pass of the main JWT, DON'T USE DEFAULT VALUE."
+    },
+    {
+      "name": "jwt.refresh-secret",
+      "type": "java.lang.String",
+      "description": "Secret pass of the refresh token, DON'T USE DEFAULT VALUE."
+    },
+    {
+      "name": "jwt.token-duration",
+      "type": "java.lang.Integer",
+      "description": "Duration of the JWT, in seconds."
+    },
+    {
+      "name": "jwt.refresh-token-duration",
+      "type": "java.lang.Integer",
+      "description": "Duration of the refresh token, in seconds."
+    },
+    {
+      "name": "jwt.issuer",
+      "type": "java.lang.String",
+      "description": "JWT issuer."
+    },
+    {
+      "name": "auth.enable-root",
+      "type": "java.lang.Boolean",
+      "description": "Allow to authenticate with the root user."
+    },
+    {
+      "name": "auth.password-root",
+      "type": "java.lang.String",
+      "description": "User root's password, DO NOT USE DEFAULT VALUE."
+    },
+    {
+      "name": "auth.auto-generation",
+      "type": "java.lang.Boolean",
+      "description": "Automatically create account if LDAP's account exist but not on database."
+    }
+  ]
+}
