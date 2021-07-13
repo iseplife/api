@@ -34,7 +34,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import springfox.documentation.annotations.Cacheable;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.security.InvalidParameterException;
 import java.time.Duration;

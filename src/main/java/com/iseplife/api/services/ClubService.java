@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -61,6 +62,7 @@ public class ClubService {
   @Autowired
   FileHandler fileHandler;
 
+  @Cacheable("club")
   public Club getClub(Long id) {
     Optional<Club> club = clubRepository.findById(id);
     if (club.isEmpty())
