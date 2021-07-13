@@ -39,13 +39,13 @@ public class AuthController {
   RoleRepository roleRepository;
 
 
-  @Value("${auth.password}")
+  @Value("${auth.password-root}")
   String defaultPassword;
 
-  @Value("${auth.enable}")
+  @Value("${auth.enable-root}")
   Boolean passwordEnable;
 
-  @Value("${auth.autoGeneration}")
+  @Value("${auth.auto-generation}")
   Boolean autoGeneration;
 
   @PostMapping

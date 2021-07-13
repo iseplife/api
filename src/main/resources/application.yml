@@ -26,9 +26,9 @@ media_limit:
   user:       ${USER_MEDIA_LIMIT:15}
 
 storage:
-  name:       ${CLOUD_NAME:aws}
-  api-key:    ${CLOUD_API_KEY:}
-  api-secret: ${CLOUD_API_SECRET:}
+  name:       ${STORAGE_NAME:aws}
+  api-key:    ${STORAGE_API_KEY:}
+  api-secret: ${STORAGE_API_SECRET:}
   bucket:     iseplife
 
 jwt:

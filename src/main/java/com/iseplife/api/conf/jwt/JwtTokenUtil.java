@@ -57,16 +57,16 @@ public class JwtTokenUtil {
   @Value("${jwt.secret}")
   private String secret;
 
-  @Value("${jwt.refreshSecret}")
+  @Value("${jwt.refresh-secret}")
   private String refreshSecret;
 
   @Value("${jwt.issuer}")
   private String issuer;
 
-  @Value("${jwt.tokenDuration}")
+  @Value("${jwt.token-duration}")
   private int tokenDuration;
 
-  @Value("${jwt.refreshTokenDuration}")
+  @Value("${jwt.refresh-token-duration}")
   private int refreshTokenDuration;
 
   public DecodedJWT decodeToken(String token) throws JWTVerificationException {
@@ -102,16 +102,6 @@ public class JwtTokenUtil {
     return null;
   }
 
-  String refreshToken(DecodedJWT jwt) {
-    String payloadString = jwt.getClaim(CLAIM_PAYLOAD).asString();
-    try {
-      TokenPayload tokenPayload = new ObjectMapper().readValue(payloadString, TokenPayload.class);
-      return generateToken(tokenPayload);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    return null;
-  }
 
   /**
    * Refresh the set of tokens (token + refresh token)

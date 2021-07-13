@@ -41,11 +41,11 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
           jwt = jwtTokenUtil.decodeToken(token);
         } catch (JWTVerificationException e) {
           LOG.debug("token expired, refresh the token");
-          response.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
+          response.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
           return;
         }
       } else {
-        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Authentication schema not found");
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication schema not found");
         return;
       }
 
