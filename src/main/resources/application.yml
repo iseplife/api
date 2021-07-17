@@ -1,6 +1,10 @@
 spring:
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost:5432}/iseplife
+    # PSQL config
+    # url: jdbc:postgresql://${DB_HOST:localhost:5432}/iseplife
+    # MySQL config
+    url: jdbc:mysql://${DB_HOST:localhost:3306}/iseplife?createDatabaseIfNotExist=true&useSSL=false&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:root}
   jpa:
@@ -39,6 +43,6 @@ jwt:
   issuer:               iseplife
 
 auth:
-  enable-root:   ${ENABLE_ROOT:true}
+  enable-root:   ${ENABLE_ROOT:false}    # Disable in production
   password-root: ${ROOT_PASS:password}
   auto-generation: ${AUTO_GEN:true}

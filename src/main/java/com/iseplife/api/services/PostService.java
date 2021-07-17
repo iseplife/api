@@ -128,10 +128,9 @@ public class PostService {
       post.setEmbed(attachement);
     });
 
-
     post.setThread(new Thread());
     post.setCreationDate(new Date());
-    post.setPublicationDate(postDTO.getPublicationDate());
+    post.setPublicationDate(postDTO.getPublicationDate() == null ? postDTO.getPublicationDate(): new Date());
     post.setState(postDTO.isDraft() ? PostState.DRAFT : PostState.READY);
 
     return postFactory.entityToView(postRepository.save(post));
@@ -151,9 +150,8 @@ public class PostService {
 
   public void deletePost(Long postID) {
     Post post = getPost(postID);
-    if (!SecurityService.hasRightOn(post)) {
+    if (!SecurityService.hasRightOn(post))
       throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");
-    }
 
     Embedable embed = post.getEmbed();
     if (embed instanceof Media) {

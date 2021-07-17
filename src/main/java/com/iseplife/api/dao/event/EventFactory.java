@@ -80,7 +80,8 @@ public class EventFactory {
     view.setLocation(event.getLocation());
 
     // Split string containing long & lag and parsing it into float
-    view.setCoordinates(Arrays.stream(event.getCoordinates().split(";")).map(Float::valueOf).toArray(Float[]::new));
+    if (event.getCoordinates() != null)
+      view.setCoordinates(Arrays.stream(event.getCoordinates().split(";")).map(Float::valueOf).toArray(Float[]::new));
     view.setTicketURL(event.getTicketUrl());
     view.setPrice(event.getPrice());
     view.setPublished(event.getPublished());
