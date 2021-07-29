@@ -30,9 +30,8 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
     String token = request.getHeader("Authorization");
-    String refreshToken = request.getHeader("X-Refresh-Token");
 
-    if (token != null && refreshToken != null) {
+    if (token != null) {
       DecodedJWT jwt;
       if (token.startsWith("Bearer ")) {
         token = token.substring(7);
@@ -54,8 +53,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         authentication.setAuthenticated(true);
 
         response.setHeader("Authorization", token);
-        response.setHeader("X-Refresh-Token", refreshToken);
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
       }
     }

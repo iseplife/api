@@ -20,9 +20,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -39,6 +42,12 @@ import java.util.stream.Collectors;
 public class JwtTokenUtil {
 
   private static final Logger LOG = LoggerFactory.getLogger(JwtTokenUtil.class);
+
+  @Autowired
+  HttpServletResponse response;
+
+  @Autowired
+  private Environment environment;
 
   @Autowired
   StudentRepository studentRepository;
@@ -77,7 +86,7 @@ public class JwtTokenUtil {
         .build(); //Reusable verifier instance
       return verifier.verify(token);
     } catch (JWTVerificationException e) {
-        LOG.error("could not decode token", e);
+      LOG.error("could not decode token", e);
     }
     throw new JWTVerificationException("invalid token");
   }
@@ -89,6 +98,20 @@ public class JwtTokenUtil {
 
     student.setLastConnection(new Date());
     studentRepository.save(student);
+
+    Cookie cRefreshToken = new Cookie("refresh-token", refreshToken);
+    cRefreshToken.setMaxAge(refreshTokenDuration);
+    cRefreshToken.setPath("/");
+    cRefreshToken.setHttpOnly(true);
+
+    //Cookie isn't secure if env is dev or local
+    cRefreshToken.setSecure(
+      Arrays.stream(environment.getActiveProfiles()).noneMatch(env -> (env.equalsIgnoreCase("dev") || env.equalsIgnoreCase("local")))
+    );
+
+
+    response.addCookie(cRefreshToken);
+
     return new TokenSet(token, refreshToken);
   }
 

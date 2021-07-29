@@ -1,7 +1,6 @@
 package com.iseplife.api.controllers;
 
 import com.iseplife.api.conf.jwt.JwtAuthRequest;
-import com.iseplife.api.conf.jwt.JwtRefreshRequest;
 import com.iseplife.api.conf.jwt.JwtTokenUtil;
 import com.iseplife.api.conf.jwt.TokenSet;
 import com.iseplife.api.dao.student.RoleRepository;
@@ -82,8 +81,11 @@ public class AuthController {
   }
 
   @PostMapping("/refresh")
-  public TokenSet getRefreshedTokens(@RequestBody JwtRefreshRequest request) {
-    return jwtTokenUtil.refreshWithToken(request.getRefreshToken());
+  public TokenSet getRefreshedTokens(@CookieValue(value = "refresh-token", defaultValue = "") String refreshToken) {
+    if(refreshToken.equals(""))
+      throw new AuthException("refresh token missing or expired");
+
+    return jwtTokenUtil.refreshWithToken(refreshToken);
   }
 
   @GetMapping("/roles")
