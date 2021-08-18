@@ -52,7 +52,7 @@ public class GroupService {
 
   public Group getGroup(Long id) {
     Optional<Group> group = groupRepository.findById(id);
-    if (group.isEmpty())
+    if (group.isEmpty() || (group.get().isRestricted() && !groupMemberRepository.isMemberOfGroup(id, SecurityService.getLoggedId())))
       throw new IllegalArgumentException("could not find the group with id: " + id);
 
     return group.get();
@@ -75,10 +75,11 @@ public class GroupService {
 
   public GroupView getGroupView(Long id) {
     Group group = getGroup(id);
-    if (groupMemberRepository.isMemberOfGroup(id, SecurityService.getLoggedId()))
-      return GroupFactory.toView(group, feedService.isSubscribedToFeed(group));
+    return GroupFactory.toView(group, feedService.isSubscribedToFeed(group));
+  }
 
-    throw new IllegalArgumentException("could not find the group with id: " + id);
+  public GroupAdminView getGroupAdmin(Long id) {
+    return GroupFactory.toAdminView(getGroup(id));
   }
 
 
@@ -95,6 +96,7 @@ public class GroupService {
       .map(GroupFactory::toPreview)
       .collect(Collectors.toList());
   }
+
 
   public GroupAdminView createGroup(GroupDTO dto, MultipartFile file) {
     Group group = GroupFactory.fromDTO(dto);
@@ -113,8 +115,6 @@ public class GroupService {
       member.setStudent(a);
       group.getMembers().add(member);
     });
-
-
     return GroupFactory.toAdminView(groupRepository.save(group));
   }
 

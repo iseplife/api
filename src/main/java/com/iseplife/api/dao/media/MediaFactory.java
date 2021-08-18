@@ -1,10 +1,10 @@
 package com.iseplife.api.dao.media;
 
 import com.iseplife.api.constants.EmbedType;
-import com.iseplife.api.dto.media.view.DocumentView;
-import com.iseplife.api.dto.media.view.ImageView;
-import com.iseplife.api.dto.media.view.MediaView;
-import com.iseplife.api.dto.media.view.VideoView;
+import com.iseplife.api.dto.embed.view.media.DocumentView;
+import com.iseplife.api.dto.embed.view.media.ImageView;
+import com.iseplife.api.dto.embed.view.media.MediaView;
+import com.iseplife.api.dto.embed.view.media.VideoView;
 import com.iseplife.api.entity.post.embed.media.Document;
 import com.iseplife.api.entity.post.embed.media.Image;
 import com.iseplife.api.entity.post.embed.media.Media;
@@ -26,13 +26,13 @@ public class MediaFactory {
         Document document = (Document) media;
         view = new DocumentView();
         ((DocumentView) view).setTitle(document.getTitle());
-
         break;
       case EmbedType.IMAGE:
         Image image = (Image) media;
         view = new ImageView();
-        ((ImageView) view).setThread(image.getThread().getId());
-
+        if(image.getThread() != null)
+          ((ImageView) view).setThread(image.getThread().getId());
+        break;
       default:
         throw new IllegalArgumentException("Invalid attachments");
     }
@@ -41,7 +41,7 @@ public class MediaFactory {
     view.setCreation(media.getCreation());
     view.setNSFW(media.isNSFW());
     view.setName(media.getName());
-
+    view.setEmbedType(media.getEmbedType());
     return view;
   }
 }

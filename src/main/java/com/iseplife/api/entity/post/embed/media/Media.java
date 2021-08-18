@@ -1,6 +1,7 @@
 package com.iseplife.api.entity.post.embed.media;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.iseplife.api.constants.MediaStatus;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.post.embed.Embedable;
 
@@ -27,6 +28,9 @@ public abstract class Media implements Embedable {
   private Date creation;
 
   private String name;
+
+  @Enumerated(EnumType.STRING)
+  private MediaStatus status;
 
   @ManyToOne
   @JsonIgnore
@@ -74,5 +78,13 @@ public abstract class Media implements Embedable {
 
   public void setFeed(Feed feed){
     this.feed = feed;
+  }
+
+  public MediaStatus getStatus() {
+    return status;
+  }
+
+  public void setStatus(MediaStatus status) {
+    this.status = status;
   }
 }

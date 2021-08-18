@@ -2,6 +2,7 @@ package com.iseplife.api.controllers;
 
 
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.dao.student.StudentFactory;
 import com.iseplife.api.dto.group.GroupDTO;
 import com.iseplife.api.dto.group.GroupMemberDTO;
 import com.iseplife.api.dto.group.view.GroupAdminView;
@@ -9,6 +10,7 @@ import com.iseplife.api.dto.group.view.GroupMemberView;
 import com.iseplife.api.dto.group.view.GroupPreview;
 import com.iseplife.api.dto.group.view.GroupView;
 import com.iseplife.api.constants.Roles;
+import com.iseplife.api.dto.student.view.StudentAdminView;
 import com.iseplife.api.services.GroupService;
 import com.iseplife.api.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +62,12 @@ public class GroupController {
     return groupService.getGroupView(id);
   }
 
+  @GetMapping("/{id}/admin")
+  @RolesAllowed({Roles.ADMIN})
+  public GroupAdminView getGroupAdmin(@PathVariable Long id) {
+    return groupService.getGroupAdmin(id);
+  }
+
   @PutMapping("/{id}")
   @RolesAllowed({Roles.ADMIN})
   public GroupAdminView updateGroup(@PathVariable Long id, @RequestBody GroupDTO dto) {
@@ -71,7 +79,6 @@ public class GroupController {
   public String updateCover(@PathVariable Long id, @RequestParam(value = "file") MultipartFile file) {
     return groupService.updateCover(id, file);
   }
-
 
   @GetMapping("/{id}/member")
   @RolesAllowed({Roles.STUDENT})

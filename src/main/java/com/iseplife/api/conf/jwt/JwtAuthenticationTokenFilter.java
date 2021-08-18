@@ -1,6 +1,7 @@
 package com.iseplife.api.conf.jwt;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,45 +29,30 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-    String authToken = request.getHeader("Authorization");
-    String refreshToken = request.getHeader("X-Refresh-Token");
+    String token = request.getHeader("Authorization");
 
-    if (authToken != null && refreshToken != null) {
+    if (token != null) {
       DecodedJWT jwt;
-      TokenSet tokenSet = null;
-      if (authToken.startsWith("Bearer ")) {
-        authToken = authToken.substring(7);
+      if (token.startsWith("Bearer ")) {
+        token = token.substring(7);
         try {
           LOG.debug("decoding token");
-          jwt = jwtTokenUtil.decodeToken(authToken);
+          jwt = jwtTokenUtil.decodeToken(token);
         } catch (JWTVerificationException e) {
-
-          try {
-            LOG.debug("token expired, trying to refresh the token");
-            tokenSet = jwtTokenUtil.refreshWithToken(refreshToken);
-            jwt = jwtTokenUtil.decodeToken(tokenSet.getToken());
-          } catch (JWTVerificationException e1) {
-            LOG.debug("token could not be refreshed, refresh token is invalid");
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, e1.getMessage());
-            return;
-          }
-
+          LOG.debug("token expired, refresh the token");
+          response.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
+          return;
         }
       } else {
-        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Authentication schema not found");
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication schema not found");
         return;
       }
 
       if (jwt != null && SecurityContextHolder.getContext().getAuthentication() == null) {
         JwtAuthenticationToken authentication = new JwtAuthenticationToken(jwt);
         authentication.setAuthenticated(true);
-        if (tokenSet != null) {
-          response.setHeader("Authorization", tokenSet.getToken());
-          response.setHeader("X-Refresh-Token", tokenSet.getRefreshToken());
-        } else {
-          response.setHeader("Authorization", jwtTokenUtil.refreshToken(jwt));
-          response.setHeader("X-Refresh-Token", refreshToken);
-        }
+
+        response.setHeader("Authorization", token);
         SecurityContextHolder.getContext().setAuthentication(authentication);
       }
     }

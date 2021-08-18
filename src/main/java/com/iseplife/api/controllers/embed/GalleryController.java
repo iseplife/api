@@ -1,11 +1,13 @@
 package com.iseplife.api.controllers.embed;
 
+import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dto.gallery.GalleryDTO;
 import com.iseplife.api.dto.gallery.view.GalleryView;
 import com.iseplife.api.entity.post.embed.media.Image;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.services.GalleryService;
+import com.iseplife.api.services.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +21,9 @@ public class GalleryController {
   @Autowired
   GalleryService galleryService;
 
+  @Autowired
+  PostService postService;
+
   @PostMapping
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
   public GalleryView createGallery(@RequestBody GalleryDTO dto) {
@@ -31,8 +36,13 @@ public class GalleryController {
   }
 
   @DeleteMapping("/{id}")
-  public Boolean deleteGallery(@PathVariable Long id) {
-    return galleryService.deleteGallery(id);
+  public void deleteGallery(@PathVariable Long id) {
+    Gallery gallery = galleryService.getGallery(id);
+    postService.deletePost(
+      postService.getPostFromEmbed(gallery).getId()
+    );
+
+    galleryService.deleteGallery(gallery);
   }
 
   @GetMapping("/{id}/images")

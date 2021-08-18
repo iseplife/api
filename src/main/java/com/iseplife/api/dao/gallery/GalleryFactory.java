@@ -1,8 +1,10 @@
 package com.iseplife.api.dao.gallery;
 
+import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.dao.club.ClubFactory;
 import com.iseplife.api.dto.gallery.view.GalleryPreview;
 import com.iseplife.api.dto.gallery.view.GalleryView;
+import com.iseplife.api.dto.gallery.view.PseudoGalleryView;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.services.SecurityService;
 
@@ -20,12 +22,20 @@ public class GalleryFactory {
     return view;
   }
 
+  static public PseudoGalleryView toPseudoView(Gallery gallery){
+    PseudoGalleryView view = new PseudoGalleryView();
+    view.setId(gallery.getId());
+    view.setImages(gallery.getImages());
+    view.setEmbedType(EmbedType.IMAGE);
+    return view;
+  }
+
   static public GalleryPreview toPreview(Gallery gallery){
     GalleryPreview preview = new GalleryPreview();
     preview.setId(gallery.getId());
     preview.setName(gallery.getName());
     preview.setPreview(gallery.getPreview());
-
+    preview.setEmbedType(EmbedType.GALLERY);
     return preview;
   }
 

@@ -1,4 +1,4 @@
-package com.iseplife.api.dto.media.view;
+package com.iseplife.api.dto.embed.view.media;
 
 public class DocumentView extends MediaView{
   private String title;

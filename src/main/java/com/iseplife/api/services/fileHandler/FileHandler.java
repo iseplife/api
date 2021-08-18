@@ -15,13 +15,13 @@ import java.util.Optional;
 public abstract class FileHandler {
   protected final Logger LOG = LoggerFactory.getLogger(FileHandler.class);
 
-  @Value("${cloud_handler.api_key}")
+  @Value("${storage.api-key}")
   protected String key;
 
-  @Value("${cloud_handler.api_secret}")
+  @Value("${storage.api-secret}")
   protected String secret;
 
-  @Value("${cloud_handler.bucket}")
+  @Value("${storage.bucket}")
   protected String bucket;
 
   public abstract String upload(MultipartFile file, String path, Boolean pathContainName, Map metadata);

@@ -38,13 +38,13 @@ public class AuthController {
   RoleRepository roleRepository;
 
 
-  @Value("${auth.password}")
+  @Value("${auth.password-root}")
   String defaultPassword;
 
-  @Value("${auth.enable}")
+  @Value("${auth.enable-root}")
   Boolean passwordEnable;
 
-  @Value("${auth.autoGeneration}")
+  @Value("${auth.auto-generation}")
   Boolean autoGeneration;
 
   @PostMapping
@@ -78,6 +78,14 @@ public class AuthController {
       throw new AuthException("User archived");
 
     return jwtTokenUtil.generateToken(student);
+  }
+
+  @PostMapping("/refresh")
+  public TokenSet getRefreshedTokens(@CookieValue(value = "refresh-token", defaultValue = "") String refreshToken) {
+    if(refreshToken.equals(""))
+      throw new AuthException("refresh token missing or expired");
+
+    return jwtTokenUtil.refreshWithToken(refreshToken);
   }
 
   @GetMapping("/roles")

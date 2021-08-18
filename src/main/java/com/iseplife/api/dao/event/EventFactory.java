@@ -10,6 +10,7 @@ import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.services.SecurityService;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.stream.Collectors;
 
@@ -27,21 +28,29 @@ public class EventFactory {
     event.setTicketUrl(dto.getTicketUrl());
     event.setLocation(dto.getLocation());
 
+    // Generic version: Stream.of(dto.getCoordinates()).map(String::valueOf).collect(Collectors.joining(";")
+    event.setCoordinates(dto.getCoordinates()[0] + ";" + dto.getCoordinates()[1]);
+
     event.setClosed(dto.getClosed());
     event.setPublished(dto.getPublished());
     return event;
   }
 
   static public Event dtoToEntity(EventDTO dto, Event previous) {
-    Event event = new Event();
+    Event event = dtoToEntity(dto);
+    event.setPreviousEdition(previous);
+
     event.setTitle(dto.getTitle() != null ? dto.getTitle() : previous.getTitle());
     event.setStart(dto.getStart() != null ? dto.getStart() : previous.getStart());
     event.setEnd(dto.getEnd() != null ? dto.getEnd() : previous.getEnd());
     event.setPrice(dto.getPrice() != null ? dto.getPrice() : previous.getPrice());
     event.setLocation(dto.getLocation() != null ? dto.getLocation() : previous.getLocation());
-    event.setDescription(dto.getDescription() != null ? dto.getDescription() : previous.getDescription());
-    event.setPreviousEdition(previous);
-    event.setPublished(dto.getPublished());
+
+    event.setCoordinates(dto.getLocation() != null ?
+      dto.getCoordinates()[0] + ";" + dto.getCoordinates()[1] :
+      previous.getCoordinates()
+    );
+
     return event;
   }
 
@@ -54,11 +63,11 @@ public class EventFactory {
     preview.setStart(event.getStart());
     preview.setEnd(event.getEnd());
     preview.setCover(event.getImageUrl());
-    preview.setPublished(event.getPublished().after(new Date()));
+    preview.setPublished(event.getPublished().before(new Date()));
     return preview;
   }
 
-  static public EventView toView(Event event, Boolean isSubscribed){
+  static public EventView toView(Event event, Boolean isSubscribed) {
     EventView view = new EventView();
     view.setId(event.getId());
     view.setType(event.getType().name());
@@ -69,6 +78,10 @@ public class EventFactory {
     view.setStart(event.getStart());
     view.setEnd(event.getEnd());
     view.setLocation(event.getLocation());
+
+    // Split string containing long & lag and parsing it into float
+    if (event.getCoordinates() != null)
+      view.setCoordinates(Arrays.stream(event.getCoordinates().split(";")).map(Float::valueOf).toArray(Float[]::new));
     view.setTicketURL(event.getTicketUrl());
     view.setPrice(event.getPrice());
     view.setPublished(event.getPublished());

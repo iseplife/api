@@ -3,7 +3,7 @@ package com.iseplife.api.entity.user;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.constants.Language;
 import com.iseplife.api.entity.Author;
-import com.iseplife.api.entity.Subscription;
+import com.iseplife.api.entity.subscription.Subscription;
 import com.sun.istack.NotNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -45,6 +45,7 @@ public class Student implements UserDetails, Author {
 
   @NotNull
   private Boolean hasDefaultPicture = false;
+
   private String picture;
 
   @ManyToMany(fetch = FetchType.EAGER)

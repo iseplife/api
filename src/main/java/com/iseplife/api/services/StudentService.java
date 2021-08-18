@@ -46,6 +46,9 @@ public class StudentService {
   GroupRepository groupRepository;
 
   @Autowired
+  ModelMapper mapper;
+
+  @Autowired
   StudentFactory studentFactory;
 
   @Autowired
@@ -83,17 +86,6 @@ public class StudentService {
     return student.get();
   }
 
-  public StudentPreview getLoggedStudentPreview() {
-    Student student = getStudent(SecurityService.getLoggedId());
-
-    return StudentFactory.toPreview(student);
-  }
-
-  public StudentView getLoggedStudent() {
-    Student student = getStudent(SecurityService.getLoggedId());
-
-    return StudentFactory.toView(student);
-  }
 
   public List<Student> getStudents(List<Long> ids) {
     List<Student> students = (List<Student>) studentRepository.findAllById(ids);
@@ -119,7 +111,6 @@ public class StudentService {
   }
 
   public void updateSettings(StudentSettingsDTO settingDTO) {
-    ModelMapper mapper = new ModelMapper();
     Student student = getStudent(SecurityService.getLoggedId());
 
     mapper.map(settingDTO, student);

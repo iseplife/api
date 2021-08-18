@@ -3,6 +3,7 @@ package com.iseplife.api.controllers.embed;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dao.poll.PollFactory;
 import com.iseplife.api.dto.embed.PollCreationDTO;
+import com.iseplife.api.dto.embed.PollEditionDTO;
 import com.iseplife.api.dto.embed.view.PollChoiceView;
 import com.iseplife.api.dto.embed.view.PollView;
 import com.iseplife.api.entity.post.embed.poll.Poll;
@@ -35,6 +36,11 @@ public class PollController {
   public PollView createPoll(@RequestBody PollCreationDTO dto) {
     return pollService.createPoll(dto);
   }
+
+  @PutMapping
+  @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
+  public PollView update(@RequestBody PollEditionDTO dto) { return pollService.updatePoll(dto);}
+
 
   @PostMapping("/{id}/choice/{choiceId}")
   @RolesAllowed({Roles.STUDENT})

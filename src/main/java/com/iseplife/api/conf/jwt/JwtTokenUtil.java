@@ -20,9 +20,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -41,6 +44,12 @@ public class JwtTokenUtil {
   private static final Logger LOG = LoggerFactory.getLogger(JwtTokenUtil.class);
 
   @Autowired
+  HttpServletResponse response;
+
+  @Autowired
+  private Environment environment;
+
+  @Autowired
   StudentRepository studentRepository;
 
   @Autowired
@@ -57,16 +66,16 @@ public class JwtTokenUtil {
   @Value("${jwt.secret}")
   private String secret;
 
-  @Value("${jwt.refreshSecret}")
+  @Value("${jwt.refresh-secret}")
   private String refreshSecret;
 
   @Value("${jwt.issuer}")
   private String issuer;
 
-  @Value("${jwt.tokenDuration}")
+  @Value("${jwt.token-duration}")
   private int tokenDuration;
 
-  @Value("${jwt.refreshTokenDuration}")
+  @Value("${jwt.refresh-token-duration}")
   private int refreshTokenDuration;
 
   public DecodedJWT decodeToken(String token) throws JWTVerificationException {
@@ -89,6 +98,15 @@ public class JwtTokenUtil {
 
     student.setLastConnection(new Date());
     studentRepository.save(student);
+
+    Cookie cRefreshToken = new Cookie("refresh-token", refreshToken);
+    cRefreshToken.setMaxAge(refreshTokenDuration);
+    cRefreshToken.setPath("/");
+    cRefreshToken.setHttpOnly(true);
+    cRefreshToken.setSecure(true);
+
+    response.addCookie(cRefreshToken);
+
     return new TokenSet(token, refreshToken);
   }
 
@@ -102,16 +120,6 @@ public class JwtTokenUtil {
     return null;
   }
 
-  String refreshToken(DecodedJWT jwt) {
-    String payloadString = jwt.getClaim(CLAIM_PAYLOAD).asString();
-    try {
-      TokenPayload tokenPayload = new ObjectMapper().readValue(payloadString, TokenPayload.class);
-      return generateToken(tokenPayload);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    return null;
-  }
 
   /**
    * Refresh the set of tokens (token + refresh token)
@@ -121,13 +129,14 @@ public class JwtTokenUtil {
    * @return a set of new tokens
    * @throws JWTVerificationException
    */
-  TokenSet refreshWithToken(String token) throws JWTVerificationException {
+  public TokenSet refreshWithToken(String token) throws JWTVerificationException {
     try {
       DecodedJWT decodedJWT = JWT.decode(token);
       Long id = decodedJWT.getClaim(CLAIM_USER_ID).asLong();
       Student student = studentService.getStudent(id);
       TokenPayload tokenPayload = generatePayload(student);
       String secret = generateRefreshSecret(tokenPayload);
+
       if (secret != null) {
         Algorithm algorithm = Algorithm.HMAC256(secret);
         JWTVerifier verifier = JWT.require(algorithm)

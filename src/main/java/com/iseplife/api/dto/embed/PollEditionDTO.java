@@ -3,7 +3,8 @@ package com.iseplife.api.dto.embed;
 import java.util.Date;
 import java.util.List;
 
-public class PollCreationDTO {
+public class PollEditionDTO {
+  private Long id;
   private String title;
   private List<PollChoiceDTO> choices;
   private Date endsAt;
@@ -48,5 +49,13 @@ public class PollCreationDTO {
 
   public void setAnonymous(Boolean anonymous) {
     this.anonymous = anonymous;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
   }
 }

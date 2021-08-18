@@ -1,7 +1,9 @@
 package com.iseplife.api.services;
 
 import com.iseplife.api.dao.poll.PollFactory;
+import com.iseplife.api.dto.embed.PollChoiceDTO;
 import com.iseplife.api.dto.embed.PollCreationDTO;
+import com.iseplife.api.dto.embed.PollEditionDTO;
 import com.iseplife.api.dto.embed.view.PollChoiceView;
 import com.iseplife.api.dto.embed.view.PollView;
 import com.iseplife.api.entity.feed.Feed;
@@ -16,6 +18,7 @@ import com.iseplife.api.exceptions.AuthException;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,6 +29,10 @@ import java.util.stream.Collectors;
 
 @Service
 public class PollService {
+
+  @Autowired
+  ModelMapper mapper;
+
   @Autowired
   PollRepository pollRepository;
 
@@ -38,10 +45,8 @@ public class PollService {
   @Autowired
   StudentService studentService;
 
-
   @Autowired
   PostService postService;
-
 
   public Poll getPoll(Long id) {
     Optional<Poll> poll = pollRepository.findById(id);
@@ -51,13 +56,13 @@ public class PollService {
     return poll.get();
   }
 
-  public PollView getPollView(Long id){
+  public PollView getPollView(Long id) {
     Poll poll = getPoll(id);
 
     return PollFactory.toView(poll);
   }
 
-  public Poll bindPollToPost(Long id, Feed feed){
+  public Poll bindPollToPost(Long id, Feed feed) {
     Poll poll = getPoll(id);
     poll.setFeed(feed);
 
@@ -68,10 +73,10 @@ public class PollService {
   public void addVote(Long pollId, Long choiceId, Long studentId) {
     Poll poll = getPoll(pollId);
 
-    if(poll.getEndsAt().before(new Date()))
+    if (poll.getEndsAt().before(new Date()))
       throw new AuthException("You are not allowed to vote on this poll anymore");
 
-    if(pollVoteRepository.findByChoice_IdAndStudent_Id(choiceId, studentId).isPresent())
+    if (pollVoteRepository.findByChoice_IdAndStudent_Id(choiceId, studentId).isPresent())
       throw new IllegalArgumentException("This choice has already been chosen");
 
 
@@ -98,7 +103,7 @@ public class PollService {
   public void removeVote(Long pollId, Long choiceId, Long studentId) {
     Poll poll = getPoll(pollId);
 
-    if(poll.getEndsAt().before(new Date()))
+    if (poll.getEndsAt().before(new Date()))
       throw new AuthException("You are not allowed to vote on this poll anymore");
 
     Optional<PollVote> vote = pollVoteRepository.findByChoice_IdAndStudent_Id(choiceId, studentId);
@@ -110,7 +115,6 @@ public class PollService {
 
 
   public PollView createPoll(PollCreationDTO dto) {
-    ModelMapper mapper = new ModelMapper();
     Poll poll = new Poll();
 
     mapper.map(dto, poll);
@@ -118,9 +122,55 @@ public class PollService {
     poll.setCreation(new Date());
 
     poll.setChoices(new ArrayList<>());
+    dto.getChoices().forEach(choice -> {
+      PollChoice pollChoice = new PollChoice();
+      pollChoice.setContent(choice.getContent());
+      pollChoice.setPoll(poll);
+
+      poll.getChoices().add(pollChoice);
+    });
+
+    return PollFactory.toView(pollRepository.save(poll));
+  }
+
+  public void deletePoll(Poll poll){
+    pollRepository.delete(poll);
+  }
+
+  public PollView updatePoll(PollEditionDTO dto) {
+    Poll poll = getPoll(dto.getId());
+
+    if (!SecurityService.hasRightOn(postService.getPostFromEmbed(poll)))
+      throw new AuthException("You have not sufficient rights on this post");
+
+    poll.setTitle(dto.getTitle());
+    poll.setAnonymous(dto.getAnonymous());
+    poll.setMultiple(dto.getMultiple());
+    poll.setEndsAt(dto.getEndsAt());
+
+    // Edit or remove existing choices
+    poll.getChoices().forEach(choice -> {
+      Optional<PollChoiceDTO> dq = dto.getChoices().stream()
+        .filter(c -> choice.getId().equals(c.getId()))
+        .findAny();
+
+      if (dq.isPresent()) {
+        if (!choice.getContent().equals(dq.get().getContent())) {
+          choice.setContent(dq.get().getContent());
+          pollChoiceRepository.save(choice);
+        }
+
+        // We remove it, so we only have new choices left at the end
+        dto.getChoices().remove(dq.get());
+      } else {
+        pollChoiceRepository.delete(choice);
+      }
+    });
+
+    // Add all new choices
     dto.getChoices().forEach(q -> {
       PollChoice pollChoice = new PollChoice();
-      pollChoice.setContent(q);
+      pollChoice.setContent(q.getContent());
       pollChoice.setPoll(poll);
 
       poll.getChoices().add(pollChoice);
@@ -134,7 +184,7 @@ public class PollService {
     Poll poll = getPoll(pollId);
 
     return poll.getChoices().stream()
-      .map(choice -> poll.getAnonymous() ? PollFactory.toAnonymousView(choice): PollFactory.toView(choice))
+      .map(choice -> poll.getAnonymous() ? PollFactory.toAnonymousView(choice) : PollFactory.toView(choice))
       .collect(Collectors.toList());
   }
 

@@ -15,9 +15,9 @@ import java.util.Map;
 @Configuration
 public class StorageConfig implements WebMvcConfigurer {
 
-  public static final String GALLERY_SIZES = "autox140;autox200;1280xauto";
-  public static final String POST_SIZES = "autox300;1280xauto";
-  public static final String AVATAR_SIZES = "140x140;50x50";
+  public static final String GALLERY_SIZES = "autox140;autox400;1280xauto";
+  public static final String POST_SIZES = "autox400;1280xauto";
+  public static final String AVATAR_SIZES = "300x300;200x200;90x90";
   public static final String COVER_SIZES = "1280xauto";
 
   public static class MediaConf {
@@ -43,7 +43,7 @@ public class StorageConfig implements WebMvcConfigurer {
 
   @Bean("FileHandlerBean")
   @ConditionalOnProperty(
-    name = "cloud_handler.name",
+    name = "storage.name",
     havingValue = "cloudinary")
   public FileHandler setCloudinaryAsHandler() {
     return new CloudinaryHandler();
@@ -51,7 +51,7 @@ public class StorageConfig implements WebMvcConfigurer {
 
   @Bean("FileHandlerBean")
   @ConditionalOnProperty(
-    name = "cloud_handler.name",
+    name = "storage.name",
     havingValue = "aws")
   public FileHandler setAWSAsHandler() {
     return new AmazonHandler();

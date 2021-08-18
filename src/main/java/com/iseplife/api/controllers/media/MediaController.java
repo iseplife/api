@@ -40,7 +40,7 @@ public class MediaController {
     return mediaService.createMedia(file, club, gallery,  nsfw);
   }
 
-  @PutMapping("/image/{id}/nsfw")
+  @PutMapping("/{id}/nsfw")
   public boolean toggleNSFW(@PathVariable Long id){ return mediaService.toggleNSFW(id); }
 
   @GetMapping("/image/{id}/tags")

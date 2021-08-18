@@ -1,5 +1,6 @@
 package com.iseplife.api.controllers;
 
+import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.student.StudentFactory;
 import com.iseplife.api.dto.club.view.ClubMemberPreview;
@@ -15,6 +16,7 @@ import com.iseplife.api.services.*;
 import com.iseplife.api.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -51,14 +53,14 @@ public class StudentController {
 
   @GetMapping("/me")
   @RolesAllowed({Roles.STUDENT})
-  public StudentPreview getLoggedStudentPreview() {
-    return studentService.getLoggedStudentPreview();
+  public StudentPreview getLoggedStudentPreview(@AuthenticationPrincipal TokenPayload token) {
+    return StudentFactory.toPreview(studentService.getStudent(token.getId()));
   }
 
   @GetMapping("/me/full")
   @RolesAllowed({Roles.STUDENT})
-  public StudentView getLoggedStudent() {
-    return studentService.getLoggedStudent();
+  public StudentView getLoggedStudent(@AuthenticationPrincipal TokenPayload token) {
+    return StudentFactory.toView(studentService.getStudent(token.getId()));
   }
 
   @GetMapping("/{id}")

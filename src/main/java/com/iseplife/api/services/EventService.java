@@ -71,7 +71,7 @@ public class EventService {
 
     event.setClub(club);
     event.setFeed(new Feed());
-    if(dto.getTargets().size() > 0)
+    if (dto.getTargets().size() > 0)
       event.setTargets(Sets.newHashSet(feedRepository.findAllById(dto.getTargets())));
 
     return EventFactory.toView(eventRepository.save(event), false);
@@ -109,8 +109,8 @@ public class EventService {
       .collect(Collectors.toList());
   }
 
-  public List<EventPreview> getIncomingEvents(TokenPayload token, Long feed){
-    if(feed != 0)
+  public List<EventPreview> getIncomingEvents(TokenPayload token, Long feed) {
+    if (feed != 0)
       return getFeedIncomingEvents(token, feedService.getFeed(feed));
 
     return eventRepository.findIncomingEvents(
@@ -122,9 +122,9 @@ public class EventService {
       .toList();
   }
 
-  public List<EventPreview> getFeedIncomingEvents(TokenPayload token, Feed feed){
-    if(!SecurityService.hasReadAccess(feed))
-      throw new NotFoundException("Could not find feed with id: "+ feed);
+  public List<EventPreview> getFeedIncomingEvents(TokenPayload token, Feed feed) {
+    if (!SecurityService.hasReadAccess(feed))
+      throw new NotFoundException("Could not find feed with id: " + feed);
 
     return eventRepository.findFeedIncomingEvents(
       token.getRoles().contains("ROLE_ADMIN"),
@@ -182,17 +182,18 @@ public class EventService {
       .collect(Collectors.toList());
   }
 
-  public Event updateEvent(Long id, EventDTO eventDTO) {
+  public Event updateEvent(Long id, EventDTO dto) {
     Event event = getEvent(id);
     if (!SecurityService.hasRightOn(event))
       throw new AuthException("You are not allowed to edit this event");
 
-    event.setTitle(eventDTO.getTitle());
-    event.setDescription(eventDTO.getDescription());
-    event.setLocation(eventDTO.getLocation());
-    event.setStart(eventDTO.getStart());
-    if (eventDTO.getPreviousEditionId() != null) {
-      Event prev = getEvent(eventDTO.getPreviousEditionId());
+    event.setTitle(dto.getTitle());
+    event.setDescription(dto.getDescription());
+    event.setLocation(dto.getLocation());
+    event.setCoordinates(dto.getCoordinates()[0] + ";" + dto.getCoordinates()[1]);
+    event.setStart(dto.getStart());
+    if (dto.getPreviousEditionId() != null) {
+      Event prev = getEvent(dto.getPreviousEditionId());
       event.setPreviousEdition(prev);
     }
 

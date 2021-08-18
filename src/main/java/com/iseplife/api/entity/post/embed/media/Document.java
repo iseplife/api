@@ -1,6 +1,7 @@
 package com.iseplife.api.entity.post.embed.media;
 
 import com.iseplife.api.constants.EmbedType;
+import com.iseplife.api.constants.MediaStatus;
 import com.iseplife.api.constants.MediaType;
 
 import javax.persistence.DiscriminatorValue;
@@ -12,6 +13,8 @@ import javax.persistence.Entity;
 public class Document extends Media {
 
   private String title;
+
+  private final MediaStatus status = MediaStatus.READY;
 
   public String getEmbedType(){
     return EmbedType.DOCUMENT;

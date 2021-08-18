@@ -8,6 +8,7 @@ public class EventDTO {
   private String title;
   private String description;
   private String location;
+  private Float[] coordinates;
   private Date start;
   private Date end;
   private Long club;
@@ -32,6 +33,14 @@ public class EventDTO {
 
   public void setLocation(String location) {
     this.location = location;
+  }
+
+  public Float[] getCoordinates() {
+    return coordinates;
+  }
+
+  public void setCoordinates(Float[] coordinates) {
+    this.coordinates = coordinates;
   }
 
   public Date getStart() {

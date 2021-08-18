@@ -1,14 +1,15 @@
 package com.iseplife.api.dto.post;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
-public class PostDTO {
+public class PostCreationDTO {
   private Long feed;
   private String description;
   private Date publicationDate = new Date();
   private Long linkedClub = null;
-  private Map<String, Long> attachements;
+  private Map<String, Long> attachements = new HashMap<>();
   private Boolean isPrivate;
   private Boolean isDraft = false;
 

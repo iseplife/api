@@ -67,7 +67,8 @@ public class GroupFactory {
     GroupPreview preview = new GroupPreview();
     preview.setId(group.getId());
     preview.setName(group.getName());
-    preview.setCover(group.getCover());
+    preview.setRestricted(group.isRestricted());
+    preview.setArchived(group.isArchived());
 
     return preview;
   }
