@@ -1,11 +1,9 @@
 package com.iseplife.api.controllers;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
-import com.iseplife.api.dto.post.PostDTO;
+import com.iseplife.api.dto.post.PostCreationDTO;
 import com.iseplife.api.dto.PostUpdateDTO;
 import com.iseplife.api.dto.view.*;
-import com.iseplife.api.entity.post.Post;
-import com.iseplife.api.constants.PostState;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dto.post.view.PostView;
 import com.iseplife.api.services.PostService;
@@ -34,8 +32,8 @@ public class PostController {
 
   @PostMapping
   @RolesAllowed({Roles.STUDENT})
-  public PostView createPost(@RequestBody PostDTO post, @AuthenticationPrincipal TokenPayload token) {
-    return postService.createPost(token, post);
+  public PostView createPost(@RequestBody PostCreationDTO dto) {
+    return postService.createPost(dto);
   }
 
   @GetMapping("/{id}")
@@ -67,11 +65,4 @@ public class PostController {
   public Set<AuthorView> getAuthors(@RequestParam(name = "club") Boolean clubOnly, @AuthenticationPrincipal TokenPayload auth) {
     return postService.getAuthorizedPublish(auth, clubOnly);
   }
-
-  @PutMapping("/{id}/embed/{embedType}/{embedID}")
-  @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
-  public void addMediaEmbed(@PathVariable Long id, @PathVariable String embedType, @PathVariable Long embedID) {
-    postService.addMediaEmbed(id, embedType, embedID);
-  }
-
 }

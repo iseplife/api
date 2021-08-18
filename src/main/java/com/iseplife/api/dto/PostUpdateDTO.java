@@ -1,6 +1,8 @@
 package com.iseplife.api.dto;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Guillaume on 28/10/2017.
@@ -12,6 +14,7 @@ public class PostUpdateDTO {
   private Boolean isPrivate = true;
   private Long linkedClub;
   private Boolean removeEmbed = false;
+  private Map<String, Long> attachements = new HashMap<>();
 
   public String getDescription() {
     return description;
@@ -47,5 +50,13 @@ public class PostUpdateDTO {
 
   public void setRemoveEmbed(Boolean removeEmbed) {
     this.removeEmbed = removeEmbed;
+  }
+
+  public Map<String, Long> getAttachements() {
+    return attachements;
+  }
+
+  public void setAttachements(Map<String, Long> attachements) {
+    this.attachements = attachements;
   }
 }

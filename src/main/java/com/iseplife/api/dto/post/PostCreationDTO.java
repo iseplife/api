@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PostDTO {
+public class PostCreationDTO {
   private Long feed;
   private String description;
   private Date publicationDate = new Date();

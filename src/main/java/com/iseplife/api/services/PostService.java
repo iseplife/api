@@ -3,7 +3,7 @@ package com.iseplife.api.services;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.dao.post.*;
-import com.iseplife.api.dto.post.PostDTO;
+import com.iseplife.api.dto.post.PostCreationDTO;
 import com.iseplife.api.dto.PostUpdateDTO;
 import com.iseplife.api.dto.view.AuthorView;
 import com.iseplife.api.dto.post.view.PostView;
@@ -99,9 +99,9 @@ public class PostService {
     return postFactory.entityToView(post);
   }
 
-  public PostView createPost(TokenPayload auth, PostDTO postDTO) {
-    Post post = postFactory.dtoToEntity(postDTO);
-    Feed feed = feedService.getFeed(postDTO.getFeed());
+  public PostView createPost(PostCreationDTO dto) {
+    Post post = postFactory.dtoToEntity(dto);
+    Feed feed = feedService.getFeed(dto.getFeed());
 
     if (!SecurityService.hasRightOn(feed))
       throw new AuthException("You are not allow to create a post here");
@@ -110,34 +110,16 @@ public class PostService {
     post.setAuthor(securityService.getLoggedUser());
 
     // Author should be an admin or club publisher
-    if (postDTO.getLinkedClub() != null && !SecurityService.hasAuthorAccessOn(postDTO.getLinkedClub()))
+    if (dto.getLinkedClub() != null && !SecurityService.hasAuthorAccessOn(dto.getLinkedClub()))
       throw new AuthException("insufficient rights");
-    post.setLinkedClub(postDTO.getLinkedClub() != null ? clubService.getClub(postDTO.getLinkedClub()) : null);
+    post.setLinkedClub(dto.getLinkedClub() != null ? clubService.getClub(dto.getLinkedClub()) : null);
 
-    postDTO.getAttachements().forEach((type, id) -> {
-      Embedable attachement;
-      switch (type) {
-        case EmbedType.IMAGE:
-        case EmbedType.GALLERY:
-          attachement = galleryService.getGallery(id);
-          break;
-        case EmbedType.POLL:
-          attachement = pollService.bindPollToPost(id, feed);
-          break;
-        case EmbedType.VIDEO:
-        case EmbedType.DOCUMENT:
-          attachement = mediaService.getMedia(id);
-          break;
-        default:
-          throw new IllegalArgumentException("Invalid attachments");
-      }
-      post.setEmbed(attachement);
-    });
+    dto.getAttachements().forEach((type, id) -> bindAttachementToPost(type, id, post));
 
     post.setThread(new Thread());
     post.setCreationDate(new Date());
-    post.setPublicationDate(postDTO.getPublicationDate() == null ? new Date() : postDTO.getPublicationDate());
-    post.setState(postDTO.isDraft() ? PostState.DRAFT : PostState.READY);
+    post.setPublicationDate(dto.getPublicationDate() == null ? new Date() : dto.getPublicationDate());
+    post.setState(dto.isDraft() ? PostState.DRAFT : PostState.READY);
 
     return postFactory.entityToView(postRepository.save(post));
   }
@@ -158,25 +140,32 @@ public class PostService {
     post.setPublicationDate(dto.getPublicationDate());
     post.setPrivate(dto.getPrivate());
 
-    if(dto.isRemoveEmbed()){
-      Embedable attachement = post.getEmbed();
-      post.setEmbed(null);
+    if (!dto.getAttachements().isEmpty()) {
+      removeEmbed(post.getEmbed());
+      dto.getAttachements().forEach((type, id) -> bindAttachementToPost(type, id, post));
+    }
 
-      switch (attachement.getEmbedType()) {
-        case EmbedType.IMAGE:
-          galleryService.deleteGallery((Gallery) attachement);
-          break;
-        case EmbedType.POLL:
-          pollService.deletePoll((Poll) attachement);
-          break;
-        case EmbedType.VIDEO:
-        case EmbedType.DOCUMENT:
-          mediaService.deleteMedia((Media) attachement);
-          break;
-      }
+    if (dto.isRemoveEmbed()) {
+      removeEmbed(post.getEmbed());
+      post.setEmbed(null);
     }
 
     return postFactory.entityToView(postRepository.save(post));
+  }
+
+  private void removeEmbed(Embedable embed) {
+    switch (embed.getEmbedType()) {
+      case EmbedType.IMAGE:
+        galleryService.deleteGallery((Gallery) embed);
+        break;
+      case EmbedType.POLL:
+        pollService.deletePoll((Poll) embed);
+        break;
+      case EmbedType.VIDEO:
+      case EmbedType.DOCUMENT:
+        mediaService.deleteMedia((Media) embed);
+        break;
+    }
   }
 
   public void deletePost(Long postID) {
@@ -185,12 +174,8 @@ public class PostService {
       throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");
 
     Embedable embed = post.getEmbed();
-    if (embed instanceof Media) {
-      mediaService.deleteMedia((Media) embed);
-    }
-    if (embed instanceof Gallery && ((Gallery) embed).getPseudo()) {
-      galleryService.deleteGallery((Gallery) embed);
-    }
+    if (embed != null)
+      removeEmbed(embed);
 
     postRepository.deleteById(postID);
   }
@@ -207,34 +192,25 @@ public class PostService {
   }
 
 
-  public void addMediaEmbed(Long postID, String type, Long embedID) {
-    Post post = getPost(postID);
-    Embedable embed;
+  private void bindAttachementToPost(String type, Long id, Post post) {
+    Embedable attachement;
     switch (type) {
+      case EmbedType.IMAGE:
       case EmbedType.GALLERY:
-        embed = galleryService.getGallery(embedID);
+        attachement = galleryService.getGallery(id);
         break;
       case EmbedType.POLL:
-        embed = pollService.getPoll(embedID);
+        attachement = pollService.getPoll(id);
+        ((Poll) attachement).setFeed(post.getFeed());
         break;
-      case EmbedType.IMAGE:
       case EmbedType.VIDEO:
       case EmbedType.DOCUMENT:
-        embed = mediaService.getMedia(embedID);
+        attachement = mediaService.getMedia(id);
         break;
       default:
-        throw new IllegalArgumentException("the embed type (" + type + ") doesn't exist");
+        throw new IllegalArgumentException("embed type (" + type + ") doesn't exist");
     }
-
-    post.setEmbed(embed);
-    postRepository.save(post);
-  }
-
-  public Post addMediaEmbed(Long id, Embedable embed) {
-    Post post = getPost(id);
-    post.setEmbed(embed);
-
-    return postRepository.save(post);
+    post.setEmbed(attachement);
   }
 
   public Set<AuthorView> getAuthorizedPublish(TokenPayload auth, Boolean clubOnly) {

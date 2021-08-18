@@ -103,11 +103,7 @@ public class JwtTokenUtil {
     cRefreshToken.setMaxAge(refreshTokenDuration);
     cRefreshToken.setPath("/");
     cRefreshToken.setHttpOnly(true);
-
-    //Cookie isn't secure if env is dev or local
-    cRefreshToken.setSecure(
-      Arrays.stream(environment.getActiveProfiles()).noneMatch(env -> (env.equalsIgnoreCase("dev") || env.equalsIgnoreCase("local")))
-    );
+    cRefreshToken.setSecure(true);
 
     response.addCookie(cRefreshToken);
 

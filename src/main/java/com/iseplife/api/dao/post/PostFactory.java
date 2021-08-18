@@ -1,6 +1,6 @@
 package com.iseplife.api.dao.post;
 
-import com.iseplife.api.dto.post.PostDTO;
+import com.iseplife.api.dto.post.PostCreationDTO;
 import com.iseplife.api.dto.post.view.PostView;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.services.*;
@@ -18,7 +18,7 @@ public class PostFactory {
   @Autowired
   ThreadService threadService;
 
-  public Post dtoToEntity(PostDTO post) {
+  public Post dtoToEntity(PostCreationDTO post) {
     Post p = new Post();
     p.setDescription(post.getDescription());
     p.setPrivate(post.getPrivate());
