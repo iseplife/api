@@ -5,6 +5,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.iseplife.api.conf.jwt.JwtTokenUtil;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.websocket.packets.WSProtocol;
+import com.iseplife.api.websocket.services.WSClientService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.socket.CloseStatus;
@@ -19,7 +20,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 public class WSHandler extends TextWebSocketHandler {
 
   @Autowired
-  private WSService service;
+  private WSClientService service;
   
   @Autowired
   private WSProtocol protocol;
