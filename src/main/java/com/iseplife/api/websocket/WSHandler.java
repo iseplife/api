@@ -4,6 +4,8 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.iseplife.api.conf.jwt.JwtTokenUtil;
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.websocket.packets.WSProtocol;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -18,9 +20,16 @@ public class WSHandler extends TextWebSocketHandler {
 
   @Autowired
   private WSService service;
+  
+  @Autowired
+  private WSProtocol protocol;
 
   @Autowired
   private JwtTokenUtil jwtTokenUtil;
+  
+  public WSHandler() {
+    protocol.init();
+  }
 
   @Override
   protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
