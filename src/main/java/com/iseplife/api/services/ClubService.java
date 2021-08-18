@@ -81,6 +81,7 @@ public class ClubService {
     );
   }
 
+
   public ClubView createClub(ClubAdminDTO dto) {
     Club club = ClubFactory.fromAdminDTO(dto, new Club());
     if (dto.getAdmins().size() == 0)

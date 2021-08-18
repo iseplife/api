@@ -34,8 +34,8 @@ public class PostController {
 
   @PostMapping
   @RolesAllowed({Roles.STUDENT})
-  public PostView createPost(@RequestBody PostDTO post, @AuthenticationPrincipal TokenPayload auth) {
-    return postService.createPost(auth, post);
+  public PostView createPost(@RequestBody PostDTO post, @AuthenticationPrincipal TokenPayload token) {
+    return postService.createPost(token, post);
   }
 
   @GetMapping("/{id}")
@@ -46,8 +46,7 @@ public class PostController {
 
   @PutMapping("/{id}")
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
-  public Post updatePost(@PathVariable Long id,
-                         @RequestBody PostUpdateDTO update) {
+  public PostView updatePost(@PathVariable Long id, @RequestBody PostUpdateDTO update) {
     return postService.updatePost(id, update);
   }
 
@@ -67,12 +66,6 @@ public class PostController {
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
   public Set<AuthorView> getAuthors(@RequestParam(name = "club") Boolean clubOnly, @AuthenticationPrincipal TokenPayload auth) {
     return postService.getAuthorizedPublish(auth, clubOnly);
-  }
-
-  @PutMapping("/{id}/state/{state}")
-  @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
-  public void setPublishState(@PathVariable("id") Long id, @PathVariable("state") PostState state) {
-    postService.setPublishState(id, state);
   }
 
   @PutMapping("/{id}/embed/{embedType}/{embedID}")

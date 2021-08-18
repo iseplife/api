@@ -13,6 +13,7 @@ import com.iseplife.api.entity.post.embed.Embedable;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.post.embed.media.Media;
+import com.iseplife.api.entity.post.embed.poll.Poll;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.PostState;
 import com.iseplife.api.constants.Roles;
@@ -82,6 +83,14 @@ public class PostService {
     return post.get();
   }
 
+  public Post getPostFromEmbed(Embedable embed) {
+    Optional<Post> post = postRepository.findByEmbed(embed);
+    if (post.isEmpty())
+      throw new IllegalArgumentException("Could not find a post related to this embed)");
+
+    return post.get();
+  }
+
   public PostView getPostView(Long postID) {
     Post post = getPost(postID);
     if (post.getPrivate()) {
@@ -94,23 +103,21 @@ public class PostService {
     Post post = postFactory.dtoToEntity(postDTO);
     Feed feed = feedService.getFeed(postDTO.getFeed());
 
-    if(!SecurityService.hasRightOn(feed))
+    if (!SecurityService.hasRightOn(feed))
       throw new AuthException("You are not allow to create a post here");
 
     post.setFeed(feed);
     post.setAuthor(securityService.getLoggedUser());
-    post.setLinkedClub(postDTO.getLinkedClub() != null ? clubService.getClub(postDTO.getLinkedClub()) : null);
 
     // Author should be an admin or club publisher
-    if (!auth.getRoles().contains(Roles.ADMIN)) {
-      if (post.getLinkedClub() != null && !auth.getClubsPublisher().contains(postDTO.getLinkedClub())) {
-        throw new AuthException("not allowed to create this post");
-      }
-    }
+    if (postDTO.getLinkedClub() != null && !SecurityService.hasAuthorAccessOn(postDTO.getLinkedClub()))
+      throw new AuthException("insufficient rights");
+    post.setLinkedClub(postDTO.getLinkedClub() != null ? clubService.getClub(postDTO.getLinkedClub()) : null);
 
     postDTO.getAttachements().forEach((type, id) -> {
       Embedable attachement;
-      switch (type){
+      switch (type) {
+        case EmbedType.IMAGE:
         case EmbedType.GALLERY:
           attachement = galleryService.getGallery(id);
           break;
@@ -119,7 +126,6 @@ public class PostService {
           break;
         case EmbedType.VIDEO:
         case EmbedType.DOCUMENT:
-        case EmbedType.IMAGE:
           attachement = mediaService.getMedia(id);
           break;
         default:
@@ -130,22 +136,47 @@ public class PostService {
 
     post.setThread(new Thread());
     post.setCreationDate(new Date());
-    post.setPublicationDate(postDTO.getPublicationDate() == null ? postDTO.getPublicationDate(): new Date());
+    post.setPublicationDate(postDTO.getPublicationDate() == null ? new Date() : postDTO.getPublicationDate());
     post.setState(postDTO.isDraft() ? PostState.DRAFT : PostState.READY);
 
     return postFactory.entityToView(postRepository.save(post));
   }
 
-  public Post updatePost(Long postID, PostUpdateDTO update) {
+  public PostView updatePost(Long postID, PostUpdateDTO dto) {
     Post post = getPost(postID);
     if (!SecurityService.hasRightOn(post)) {
       throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");
     }
 
-    post.setDescription(update.getDescription());
-    post.setPublicationDate(update.getPublicationDate());
-    post.setPrivate(update.getPrivate());
-    return postRepository.save(post);
+    // Author should be an admin or club publisher
+    if (dto.getLinkedClub() != null && !SecurityService.hasAuthorAccessOn(dto.getLinkedClub()))
+      throw new AuthException("insufficient rights");
+
+    post.setLinkedClub(dto.getLinkedClub() != null ? clubService.getClub(dto.getLinkedClub()) : null);
+
+    post.setDescription(dto.getDescription());
+    post.setPublicationDate(dto.getPublicationDate());
+    post.setPrivate(dto.getPrivate());
+
+    if(dto.isRemoveEmbed()){
+      Embedable attachement = post.getEmbed();
+      post.setEmbed(null);
+
+      switch (attachement.getEmbedType()) {
+        case EmbedType.IMAGE:
+          galleryService.deleteGallery((Gallery) attachement);
+          break;
+        case EmbedType.POLL:
+          pollService.deletePoll((Poll) attachement);
+          break;
+        case EmbedType.VIDEO:
+        case EmbedType.DOCUMENT:
+          mediaService.deleteMedia((Media) attachement);
+          break;
+      }
+    }
+
+    return postFactory.entityToView(postRepository.save(post));
   }
 
   public void deletePost(Long postID) {
@@ -157,7 +188,7 @@ public class PostService {
     if (embed instanceof Media) {
       mediaService.deleteMedia((Media) embed);
     }
-    if (embed instanceof Gallery) {
+    if (embed instanceof Gallery && ((Gallery) embed).getPseudo()) {
       galleryService.deleteGallery((Gallery) embed);
     }
 
@@ -175,11 +206,6 @@ public class PostService {
     postRepository.save(post);
   }
 
-  public void setPublishState(Long postID, PostState state) {
-    Post post = getPost(postID);
-    post.setState(state);
-    postRepository.save(post);
-  }
 
   public void addMediaEmbed(Long postID, String type, Long embedID) {
     Post post = getPost(postID);
@@ -216,7 +242,7 @@ public class PostService {
     Set<AuthorView> authorStatus = new HashSet<>();
 
     if (auth.getRoles().contains(Roles.ADMIN)) {
-      if(!clubOnly)
+      if (!clubOnly)
         authorStatus.add(AuthorFactory.adminToView());
 
       authorStatus.addAll(
@@ -244,8 +270,11 @@ public class PostService {
   }
 
   public Page<PostView> getFeedPosts(Feed feed, int page) {
-    Page<Post> posts = postRepository.findByFeedAndStateOrderByPublicationDateDesc(feed,
-      PostState.READY, PageRequest.of(page, POSTS_PER_PAGE));
+    Page<Post> posts = postRepository.findByFeedAndStateOrderByPublicationDateDesc(
+      feed,
+      PostState.READY,
+      PageRequest.of(page, POSTS_PER_PAGE)
+    );
 
     return posts.map(post -> postFactory.entityToView(post));
   }

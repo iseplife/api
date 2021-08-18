@@ -1,4 +1,4 @@
-package com.iseplife.api.entity;
+package com.iseplife.api.entity.subscription;
 
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.user.Student;

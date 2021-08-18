@@ -120,6 +120,13 @@ public class SecurityService {
             || payload.getClubsAdmin().contains(club.getId());
   }
 
+  static public boolean hasAuthorAccessOn(Long clubId) {
+    TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return userHasRole(Roles.ADMIN)
+      || payload.getClubsAdmin().contains(clubId)
+      || payload.getClubsPublisher().contains(clubId);
+  }
+
   static public boolean hasRightOn(Event event) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
     return userHasRole(Roles.ADMIN)

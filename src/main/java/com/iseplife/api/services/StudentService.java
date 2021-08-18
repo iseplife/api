@@ -46,6 +46,9 @@ public class StudentService {
   GroupRepository groupRepository;
 
   @Autowired
+  ModelMapper mapper;
+
+  @Autowired
   StudentFactory studentFactory;
 
   @Autowired
@@ -108,7 +111,6 @@ public class StudentService {
   }
 
   public void updateSettings(StudentSettingsDTO settingDTO) {
-    ModelMapper mapper = new ModelMapper();
     Student student = getStudent(SecurityService.getLoggedId());
 
     mapper.map(settingDTO, student);

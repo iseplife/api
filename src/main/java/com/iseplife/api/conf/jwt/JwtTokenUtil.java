@@ -109,7 +109,6 @@ public class JwtTokenUtil {
       Arrays.stream(environment.getActiveProfiles()).noneMatch(env -> (env.equalsIgnoreCase("dev") || env.equalsIgnoreCase("local")))
     );
 
-
     response.addCookie(cRefreshToken);
 
     return new TokenSet(token, refreshToken);

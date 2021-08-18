@@ -64,6 +64,11 @@ public class GalleryService {
   private static final int GALLERY_PER_PAGE = 5;
   private static final int PSEUDO_GALLERY_MAX_SIZE = 5;
 
+  private void checkIfHasRightsOnGallery(Gallery gallery){
+    if ((gallery.getPseudo() && !SecurityService.hasRightOn(postService.getPostFromEmbed(gallery))) || !SecurityService.hasRightOn(gallery))
+      throw new AuthException("You have not sufficient rights on this gallery (id:" + gallery.getId() + ")");
+  }
+
   public Gallery getGallery(Long id) {
     Optional<Gallery> gallery = galleryRepository.findById(id);
     if (gallery.isEmpty())
@@ -115,9 +120,10 @@ public class GalleryService {
 
     Iterable<Image> images = imageRepository.findAllById(dto.getImages());
     images.forEach(img -> {
-      if (img.getGallery() == null && img.getName().startsWith("img/g"))
-        img.setGallery(gallery);
+      // We make sure to not add a same media to multiple gallery
+      if (img.getGallery() == null) img.setGallery(gallery);
     });
+
     imageRepository.saveAll(images);
     if(!dto.getPseudo() && dto.getGeneratePost()){
       Post post = new Post();
@@ -138,8 +144,7 @@ public class GalleryService {
 
   public void addImagesGallery(Long galleryID, List<Long> images) {
     Gallery gallery = getGallery(galleryID);
-    if (!SecurityService.hasRightOn(gallery))
-      throw new AuthException("You have not sufficient rights on this gallery (id:" + galleryID + ")");
+    checkIfHasRightsOnGallery(gallery);
 
     Iterable<Image> medias = imageRepository.findAllById(images);
     medias.forEach(img -> {
@@ -152,31 +157,23 @@ public class GalleryService {
     imageRepository.saveAll(medias);
   }
 
-  public Boolean deleteGallery(Long id) {
-    return deleteGallery(getGallery(id));
-  }
 
-
-  public Boolean deleteGallery(Gallery gallery) {
-    if (!SecurityService.hasRightOn(gallery))
-      throw new AuthException("You have not sufficient rights on this gallery (id:" + gallery + ")");
+  public void deleteGallery(Gallery gallery) {
+    checkIfHasRightsOnGallery(gallery);
 
     gallery
       .getImages()
       .forEach(img -> mediaService.deleteMedia(img));
     gallery.setImages(null);
-    List<Post> p = postRepository.findAllByEmbed(gallery.getId(), EmbedType.GALLERY);
-    postRepository.deleteAll(p);
 
     galleryRepository.delete(gallery);
-    return true;
   }
 
 
   public void deleteImagesGallery(Long id, List<Long> images) {
     Gallery gallery = getGallery(id);
-    if (!SecurityService.hasRightOn(gallery))
-      throw new AuthException("You have not sufficient rights on this gallery (id:" + gallery + ")");
+
+    checkIfHasRightsOnGallery(gallery);
 
     long imageSize = gallery.getImages()
       .stream()

@@ -1,5 +1,6 @@
 package com.iseplife.api.dao.poll;
 
+import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.dto.embed.view.PollChoiceView;
 import com.iseplife.api.dto.embed.view.PollView;
 import com.iseplife.api.entity.post.embed.poll.Poll;
@@ -30,6 +31,7 @@ public class PollFactory {
       choices.add(poll.getAnonymous() ? toAnonymousView(option): toView(option));
     });
     view.setChoices(choices);
+    view.setEmbedType(EmbedType.POLL);
 
     return view;
   }

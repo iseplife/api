@@ -10,6 +10,8 @@ public class PostUpdateDTO {
   private String description;
   private Date publicationDate;
   private Boolean isPrivate = true;
+  private Long linkedClub;
+  private Boolean removeEmbed = false;
 
   public String getDescription() {
     return description;
@@ -29,5 +31,21 @@ public class PostUpdateDTO {
 
   public void setPublicationDate(Date publicationDate) {
     this.publicationDate = publicationDate;
+  }
+
+  public Long getLinkedClub() {
+    return linkedClub;
+  }
+
+  public void setLinkedClub(Long linkedClub) {
+    this.linkedClub = linkedClub;
+  }
+
+  public Boolean isRemoveEmbed() {
+    return removeEmbed;
+  }
+
+  public void setRemoveEmbed(Boolean removeEmbed) {
+    this.removeEmbed = removeEmbed;
   }
 }

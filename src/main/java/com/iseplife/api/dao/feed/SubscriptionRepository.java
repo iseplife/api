@@ -1,6 +1,6 @@
 package com.iseplife.api.dao.feed;
 
-import com.iseplife.api.entity.Subscription;
+import com.iseplife.api.entity.subscription.Subscription;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.user.Student;
 import org.springframework.data.jpa.repository.Query;

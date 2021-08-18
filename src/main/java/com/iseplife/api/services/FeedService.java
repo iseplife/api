@@ -4,7 +4,7 @@ import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dao.feed.SubscriptionRepository;
 import com.iseplife.api.dto.post.view.PostView;
 import com.iseplife.api.entity.feed.Feed;
-import com.iseplife.api.entity.Subscription;
+import com.iseplife.api.entity.subscription.Subscription;
 import com.iseplife.api.entity.feed.Feedable;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.dao.feed.FeedRepository;
@@ -60,7 +60,6 @@ public class FeedService {
     return postService.getFeedPosts(feed, page);
   }
 
-  @Cacheable("posts")
   public Page<PostView> getFeedPosts(Long id, int page) {
     Feed feed = getFeed(id);
     return postService.getFeedPosts(feed, page);

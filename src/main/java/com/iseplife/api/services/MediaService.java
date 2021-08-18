@@ -8,6 +8,7 @@ import com.iseplife.api.dao.gallery.GalleryRepository;
 import com.iseplife.api.dao.student.StudentRepository;
 import com.iseplife.api.dto.view.MatchedView;
 import com.iseplife.api.entity.Author;
+import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.post.embed.media.Image;
 import com.iseplife.api.entity.Matched;
@@ -173,6 +174,7 @@ public class MediaService {
           break;
         case "image":
           media = new Image();
+          ((Image)media).setThread(new Thread());
           if (gallery) {
             name = fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("gallery").path, false,
               Map.of(

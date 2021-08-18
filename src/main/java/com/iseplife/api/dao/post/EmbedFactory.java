@@ -17,21 +17,21 @@ public class EmbedFactory {
     EmbedView view;
     switch (embed.getEmbedType()) {
       case EmbedType.GALLERY:
-        view = GalleryFactory.toPreview((Gallery) embed);
+        view = ((Gallery) embed).getPseudo() ?
+          GalleryFactory.toPseudoView((Gallery) embed):
+          GalleryFactory.toPreview((Gallery) embed);
         break;
       case EmbedType.POLL:
         view = PollFactory.toView((Poll) embed);
         break;
       case EmbedType.VIDEO:
-      case EmbedType.DOCUMENT:
       case EmbedType.IMAGE:
+      case EmbedType.DOCUMENT:
         view = MediaFactory.toView((Media) embed);
         break;
       default:
         throw new IllegalArgumentException("Invalid attachments");
     }
-
-    view.setEmbedType(embed.getEmbedType());
     return view;
 
   }
