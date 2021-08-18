@@ -11,7 +11,7 @@ public class WSProtocol {
   private Map<Class<? extends WSPacketOut>, Integer> packetOut = new HashMap<>();
   
   @SuppressWarnings("unchecked")
-  public void init() {
+  public WSProtocol() {
     for(WSPacketType type : WSPacketType.values())
       if(WSPacketIn.class.isAssignableFrom(type.getPacketClass()))
         packetIn.put(type.getId(), (Class<? extends WSPacketIn>) type.getPacketClass());

@@ -27,10 +27,6 @@ public class WSHandler extends TextWebSocketHandler {
 
   @Autowired
   private JwtTokenUtil jwtTokenUtil;
-  
-  public WSHandler() {
-    protocol.init();
-  }
 
   @Override
   protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
