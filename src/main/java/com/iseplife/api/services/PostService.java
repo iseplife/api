@@ -112,6 +112,7 @@ public class PostService {
     // Author should be an admin or club publisher
     if (dto.getLinkedClub() != null && !SecurityService.hasAuthorAccessOn(dto.getLinkedClub()))
       throw new AuthException("insufficient rights");
+
     post.setLinkedClub(dto.getLinkedClub() != null ? clubService.getClub(dto.getLinkedClub()) : null);
 
     dto.getAttachements().forEach((type, id) -> bindAttachementToPost(type, id, post));
@@ -154,17 +155,19 @@ public class PostService {
   }
 
   private void removeEmbed(Embedable embed) {
-    switch (embed.getEmbedType()) {
-      case EmbedType.IMAGE:
-        galleryService.deleteGallery((Gallery) embed);
-        break;
-      case EmbedType.POLL:
-        pollService.deletePoll((Poll) embed);
-        break;
-      case EmbedType.VIDEO:
-      case EmbedType.DOCUMENT:
-        mediaService.deleteMedia((Media) embed);
-        break;
+    if (embed != null) {
+      switch (embed.getEmbedType()) {
+        case EmbedType.IMAGE:
+          galleryService.deleteGallery((Gallery) embed);
+          break;
+        case EmbedType.POLL:
+          pollService.deletePoll((Poll) embed);
+          break;
+        case EmbedType.VIDEO:
+        case EmbedType.DOCUMENT:
+          mediaService.deleteMedia((Media) embed);
+          break;
+      }
     }
   }
 
