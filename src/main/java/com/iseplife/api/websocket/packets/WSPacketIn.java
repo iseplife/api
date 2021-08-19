@@ -1,8 +1,9 @@
 package com.iseplife.api.websocket.packets;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 
-public interface WSPacketIn extends WSPacket {
-  public void read(DataInputStream stream) throws IOException;
+import io.netty.buffer.ByteBuf;
+
+public abstract class WSPacketIn implements WSPacket {
+  public abstract void read(ByteBuf buf) throws IOException;
 }

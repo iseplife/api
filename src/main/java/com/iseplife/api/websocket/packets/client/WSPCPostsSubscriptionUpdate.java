@@ -1,11 +1,12 @@
 package com.iseplife.api.websocket.packets.client;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 
 import com.iseplife.api.websocket.packets.WSPacketIn;
 
-public class WSPCPostsSubscriptionUpdate implements WSPacketIn {
+import io.netty.buffer.ByteBuf;
+
+public class WSPCPostsSubscriptionUpdate extends WSPacketIn {
   
   private long[] postsIds;
   private boolean subscribe;
@@ -18,15 +19,15 @@ public class WSPCPostsSubscriptionUpdate implements WSPacketIn {
   }
 
   @Override
-  public void read(DataInputStream stream) throws IOException {
-    subscribe = stream.readBoolean();
+  public void read(ByteBuf buf) throws IOException {
+    subscribe = buf.readBoolean();
     
-    int size = stream.readUnsignedByte();//Max 256
+    int size = buf.readUnsignedByte();//Max 256
     
     postsIds = new long[size];
     
     for(int i = 0; i < size; i++)
-      postsIds[i] = stream.readLong();
+      postsIds[i] = buf.readLong();
   }
 
 }
