@@ -35,9 +35,8 @@ public class PostFactory {
     postView.setPinned(post.getPinned());
     postView.setNbComments(post.getComments().size());
 
-    postView.setEmbed(
-      EmbedFactory.toView(post.getEmbed())
-    );
+    if(post.getEmbed() != null)
+      postView.setEmbed(EmbedFactory.toView(post.getEmbed()));
 
     postView.setThread(post.getThread().getId());
     postView.setAuthor(AuthorFactory.toView(post.getAuthor()));
