@@ -23,7 +23,7 @@ public class SearchFactory {
     searchItem.setType(SearchItem.EVENT);
 
     // Status is false when event is passed
-    searchItem.setStatus(!event.getEnd().before(new Date()));
+    searchItem.setStatus(!event.getEndsAt().before(new Date()));
     return searchItem;
   }
 

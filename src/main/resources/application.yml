@@ -1,13 +1,10 @@
 spring:
   datasource:
-    # PSQL config
-    # url: jdbc:postgresql://${DB_HOST:localhost:5432}/iseplife
-    # MySQL config
-    url: jdbc:mysql://${DB_HOST:localhost:3306}/iseplife?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
-
+    url: jdbc:postgresql://${DB_HOST:localhost:5432}/${DB_NAME:iseplife}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:root}
   jpa:
+    show-sql: false
     hibernate:
       ddl-auto: update
   servlet:

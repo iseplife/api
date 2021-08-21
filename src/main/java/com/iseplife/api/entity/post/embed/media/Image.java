@@ -1,6 +1,5 @@
 package com.iseplife.api.entity.post.embed.media;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.constants.MediaType;
 import com.iseplife.api.entity.Thread;
@@ -16,15 +15,12 @@ public class Image extends Media {
   @GeneratedValue
   private Long id;
 
-  @JsonIgnore
   @ManyToOne
   private Gallery gallery;
 
-  @JsonIgnore
   @OneToOne(cascade = CascadeType.ALL)
   private Thread thread;
 
-  @JsonIgnore
   @OneToMany(mappedBy = "image", cascade = CascadeType.ALL)
   private List<Matched> matched;
 

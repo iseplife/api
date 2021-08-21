@@ -1,16 +1,15 @@
 package com.iseplife.api.entity.post;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.ThreadInterface;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.exceptions.CommentMaxDepthException;
 
 import javax.persistence.*;
 import java.util.*;
 
 @Entity
+@Table(name = "thread_comment")
 public class Comment implements ThreadInterface {
 
   @Id
@@ -61,7 +60,6 @@ public class Comment implements ThreadInterface {
     this.message = message;
   }
 
-  @JsonIgnore
   public Thread getParentThread() {
     return parentThread;
   }

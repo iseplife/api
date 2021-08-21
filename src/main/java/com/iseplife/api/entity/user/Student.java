@@ -1,6 +1,5 @@
 package com.iseplife.api.entity.user;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+;
 import com.iseplife.api.constants.Language;
 import com.iseplife.api.entity.Author;
 import com.iseplife.api.entity.subscription.Subscription;
@@ -51,7 +50,7 @@ public class Student implements UserDetails, Author {
   @ManyToMany(fetch = FetchType.EAGER)
   private Set<Role> roles;
 
-  @JsonIgnore
+
   @OneToMany(mappedBy = "listener", cascade = CascadeType.ALL)
   private List<Subscription> subscriptions;
 
@@ -105,48 +104,40 @@ public class Student implements UserDetails, Author {
 
 
   @Override
-  @JsonIgnore
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return roles;
   }
 
   @Override
-  @JsonIgnore
   public String getPassword() {
     return null;
   }
 
   @Override
-  @JsonIgnore
   public String getUsername() {
     return null;
   }
 
   @Override
-  @JsonIgnore
   public boolean isAccountNonExpired() {
     return true;
   }
 
   @Override
-  @JsonIgnore
   public boolean isAccountNonLocked() {
     return true;
   }
 
   @Override
-  @JsonIgnore
   public boolean isCredentialsNonExpired() {
     return true;
   }
 
   @Override
-  @JsonIgnore
   public boolean isEnabled() {
     return true;
   }
 
-  @JsonIgnore
   public Set<Role> getRoles() {
     return roles;
   }

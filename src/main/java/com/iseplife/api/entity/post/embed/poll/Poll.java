@@ -1,6 +1,5 @@
 package com.iseplife.api.entity.post.embed.poll;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.post.embed.Embedable;
@@ -25,7 +24,6 @@ public class Poll implements Embedable {
   private List<PollChoice> choices;
 
   @ManyToOne
-  @JsonIgnore
   private Feed feed;
 
   private Date creation;

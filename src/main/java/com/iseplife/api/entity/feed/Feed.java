@@ -1,6 +1,5 @@
 package com.iseplife.api.entity.feed;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
@@ -10,6 +9,7 @@ import com.iseplife.api.entity.post.embed.Gallery;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Feed {
@@ -18,27 +18,24 @@ public class Feed {
   @GeneratedValue
   private Long id;
 
-  @JsonIgnore
-  @OneToOne(mappedBy = "feed")
+  @OneToOne(mappedBy = "feed", orphanRemoval = true)
   private Event event;
 
-  @JsonIgnore
-  @OneToOne(mappedBy = "feed")
+  @OneToOne(mappedBy = "feed", orphanRemoval = true)
   private Club club;
 
-  @JsonIgnore
   @OneToOne(mappedBy = "feed", orphanRemoval = true)
   private Group group;
 
-  @JsonIgnore
-  @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  @ManyToMany(mappedBy = "targets")
+  private Set<Event> events;
+
+  @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Post> posts;
 
-  @JsonIgnore
-  @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Media> media;
 
-  @JsonIgnore
   @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   private List<Gallery> galleries;
 

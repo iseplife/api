@@ -110,7 +110,7 @@ public class EventService {
   }
 
   public List<EventPreview> getIncomingEvents(TokenPayload token, Long feed) {
-    if (feed != 0)
+    if (feed != 1)
       return getFeedIncomingEvents(token, feedService.getFeed(feed));
 
     return eventRepository.findIncomingEvents(
@@ -158,7 +158,7 @@ public class EventService {
   public List<EventPreview> getChildrenEvents(Long id) {
     Event event = getEvent(id);
 
-    return event.getEvents()
+    return event.getChildren()
       .stream()
       .map(EventFactory::entityToPreviewView)
       .collect(Collectors.toList());
@@ -191,7 +191,7 @@ public class EventService {
     event.setDescription(dto.getDescription());
     event.setLocation(dto.getLocation());
     event.setCoordinates(dto.getCoordinates()[0] + ";" + dto.getCoordinates()[1]);
-    event.setStart(dto.getStart());
+    event.setStartsAt(dto.getStart());
     if (dto.getPreviousEditionId() != null) {
       Event prev = getEvent(dto.getPreviousEditionId());
       event.setPreviousEdition(prev);

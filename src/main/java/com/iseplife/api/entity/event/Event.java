@@ -1,6 +1,5 @@
 package com.iseplife.api.entity.event;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.constants.EventType;
@@ -24,8 +23,8 @@ public class Event implements Feedable {
   @Enumerated(EnumType.STRING)
   private EventType type;
 
-  private Date start;
-  private Date end;
+  private Date startsAt;
+  private Date endsAt;
   private String location;
   private String coordinates;
   private String ticketUrl = null;
@@ -38,9 +37,8 @@ public class Event implements Feedable {
   private String description;
 
   //An event can have event child in specific cases (e.g BDE Campaign)
-  @JsonIgnore
   @OneToMany(cascade = CascadeType.ALL)
-  private List<Event> events;
+  private List<Event> children;
 
   @ManyToOne
   private Club club;
@@ -48,11 +46,9 @@ public class Event implements Feedable {
   @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
   private Feed feed;
 
-  @JsonIgnore
   @ManyToMany
   private Set<Feed> targets;
 
-  @JsonIgnore
   @OneToOne
   private Event previousEdition;
 
@@ -80,12 +76,12 @@ public class Event implements Feedable {
     this.location = location;
   }
 
-  public Date getStart() {
-    return start;
+  public Date getStartsAt() {
+    return startsAt;
   }
 
-  public void setStart(Date startsAt) {
-    this.start = startsAt;
+  public void setStartsAt(Date startsAt) {
+    this.startsAt = startsAt;
   }
 
   public String getDescription() {
@@ -112,12 +108,12 @@ public class Event implements Feedable {
     this.imageUrl = imageUrl;
   }
 
-  public Date getEnd() {
-    return end;
+  public Date getEndsAt() {
+    return endsAt;
   }
 
-  public void setEnd(Date endsAt) {
-    this.end = endsAt;
+  public void setEndsAt(Date endsAt) {
+    this.endsAt = endsAt;
   }
 
   public Event getPreviousEdition() {
@@ -126,18 +122,6 @@ public class Event implements Feedable {
 
   public void setPreviousEdition(Event previousEdition) {
     this.previousEdition = previousEdition;
-  }
-
-  public List<Event> getEvents() {
-    return events;
-  }
-
-  public void addEvent(Event event) {
-    this.events.add(event);
-  }
-
-  public void setEvents(List<Event> events) {
-    this.events = events;
   }
 
   public EventType getType() {
@@ -202,5 +186,13 @@ public class Event implements Feedable {
 
   public void setCoordinates(String coordinates) {
     this.coordinates = coordinates;
+  }
+
+  public List<Event> getChildren() {
+    return children;
+  }
+
+  public void setChildren(List<Event> children) {
+    this.children = children;
   }
 }

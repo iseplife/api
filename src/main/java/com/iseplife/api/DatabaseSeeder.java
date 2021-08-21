@@ -2,9 +2,11 @@ package com.iseplife.api;
 
 import com.google.common.collect.Sets;
 import com.iseplife.api.constants.GroupType;
+import com.iseplife.api.dao.feed.FeedRepository;
 import com.iseplife.api.dao.group.GroupRepository;
 import com.iseplife.api.dao.student.RoleRepository;
 import com.iseplife.api.dao.student.StudentRepository;
+import com.iseplife.api.entity.GroupMember;
 import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.user.Role;
@@ -16,9 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +31,9 @@ class DatabaseSeeder {
 
   @Autowired
   private RoleRepository roleRepository;
+
+  @Autowired
+  private FeedRepository feedRepository;
 
   @Autowired
   private GroupRepository groupRepository;
@@ -54,6 +57,12 @@ class DatabaseSeeder {
   }
 
   private void runSeedDatabase() {
+    /* Create main/homepage feed */
+    Feed mainFeed = new Feed();
+    mainFeed.setId(1L);
+
+    feedRepository.save(mainFeed);
+
     /* Create all roles inside Roles class */
     List<Role> roles = new ArrayList<>();
     List<Role> savedRoles = roleRepository.findAll();
@@ -83,7 +92,7 @@ class DatabaseSeeder {
 
     studentRepository.save(student);
 
-    /* Create default group */
+    /* Create default group and add super admin as member */
     List<Group> groups = new ArrayList<>();
     List<GroupType> existingTypes = groupRepository
       .findDistinctType()
@@ -96,10 +105,17 @@ class DatabaseSeeder {
       for (GroupType type: GroupType.values()){
         if(!existingTypes.contains(type) && type != GroupType.DEFAULT){
           Group g = new Group();
-          g.setName(type.toString());
+          g.setName(type.getName());
           g.setFeed(new Feed());
           g.setRestricted(true);
           g.setType(type);
+
+          GroupMember gm = new GroupMember();
+          gm.setStudent(student);
+          gm.setAdmin(true);
+          gm.setGroup(g);
+
+          g.setMembers(Collections.singletonList(gm));
 
           groups.add(g);
         }

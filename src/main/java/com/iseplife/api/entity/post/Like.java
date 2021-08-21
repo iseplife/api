@@ -1,12 +1,12 @@
 package com.iseplife.api.entity.post;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.user.Student;
 
 import javax.persistence.*;
 
-@Entity(name="Likes")
+@Entity
+@Table(name = "thread_like")
 public class Like {
 
   @Id
@@ -23,7 +23,6 @@ public class Like {
 
   public void setId(Long id) { this.id = id; }
 
-  @JsonIgnore
   public Thread getThread() {
     return thread;
   }

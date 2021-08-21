@@ -1,6 +1,7 @@
 package com.iseplife.api.entity.post.embed.media;
 
 import com.iseplife.api.constants.EmbedType;
+import com.iseplife.api.constants.MediaStatus;
 import com.iseplife.api.constants.MediaType;
 
 import javax.persistence.DiscriminatorValue;

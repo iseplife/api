@@ -1,6 +1,5 @@
 package com.iseplife.api.entity.post.embed;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.club.Club;
@@ -26,15 +25,12 @@ public class Gallery implements Embedable {
 
   private Date creation;
 
-  @JsonIgnore
   @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "gallery")
   private List<Image> images = new ArrayList<>();
 
-  @JsonIgnore
   @ManyToOne
   private Feed feed;
 
-  @JsonIgnore
   @ManyToOne
   private Club club;
 
