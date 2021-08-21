@@ -1,7 +1,8 @@
 package com.iseplife.api.dao.group;
 
 import com.iseplife.api.constants.GroupType;
-import com.iseplife.api.dto.group.GroupDTO;
+import com.iseplife.api.dto.group.GroupCreationDTO;
+import com.iseplife.api.dto.group.GroupUpdateDTO;
 import com.iseplife.api.dto.group.view.GroupAdminView;
 import com.iseplife.api.dto.group.view.GroupPreview;
 import com.iseplife.api.dto.group.view.GroupView;
@@ -14,12 +15,12 @@ import java.util.stream.Collectors;
 
 public class GroupFactory {
 
-  static public void updateFromDTO(Group group, GroupDTO dto){
+  static public void updateFromDTO(Group group, GroupUpdateDTO dto){
     group.setName(dto.getName());
     group.setRestricted(dto.getRestricted());
   }
 
-  static public Group fromDTO(GroupDTO dto){
+  static public Group fromDTO(GroupCreationDTO dto){
     Group group = new Group();
     group.setName(dto.getName());
     group.setRestricted(dto.getRestricted());

@@ -2,15 +2,14 @@ package com.iseplife.api.controllers;
 
 
 import com.iseplife.api.conf.jwt.TokenPayload;
-import com.iseplife.api.dao.student.StudentFactory;
-import com.iseplife.api.dto.group.GroupDTO;
+import com.iseplife.api.dto.group.GroupCreationDTO;
 import com.iseplife.api.dto.group.GroupMemberDTO;
+import com.iseplife.api.dto.group.GroupUpdateDTO;
 import com.iseplife.api.dto.group.view.GroupAdminView;
 import com.iseplife.api.dto.group.view.GroupMemberView;
 import com.iseplife.api.dto.group.view.GroupPreview;
 import com.iseplife.api.dto.group.view.GroupView;
 import com.iseplife.api.constants.Roles;
-import com.iseplife.api.dto.student.view.StudentAdminView;
 import com.iseplife.api.services.GroupService;
 import com.iseplife.api.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,12 +47,8 @@ public class GroupController {
 
   @PostMapping
   @RolesAllowed({Roles.ADMIN})
-  public GroupAdminView createGroup(
-    @RequestParam(name="form") String form,
-    @RequestParam(name="file", required = false) MultipartFile file
-  ) {
-    GroupDTO dto = jsonUtils.deserialize(form, GroupDTO.class);
-    return groupService.createGroup(dto, file);
+  public GroupAdminView createGroup(@RequestBody GroupCreationDTO dto) {
+    return groupService.createGroup(dto);
   }
 
   @GetMapping("/{id}")
@@ -70,7 +65,7 @@ public class GroupController {
 
   @PutMapping("/{id}")
   @RolesAllowed({Roles.ADMIN})
-  public GroupAdminView updateGroup(@PathVariable Long id, @RequestBody GroupDTO dto) {
+  public GroupAdminView updateGroup(@PathVariable Long id, @RequestBody GroupUpdateDTO dto) {
     return groupService.updateGroup(id, dto);
   }
 
