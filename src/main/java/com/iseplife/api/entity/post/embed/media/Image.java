@@ -3,7 +3,6 @@ package com.iseplife.api.entity.post.embed.media;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.constants.MediaType;
-import com.iseplife.api.entity.Matched;
 import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.post.embed.Gallery;
 

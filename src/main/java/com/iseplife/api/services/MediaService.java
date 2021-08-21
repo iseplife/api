@@ -11,7 +11,7 @@ import com.iseplife.api.entity.Author;
 import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.post.embed.media.Image;
-import com.iseplife.api.entity.Matched;
+import com.iseplife.api.entity.post.embed.media.Matched;
 import com.iseplife.api.entity.post.embed.media.Document;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.post.embed.media.Media;
