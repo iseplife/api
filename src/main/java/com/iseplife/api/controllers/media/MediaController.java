@@ -1,7 +1,7 @@
 package com.iseplife.api.controllers.media;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
-import com.iseplife.api.entity.Matched;
+import com.iseplife.api.entity.post.embed.media.Matched;
 import com.iseplife.api.entity.post.embed.media.Media;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.services.MediaService;

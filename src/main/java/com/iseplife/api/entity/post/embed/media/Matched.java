@@ -1,7 +1,6 @@
-package com.iseplife.api.entity;
+package com.iseplife.api.entity.post.embed.media;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.iseplife.api.entity.post.embed.media.Image;
 import com.iseplife.api.entity.user.Student;
 
 import javax.persistence.*;
