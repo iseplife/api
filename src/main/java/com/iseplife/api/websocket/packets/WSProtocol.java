@@ -10,6 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.stereotype.Service;
 
+import com.iseplife.api.websocket.packets.client.WSPCFeedSubscriptionUpdate;
 import com.iseplife.api.websocket.packets.client.WSPCPostsSubscriptionUpdate;
 import com.iseplife.api.websocket.packets.server.WSPSConnected;
 
@@ -39,6 +40,7 @@ public class WSProtocol {
     
     //Client packets
     registerPacketClient(WSPCPostsSubscriptionUpdate.class);
+    registerPacketClient(WSPCFeedSubscriptionUpdate.class);
     return this;
   }
   
