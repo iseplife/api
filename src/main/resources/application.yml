@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/iseplife
+    url: jdbc:postgresql://${DB_HOST:localhost:5432}/${DB_NAME:iseplife}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:root}
   jpa:
