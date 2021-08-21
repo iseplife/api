@@ -4,7 +4,11 @@ spring:
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:root}
   jpa:
-    show-sql: false
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        
     hibernate:
       ddl-auto: update
   servlet:
