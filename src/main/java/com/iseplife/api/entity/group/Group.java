@@ -1,19 +1,16 @@
 package com.iseplife.api.entity.group;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.constants.GroupType;
 import com.iseplife.api.entity.GroupMember;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.feed.Feedable;
-import com.iseplife.api.entity.user.Student;
 
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 @Entity
-@Table(name = "`group`")
+@Table(name="groups")
 public class Group implements Feedable {
   @Id
   @GeneratedValue
@@ -34,7 +31,6 @@ public class Group implements Feedable {
   @OneToOne(cascade = CascadeType.ALL)
   private Feed feed;
 
-  @JsonIgnore
   @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<GroupMember> members;
 

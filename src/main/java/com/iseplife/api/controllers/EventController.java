@@ -49,7 +49,7 @@ public class EventController {
 
   @GetMapping("/incoming")
   @RolesAllowed({Roles.STUDENT})
-  public  List<EventPreview> getIncomingEvents(@AuthenticationPrincipal TokenPayload token, @RequestParam(name = "feed", defaultValue = "0") Long feed) {
+  public  List<EventPreview> getIncomingEvents(@AuthenticationPrincipal TokenPayload token, @RequestParam(name = "feed", defaultValue = "1") Long feed) {
     return eventService.getIncomingEvents(token, feed);
   }
 

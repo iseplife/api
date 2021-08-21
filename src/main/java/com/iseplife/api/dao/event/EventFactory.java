@@ -22,8 +22,8 @@ public class EventFactory {
     event.setTitle(dto.getTitle());
     event.setType(EventType.valueOf(dto.getType()));
     event.setDescription(dto.getDescription());
-    event.setStart(dto.getStart());
-    event.setEnd(dto.getEnd());
+    event.setStartsAt(dto.getStart());
+    event.setEndsAt(dto.getEnd());
     event.setPrice(dto.getPrice());
     event.setTicketUrl(dto.getTicketUrl());
     event.setLocation(dto.getLocation());
@@ -41,8 +41,8 @@ public class EventFactory {
     event.setPreviousEdition(previous);
 
     event.setTitle(dto.getTitle() != null ? dto.getTitle() : previous.getTitle());
-    event.setStart(dto.getStart() != null ? dto.getStart() : previous.getStart());
-    event.setEnd(dto.getEnd() != null ? dto.getEnd() : previous.getEnd());
+    event.setStartsAt(dto.getStart() != null ? dto.getStart() : previous.getStartsAt());
+    event.setEndsAt(dto.getEnd() != null ? dto.getEnd() : previous.getEndsAt());
     event.setPrice(dto.getPrice() != null ? dto.getPrice() : previous.getPrice());
     event.setLocation(dto.getLocation() != null ? dto.getLocation() : previous.getLocation());
 
@@ -60,8 +60,8 @@ public class EventFactory {
     preview.setTitle(event.getTitle());
     preview.setType(event.getType().name());
     preview.setTargets(event.getTargets().stream().map(Feed::getId).collect(Collectors.toSet()));
-    preview.setStart(event.getStart());
-    preview.setEnd(event.getEnd());
+    preview.setStart(event.getStartsAt());
+    preview.setEnd(event.getEndsAt());
     preview.setCover(event.getImageUrl());
     preview.setPublished(event.getPublished().before(new Date()));
     return preview;
@@ -75,8 +75,8 @@ public class EventFactory {
     view.setDescription(event.getDescription());
     view.setCover(event.getImageUrl());
 
-    view.setStart(event.getStart());
-    view.setEnd(event.getEnd());
+    view.setStart(event.getStartsAt());
+    view.setEnd(event.getEndsAt());
     view.setLocation(event.getLocation());
 
     // Split string containing long & lag and parsing it into float
