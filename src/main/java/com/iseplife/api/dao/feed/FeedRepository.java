@@ -9,5 +9,4 @@ import java.util.List;
 
 @Repository
 public interface FeedRepository extends CrudRepository<Feed, Long> {
-  List<Feed> findAll();
 }

@@ -1,6 +1,5 @@
 package com.iseplife.api.entity.post;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.ThreadInterface;
@@ -56,14 +55,12 @@ public class Post implements ThreadInterface {
   @ManyToOne
   private Student author;
 
-  @JsonIgnore
   @OneToOne(cascade = CascadeType.ALL)
   private Thread thread;
 
   @ManyToOne
   private Club linkedClub = null;
 
-  @JsonIgnore
   @ManyToOne
   private Feed feed;
 
@@ -118,12 +115,10 @@ public class Post implements ThreadInterface {
     this.embed = embed;
   }
 
-  @JsonIgnore
   public List<Comment> getComments() {
     return thread.getComments();
   }
 
-  @JsonIgnore
   public List<Like> getLikes() {
     return thread.getLikes();
   }

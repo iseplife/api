@@ -1,6 +1,5 @@
 package com.iseplife.api.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.post.Comment;
 import com.iseplife.api.entity.post.Like;
@@ -23,11 +22,9 @@ public class Thread {
   @OneToOne(mappedBy = "thread", cascade = CascadeType.ALL)
   private Comment comment;
 
-  @JsonIgnore
   @OneToMany(mappedBy = "parentThread", cascade = CascadeType.ALL)
   private List<Comment> comments = new ArrayList<>();
 
-  @JsonIgnore
   @OneToMany(mappedBy = "thread", cascade = CascadeType.REMOVE, orphanRemoval = true)
   private List<Like> likes = new ArrayList<>();
 
@@ -47,7 +44,6 @@ public class Thread {
     this.comments = comments;
   }
 
-  @JsonIgnore
   public List<Like> getLikes() {
     return likes;
   }

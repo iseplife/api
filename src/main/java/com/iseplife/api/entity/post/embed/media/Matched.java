@@ -1,6 +1,5 @@
 package com.iseplife.api.entity.post.embed.media;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.entity.user.Student;
 
 import javax.persistence.*;
@@ -19,7 +18,6 @@ public class Matched {
   private Student owner;
 
   @ManyToOne
-  @JsonIgnore
   private Image image;
 
   public Student getMatch() {

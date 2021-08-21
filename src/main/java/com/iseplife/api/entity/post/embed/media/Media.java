@@ -1,6 +1,5 @@
 package com.iseplife.api.entity.post.embed.media;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.constants.MediaStatus;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.post.embed.Embedable;
@@ -19,7 +18,6 @@ public abstract class Media implements Embedable {
    * We can ignore this field in json as the Embeddable interface
    * will already give use the media type by giving us the embed type
    */
-  @JsonIgnore
   @Column(insertable = false, updatable = false)
   private String mediaType;
 
@@ -30,10 +28,9 @@ public abstract class Media implements Embedable {
   private String name;
 
   @Enumerated(EnumType.STRING)
-  private MediaStatus status;
+  private MediaStatus status = MediaStatus.UNPROCESSED;
 
   @ManyToOne
-  @JsonIgnore
   private Feed feed;
 
   public Long getId() {

@@ -1,6 +1,5 @@
 package com.iseplife.api.entity.post.embed.poll;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -40,7 +39,6 @@ public class PollChoice {
     this.content = content;
   }
 
-  @JsonIgnore
   public Poll getPoll() {
     return poll;
   }

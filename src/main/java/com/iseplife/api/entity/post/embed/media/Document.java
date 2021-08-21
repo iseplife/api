@@ -14,8 +14,6 @@ public class Document extends Media {
 
   private String title;
 
-  private final MediaStatus status = MediaStatus.READY;
-
   public String getEmbedType(){
     return EmbedType.DOCUMENT;
   }

@@ -1,16 +1,12 @@
 spring:
   datasource:
-    # PSQL config
     url: jdbc:postgresql://localhost:5432/iseplife
-    # MySQL config
-    #url: jdbc:mysql://${DB_HOST:localhost:3306}/iseplife?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&useUnicode=yes&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
-
-    username: postgres #${DB_USERNAME:postgres}
-    password: root     #${DB_PASSWORD:root}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:root}
   jpa:
-    show-sql: true
+    show-sql: false
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
   servlet:
     multipart:
       max-file-size: 2000MB

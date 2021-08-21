@@ -1,6 +1,5 @@
 package com.iseplife.api.entity.club;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iseplife.api.constants.ClubType;
 import com.iseplife.api.entity.Author;
 import com.iseplife.api.entity.feed.Feed;
@@ -37,7 +36,6 @@ public class Club implements Feedable, Author {
   @OneToOne(cascade = CascadeType.ALL)
   private Feed feed;
 
-  @JsonIgnore
   private String facebook_token;
   private String facebook;
   private String snapchat;
@@ -47,15 +45,12 @@ public class Club implements Feedable, Author {
   private Integer mediaCounter;
   private Date mediaCooldown;
 
-  @JsonIgnore
   @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ClubMember> members;
 
-  @JsonIgnore
   @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = false)
   private List<Event> events;
 
-  @JsonIgnore
   @OneToMany(mappedBy = "linkedClub", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Post> posts;
 
