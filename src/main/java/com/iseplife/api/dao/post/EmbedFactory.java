@@ -4,7 +4,7 @@ import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.dao.gallery.GalleryFactory;
 import com.iseplife.api.dao.media.MediaFactory;
 import com.iseplife.api.dao.poll.PollFactory;
-import com.iseplife.api.dto.post.view.EmbedView;
+import com.iseplife.api.dto.embed.view.EmbedView;
 import com.iseplife.api.entity.post.embed.Embedable;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.post.embed.media.Media;

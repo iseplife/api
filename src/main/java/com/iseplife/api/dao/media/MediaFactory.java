@@ -44,4 +44,18 @@ public class MediaFactory {
     view.setEmbedType(media.getEmbedType());
     return view;
   }
+
+  public static ImageView toView(Image image) {
+    ImageView view = new ImageView();
+    if(image.getThread() != null)
+      view.setThread(image.getThread().getId());
+
+    view.setId(image.getId());
+    view.setCreation(image.getCreation());
+    view.setNSFW(image.isNSFW());
+    view.setName(image.getName());
+    view.setEmbedType(image.getEmbedType());
+
+    return view;
+  }
 }

@@ -1,7 +1,5 @@
 package com.iseplife.api.dto.embed.view;
 
-import com.iseplife.api.dto.post.view.EmbedView;
-
 import java.util.Date;
 import java.util.List;
 

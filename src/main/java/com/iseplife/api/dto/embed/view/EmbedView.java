@@ -1,4 +1,4 @@
-package com.iseplife.api.dto.post.view;
+package com.iseplife.api.dto.embed.view;
 
 
 public abstract class EmbedView {

@@ -1,4 +1,4 @@
-package com.iseplife.api.dto;
+package com.iseplife.api.dto.event;
 
 import java.util.Date;
 import java.util.Set;
