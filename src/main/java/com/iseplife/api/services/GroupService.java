@@ -7,8 +7,9 @@ import com.iseplife.api.dao.group.GroupFactory;
 import com.iseplife.api.dao.group.GroupMemberFactory;
 import com.iseplife.api.dao.group.GroupMemberRepository;
 import com.iseplife.api.dao.group.GroupRepository;
-import com.iseplife.api.dto.group.GroupDTO;
+import com.iseplife.api.dto.group.GroupCreationDTO;
 import com.iseplife.api.dto.group.GroupMemberDTO;
+import com.iseplife.api.dto.group.GroupUpdateDTO;
 import com.iseplife.api.dto.group.view.GroupAdminView;
 import com.iseplife.api.dto.group.view.GroupMemberView;
 import com.iseplife.api.dto.group.view.GroupPreview;
@@ -98,37 +99,50 @@ public class GroupService {
   }
 
 
-  public GroupAdminView createGroup(GroupDTO dto, MultipartFile file) {
+  public GroupAdminView createGroup(GroupCreationDTO dto) {
     Group group = GroupFactory.fromDTO(dto);
 
-    if (file != null) {
-      Map params = Map.of(
-        "process", "compress",
-        "sizes", StorageConfig.MEDIAS_CONF.get("feed_cover").sizes
-      );
-      group.setCover(fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("feed_cover").path, false, params));
-    }
+    group.setMembers(createGroupAdminMembers(dto.getAdmins()));
 
-    studentService.getStudents(dto.getAdmins()).forEach(a -> {
-      GroupMember member = new GroupMember();
-      member.setAdmin(true);
-      member.setStudent(a);
-      group.getMembers().add(member);
-    });
     return GroupFactory.toAdminView(groupRepository.save(group));
   }
 
-
-  public GroupAdminView updateGroup(Long id, GroupDTO dto) {
-    Group group = getGroup(id);
-    GroupFactory.updateFromDTO(group, dto);
-
-    studentService.getStudents(dto.getAdmins()).forEach(a -> {
+  private List<GroupMember> createGroupAdminMembers(List<Long> ids) {
+    List<GroupMember> adminMembers = new ArrayList<>();
+    studentService.getStudents(ids).forEach(a -> {
       GroupMember member = new GroupMember();
       member.setAdmin(true);
       member.setStudent(a);
-      group.getMembers().add(member);
+
+      adminMembers.add(member);
     });
+
+    return adminMembers;
+  }
+
+
+  public GroupAdminView updateGroup(Long id, GroupUpdateDTO dto) {
+    Group group = getGroup(id);
+    GroupFactory.updateFromDTO(group, dto);
+
+    // Keep only admins that are in dto.admins
+    group.setMembers(
+      group.getMembers().stream()
+        .filter(m -> {
+          if (dto.getAdmins().contains(m.getId())) {
+            // In case the member wasn't already an admin
+            m.setAdmin(true);
+
+            dto.getAdmins().remove(m.getId());
+            return true;
+          } else return !m.isAdmin();
+        })
+        .collect(Collectors.toList())
+    );
+
+    // We create a group member admin for all leftovers ids
+    group.getMembers().addAll(createGroupAdminMembers(dto.getAdmins()));
+
     return GroupFactory.toAdminView(groupRepository.save(group));
   }
 
