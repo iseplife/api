@@ -1,13 +1,13 @@
 package com.iseplife.api.dto.gallery.view;
 
-import com.iseplife.api.dto.post.view.EmbedView;
-import com.iseplife.api.entity.post.embed.media.Image;
+import com.iseplife.api.dto.embed.view.EmbedView;
+import com.iseplife.api.dto.embed.view.media.ImageView;
 
 import java.util.List;
 
 public class PseudoGalleryView extends EmbedView {
   private Long id;
-  private List<Image> images;
+  private List<ImageView> images;
 
   public Long getId() {
     return id;
@@ -17,11 +17,11 @@ public class PseudoGalleryView extends EmbedView {
     this.id = id;
   }
 
- public List<Image> getImages() {
+ public List<ImageView> getImages() {
     return images;
   }
 
-  public void setImages(List<Image> images) {
+  public void setImages(List<ImageView> images) {
     this.images = images;
   }
 }

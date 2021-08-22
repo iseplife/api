@@ -77,7 +77,6 @@ public class Thread {
     } else {
       return comment.getParentThread().getFeed();
     }
-
   }
 
 }

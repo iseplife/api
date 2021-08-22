@@ -2,9 +2,10 @@ package com.iseplife.api.dao.event;
 
 import com.iseplife.api.constants.EventType;
 import com.iseplife.api.dao.club.ClubFactory;
-import com.iseplife.api.dto.EventDTO;
-import com.iseplife.api.dto.view.EventPreview;
-import com.iseplife.api.dto.view.EventView;
+import com.iseplife.api.dao.feed.FeedFactory;
+import com.iseplife.api.dto.event.EventDTO;
+import com.iseplife.api.dto.event.view.EventPreview;
+import com.iseplife.api.dto.event.view.EventView;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.services.SecurityService;
@@ -89,7 +90,7 @@ public class EventFactory {
 
     view.setSubscribed(isSubscribed);
     view.setFeed(event.getFeed().getId());
-    view.setTargets(event.getTargets());
+    view.setTargets(event.getTargets().stream().map(FeedFactory::toView).collect(Collectors.toSet()));
     view.setHasRight(SecurityService.hasRightOn(event));
     view.setClub(ClubFactory.toPreview(event.getClub()));
     return view;

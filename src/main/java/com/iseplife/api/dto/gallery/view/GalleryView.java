@@ -1,6 +1,7 @@
 package com.iseplife.api.dto.gallery.view;
 
 import com.iseplife.api.dto.club.view.ClubPreview;
+import com.iseplife.api.dto.embed.view.media.ImageView;
 import com.iseplife.api.entity.post.embed.media.Image;
 
 import java.util.Date;
@@ -10,7 +11,7 @@ public class GalleryView {
   private Long id;
   private String name;
   private Date creation;
-  private List<Image> images;
+  private List<ImageView> images;
   private ClubPreview club;
   private Boolean hasRight;
 
@@ -38,11 +39,11 @@ public class GalleryView {
     this.creation = creation;
   }
 
-  public List<Image> getImages() {
+  public List<ImageView> getImages() {
     return images;
   }
 
-  public void setImages(List<Image> images) {
+  public void setImages(List<ImageView> images) {
     this.images = images;
   }
 

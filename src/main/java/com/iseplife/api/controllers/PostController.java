@@ -2,7 +2,7 @@ package com.iseplife.api.controllers;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dto.post.PostCreationDTO;
-import com.iseplife.api.dto.PostUpdateDTO;
+import com.iseplife.api.dto.post.PostUpdateDTO;
 import com.iseplife.api.dto.view.*;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dto.post.view.PostView;

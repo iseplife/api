@@ -4,7 +4,7 @@ import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.dao.post.*;
 import com.iseplife.api.dto.post.PostCreationDTO;
-import com.iseplife.api.dto.PostUpdateDTO;
+import com.iseplife.api.dto.post.PostUpdateDTO;
 import com.iseplife.api.dto.view.AuthorView;
 import com.iseplife.api.dto.post.view.PostView;
 import com.iseplife.api.entity.feed.Feed;

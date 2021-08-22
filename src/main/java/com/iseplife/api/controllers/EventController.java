@@ -2,10 +2,10 @@ package com.iseplife.api.controllers;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
-import com.iseplife.api.dto.EventDTO;
+import com.iseplife.api.dto.event.EventDTO;
 import com.iseplife.api.dto.gallery.view.GalleryPreview;
-import com.iseplife.api.dto.view.EventPreview;
-import com.iseplife.api.dto.view.EventView;
+import com.iseplife.api.dto.event.view.EventPreview;
+import com.iseplife.api.dto.event.view.EventView;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.services.EventService;
 import org.springframework.beans.factory.annotation.Autowired;

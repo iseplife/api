@@ -1,7 +1,7 @@
-package com.iseplife.api.dto.view;
+package com.iseplife.api.dto.event.view;
 
 import com.iseplife.api.dto.club.view.ClubPreview;
-import com.iseplife.api.entity.feed.Feed;
+import com.iseplife.api.dto.view.FeedView;
 
 import java.util.Date;
 import java.util.Set;
@@ -25,7 +25,7 @@ public class EventView {
   private Boolean hasRight;
 
   private ClubPreview club;
-  private Set<Feed> targets;
+  private Set<FeedView> targets;
   private Long feed;
 
   public Long getId() {
@@ -132,11 +132,11 @@ public class EventView {
     this.feed = feed;
   }
 
-  public Set<Feed> getTargets() {
+  public Set<FeedView> getTargets() {
     return targets;
   }
 
-  public void setTargets(Set<Feed> targets) {
+  public void setTargets(Set<FeedView> targets) {
     this.targets = targets;
   }
 

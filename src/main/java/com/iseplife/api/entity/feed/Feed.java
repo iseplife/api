@@ -75,6 +75,7 @@ public class Feed {
     this.group = group;
   }
 
+  //TODO optimisation needed as it trigger SQL call
   public String getName() {
     if (club != null)
       return club.getName();

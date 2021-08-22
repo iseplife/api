@@ -1,6 +1,6 @@
 package com.iseplife.api.dto.embed.view.media;
 
-import com.iseplife.api.dto.post.view.EmbedView;
+import com.iseplife.api.dto.embed.view.EmbedView;
 
 import java.util.Date;
 
