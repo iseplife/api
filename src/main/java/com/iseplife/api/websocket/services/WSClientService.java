@@ -25,6 +25,6 @@ public class WSClientService {
   }
 
   public void removeSession(WebSocketSession session) {
-    clients.get(((TokenPayload)session.getAttributes().get("logged_id")).getId()).remove(session);
+    clients.get(((TokenPayload)session.getAttributes().get("token")).getId()).remove(session);
   }
 }
