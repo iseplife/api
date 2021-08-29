@@ -1,5 +1,6 @@
 package com.iseplife.api.entity.user;
 ;
+import com.iseplife.api.constants.AuthorType;
 import com.iseplife.api.constants.Language;
 import com.iseplife.api.entity.Author;
 import com.iseplife.api.entity.subscription.Subscription;
@@ -56,6 +57,21 @@ public class Student implements UserDetails, Author {
 
   public Long getId() {
     return id;
+  }
+
+  @Override
+  public String getName() {
+    return firstName + " " + lastName;
+  }
+
+  @Override
+  public AuthorType getAuthorType() {
+    return AuthorType.STUDENT;
+  }
+
+  @Override
+  public String getThumbnail() {
+    return picture;
   }
 
   public void setId(Long id) {

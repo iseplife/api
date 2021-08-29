@@ -1,8 +1,9 @@
 package com.iseplife.api.dto.view;
 
 import com.iseplife.api.constants.AuthorType;
+import com.iseplife.api.dao.post.AuthorProjection;
 
-public class AuthorView {
+public class AuthorView implements AuthorProjection {
     private Long id;
     private AuthorType type;
     private String name;
@@ -16,11 +17,11 @@ public class AuthorView {
     this.id = id;
   }
 
-  public AuthorType getType() {
+  public AuthorType getAuthorType() {
     return type;
   }
 
-  public void setType(AuthorType type) {
+  public void setAuthorType(AuthorType type) {
     this.type = type;
   }
 

@@ -1,7 +1,9 @@
 package com.iseplife.api.dto.post.view;
 
+import com.iseplife.api.dao.post.PostProjection;
 import com.iseplife.api.dto.embed.view.EmbedView;
 import com.iseplife.api.dto.view.AuthorView;
+import com.iseplife.api.dto.view.CommentView;
 
 import java.util.Date;
 
@@ -9,7 +11,7 @@ import java.util.Date;
  * Created by Guillaume on 13/08/2017.
  * back
  */
-public class PostView {
+public class PostView implements PostProjection {
   private Long id;
   private Long thread;
 
@@ -20,9 +22,11 @@ public class PostView {
 
   private Integer nbLikes;
   private Boolean isLiked;
-  private Integer nbComments;
   private Boolean isPinned;
   private Boolean isPrivate;
+
+  private Integer nbComments;
+  private CommentView trendingComment;
 
   private Boolean hasWriteAccess;
 
@@ -113,5 +117,13 @@ public class PostView {
 
   public void setAuthor(AuthorView author) {
     this.author = author;
+  }
+
+  public CommentView getTrendingComment() {
+    return trendingComment;
+  }
+
+  public void setTrendingComment(CommentView trendingComment) {
+    this.trendingComment = trendingComment;
   }
 }

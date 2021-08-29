@@ -19,6 +19,16 @@ public interface PostRepository extends CrudRepository<Post, Long> {
 
   List<Post> findAll();
 
+
+  @Query(
+    "select p as post, " +
+      "p.thread.id as thread, "+
+      "size(p.thread.comments) as nbComments, " +
+      "size(p.thread.likes) as nbLikes " +
+    "from Post p"
+  )
+  List<PostProjection> findTest();
+
   @Query(
     "select p from Post p "+
       "where p.feed.id = 1 or p.isPrivate = false " +
