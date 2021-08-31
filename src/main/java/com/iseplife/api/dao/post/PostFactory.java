@@ -9,10 +9,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-/**
- * Created by Guillaume on 28/07/2017.
- * back
- */
 @Component
 public class PostFactory {
 
@@ -42,6 +38,7 @@ public class PostFactory {
     PostView view = mapper.map(post, PostView.class);
 
     view.setEmbed(EmbedFactory.toView(post.getEmbed()));
+    view.setTrendingComment(threadService.getTrendingComment(post.getThread()));
     view.setHasWriteAccess(SecurityService.hasRightOn(post));
 
     return view;

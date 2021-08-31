@@ -4,6 +4,7 @@ import com.iseplife.api.dto.view.CommentView;
 import com.iseplife.api.entity.post.Comment;
 import com.iseplife.api.services.SecurityService;
 import com.iseplife.api.services.ThreadService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,13 @@ public class CommentFactory {
 
   @Autowired
   ThreadService threadService;
+
+  @Autowired
+  ModelMapper mapper;
+
+  public CommentView toView(CommentProjection comment) {
+    return mapper.map(comment, CommentView.class);
+  }
 
   public CommentView toView(Comment comment) {
     CommentView commentView = new CommentView();

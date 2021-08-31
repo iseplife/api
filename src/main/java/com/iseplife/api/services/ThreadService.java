@@ -113,6 +113,12 @@ public class ThreadService {
       .collect(Collectors.toList());
   }
 
+  public CommentView getTrendingComment(Long thread){
+    return commentFactory.toView(
+      commentRepository.findTrendingComments(thread, SecurityService.getLoggedId())
+    );
+  }
+
   private Boolean canCommentOnThread(Thread thread){
     if(thread.getComment() != null){
       return thread.getComment().getParentThread().getComment() == null;

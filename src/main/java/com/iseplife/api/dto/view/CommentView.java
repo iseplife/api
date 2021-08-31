@@ -1,9 +1,11 @@
 package com.iseplife.api.dto.view;
 
 
+import com.iseplife.api.dao.post.CommentProjection;
+
 import java.util.Date;
 
-public class CommentView {
+public class CommentView implements CommentProjection {
   private Long id;
   private Long thread;
   private AuthorView author;
