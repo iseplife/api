@@ -60,6 +60,13 @@ public class SecurityService {
     return studentService.getStudent(getLoggedId());
   }
 
+  static public boolean hasRightOn(Post post) {
+    TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return userHasRole(Roles.ADMIN)
+      || post.getAuthor().getId().equals(payload.getId())
+      || post.getLinkedClub() != null && payload.getClubsPublisher().contains(post.getLinkedClub().getId());
+  }
+
   static public boolean hasRightOn(PostProjection post) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
     return userHasRole(Roles.ADMIN)

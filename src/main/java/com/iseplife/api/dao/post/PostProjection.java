@@ -1,9 +1,7 @@
 package com.iseplife.api.dao.post;
 
 
-import com.iseplife.api.entity.Author;
 import com.iseplife.api.entity.post.embed.Embedable;
-import com.iseplife.api.entity.user.Student;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Date;
@@ -28,4 +26,5 @@ public interface PostProjection {
     Long getThread();
     Integer getNbLikes();
     Integer getNbComments();
+    Boolean getLiked();
 }

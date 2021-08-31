@@ -83,8 +83,8 @@ public class StudentController {
 
   @GetMapping("/{id}/post")
   @RolesAllowed({Roles.STUDENT})
-  public Page<PostView> getPostsStudent(@PathVariable Long id, @RequestParam(defaultValue = "0") int page) {
-    return postService.getPostsAuthor(id, SecurityService.isUserAnonymous(), page);
+  public Page<PostView> getPostsStudent(@PathVariable Long id, @RequestParam(defaultValue = "0") int page, @AuthenticationPrincipal TokenPayload token) {
+    return postService.getAuthorPosts(id, page, token);
   }
 
   @GetMapping("/{id}/photo")
