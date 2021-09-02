@@ -30,7 +30,7 @@ storage:
   name:       ${STORAGE_NAME:aws}
   api-key:    ${STORAGE_API_KEY:}
   api-secret: ${STORAGE_API_SECRET:}
-  bucket:     iseplife
+  bucket:     ${STORAGE_BUCKET:iseplife-dev}
 
 jwt:
   secret:               ${JWT_SECRET:1jmhvPXhI40vqAnm}
