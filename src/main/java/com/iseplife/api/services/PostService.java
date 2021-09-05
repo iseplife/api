@@ -115,7 +115,7 @@ public class PostService {
     post.setPublicationDate(dto.getPublicationDate() == null ? new Date() : dto.getPublicationDate());
     post.setState(dto.isDraft() ? PostState.DRAFT : PostState.READY);
 
-    return postFactory.entityToView(postRepository.save(post));
+    return postFactory.toPostFormView(postRepository.save(post));
   }
 
   public PostFormView updatePost(Long postID, PostUpdateDTO dto) {
@@ -144,7 +144,7 @@ public class PostService {
       post.setEmbed(null);
     }
 
-    return postFactory.entityToView(postRepository.save(post));
+    return postFactory.toPostFormView(postRepository.save(post));
   }
 
   private void removeEmbed(Embedable embed) {
@@ -245,23 +245,23 @@ public class PostService {
       PageRequest.of(page, POSTS_PER_PAGE)
     );
 
-    return posts.map(post -> postFactory.entityToView(post));
+    return posts.map(post -> postFactory.toView(post));
   }
 
   public List<PostView> getFeedPostsPinned(Feed feed) {
     List<PostProjection> posts = postRepository.findFeedPinnedPosts(feed, SecurityService.getLoggedId());
 
-    return posts.stream().map(post -> postFactory.entityToView(post)).collect(Collectors.toList());
+    return posts.stream().map(post -> postFactory.toView(post)).collect(Collectors.toList());
   }
 
   public PostView getFeedDrafts(Feed feed, Long author) {
     Optional<PostProjection> post = postRepository.findFeedDraft(feed, author);
 
-    return post.map(postProjection -> postFactory.entityToView(postProjection)).orElse(null);
+    return post.map(postProjection -> postFactory.toView(postProjection)).orElse(null);
   }
 
   public Page<PostView> getAuthorPosts(Long id, int page, TokenPayload token) {
     Page<PostProjection> posts = postRepository.findAuthorPosts(id, SecurityService.getLoggedId(), token.getFeeds(), PageRequest.of(page, POSTS_PER_PAGE));
-    return posts.map(p -> postFactory.entityToView(p));
+    return posts.map(p -> postFactory.toView(p));
   }
 }

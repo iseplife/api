@@ -26,7 +26,7 @@ public class PostFactory {
     return p;
   }
 
-  public PostFormView entityToView(Post post) {
+  public PostFormView toPostFormView(Post post) {
     PostFormView view = mapper.map(post, PostFormView.class);
 
     view.setEmbed(EmbedFactory.toView(post.getEmbed()));
@@ -34,10 +34,11 @@ public class PostFactory {
     return view;
   }
 
-  public PostView entityToView(PostProjection post) {
+  public PostView toView(PostProjection post) {
     PostView view = mapper.map(post, PostView.class);
 
     view.setEmbed(EmbedFactory.toView(post.getEmbed()));
+    view.setLiked(threadService.isLiked(post.getThread()));
     view.setTrendingComment(threadService.getTrendingComment(post.getThread()));
     view.setHasWriteAccess(SecurityService.hasRightOn(post));
 

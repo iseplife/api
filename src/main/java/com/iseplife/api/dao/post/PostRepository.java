@@ -30,14 +30,12 @@ public interface PostRepository extends CrudRepository<Post, Long>, JpaSpecifica
   @Query(
     "select p as post, " +
       "p.thread.id as thread, " +
-      "case when count(l) = 1 then true else false end as liked, " +
-      "size(p.thread.comments) as nbComments, " +
-      "size(p.thread.likes) as nbLikes " +
+      "size(p.thread.likes) as nbLikes, " +
+      "size(p.thread.comments) as nbComments " +
     "from Post p " +
-    "join p.thread.likes l on l.student.id = ?3 " +
     "where p.feed.id = ?1 and p.state = ?2 and " +
-      "(p.publicationDate > current_time or ?1 = true or p.author.id = ?3)" +
-    "order by p.publicationDate desc"
+      "(p.publicationDate > current_date or ?4 = true or p.author.id = ?3)" +
+    "order by p.publicationDate desc "
   )
   Page<PostProjection> findCurrentFeedPost(Long feed, PostState state, Long loggedUser, Boolean isAdmin, Pageable pageable);
 
@@ -55,11 +53,9 @@ public interface PostRepository extends CrudRepository<Post, Long>, JpaSpecifica
   @Query(
     "select p as post, " +
       "p.thread.id as thread, " +
-      "case when count(l) = 1 then true else false end as liked, " +
       "size(p.thread.comments) as nbComments, " +
       "size(p.thread.likes) as nbLikes " +
     "from Post p " +
-    "join p.thread.likes l on l.student.id = ?2 " +
     "where p.feed = ?1 and p.isPinned = true " +
     "order by p.publicationDate desc"
   )
@@ -68,11 +64,9 @@ public interface PostRepository extends CrudRepository<Post, Long>, JpaSpecifica
   @Query(
     "select p as post, " +
       "p.thread.id as thread, " +
-      "case when count(l) = 1 then true else false end as liked, " +
       "size(p.thread.comments) as nbComments, " +
       "size(p.thread.likes) as nbLikes " +
     "from Post p " +
-    "join p.thread.likes l on l.student.id = ?2 " +
     "where p.feed.id in ?3 and p.author = ?1 and p.state = 'READY' and " +
       "(p.publicationDate > current_time or p.author.id = ?2)" +
     "order by p.publicationDate desc"
