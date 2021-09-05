@@ -3,9 +3,9 @@ package com.iseplife.api.controllers;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dto.post.PostCreationDTO;
 import com.iseplife.api.dto.post.PostUpdateDTO;
+import com.iseplife.api.dto.post.view.PostFormView;
 import com.iseplife.api.dto.view.*;
 import com.iseplife.api.constants.Roles;
-import com.iseplife.api.dto.post.view.PostView;
 import com.iseplife.api.services.PostService;
 import com.iseplife.api.services.StudentService;
 import com.iseplife.api.services.ThreadService;
@@ -32,19 +32,13 @@ public class PostController {
 
   @PostMapping
   @RolesAllowed({Roles.STUDENT})
-  public PostView createPost(@RequestBody PostCreationDTO dto) {
+  public PostFormView createPost(@RequestBody PostCreationDTO dto) {
     return postService.createPost(dto);
-  }
-
-  @GetMapping("/{id}")
-  @RolesAllowed({Roles.STUDENT})
-  public PostView getPost(@PathVariable Long id) {
-    return postService.getPostView(id);
   }
 
   @PutMapping("/{id}")
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
-  public PostView updatePost(@PathVariable Long id, @RequestBody PostUpdateDTO update) {
+  public PostFormView updatePost(@PathVariable Long id, @RequestBody PostUpdateDTO update) {
     return postService.updatePost(id, update);
   }
 

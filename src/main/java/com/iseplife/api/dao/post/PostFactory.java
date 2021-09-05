@@ -1,22 +1,23 @@
 package com.iseplife.api.dao.post;
 
 import com.iseplife.api.dto.post.PostCreationDTO;
+import com.iseplife.api.dto.post.view.PostFormView;
 import com.iseplife.api.dto.post.view.PostView;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.services.*;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-/**
- * Created by Guillaume on 28/07/2017.
- * back
- */
 @Component
 public class PostFactory {
 
-
   @Autowired
   ThreadService threadService;
+
+  @Autowired
+  ModelMapper mapper;
+
 
   public Post dtoToEntity(PostCreationDTO post) {
     Post p = new Post();
@@ -25,26 +26,21 @@ public class PostFactory {
     return p;
   }
 
-  public PostView entityToView(Post post) {
-    PostView postView = new PostView();
+  public PostFormView entityToView(Post post) {
+    PostFormView view = mapper.map(post, PostFormView.class);
 
-    postView.setId(post.getId());
-    postView.setDescription(post.getDescription());
-    postView.setPublicationDate(post.getPublicationDate());
-    postView.setNbLikes(post.getLikes().size());
-    postView.setPinned(post.getPinned());
-    postView.setNbComments(post.getComments().size());
+    view.setEmbed(EmbedFactory.toView(post.getEmbed()));
+    view.setThread(post.getThread().getId());
+    return view;
+  }
 
-    if(post.getEmbed() != null)
-      postView.setEmbed(EmbedFactory.toView(post.getEmbed()));
+  public PostView entityToView(PostProjection post) {
+    PostView view = mapper.map(post, PostView.class);
 
-    postView.setThread(post.getThread().getId());
-    postView.setAuthor(AuthorFactory.toView(post.getAuthor()));
-    postView.setLiked(threadService.isLiked(post.getThread()));
-    postView.setPrivate(post.getPrivate());
+    view.setEmbed(EmbedFactory.toView(post.getEmbed()));
+    view.setTrendingComment(threadService.getTrendingComment(post.getThread()));
+    view.setHasWriteAccess(SecurityService.hasRightOn(post));
 
-    postView.setHasWriteAccess(SecurityService.hasRightOn(post));
-
-    return postView;
+    return view;
   }
 }

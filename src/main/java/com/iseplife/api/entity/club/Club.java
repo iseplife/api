@@ -1,5 +1,6 @@
 package com.iseplife.api.entity.club;
 
+import com.iseplife.api.constants.AuthorType;
 import com.iseplife.api.constants.ClubType;
 import com.iseplife.api.entity.Author;
 import com.iseplife.api.entity.feed.Feed;
@@ -60,6 +61,16 @@ public class Club implements Feedable, Author {
 
   public String getName() {
     return name;
+  }
+
+  @Override
+  public AuthorType getAuthorType() {
+    return AuthorType.CLUB;
+  }
+
+  @Override
+  public String getThumbnail() {
+    return logoUrl;
   }
 
   public void setName(String name) {

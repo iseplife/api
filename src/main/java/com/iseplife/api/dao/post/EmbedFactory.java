@@ -14,11 +14,14 @@ import com.iseplife.api.exceptions.IllegalArgumentException;
 public class EmbedFactory {
 
   public static EmbedView toView(Embedable embed) {
+    if (embed == null)
+      return null;
+
     EmbedView view;
     switch (embed.getEmbedType()) {
       case EmbedType.GALLERY:
         view = ((Gallery) embed).getPseudo() ?
-          GalleryFactory.toPseudoView((Gallery) embed):
+          GalleryFactory.toPseudoView((Gallery) embed) :
           GalleryFactory.toPreview((Gallery) embed);
         break;
       case EmbedType.POLL:

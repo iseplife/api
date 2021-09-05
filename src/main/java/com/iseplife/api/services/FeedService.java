@@ -57,17 +57,12 @@ public class FeedService {
   @Cacheable("main-posts")
   public Page<PostView> getMainFeedPosts(int page) {
     Feed feed = getFeed(1L);
-    return postService.getFeedPosts(feed, page);
+    return postService.getFeedPosts(feed.getId(), page);
   }
 
   public Page<PostView> getFeedPosts(Long id, int page) {
     Feed feed = getFeed(id);
-    return postService.getFeedPosts(feed, page);
-  }
-
-  public List<PostView> getFeedPostsWaiting(Long id) {
-    Feed feed = getFeed(id);
-    return postService.getFeedPostsWaiting(feed);
+    return postService.getFeedPosts(feed.getId(), page);
   }
 
   public List<PostView> getFeedPostsPinned(Long id) {
@@ -75,7 +70,7 @@ public class FeedService {
     return postService.getFeedPostsPinned(feed);
   }
 
-  public List<PostView> getFeedDrafts(Long id, Student author) {
+  public PostView getFeedDrafts(Long id, Long author) {
     Feed feed = getFeed(id);
     return postService.getFeedDrafts(feed, author);
   }

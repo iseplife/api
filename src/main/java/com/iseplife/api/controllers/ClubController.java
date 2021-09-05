@@ -11,7 +11,6 @@ import com.iseplife.api.dto.student.view.StudentPreview;
 import com.iseplife.api.dto.post.view.PostView;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.club.ClubMember;
-import com.iseplife.api.services.SecurityService;
 import com.iseplife.api.services.ClubService;
 import com.iseplife.api.services.PostService;
 import com.iseplife.api.utils.JsonUtils;
@@ -138,8 +137,7 @@ public class ClubController {
 
   @GetMapping("/{id}/post")
   @RolesAllowed({Roles.STUDENT})
-  public Page<PostView> getPosts(@PathVariable Long id, @RequestParam(defaultValue = "0") int page) {
-    return postService.getPostsAuthor(id, SecurityService.isUserAnonymous(), page);
-
+  public Page<PostView> getPosts(@PathVariable Long id, @RequestParam(defaultValue = "0") int page, @AuthenticationPrincipal TokenPayload token) {
+    return postService.getAuthorPosts(id, page, token);
   }
 }

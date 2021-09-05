@@ -2,6 +2,7 @@ package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
+import com.iseplife.api.dao.post.PostProjection;
 import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
@@ -62,9 +63,15 @@ public class SecurityService {
   static public boolean hasRightOn(Post post) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
     return userHasRole(Roles.ADMIN)
+      || post.getAuthor().getId().equals(payload.getId())
+      || post.getLinkedClub() != null && payload.getClubsPublisher().contains(post.getLinkedClub().getId());
+  }
+
+  static public boolean hasRightOn(PostProjection post) {
+    TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return userHasRole(Roles.ADMIN)
             || post.getAuthor().getId().equals(payload.getId())
-            || payload.getClubsPublisher().contains(post.getLinkedClub().getId())
-            || hasRightOn(post.getFeed());
+            || payload.getClubsPublisher().contains(post.getAuthor().getId());
   }
 
   static public boolean hasRightOn(Comment comment) {

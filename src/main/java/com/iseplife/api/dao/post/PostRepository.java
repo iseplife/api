@@ -3,10 +3,10 @@ package com.iseplife.api.dao.post;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.post.embed.Embedable;
-import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.PostState;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -15,43 +15,72 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PostRepository extends CrudRepository<Post, Long> {
+public interface PostRepository extends CrudRepository<Post, Long>, JpaSpecificationExecutor {
 
   List<Post> findAll();
 
   @Query(
-    "select p from Post p "+
+    "select p from Post p " +
       "where p.feed.id = 1 or p.isPrivate = false " +
       "and p.state = ?1 " +
       "order by p.publicationDate"
   )
-  Page<Post> findMainPostsByState(PostState state,Pageable pageable);
-
-  Page<Post> findByFeedAndStateOrderByPublicationDateDesc(Feed feed, PostState state, Pageable pageable);
-
-
-  List<Post> findByFeedAndStateOrderByPublicationDateDesc(Feed feed, PostState state);
+  Page<Post> findMainPostsByState(PostState state, Pageable pageable);
 
   @Query(
-    "select p from Post p "+
-      "where p.feed = ?1 " +
-      "and p.author = ?2 " +
-      "and p.state = 'DRAFT'"
+    "select p as post, " +
+      "p.thread.id as thread, " +
+      "case when count(l) = 1 then true else false end as liked, " +
+      "size(p.thread.comments) as nbComments, " +
+      "size(p.thread.likes) as nbLikes " +
+    "from Post p " +
+    "join p.thread.likes l on l.student.id = ?3 " +
+    "where p.feed.id = ?1 and p.state = ?2 and " +
+      "(p.publicationDate > current_time or ?1 = true or p.author.id = ?3)" +
+    "order by p.publicationDate desc"
   )
-  List<Post> findFeedDrafts(Feed feed, Student author);
+  Page<PostProjection> findCurrentFeedPost(Long feed, PostState state, Long loggedUser, Boolean isAdmin, Pageable pageable);
 
-  List<Post> findByFeedAndIsPinnedIsTrue(Feed feed);
-
-  @Query(value = "select * from post as p where embed_id = ?1 and embed_type = ?2", nativeQuery = true)
-  List<Post> findAllByEmbed(Long id, String type);
-
-  Page<Post> findByAuthorIdOrderByCreationDateDesc(Long author_id, Pageable pageable);
-
-  Page<Post> findByAuthorIdAndIsPrivateOrderByCreationDateDesc(Long author_id, Boolean isPrivate, Pageable pageable);
-
-  //@Query(value = "select * from post as p where embed_id =  and embed_type = ?2", nativeQuery = true)
   @Query(
-    "select p from Post p "+
+    "select p as post, " +
+      "p.thread.id as thread, " +
+      "size(p.thread.comments) as nbComments, " +
+      "size(p.thread.likes) as nbLikes " +
+    "from Post p " +
+    "where p.feed = ?1 " +
+    "and p.author.id = ?2 and p.state = 'DRAFT'"
+  )
+  Optional<PostProjection> findFeedDraft(Feed feed, Long author);
+
+  @Query(
+    "select p as post, " +
+      "p.thread.id as thread, " +
+      "case when count(l) = 1 then true else false end as liked, " +
+      "size(p.thread.comments) as nbComments, " +
+      "size(p.thread.likes) as nbLikes " +
+    "from Post p " +
+    "join p.thread.likes l on l.student.id = ?2 " +
+    "where p.feed = ?1 and p.isPinned = true " +
+    "order by p.publicationDate desc"
+  )
+  List<PostProjection> findFeedPinnedPosts(Feed feed, Long loggedUser);
+
+  @Query(
+    "select p as post, " +
+      "p.thread.id as thread, " +
+      "case when count(l) = 1 then true else false end as liked, " +
+      "size(p.thread.comments) as nbComments, " +
+      "size(p.thread.likes) as nbLikes " +
+    "from Post p " +
+    "join p.thread.likes l on l.student.id = ?2 " +
+    "where p.feed.id in ?3 and p.author = ?1 and p.state = 'READY' and " +
+      "(p.publicationDate > current_time or p.author.id = ?2)" +
+    "order by p.publicationDate desc"
+  )
+  Page<PostProjection> findAuthorPosts(Long author_id, Long loggedUser, List<Long> authorizedFeeds, Pageable pageable);
+
+  @Query(
+    "select p from Post p " +
       "where p.embed = ?1 "
   )
   Optional<Post> findByEmbed(Embedable embed);

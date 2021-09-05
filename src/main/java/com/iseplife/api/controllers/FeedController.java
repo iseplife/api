@@ -27,7 +27,7 @@ public class FeedController {
   SecurityService securityService;
 
   @GetMapping
-  @PostMapping({Roles.STUDENT})
+  @RolesAllowed({Roles.STUDENT})
   public Iterable<Feed> getUserFeed(@AuthenticationPrincipal TokenPayload token){
     return feedService.getUserFeed(token);
   }
@@ -50,16 +50,10 @@ public class FeedController {
     return feedService.getFeedPostsPinned(id);
   }
 
-  @GetMapping("/{id}/post/waiting")
-  @RolesAllowed({Roles.ADMIN})
-  public List<PostView> getFeedPostsWaiting(@PathVariable Long id) {
-    return feedService.getFeedPostsWaiting(id);
-  }
-
   @GetMapping("/{id}/post/draft")
   @RolesAllowed({Roles.STUDENT})
-  public List<PostView> getClubPostDraft(@PathVariable Long id) {
-    return feedService.getFeedDrafts(id, securityService.getLoggedUser());
+  public PostView getClubPostDraft(@PathVariable Long id) {
+    return feedService.getFeedDrafts(id, SecurityService.getLoggedId());
   }
 
   @GetMapping("/{id}/subscribe")
