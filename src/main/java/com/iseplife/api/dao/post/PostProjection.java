@@ -26,5 +26,4 @@ public interface PostProjection {
     Long getThread();
     Integer getNbLikes();
     Integer getNbComments();
-    Boolean getLiked();
 }
