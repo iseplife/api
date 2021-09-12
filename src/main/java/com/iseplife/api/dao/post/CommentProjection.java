@@ -17,7 +17,6 @@ public interface CommentProjection {
   @Value("#{target.comment.asClub == null ? target.comment.student: target.comment.asClub}")
   AuthorProjection getAuthor();
 
-  Boolean getLiked();
   Long getThread();
   Integer getLikes();
   Integer getComments();

@@ -4,10 +4,13 @@ import com.iseplife.api.dto.post.PostCreationDTO;
 import com.iseplife.api.dto.post.view.PostFormView;
 import com.iseplife.api.dto.post.view.PostView;
 import com.iseplife.api.entity.post.Post;
+import com.iseplife.api.entity.post.embed.Embedable;
 import com.iseplife.api.services.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
 
 @Component
 public class PostFactory {
@@ -27,21 +30,33 @@ public class PostFactory {
   }
 
   public PostFormView toPostFormView(Post post) {
-    PostFormView view = mapper.map(post, PostFormView.class);
+    mapper.typeMap(Post.class, PostFormView.class).addMappings(mapper -> {
+      mapper
+        .using(ctx -> EmbedFactory.toView((Embedable) ctx.getSource()))
+        .map(Post::getEmbed, PostFormView::setEmbed);
+      mapper.map(src -> src.getThread().getId(), PostFormView::setThread);
+    });
 
-    view.setEmbed(EmbedFactory.toView(post.getEmbed()));
-    view.setThread(post.getThread().getId());
-    return view;
+    return mapper.map(post, PostFormView.class);
   }
 
   public PostView toView(PostProjection post) {
-    PostView view = mapper.map(post, PostView.class);
+    mapper
+      .typeMap(PostProjection.class, PostView.class)
+      .addMappings(mapper -> {
+        mapper.map(SecurityService::hasRightOn, PostView::setHasWriteAccess);
+        mapper
+          .using(ctx -> EmbedFactory.toView((Embedable) ctx.getSource()))
+          .map(PostProjection::getEmbed, PostView::setEmbed);
+        mapper
+          .using(ctx -> threadService.isLiked((Long) ctx.getSource()))
+          .map(PostProjection::getThread, PostView::setLiked);
+        mapper
+          .using(ctx -> threadService.getTrendingComment((Long) ctx.getSource()))
+          .map(PostProjection::getThread, PostView::setTrendingComment);
 
-    view.setEmbed(EmbedFactory.toView(post.getEmbed()));
-    view.setLiked(threadService.isLiked(post.getThread()));
-    view.setTrendingComment(threadService.getTrendingComment(post.getThread()));
-    view.setHasWriteAccess(SecurityService.hasRightOn(post));
+      });
 
-    return view;
+    return mapper.map(post, PostView.class);
   }
 }

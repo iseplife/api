@@ -1,6 +1,8 @@
 package com.iseplife.api.dao.post;
 
-import com.iseplife.api.dto.view.CommentView;
+import com.iseplife.api.dto.thread.view.CommentFormView;
+import com.iseplife.api.dto.thread.view.CommentView;
+import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.post.Comment;
 import com.iseplife.api.services.SecurityService;
 import com.iseplife.api.services.ThreadService;
@@ -19,30 +21,25 @@ public class CommentFactory {
   ModelMapper mapper;
 
   public CommentView toView(CommentProjection comment) {
+    mapper.typeMap(CommentProjection.class, CommentView.class).addMappings(mapper -> {
+      mapper
+        .using(ctx -> threadService.isLiked((Long) ctx.getSource()))
+        .map(CommentProjection::getThread, CommentView::setLiked);
+      mapper.map(SecurityService::hasRightOn, CommentView::setHasWriteAccess);
+    });
+
     return mapper.map(comment, CommentView.class);
   }
 
-  public CommentView toView(Comment comment) {
-    CommentView commentView = new CommentView();
+  public CommentFormView toView(Comment comment) {
+//    mapper.typeMap(Comment.class, CommentFormView.class).addMappings(mapper -> {
+//      mapper
+//        .using(ctx -> AuthorFactory.toView((Club) ctx.getSource())).
+//        .when(ctx -> ctx.getSource() != null)
+//        .map(Comment::getAsClub, CommentFormView::setAuthor
+//      );
+//    });
 
-    commentView.setId(comment.getId());
-    commentView.setThread(comment.getThread().getId());
-    commentView.setCreation(comment.getCreation());
-    commentView.setLikes(comment.getLikes().size());
-    commentView.setComments(comment.getThread().getComments().size());
-
-    commentView.setLastEdition(comment.getLastEdition());
-    commentView.setMessage(comment.getMessage());
-
-    commentView.setAuthor(
-      comment.getAsClub() != null ?
-        AuthorFactory.toView(comment.getAsClub()):
-        AuthorFactory.toView(comment.getStudent())
-    );
-
-    commentView.setLiked(threadService.isLiked(comment));
-    commentView.setHasWriteAccess(SecurityService.hasRightOn(comment));
-
-    return commentView;
+    return mapper.map(comment, CommentFormView.class);
   }
 }
