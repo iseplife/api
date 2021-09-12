@@ -6,7 +6,8 @@ import com.iseplife.api.dao.media.image.ImageRepository;
 import com.iseplife.api.dao.post.*;
 import com.iseplife.api.dto.thread.CommentDTO;
 import com.iseplife.api.dto.thread.CommentEditDTO;
-import com.iseplife.api.dto.view.CommentView;
+import com.iseplife.api.dto.thread.view.CommentFormView;
+import com.iseplife.api.dto.thread.view.CommentView;
 import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.ThreadInterface;
 import com.iseplife.api.entity.club.Club;
@@ -16,6 +17,7 @@ import com.iseplife.api.exceptions.AuthException;
 import com.iseplife.api.exceptions.CommentMaxDepthException;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -80,7 +82,7 @@ public class ThreadService {
   }
 
   public Boolean isLiked(Long thread) {
-    return likeRepository.existsByThread_IdAndStudent_Id(thread, securityService.getLoggedUser().getId());
+    return likeRepository.existsByThread_IdAndStudent_Id(thread, SecurityService.getLoggedId());
   }
 
   public Boolean isLiked(Object entity) {
@@ -106,17 +108,15 @@ public class ThreadService {
   }
 
   public List<CommentView> getComments(Long threadID) {
-    Thread thread = getThread(threadID);
-    return thread.getComments()
-      .stream()
-      .map(c -> commentFactory.toView(c))
+    return commentRepository.findThreadComments(threadID).stream()
+      .map(commentFactory::toView)
       .collect(Collectors.toList());
   }
 
   public CommentView getTrendingComment(Long thread){
-    return commentFactory.toView(
-      commentRepository.findTrendingComments(thread, SecurityService.getLoggedId())
-    );
+    List<CommentProjection> comment = commentRepository.findTrendingComments(thread, SecurityService.getLoggedId(), PageRequest.of(0, 1));
+
+    return comment.isEmpty() ? null: commentFactory.toView(comment.get(0));
   }
 
   private Boolean canCommentOnThread(Thread thread){
@@ -126,7 +126,7 @@ public class ThreadService {
     return true;
   }
 
-  public CommentView comment(Long threadID, CommentDTO dto, Long studentID) {
+  public CommentFormView comment(Long threadID, CommentDTO dto, Long studentID) {
     Thread thread = getThread(threadID);
 
     if (!canCommentOnThread(thread))
@@ -140,7 +140,6 @@ public class ThreadService {
 
     if (dto.getAsClub() != null) {
       Club club = clubService.getClub(dto.getAsClub());
-
       if (!SecurityService.hasRightOn(club))
         throw new AuthException("You are not allowed to comment as this club (id:" + club.getId() + ")");
 
@@ -150,7 +149,7 @@ public class ThreadService {
     return commentFactory.toView(commentRepository.save(comment));
   }
 
-  public CommentView editComment(Long id, Long comID, CommentEditDTO dto) {
+  public CommentFormView editComment(Long id, Long comID, CommentEditDTO dto) {
     Optional<Comment> optional = commentRepository.findById(comID);
 
     if (optional.isEmpty())

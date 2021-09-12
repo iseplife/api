@@ -4,7 +4,8 @@ import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dto.thread.CommentDTO;
 import com.iseplife.api.dto.thread.CommentEditDTO;
-import com.iseplife.api.dto.view.CommentView;
+import com.iseplife.api.dto.thread.view.CommentFormView;
+import com.iseplife.api.dto.thread.view.CommentView;
 import com.iseplife.api.entity.post.Like;
 import com.iseplife.api.services.ThreadService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,13 +43,13 @@ public class ThreadController {
 
   @PutMapping("/{id}/comment")
   @RolesAllowed({Roles.STUDENT})
-  public CommentView commentThread(@PathVariable Long id, @RequestBody CommentDTO dto, @AuthenticationPrincipal TokenPayload auth) {
+  public CommentFormView commentThread(@PathVariable Long id, @RequestBody CommentDTO dto, @AuthenticationPrincipal TokenPayload auth) {
     return threadService.comment(id, dto, auth.getId());
   }
 
   @PutMapping("/{id}/comment/{comID}")
   @RolesAllowed({Roles.STUDENT})
-  public CommentView editComment(@PathVariable Long id, @PathVariable Long comID, @RequestBody CommentEditDTO dto) {
+  public CommentFormView editComment(@PathVariable Long id, @PathVariable Long comID, @RequestBody CommentEditDTO dto) {
     return threadService.editComment(id, comID, dto);
   }
 
