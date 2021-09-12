@@ -1,5 +1,6 @@
 package com.iseplife.api.dao.club;
 
+import com.iseplife.api.dao.club.projection.ClubMemberProjection;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.club.ClubMember;
 import com.iseplife.api.entity.user.Student;
@@ -10,13 +11,13 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * Created by Guillaume on 30/07/2017.
- * back
- */
 @Repository
 public interface ClubMemberRepository extends CrudRepository<ClubMember, Long> {
   List<ClubMemberProjection> findByClubId(Long club_id);
+
+  Boolean existsByClubIdAndStudentIdAndFromYear(Long club, Long student, Integer Year);
+
+  List<ClubMemberProjection> findByClubIdAndFromYearAndToYear(Long club_id, Integer from, Integer to);
 
   List<ClubMemberProjection> findByClubIdAndRole(Long club_id, ClubRole role);
 

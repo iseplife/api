@@ -4,11 +4,8 @@ import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.ClubRole;
 
 import javax.persistence.*;
+import java.util.Calendar;
 
-/**
- * Created by Guillaume on 30/07/2017.
- * back
- */
 @Entity
 public class ClubMember {
   @Id
@@ -30,6 +27,10 @@ public class ClubMember {
 
   @ManyToOne
   private ClubMember parent;
+
+  private Integer fromYear = Calendar.getInstance().get(Calendar.YEAR);
+
+  private Integer toYear = Calendar.getInstance().get(Calendar.YEAR)+1;
 
   public Long getId() {
     return id;
@@ -58,4 +59,20 @@ public class ClubMember {
   public String getPosition() { return position; }
 
   public void setPosition(String position) { this.position = position; }
+
+  public Integer getFrom() {
+    return fromYear;
+  }
+
+  public void setFrom(Integer from) {
+    this.fromYear = from;
+  }
+
+  public Integer getTo() {
+    return toYear;
+  }
+
+  public void setTo(Integer to) {
+    this.toYear = to;
+  }
 }

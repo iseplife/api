@@ -3,11 +3,12 @@ package com.iseplife.api.services;
 import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dao.club.ClubMemberFactory;
-import com.iseplife.api.dao.student.StudentFactory;
+import com.iseplife.api.dao.club.projection.ClubMemberProjection;
 import com.iseplife.api.dto.club.ClubAdminDTO;
 import com.iseplife.api.dto.club.ClubDTO;
 import com.iseplife.api.dto.club.ClubMemberDTO;
 import com.iseplife.api.dto.club.view.ClubMemberPreview;
+import com.iseplife.api.dto.club.view.ClubMemberView;
 import com.iseplife.api.dto.club.view.ClubView;
 import com.iseplife.api.dto.gallery.view.GalleryPreview;
 import com.iseplife.api.dto.student.view.StudentPreview;
@@ -178,11 +179,9 @@ public class ClubService {
   }
 
   public ClubMember addMember(Long clubId, Long studentId) {
-    clubMemberRepository.findByClubId(clubId).forEach(member -> {
-      if (member.getStudent().getId().equals(studentId)) {
-        throw new IllegalArgumentException("this student is already part of this club");
-      }
-    });
+    // Ensure that student is not already member of the club this year
+    if (clubMemberRepository.existsByClubIdAndStudentIdAndFromYear(clubId, studentId, Calendar.getInstance().get(Calendar.YEAR)))
+      throw new IllegalArgumentException("this student is already part of this club");
 
     ClubMember clubMember = new ClubMember();
     clubMember.setClub(getClub(clubId));
@@ -241,8 +240,8 @@ public class ClubService {
     clubRepository.deleteById(id);
   }
 
-  public List<ClubMember> getMembers(Long id) {
-    return clubMemberRepository.findByClubId(id);
+  public List<ClubMemberProjection> getYearlyMembers(Long id, Integer from, Integer  to) {
+    return clubMemberRepository.findByClubIdAndFromYearAndToYear(id, from, to);
   }
 
   public Page<GalleryPreview> getClubGalleries(Long id, int page) {
@@ -250,12 +249,10 @@ public class ClubService {
   }
 
   public Set<StudentPreview> getAdmins(Long clubId) {
-    Club club = getClub(clubId);
-    return club.getMembers()
-      .stream()
-      .filter(s -> s.getRole().is(ClubRole.ADMIN))
-      .map(m -> StudentFactory.toPreview(m.getStudent()))
-      .collect(Collectors.toSet());
+   return clubMemberRepository.findByClubIdAndRole(clubId, ClubRole.ADMIN)
+     .stream()
+     .map(m -> (StudentPreview) m.getStudent())
+     .collect(Collectors.toSet());
   }
 
   public Set<Student> getAdmins(Club club) {

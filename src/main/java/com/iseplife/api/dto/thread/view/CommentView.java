@@ -1,7 +1,5 @@
 package com.iseplife.api.dto.thread.view;
-
-
-import com.iseplife.api.dao.post.CommentProjection;
+import com.iseplife.api.dao.post.projection.CommentProjection;
 import com.iseplife.api.dto.view.AuthorView;
 
 import java.util.Date;
