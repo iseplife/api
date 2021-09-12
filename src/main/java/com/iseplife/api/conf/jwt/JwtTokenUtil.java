@@ -158,7 +158,7 @@ public class JwtTokenUtil {
       .map(GrantedAuthority::getAuthority)
       .collect(Collectors.toList());
 
-    
+
     List<Long> publisherClubs = clubService.getUserCurrentClubsWith(student, ClubRole.PUBLISHER)
       .stream()
       .map(Club::getId)

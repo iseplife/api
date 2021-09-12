@@ -264,7 +264,12 @@ public class StudentService {
   }
 
   public List<Club> getPublisherClubs(Student student) {
-    return clubRepository.findByRoleWithInheritance(student, ClubRole.PUBLISHER);
+    Calendar c = Calendar.getInstance();
+    Integer year = c.get(Calendar.MONTH) > Calendar.SEPTEMBER ?
+      c.get(Calendar.YEAR):
+      c.get(Calendar.YEAR) - 1;
+
+    return clubRepository.findCurrentByRoleWithInheritance(student, ClubRole.PUBLISHER, year);
   }
 
   public List<Role> getRoles() {
