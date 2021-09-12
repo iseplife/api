@@ -14,7 +14,7 @@ import com.iseplife.api.exceptions.IllegalArgumentException;
 public class EmbedFactory {
 
   public static EmbedView toView(Embedable embed) {
-    if (embed == null)
+    if (embed == null || embed.getEmbedType() == null)
       return null;
 
     EmbedView view;

@@ -14,5 +14,4 @@ public abstract class EmbedView implements Embedable {
     this.embedType = embedType;
   }
 
-
 }

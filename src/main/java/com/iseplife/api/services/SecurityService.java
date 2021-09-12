@@ -2,6 +2,7 @@ package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
+import com.iseplife.api.dao.post.CommentProjection;
 import com.iseplife.api.dao.post.PostProjection;
 import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.club.Club;
@@ -72,6 +73,13 @@ public class SecurityService {
     return userHasRole(Roles.ADMIN)
             || post.getAuthor().getId().equals(payload.getId())
             || payload.getClubsPublisher().contains(post.getAuthor().getId());
+  }
+
+  static public boolean hasRightOn(CommentProjection comment) {
+    TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return userHasRole(Roles.ADMIN)
+      || comment.getAuthor().getId().equals(payload.getId())
+      || payload.getClubsPublisher().contains(comment.getAuthor().getId());
   }
 
   static public boolean hasRightOn(Comment comment) {
