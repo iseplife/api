@@ -223,8 +223,13 @@ public class ClubService {
     return clubMemberRepository.findClubPublishers(club, ClubRole.PUBLISHER);
   }
 
-  public List<Club> getUserClubsWith(Student student, ClubRole role) {
-    return clubRepository.findByRoleWithInheritance(student, role);
+  public List<Club> getUserCurrentClubsWith(Student student, ClubRole role) {
+    Calendar c = Calendar.getInstance();
+    Integer year = c.get(Calendar.MONTH) > Calendar.SEPTEMBER ?
+      c.get(Calendar.YEAR):
+      c.get(Calendar.YEAR) - 1;
+
+    return clubRepository.findCurrentByRoleWithInheritance(student, role, year);
   }
 
 
