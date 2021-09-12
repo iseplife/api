@@ -1,4 +1,4 @@
-package com.iseplife.api.dao.post;
+package com.iseplife.api.dao.post.projection;
 
 import com.iseplife.api.constants.AuthorType;
 

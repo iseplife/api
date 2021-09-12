@@ -1,6 +1,8 @@
 package com.iseplife.api.dto.student.view;
 
-public class StudentPreview {
+import com.iseplife.api.dao.student.projection.StudentPreviewProjection;
+
+public class StudentPreview implements StudentPreviewProjection {
   protected Long id;
   protected String firstName;
   protected String lastName;

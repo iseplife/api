@@ -1,8 +1,8 @@
 package com.iseplife.api.dao.post;
 
+import com.iseplife.api.dao.post.projection.CommentProjection;
 import com.iseplife.api.dto.thread.view.CommentFormView;
 import com.iseplife.api.dto.thread.view.CommentView;
-import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.post.Comment;
 import com.iseplife.api.services.SecurityService;
 import com.iseplife.api.services.ThreadService;

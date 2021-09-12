@@ -1,4 +1,4 @@
-package com.iseplife.api.dao.post;
+package com.iseplife.api.dao.post.projection;
 
 
 import com.iseplife.api.entity.post.embed.Embedable;
@@ -26,4 +26,5 @@ public interface PostProjection {
     Long getThread();
     Integer getNbLikes();
     Integer getNbComments();
+    Boolean getLiked();
 }

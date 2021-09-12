@@ -16,17 +16,13 @@ import java.util.List;
  */
 @Repository
 public interface ClubMemberRepository extends CrudRepository<ClubMember, Long> {
-  List<ClubMember> findByClubId(Long club_id);
+  List<ClubMemberProjection> findByClubId(Long club_id);
+
+  List<ClubMemberProjection> findByClubIdAndRole(Long club_id, ClubRole role);
 
   ClubMember findOneByStudentIdAndClubId(Long student_id, Long club_id);
 
   List<ClubMember> findByStudentId(Long student_id);
-
-  @Query("select cm.club from ClubMember cm " +
-    "where cm.student.id = :#{#student.id} " +
-    "and cm.role in :#{#role.getParents()}"
-  )
-  List<Club> findByRoleWithInheritance(Student student, ClubRole role);
 
   @Query("select count(cm.id) from ClubMember cm " +
     "where cm.club = ?1 " +
