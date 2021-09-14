@@ -1,6 +1,7 @@
 package com.iseplife.api.controllers.media;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.dto.embed.view.media.MediaView;
 import com.iseplife.api.entity.post.embed.media.Matched;
 import com.iseplife.api.entity.post.embed.media.Media;
 import com.iseplife.api.constants.Roles;
@@ -21,7 +22,7 @@ public class MediaController {
   MediaService mediaService;
 
   @GetMapping
-  public Page<Media> getAllMedia(@RequestParam(defaultValue = "0") int page,
+  public Page<MediaView> getAllMedia(@RequestParam(defaultValue = "0") int page,
                                  @AuthenticationPrincipal TokenPayload auth) {
     if(!auth.getRoles().contains(Roles.ADMIN)){
       return mediaService.getAllGalleryGazetteVideoPublished(page);
@@ -31,7 +32,7 @@ public class MediaController {
 
   @PostMapping
   @RolesAllowed({Roles.STUDENT})
-  public Media createMedia(
+  public MediaView createMedia(
     @RequestParam(defaultValue = "0") Long club,
     @RequestParam(defaultValue = "0") Boolean gallery,
     @RequestParam(defaultValue = "0") Boolean nsfw,
