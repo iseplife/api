@@ -58,6 +58,9 @@ public class MediaService {
   private Integer DAILY_USER_MEDIA;
 
   @Autowired
+  MediaFactory mediaFactory;
+
+  @Autowired
   MediaRepository mediaRepository;
 
   @Autowired
@@ -204,7 +207,7 @@ public class MediaService {
       media.setName(name);
       media.setNSFW(nsfw);
       media.setCreation(new Date());
-      return MediaFactory.toView(mediaRepository.save(media));
+      return mediaFactory.toBasicView(mediaRepository.save(media));
     }
 
     throw new MediaMaxUploadException("You've reached your maximum daily upload");
