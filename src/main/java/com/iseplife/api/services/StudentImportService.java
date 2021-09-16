@@ -43,6 +43,8 @@ public class StudentImportService {
         if (file != null) {
             student.setPicture(studentService.uploadOriginalPicture(null, file));
         }
+        
+        studentRepository.save(student);
         return student;
     }
 

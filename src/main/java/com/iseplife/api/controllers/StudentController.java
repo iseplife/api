@@ -161,7 +161,7 @@ public class StudentController {
 
   @PostMapping("/import")
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
-  public StudentAdminView importStudents(@ModelAttribute Student student, @RequestParam(value = "file",
+  public StudentAdminView importStudent(@ModelAttribute Student student, @RequestParam(value = "file",
           required = false) MultipartFile file) {
     return StudentFactory.toAdminView(studentImportService.importStudents(student, file));
   }
