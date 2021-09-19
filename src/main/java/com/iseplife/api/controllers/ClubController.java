@@ -126,10 +126,7 @@ public class ClubController {
   @GetMapping("/{id}/member")
   @RolesAllowed({Roles.STUDENT})
   public List<ClubMemberProjection> getYearlyMembers(@PathVariable Long id, @RequestParam(name = "y", required = false) Integer year) {
-    if(year == null)
-      year = clubService.getCurrentSchoolYear();
-
-    return clubService.getYearlyMembers(id, year, year+1);
+    return clubService.getYearlyMembers(id, year == null ? ClubService.getCurrentSchoolYear(): year);
   }
 
 

@@ -17,7 +17,11 @@ public interface ClubMemberRepository extends CrudRepository<ClubMember, Long> {
 
   Boolean existsByClubIdAndStudentIdAndFromYear(Long club, Long student, Integer Year);
 
-  List<ClubMemberProjection> findByClubIdAndFromYearAndToYear(Long club_id, Integer from, Integer to);
+  @Query(
+    "select cm from ClubMember cm " +
+      "where cm.fromYear <= ?2 and cm.toYear >= ?2 and cm.club.id = ?1"
+  )
+  List<ClubMemberProjection> findClubYearlyMembers(Long club_id, Integer year);
 
   List<ClubMemberProjection> findByClubIdAndRole(Long club_id, ClubRole role);
 

@@ -71,7 +71,7 @@ public class ClubService {
     return club.get();
   }
 
-  public static int getCurrentSchoolYear() {
+  public static Integer getCurrentSchoolYear() {
     Calendar c = Calendar.getInstance();
     return c.get(Calendar.MONTH) >= Calendar.SEPTEMBER ?
       c.get(Calendar.YEAR) :
@@ -99,7 +99,7 @@ public class ClubService {
     admins.forEach(a -> {
       ClubMember member = new ClubMember();
       member.setFrom(getCurrentSchoolYear());
-      member.setTo(member.getFrom() + 1);
+      member.setTo(member.getFrom());
       member.setStudent(a);
       member.setRole(ClubRole.SUPER_ADMIN);
       member.setClub(club);
@@ -249,8 +249,8 @@ public class ClubService {
     clubRepository.deleteById(id);
   }
 
-  public List<ClubMemberProjection> getYearlyMembers(Long id, Integer from, Integer to) {
-    return clubMemberRepository.findByClubIdAndFromYearAndToYear(id, from, to);
+  public List<ClubMemberProjection> getYearlyMembers(Long id, Integer year) {
+    return clubMemberRepository.findClubYearlyMembers(id, year);
   }
 
   public Page<GalleryPreview> getClubGalleries(Long id, int page) {

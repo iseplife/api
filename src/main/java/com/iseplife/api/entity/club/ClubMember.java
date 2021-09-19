@@ -28,8 +28,10 @@ public class ClubMember {
   @ManyToOne
   private ClubMember parent;
 
+  // Starting year of the first x school session the member has been part of the club
   private Integer fromYear;
 
+  // Starting year of the last school session the member has been part of the club
   private Integer toYear;
 
   public Long getId() {

@@ -43,7 +43,7 @@ public interface ClubRepository extends CrudRepository<Club, Long> {
       "join c.members m " +
       "where m.student = :#{#student} " +
       "and m.role in :#{#role.getParents()} " +
-      "and m.fromYear = :#{#year}"
+      "and (m.fromYear <= :#{#year} and m.toYear >=:#{#year})"
   )
   List<Club> findCurrentByRoleWithInheritance(@Param("student") Student student, @Param("role") ClubRole role, @Param("year") Integer year);
 
