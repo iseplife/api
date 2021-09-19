@@ -28,9 +28,9 @@ public class ClubMember {
   @ManyToOne
   private ClubMember parent;
 
-  private Integer fromYear = Calendar.getInstance().get(Calendar.YEAR);
+  private Integer fromYear;
 
-  private Integer toYear = Calendar.getInstance().get(Calendar.YEAR)+1;
+  private Integer toYear;
 
   public Long getId() {
     return id;
