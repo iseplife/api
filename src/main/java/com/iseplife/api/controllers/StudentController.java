@@ -1,5 +1,6 @@
 package com.iseplife.api.controllers;
 
+import com.amazonaws.services.dynamodbv2.xspec.NULL;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.student.StudentFactory;
@@ -14,6 +15,7 @@ import com.iseplife.api.dto.view.MatchedView;
 import com.iseplife.api.dto.post.view.PostView;
 import com.iseplife.api.services.*;
 import com.iseplife.api.utils.JsonUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.security.RolesAllowed;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -164,6 +167,38 @@ public class StudentController {
   public StudentAdminView importStudent(@ModelAttribute Student student, @RequestParam(value = "file",
           required = false) MultipartFile file) {
     return StudentFactory.toAdminView(studentImportService.importStudents(student, file));
+  }
+
+  @PostMapping("/import/multiple")
+  @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
+  public StudentAdminView[] importStudents(
+    @RequestParam(value = "firstName[]") String[] firstNames,
+    @RequestParam(value = "lastName[]") String[] lastName,
+    @RequestParam(value = "id[]") Long[] ids,
+    @RequestParam(value = "promo[]") Integer[] promos,
+    @RequestParam(value = "hasFile[]") boolean[] hasFiles,
+    @RequestParam(value = "file[]", required = false) MultipartFile[] files) {
+
+    int numStudent = ids.length;
+    int fileIndex = 0;
+
+    StudentAdminView[] studentAdminViews = new StudentAdminView[numStudent];
+
+    for(int x = 0;x<numStudent;x++){
+      Student student = new Student();
+      student.setId(ids[x]);
+      student.setFirstName(firstNames[x]);
+      student.setLastName(lastName[x]);
+      student.setPromo(promos[x]);
+
+      studentAdminViews[x] = StudentFactory.toAdminView(studentImportService.importStudents(student, hasFiles[x] ? files[fileIndex] : null));
+
+      if(hasFiles[x]){
+        fileIndex++;
+      }
+    }
+
+    return studentAdminViews;
   }
 
   @GetMapping("/promos")
