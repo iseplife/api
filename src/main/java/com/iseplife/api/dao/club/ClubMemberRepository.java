@@ -29,16 +29,11 @@ public interface ClubMemberRepository extends CrudRepository<ClubMember, Long> {
 
   List<ClubMember> findByStudentId(Long student_id);
 
-  @Query("select count(cm.id) from ClubMember cm " +
+  @Query(
+    "select count(cm.id) from ClubMember cm " +
     "where cm.club = ?1 " +
-    "and cm.role = 'ADMIN' "
+      "and cm.role = 'ADMIN' " +
+      "and cm.fromYear <= ?2 and cm.toYear >= ?2 "
   )
-  Integer findClubAdminCount(Club club);
-
-  @Query("select cm.student from ClubMember cm " +
-    "where cm.club.id = :#{#club.id} " +
-    "and cm.role in :#{#role.getParents()}"
-  )
-  List<Student> findClubPublishers(Club club, ClubRole role);
-
+  Integer findClubYearlyAdminCount(Club club, Integer year);
 }

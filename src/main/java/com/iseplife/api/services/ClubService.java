@@ -212,7 +212,7 @@ public class ClubService {
 
     if (member.getRole() == ClubRole.ADMIN &&
       dto.getRole() != member.getRole() &&
-      clubMemberRepository.findClubAdminCount(member.getClub()) == 1) {
+      clubMemberRepository.findClubYearlyAdminCount(member.getClub(), ClubService.getCurrentSchoolYear()) == 1) {
       throw new IllegalArgumentException("Could not update member as club must have at least 1 admin");
     }
 
@@ -228,9 +228,6 @@ public class ClubService {
     return clubRepository.findAllByOrderByName();
   }
 
-  public List<Student> getClubPublishers(Club club) {
-    return clubMemberRepository.findClubPublishers(club, ClubRole.PUBLISHER);
-  }
 
   public List<Club> getUserCurrentClubsWith(Student student, ClubRole role) {
    return clubRepository.findCurrentByRoleWithInheritance(student, role, getCurrentSchoolYear());
