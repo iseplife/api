@@ -191,7 +191,7 @@ public class StudentService {
   public String uploadOriginalPicture(String previousPicture, MultipartFile image) {
     Map params = Map.of(
       "process", "compress",
-      "sizes", StorageConfig.MEDIAS_CONF.get("user_original"),
+      "sizes", StorageConfig.MEDIAS_CONF.get("user_original").sizes,
       "dest_ext", "jpeg"
     );
     return previousPicture == null ?
