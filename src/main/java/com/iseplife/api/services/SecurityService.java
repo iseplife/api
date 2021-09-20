@@ -2,8 +2,8 @@ package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
-import com.iseplife.api.dao.post.CommentProjection;
-import com.iseplife.api.dao.post.PostProjection;
+import com.iseplife.api.dao.post.projection.CommentProjection;
+import com.iseplife.api.dao.post.projection.PostProjection;
 import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
@@ -17,12 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 
-/**
- * Created by Guillaume on 13/08/2017.
- * back
- */
 @Service
 public class SecurityService {
 

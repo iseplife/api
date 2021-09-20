@@ -2,6 +2,7 @@ package com.iseplife.api.controllers;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
+import com.iseplife.api.dao.club.projection.ClubMemberProjection;
 import com.iseplife.api.dto.club.ClubAdminDTO;
 import com.iseplife.api.dto.club.ClubDTO;
 import com.iseplife.api.dto.club.ClubMemberDTO;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.security.RolesAllowed;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
@@ -123,8 +125,8 @@ public class ClubController {
 
   @GetMapping("/{id}/member")
   @RolesAllowed({Roles.STUDENT})
-  public List<ClubMember> getMembers(@PathVariable Long id) {
-    return clubService.getMembers(id);
+  public List<ClubMemberProjection> getYearlyMembers(@PathVariable Long id, @RequestParam(name = "y", required = false) Integer year) {
+    return clubService.getYearlyMembers(id, year == null ? ClubService.getCurrentSchoolYear(): year);
   }
 
 

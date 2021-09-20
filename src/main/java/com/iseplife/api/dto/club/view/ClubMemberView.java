@@ -1,14 +1,15 @@
 package com.iseplife.api.dto.club.view;
 
+import com.iseplife.api.dao.club.projection.ClubMemberProjection;
 import com.iseplife.api.dto.student.view.StudentPreview;
 import com.iseplife.api.constants.ClubRole;
 
 
-public class ClubMemberView {
+public class ClubMemberView implements ClubMemberProjection {
   private Long id;
   private String position;
   private ClubRole role;
-  private StudentPreview member;
+  private StudentPreview student;
   private Long parent;
 
   public Long getId() {
@@ -27,12 +28,12 @@ public class ClubMemberView {
     this.role = role;
   }
 
-  public StudentPreview getMember() {
-    return member;
+  public StudentPreview getStudent() {
+    return student;
   }
 
-  public void setMember(StudentPreview member) {
-    this.member = member;
+  public void setStudent(StudentPreview student) {
+    this.student = student;
   }
 
   public String getPosition() {

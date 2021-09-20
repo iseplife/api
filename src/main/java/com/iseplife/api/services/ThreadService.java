@@ -4,6 +4,7 @@ import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.media.image.ImageRepository;
 import com.iseplife.api.dao.post.*;
+import com.iseplife.api.dao.post.projection.CommentProjection;
 import com.iseplife.api.dto.thread.CommentDTO;
 import com.iseplife.api.dto.thread.CommentEditDTO;
 import com.iseplife.api.dto.thread.view.CommentFormView;

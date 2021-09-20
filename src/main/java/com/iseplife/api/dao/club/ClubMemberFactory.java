@@ -11,7 +11,7 @@ public class ClubMemberFactory {
       view.setId(member.getId());
       view.setRole(member.getRole());
       view.setPosition(member.getPosition());
-      view.setMember(StudentFactory.toPreview(member.getStudent()));
+      view.setStudent(StudentFactory.toPreview(member.getStudent()));
       view.setParent(member.getParent().getId());
 
       return view;

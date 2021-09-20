@@ -1,5 +1,6 @@
 package com.iseplife.api.dao.post;
 
+import com.iseplife.api.dao.post.projection.PostProjection;
 import com.iseplife.api.dto.post.PostCreationDTO;
 import com.iseplife.api.dto.post.view.PostFormView;
 import com.iseplife.api.dto.post.view.PostView;
@@ -9,8 +10,6 @@ import com.iseplife.api.services.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
 
 @Component
 public class PostFactory {
@@ -44,7 +43,9 @@ public class PostFactory {
     mapper
       .typeMap(PostProjection.class, PostView.class)
       .addMappings(mapper -> {
-        mapper.map(SecurityService::hasRightOn, PostView::setHasWriteAccess);
+        mapper
+          .using(ctx -> SecurityService.hasRightOn((PostProjection) ctx.getSource()))
+          .map(src -> src, PostView::setHasWriteAccess);
         mapper
           .using(ctx -> EmbedFactory.toView((Embedable) ctx.getSource()))
           .map(PostProjection::getEmbed, PostView::setEmbed);

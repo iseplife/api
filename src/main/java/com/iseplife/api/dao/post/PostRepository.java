@@ -1,5 +1,6 @@
 package com.iseplife.api.dao.post;
 
+import com.iseplife.api.dao.post.projection.PostProjection;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.post.embed.Embedable;
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PostRepository extends CrudRepository<Post, Long>, JpaSpecificationExecutor {
+public interface PostRepository extends CrudRepository<Post, Long> {
 
   List<Post> findAll();
 

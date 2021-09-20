@@ -264,7 +264,7 @@ public class StudentService {
   }
 
   public List<Club> getPublisherClubs(Student student) {
-    return clubMemberRepository.findByRoleWithInheritance(student, ClubRole.PUBLISHER);
+    return clubRepository.findCurrentByRoleWithInheritance(student, ClubRole.PUBLISHER, ClubService.getCurrentSchoolYear());
   }
 
   public List<Role> getRoles() {

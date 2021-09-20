@@ -3,7 +3,7 @@ package com.iseplife.api.services;
 import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dao.club.ClubMemberFactory;
-import com.iseplife.api.dao.student.StudentFactory;
+import com.iseplife.api.dao.club.projection.ClubMemberProjection;
 import com.iseplife.api.dto.club.ClubAdminDTO;
 import com.iseplife.api.dto.club.ClubDTO;
 import com.iseplife.api.dto.club.ClubMemberDTO;
@@ -71,6 +71,13 @@ public class ClubService {
     return club.get();
   }
 
+  public static Integer getCurrentSchoolYear() {
+    Calendar c = Calendar.getInstance();
+    return c.get(Calendar.MONTH) >= Calendar.SEPTEMBER ?
+      c.get(Calendar.YEAR) :
+      c.get(Calendar.YEAR) - 1;
+  }
+
   public ClubView getClubView(Long id) {
     Club club = getClub(id);
 
@@ -91,6 +98,8 @@ public class ClubService {
     List<ClubMember> members = new ArrayList<>();
     admins.forEach(a -> {
       ClubMember member = new ClubMember();
+      member.setFrom(getCurrentSchoolYear());
+      member.setTo(member.getFrom());
       member.setStudent(a);
       member.setRole(ClubRole.SUPER_ADMIN);
       member.setClub(club);
@@ -178,16 +187,16 @@ public class ClubService {
   }
 
   public ClubMember addMember(Long clubId, Long studentId) {
-    clubMemberRepository.findByClubId(clubId).forEach(member -> {
-      if (member.getStudent().getId().equals(studentId)) {
-        throw new IllegalArgumentException("this student is already part of this club");
-      }
-    });
+    // Ensure that student is not already member of the club this year
+    if (clubMemberRepository.existsByClubIdAndStudentIdAndFromYear(clubId, studentId, getCurrentSchoolYear()))
+      throw new IllegalArgumentException("this student is already part of this club");
 
     ClubMember clubMember = new ClubMember();
     clubMember.setClub(getClub(clubId));
     clubMember.setStudent(studentService.getStudent(studentId));
     clubMember.setRole(ClubRole.MEMBER);
+    clubMember.setFrom(getCurrentSchoolYear());
+    clubMember.setTo(clubMember.getFrom());
 
     return clubMemberRepository.save(clubMember);
   }
@@ -203,8 +212,7 @@ public class ClubService {
 
     if (member.getRole() == ClubRole.ADMIN &&
       dto.getRole() != member.getRole() &&
-      clubMemberRepository.findClubAdminCount(member.getClub()) == 1)
-    {
+      clubMemberRepository.findClubYearlyAdminCount(member.getClub(), ClubService.getCurrentSchoolYear()) == 1) {
       throw new IllegalArgumentException("Could not update member as club must have at least 1 admin");
     }
 
@@ -220,12 +228,9 @@ public class ClubService {
     return clubRepository.findAllByOrderByName();
   }
 
-  public List<Student> getClubPublishers(Club club) {
-    return clubMemberRepository.findClubPublishers(club, ClubRole.PUBLISHER);
-  }
 
-  public List<Club> getUserClubsWith(Student student, ClubRole role) {
-    return clubRepository.findByRoleWithInheritance(student, role);
+  public List<Club> getUserCurrentClubsWith(Student student, ClubRole role) {
+   return clubRepository.findCurrentByRoleWithInheritance(student, role, getCurrentSchoolYear());
   }
 
 
@@ -241,8 +246,8 @@ public class ClubService {
     clubRepository.deleteById(id);
   }
 
-  public List<ClubMember> getMembers(Long id) {
-    return clubMemberRepository.findByClubId(id);
+  public List<ClubMemberProjection> getYearlyMembers(Long id, Integer year) {
+    return clubMemberRepository.findClubYearlyMembers(id, year);
   }
 
   public Page<GalleryPreview> getClubGalleries(Long id, int page) {
@@ -250,11 +255,9 @@ public class ClubService {
   }
 
   public Set<StudentPreview> getAdmins(Long clubId) {
-    Club club = getClub(clubId);
-    return club.getMembers()
+    return clubMemberRepository.findByClubIdAndRole(clubId, ClubRole.ADMIN)
       .stream()
-      .filter(s -> s.getRole().is(ClubRole.ADMIN))
-      .map(m -> StudentFactory.toPreview(m.getStudent()))
+      .map(m -> (StudentPreview) m.getStudent())
       .collect(Collectors.toSet());
   }
 

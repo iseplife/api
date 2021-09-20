@@ -1,5 +1,6 @@
 package com.iseplife.api.dao.club;
 
+import com.iseplife.api.dao.club.projection.ClubMemberProjection;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.club.ClubMember;
 import com.iseplife.api.entity.user.Student;
@@ -10,34 +11,29 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * Created by Guillaume on 30/07/2017.
- * back
- */
 @Repository
 public interface ClubMemberRepository extends CrudRepository<ClubMember, Long> {
-  List<ClubMember> findByClubId(Long club_id);
+  List<ClubMemberProjection> findByClubId(Long club_id);
+
+  Boolean existsByClubIdAndStudentIdAndFromYear(Long club, Long student, Integer Year);
+
+  @Query(
+    "select cm from ClubMember cm " +
+      "where cm.fromYear <= ?2 and cm.toYear >= ?2 and cm.club.id = ?1"
+  )
+  List<ClubMemberProjection> findClubYearlyMembers(Long club_id, Integer year);
+
+  List<ClubMemberProjection> findByClubIdAndRole(Long club_id, ClubRole role);
 
   ClubMember findOneByStudentIdAndClubId(Long student_id, Long club_id);
 
   List<ClubMember> findByStudentId(Long student_id);
 
-  @Query("select cm.club from ClubMember cm " +
-    "where cm.student.id = :#{#student.id} " +
-    "and cm.role in :#{#role.getParents()}"
-  )
-  List<Club> findByRoleWithInheritance(Student student, ClubRole role);
-
-  @Query("select count(cm.id) from ClubMember cm " +
+  @Query(
+    "select count(cm.id) from ClubMember cm " +
     "where cm.club = ?1 " +
-    "and cm.role = 'ADMIN' "
+      "and cm.role = 'ADMIN' " +
+      "and cm.fromYear <= ?2 and cm.toYear >= ?2 "
   )
-  Integer findClubAdminCount(Club club);
-
-  @Query("select cm.student from ClubMember cm " +
-    "where cm.club.id = :#{#club.id} " +
-    "and cm.role in :#{#role.getParents()}"
-  )
-  List<Student> findClubPublishers(Club club, ClubRole role);
-
+  Integer findClubYearlyAdminCount(Club club, Integer year);
 }

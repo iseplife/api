@@ -3,6 +3,7 @@ package com.iseplife.api.services;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.dao.post.*;
+import com.iseplife.api.dao.post.projection.PostProjection;
 import com.iseplife.api.dto.post.PostCreationDTO;
 import com.iseplife.api.dto.post.PostUpdateDTO;
 import com.iseplife.api.dto.post.view.PostFormView;
