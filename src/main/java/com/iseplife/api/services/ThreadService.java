@@ -19,6 +19,7 @@ import com.iseplife.api.exceptions.CommentMaxDepthException;
 import com.iseplife.api.exceptions.IllegalArgumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -109,19 +110,24 @@ public class ThreadService {
   }
 
   public List<CommentView> getComments(Long threadID) {
-    return commentRepository.findThreadComments(threadID).stream()
+    List<CommentProjection> comments = commentRepository.findThreadComments(threadID);
+    return comments.stream()
       .map(commentFactory::toView)
       .collect(Collectors.toList());
   }
 
-  public CommentView getTrendingComment(Long thread){
-    List<CommentProjection> comment = commentRepository.findTrendingComments(thread, SecurityService.getLoggedId(), PageRequest.of(0, 1));
+  public CommentView getTrendingComment(Long thread) {
+    List<CommentProjection> comment = commentRepository.findTrendingComments(
+      thread,
+      SecurityService.getLoggedId(),
+      PageRequest.of(0, 1)
+    );
 
-    return comment.isEmpty() ? null: commentFactory.toView(comment.get(0));
+    return comment.isEmpty() ? null : commentFactory.toView(comment.get(0));
   }
 
-  private Boolean canCommentOnThread(Thread thread){
-    if(thread.getComment() != null){
+  private Boolean canCommentOnThread(Thread thread) {
+    if (thread.getComment() != null) {
       return thread.getComment().getParentThread().getComment() == null;
     }
     return true;

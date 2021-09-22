@@ -27,6 +27,7 @@ import com.iseplife.api.websocket.PostMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -74,7 +75,7 @@ public class PostService {
   @Autowired
   PostMessageService postMessageService;
 
-  private final int POSTS_PER_PAGE = 10;
+  private final int POSTS_PER_PAGE = 5;
 
 
   private Post getPost(Long postID) {
@@ -243,7 +244,7 @@ public class PostService {
       PostState.READY,
       SecurityService.getLoggedId(),
       SecurityService.hasRoles(Roles.ADMIN),
-      PageRequest.of(page, POSTS_PER_PAGE)
+      PageRequest.of(page, POSTS_PER_PAGE,  Sort.by(Sort.Direction.DESC, "publicationDate"))
     );
 
     return posts.map(post -> postFactory.toView(post));

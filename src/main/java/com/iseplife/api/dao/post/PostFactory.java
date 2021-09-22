@@ -56,7 +56,6 @@ public class PostFactory {
         mapper
           .using(ctx -> threadService.getTrendingComment((Long) ctx.getSource()))
           .map(PostProjection::getThread, PostView::setTrendingComment);
-
       });
 
     return mapper.map(post, PostView.class);

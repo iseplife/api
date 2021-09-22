@@ -56,13 +56,11 @@ public class FeedService {
 
   @Cacheable("main-posts")
   public Page<PostView> getMainFeedPosts(int page) {
-    Feed feed = getFeed(1L);
-    return postService.getFeedPosts(feed.getId(), page);
+    return postService.getFeedPosts(1L, page);
   }
 
   public Page<PostView> getFeedPosts(Long id, int page) {
-    Feed feed = getFeed(id);
-    return postService.getFeedPosts(feed.getId(), page);
+    return postService.getFeedPosts(id, page);
   }
 
   public List<PostView> getFeedPostsPinned(Long id) {

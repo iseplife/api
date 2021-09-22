@@ -15,22 +15,24 @@ public interface CommentRepository extends CrudRepository<Comment, Long> {
   @Query(
     "select c as comment, " +
       "c.thread.id as thread, " +
+      "coalesce(c.student, c.asClub) as author, " +
       "size(c.thread.comments) as comments, " +
       "size(c.thread.likes) as likes " +
-      "from Comment c " +
+    "from Comment c " +
       "where c.parentThread.id = ?1 " +
-      "order by c.thread.likes.size desc "
+      "order by size(c.thread.likes) desc"
   )
   List<CommentProjection> findTrendingComments(Long thread, Long loggedUser, Pageable page);
 
   @Query(
-    "select c as comment, " +
+    "select " +
+      "c as comment, " +
       "c.thread.id as thread, " +
       "size(c.thread.comments) as comments, " +
       "size(c.thread.likes) as likes " +
     "from Comment c " +
       "where c.parentThread.id = ?1 " +
-      "order by c.creation desc "
+      "order by c.creation desc"
   )
   List<CommentProjection> findThreadComments(Long thread);
 }
