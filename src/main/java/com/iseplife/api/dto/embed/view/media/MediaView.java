@@ -4,7 +4,7 @@ import com.iseplife.api.dto.embed.view.EmbedView;
 
 import java.util.Date;
 
-public abstract class MediaView extends EmbedView {
+public class MediaView extends EmbedView {
   Long id;
   Date creation;
   String name;

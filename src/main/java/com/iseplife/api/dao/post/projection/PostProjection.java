@@ -22,7 +22,6 @@ public interface PostProjection {
 
     @Value("#{target.post.linkedClub == null ? target.post.author: target.post.linkedClub}")
     AuthorProjection getAuthor();
-
     Long getThread();
     Integer getNbLikes();
     Integer getNbComments();

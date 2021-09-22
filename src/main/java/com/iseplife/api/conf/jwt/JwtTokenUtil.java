@@ -20,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
@@ -45,9 +44,6 @@ public class JwtTokenUtil {
 
   @Autowired
   HttpServletResponse response;
-
-  @Autowired
-  private Environment environment;
 
   @Autowired
   StudentRepository studentRepository;

@@ -6,6 +6,7 @@ import java.util.Date;
 
 public class CommentFormView {
   private Long id;
+  private Long thread;
   private AuthorView author;
   private String message;
   private Date lastEdition;
@@ -41,5 +42,13 @@ public class CommentFormView {
 
   public void setLastEdition(Date lastEdition) {
     this.lastEdition = lastEdition;
+  }
+
+  public Long getThread() {
+    return thread;
+  }
+
+  public void setThread(Long thread) {
+    this.thread = thread;
   }
 }

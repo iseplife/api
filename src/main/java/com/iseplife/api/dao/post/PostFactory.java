@@ -11,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+
 @Component
 public class PostFactory {
 
@@ -55,7 +56,6 @@ public class PostFactory {
         mapper
           .using(ctx -> threadService.getTrendingComment((Long) ctx.getSource()))
           .map(PostProjection::getThread, PostView::setTrendingComment);
-
       });
 
     return mapper.map(post, PostView.class);

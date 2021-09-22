@@ -5,7 +5,9 @@ import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.MediaType;
 import com.iseplife.api.dao.club.ClubRepository;
 import com.iseplife.api.dao.gallery.GalleryRepository;
+import com.iseplife.api.dao.media.MediaFactory;
 import com.iseplife.api.dao.student.StudentRepository;
+import com.iseplife.api.dto.embed.view.media.MediaView;
 import com.iseplife.api.dto.view.MatchedView;
 import com.iseplife.api.entity.Author;
 import com.iseplife.api.entity.Thread;
@@ -41,6 +43,7 @@ import java.security.InvalidParameterException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -53,6 +56,9 @@ public class MediaService {
 
   @Value("${media_limit.user}")
   private Integer DAILY_USER_MEDIA;
+
+  @Autowired
+  MediaFactory mediaFactory;
 
   @Autowired
   MediaRepository mediaRepository;
@@ -101,21 +107,22 @@ public class MediaService {
   }
 
   @Cacheable("media-list-published")
-  public Page<Media> getAllGalleryGazetteVideoPublished(int page) {
+  public Page<MediaView> getAllGalleryGazetteVideoPublished(int page) {
     Page<Media> list = mediaRepository.findAllByMediaTypeInOrderByCreationDesc(
       Arrays.asList(MediaType.IMAGE, MediaType.VIDEO),
       PageRequest.of(page, ALL_MEDIA_PAGE_SIZE)
     );
 
-    return list;
+    return list.map(MediaFactory::toView);
   }
 
   @Cacheable("media-list-all")
-  public Page<Media> getAllGalleryGazetteVideo(int page) {
-    return mediaRepository.findAllByMediaTypeInOrderByCreationDesc(
+  public Page<MediaView> getAllGalleryGazetteVideo(int page) {
+    Page<Media> list =  mediaRepository.findAllByMediaTypeInOrderByCreationDesc(
       Arrays.asList(MediaType.IMAGE, MediaType.VIDEO),
       PageRequest.of(page, ALL_MEDIA_PAGE_SIZE)
     );
+    return list.map(MediaFactory::toView);
   }
 
   private Image getImage(Long id) {
@@ -156,7 +163,7 @@ public class MediaService {
     return false;
   }
 
-  public Media createMedia(MultipartFile file, Long club, Boolean gallery, Boolean nsfw) {
+  public MediaView createMedia(MultipartFile file, Long club, Boolean gallery, Boolean nsfw) {
     Author author = club > 0 ?
       clubService.getClub(club) :
       studentService.getStudent(SecurityService.getLoggedId());
@@ -200,7 +207,7 @@ public class MediaService {
       media.setName(name);
       media.setNSFW(nsfw);
       media.setCreation(new Date());
-      return mediaRepository.save(media);
+      return mediaFactory.toBasicView(mediaRepository.save(media));
     }
 
     throw new MediaMaxUploadException("You've reached your maximum daily upload");
