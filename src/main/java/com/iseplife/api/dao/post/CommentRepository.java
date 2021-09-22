@@ -15,7 +15,6 @@ public interface CommentRepository extends CrudRepository<Comment, Long> {
   @Query(
     "select c as comment, " +
       "c.thread.id as thread, " +
-      "coalesce(c.student, c.asClub) as author, " +
       "size(c.thread.comments) as comments, " +
       "size(c.thread.likes) as likes " +
     "from Comment c " +
