@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 
@@ -80,9 +82,20 @@ public class AuthController {
     return jwtTokenUtil.generateToken(student);
   }
 
+  @GetMapping("/logout")
+  public void logoutCurrentUser(HttpServletResponse response) {
+    Cookie expiredCookie = new Cookie("refresh-token", null);
+    expiredCookie.setMaxAge(0);
+    expiredCookie.setSecure(true);
+    expiredCookie.setHttpOnly(true);
+    expiredCookie.setPath("/");
+
+    response.addCookie(expiredCookie);
+  }
+
   @PostMapping("/refresh")
   public TokenSet getRefreshedTokens(@CookieValue(value = "refresh-token", defaultValue = "") String refreshToken) {
-    if(refreshToken.equals(""))
+    if (refreshToken.equals(""))
       throw new AuthException("refresh token missing or expired");
 
     return jwtTokenUtil.refreshWithToken(refreshToken);
