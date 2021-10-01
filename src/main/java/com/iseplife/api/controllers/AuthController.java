@@ -82,7 +82,7 @@ public class AuthController {
     return jwtTokenUtil.generateToken(student);
   }
 
-  @GetMapping("/logout")
+  @PutMapping("/logout")
   public void logoutCurrentUser(HttpServletResponse response) {
     Cookie expiredCookie = new Cookie("refresh-token", null);
     expiredCookie.setMaxAge(0);
