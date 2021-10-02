@@ -141,7 +141,7 @@ public class StudentService {
 
       if (MediaUtils.isOriginalPicture(student.getPicture()))
         student.setPicture(null);
-    } else {
+    } else if(image != null) {
       // We don't have to delete previous picture has the name won't change then the new pictures will override the old one
       String newPicture = uploadOriginalPicture(student.getPicture(), image);
       if(picture == null)
