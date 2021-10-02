@@ -157,8 +157,8 @@ public class StudentService {
         student.getPicture()
       ) :
       new StudentPictures(
-        StorageConfig.MEDIAS_CONF.get("user_original").path + "/" + MediaUtils.extractFilename(filename),
-        StorageConfig.MEDIAS_CONF.get("user_avatar").path + "/" + MediaUtils.extractFilename(filename)
+        StorageConfig.MEDIAS_CONF.get("user_original").path + "/" + filename,
+        StorageConfig.MEDIAS_CONF.get("user_avatar").path + "/" + filename
       );
   }
 
