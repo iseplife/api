@@ -3,7 +3,6 @@ package com.iseplife.api.dao.club;
 import com.iseplife.api.dao.club.projection.ClubMemberProjection;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.club.ClubMember;
-import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.ClubRole;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -31,7 +30,7 @@ public interface ClubMemberRepository extends CrudRepository<ClubMember, Long> {
 
   @Query(
     "select count(cm.id) from ClubMember cm " +
-    "where cm.club = ?1 " +
+      "where cm.club = ?1 " +
       "and cm.role = 'ADMIN' " +
       "and cm.fromYear <= ?2 and cm.toYear >= ?2 "
   )

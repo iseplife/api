@@ -2,10 +2,12 @@ package com.iseplife.api.controllers;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
+import com.iseplife.api.dao.club.ClubFactory;
 import com.iseplife.api.dao.club.projection.ClubMemberProjection;
 import com.iseplife.api.dto.club.ClubAdminDTO;
 import com.iseplife.api.dto.club.ClubDTO;
 import com.iseplife.api.dto.club.ClubMemberDTO;
+import com.iseplife.api.dto.club.view.ClubPreview;
 import com.iseplife.api.dto.club.view.ClubView;
 import com.iseplife.api.dto.gallery.view.GalleryPreview;
 import com.iseplife.api.dto.student.view.StudentPreview;
@@ -25,6 +27,7 @@ import javax.annotation.security.RolesAllowed;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by Guillaume on 30/07/2017.
@@ -45,15 +48,15 @@ public class ClubController {
 
   @GetMapping
   @RolesAllowed({Roles.STUDENT})
-  public List<Club> getAllClub() {
-    return clubService.getAll();
+  public List<ClubPreview> getAllClubs() {
+    return clubService.getAll().stream()
+      .map(ClubFactory::toPreview)
+      .collect(Collectors.toList());
   }
 
   @PostMapping
   @RolesAllowed({Roles.ADMIN})
-  public ClubView createClub(
-    @RequestBody ClubAdminDTO dto
-  ) {
+  public ClubView createClub(@RequestBody ClubAdminDTO dto) {
     return clubService.createClub(dto);
   }
 
@@ -127,6 +130,12 @@ public class ClubController {
   @RolesAllowed({Roles.STUDENT})
   public List<ClubMemberProjection> getYearlyMembers(@PathVariable Long id, @RequestParam(name = "y", required = false) Integer year) {
     return clubService.getYearlyMembers(id, year == null ? ClubService.getCurrentSchoolYear(): year);
+  }
+
+  @GetMapping("/{id}/school-sessions")
+  @RolesAllowed({Roles.STUDENT})
+  public Set<Integer> getClubSchoolSessions(@PathVariable Long id) {
+    return clubService.getClubAllSchoolSessions(id);
   }
 
 
