@@ -24,8 +24,6 @@ public class StudentUpdateAdminDTO {
 
   private List<String> roles;
 
-  private Boolean resetPicture = false;
-
   public Long getId() {
     return id;
   }
@@ -114,11 +112,4 @@ public class StudentUpdateAdminDTO {
     this.roles = roles;
   }
 
-  public Boolean getResetPicture() {
-    return resetPicture;
-  }
-
-  public void setResetPicture(Boolean resetPicture) {
-    this.resetPicture = resetPicture;
-  }
 }

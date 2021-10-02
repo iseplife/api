@@ -132,28 +132,33 @@ public class StudentService {
 
   public StudentPictures updateOriginalPicture(Long studentId, MultipartFile image) {
     Student student = getStudent(studentId);
-    String filename = MediaUtils.extractFilename(student.getPicture());
+    String picture = student.getPicture();
 
-    if (image == null) {
+    if (image == null && picture != null) {
       fileHandler.delete(
-        StorageConfig.MEDIAS_CONF.get("user_original").path + "/" + filename
+        StorageConfig.MEDIAS_CONF.get("user_original").path + "/" + MediaUtils.extractFilename(picture)
       );
+
       if (MediaUtils.isOriginalPicture(student.getPicture()))
         student.setPicture(null);
-
     } else {
-      // We don't have to delete previous picture has the name won't changes then the new pictures will override the old one
-      uploadOriginalPicture(student.getPicture(), image);
+      // We don't have to delete previous picture has the name won't change then the new pictures will override the old one
+      String newPicture = uploadOriginalPicture(student.getPicture(), image);
+      if(picture == null)
+        student.setPicture(newPicture);
+      student.setHasDefaultPicture(true);
     }
+    studentRepository.save(student);
 
+    String filename = MediaUtils.extractFilename(student.getPicture());
     return image == null ?
       new StudentPictures(
         null,
         student.getPicture()
       ) :
       new StudentPictures(
-        StorageConfig.MEDIAS_CONF.get("user_original").path + "/" + filename,
-        StorageConfig.MEDIAS_CONF.get("user_avatar").path + "/" + filename
+        StorageConfig.MEDIAS_CONF.get("user_original").path + "/" + MediaUtils.extractFilename(filename),
+        StorageConfig.MEDIAS_CONF.get("user_avatar").path + "/" + MediaUtils.extractFilename(filename)
       );
   }
 
@@ -169,11 +174,12 @@ public class StudentService {
           null
       );
     } else {
-      // We don't have to delete previous picture has the name won't changes then the new pictures will override the old one
+      // We don't have to delete previous picture has the name won't change then the new pictures will override the old one
       student.setPicture(
         uploadPicture(student.getPicture(), image)
       );
     }
+    studentRepository.save(student);
 
     return image == null ?
       new StudentPictures(
@@ -271,8 +277,8 @@ public class StudentService {
     return roleRepository.findAll();
   }
 
-  public StudentAdminView updateStudentAdmin(Long id, StudentUpdateAdminDTO dto) {
-    Student student = getStudent(id);
+  public StudentAdminView updateStudentAdmin(StudentUpdateAdminDTO dto) {
+    Student student = getStudent(dto.getId());
     studentFactory.updateAdminDtoToEntity(student, dto);
 
     Set<Role> roles = roleRepository.findAllByRoleIn(dto.getRoles());
