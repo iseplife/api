@@ -135,10 +135,10 @@ public class StudentController {
     return StudentFactory.toAdminView(studentService.getStudent(id));
   }
 
-  @PutMapping("/{id}/admin")
+  @PutMapping("/admin")
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
-  public StudentAdminView updateStudentAdmin(@PathVariable Long id, @RequestBody StudentUpdateAdminDTO dto) {
-    return studentService.updateStudentAdmin(id, dto);
+  public StudentAdminView updateStudentAdmin(@RequestBody StudentUpdateAdminDTO dto) {
+    return studentService.updateStudentAdmin(dto);
   }
 
   @PutMapping("/{id}/admin/picture")
@@ -155,8 +155,7 @@ public class StudentController {
   }
 
 
-
-  @PutMapping("/{id}/picture/original")
+  @PutMapping("/{id}/admin/picture/original")
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
   public StudentPictures updateOriginalPicture(@PathVariable Long id, @RequestBody MultipartFile file) {
     return studentService.updateOriginalPicture(id, file);
