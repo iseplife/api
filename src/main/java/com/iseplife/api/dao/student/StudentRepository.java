@@ -18,10 +18,10 @@ import java.util.Set;
 @Repository
 public interface StudentRepository extends CrudRepository<Student, Long> {
 
-  boolean existsById(Long id);
-
   String GET_STUDENT_CACHE = "getStudentCache";
   String GET_STUDENT_BY_PROMO_CACHE = "getStudentByPromoCache";
+
+  boolean existsById(Long id);
 
   Page<Student> findAllByOrderByLastName(Pageable pageable);
 
