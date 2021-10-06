@@ -4,6 +4,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import com.iseplife.api.dao.feed.FeedRepository;
+import com.iseplife.api.dao.post.projection.PostProjection;
+import com.iseplife.api.entity.feed.Feed;
+import com.iseplife.api.entity.post.Post;
+import com.iseplife.api.entity.post.embed.Embedable;
+import com.iseplife.api.constants.PostState;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -119,4 +127,20 @@ public interface PostRepository extends CrudRepository<Post, Long> {
     "select p from Post p where p.embed = ?1 "
   )
   Optional<Post> findByEmbed(Embedable embed);
+
+  @Override
+  @Caching(evict = {
+    @CacheEvict(value = FeedRepository.GET_FEED_CACHE, key = "#s.feed.id"),
+    @CacheEvict(value = FeedRepository.GET_ALL_FEED_CACHE, allEntries = true)
+  })
+  <S extends Post> S save(S s);
+
+  // We should always use delete and not deleteById to be able to access to properties in SpEL
+  @Override
+  @Caching(evict = {
+    @CacheEvict(value = FeedRepository.GET_FEED_CACHE, key = "#post.feed.id"),
+    @CacheEvict(value = FeedRepository.GET_ALL_FEED_CACHE, allEntries = true)
+  })
+  void delete(Post post);
+
 }

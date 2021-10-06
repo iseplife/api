@@ -36,6 +36,19 @@ public interface StudentRepository extends CrudRepository<Student, Long> {
   })
   <S extends Student> S save(S s);
 
+  @Override
+  @Caching(evict = {
+    @CacheEvict(value = GET_STUDENT_CACHE, key = "#aLong"),
+    @CacheEvict(value = GET_STUDENT_BY_PROMO_CACHE, allEntries = true)
+  })
+  void deleteById(Long aLong);
+
+  @Override
+  @Caching(evict = {
+    @CacheEvict(value = GET_STUDENT_CACHE, key = "#student.id"),
+    @CacheEvict(value = GET_STUDENT_BY_PROMO_CACHE, allEntries = true)
+  })
+  void delete(Student student);
 
   @Query(
     "select s from Student s " +
