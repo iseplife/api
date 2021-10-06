@@ -2,6 +2,9 @@ package com.iseplife.api.dao.student;
 
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -9,6 +12,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Repository
@@ -16,7 +20,22 @@ public interface StudentRepository extends CrudRepository<Student, Long> {
 
   boolean existsById(Long id);
 
+  String GET_STUDENT_CACHE = "getStudentCache";
+  String GET_STUDENT_BY_PROMO_CACHE = "getStudentByPromoCache";
+
   Page<Student> findAllByOrderByLastName(Pageable pageable);
+
+  @Cacheable(cacheNames = GET_STUDENT_CACHE)
+  Optional<Student> findById(Long id);
+
+
+  @Override
+  @Caching(evict = {
+    @CacheEvict(value = GET_STUDENT_CACHE, key = "#s.id"),
+    @CacheEvict(value = GET_STUDENT_BY_PROMO_CACHE, key = "#s.promo")
+  })
+  <S extends Student> S save(S s);
+
 
   @Query(
     "select s from Student s " +
@@ -68,6 +87,7 @@ public interface StudentRepository extends CrudRepository<Student, Long> {
   )
   List<Integer> findDistinctPromo();
 
+  @Cacheable(cacheNames = GET_STUDENT_BY_PROMO_CACHE)
   List<Student> findAllByPromo(Integer promo);
 
 }
