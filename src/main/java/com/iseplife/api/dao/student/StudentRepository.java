@@ -38,10 +38,10 @@ public interface StudentRepository extends CrudRepository<Student, Long> {
 
   @Override
   @Caching(evict = {
-    @CacheEvict(value = GET_STUDENT_CACHE, key = "#aLong"),
+    @CacheEvict(value = GET_STUDENT_CACHE, key = "#id"),
     @CacheEvict(value = GET_STUDENT_BY_PROMO_CACHE, allEntries = true)
   })
-  void deleteById(Long aLong);
+  void deleteById(Long id);
 
   @Override
   @Caching(evict = {
