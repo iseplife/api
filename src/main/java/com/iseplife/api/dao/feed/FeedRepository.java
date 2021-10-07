@@ -19,7 +19,7 @@ public interface FeedRepository extends CrudRepository<Feed, Long> {
 
   @Override
   @Cacheable(cacheNames = GET_FEED_CACHE)
-  Optional<Feed> findById(Long aLong);
+  Optional<Feed> findById(Long id);
 
   @Override
   @Cacheable(cacheNames = GET_ALL_FEED_CACHE)
@@ -27,10 +27,10 @@ public interface FeedRepository extends CrudRepository<Feed, Long> {
 
   @Override
     @Caching(evict = {
-      @CacheEvict(value = GET_FEED_CACHE, key = "#s.id"),
+      @CacheEvict(value = GET_FEED_CACHE, key = "#f.id"),
       @CacheEvict(value = GET_FEED_CACHE, allEntries = true)
     })
-  <S extends Feed> S save(S s);
+  <F extends Feed> F save(F F);
 
   @Override
   @Caching(evict = {

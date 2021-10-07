@@ -130,10 +130,10 @@ public interface PostRepository extends CrudRepository<Post, Long> {
 
   @Override
   @Caching(evict = {
-    @CacheEvict(value = FeedRepository.GET_FEED_CACHE, key = "#s.feed.id"),
+    @CacheEvict(value = FeedRepository.GET_FEED_CACHE, key = "#p.feed.id"),
     @CacheEvict(value = FeedRepository.GET_ALL_FEED_CACHE, allEntries = true)
   })
-  <S extends Post> S save(S s);
+  <P extends Post> P save(P p);
 
   // We should always use delete and not deleteById to be able to access to properties in SpEL
   @Override
