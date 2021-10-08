@@ -1,21 +1,26 @@
 package com.iseplife.api.entity.user;
-
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import com.iseplife.api.constants.AuthorType;
 import com.iseplife.api.constants.Language;
 import com.iseplife.api.entity.Author;
 import com.iseplife.api.entity.subscription.Subscription;
+import com.iseplife.api.entity.subscription.WebPushSubscription;
 import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import javax.persistence.*;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
 
 @Entity
 @Getter @Setter @NoArgsConstructor
@@ -53,6 +58,9 @@ public class Student implements UserDetails, Author {
 
   @ManyToMany(fetch = FetchType.EAGER)
   private Set<Role> roles;
+
+  @ManyToMany(fetch = FetchType.EAGER)
+  private Set<WebPushSubscription> webPushSubscriptions;
 
   @OneToMany(mappedBy = "listener", cascade = CascadeType.ALL)
   private List<Subscription> subscriptions;
