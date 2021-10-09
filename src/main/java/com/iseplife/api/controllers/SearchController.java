@@ -35,13 +35,13 @@ public class SearchController {
 
   @GetMapping("/student")
   @RolesAllowed({Roles.STUDENT})
-  public Page<SearchItemView> userSearch(String name, String promos, Integer page, Boolean atoz) {
+  public Page<SearchItemView> userSearch(@RequestParam String name, @RequestParam String promos, @RequestParam Integer page, @RequestParam Boolean atoz) {
     return searchService.searchUser(name, promos, atoz, page);
   }
 
   @GetMapping("/student/all")
   @RolesAllowed({Roles.STUDENT})
-  public List<SearchItemView> userSearchAll(String name) {
+  public List<SearchItemView> userSearchAll(@RequestParam String name) {
     return searchService.searchUserAll(name);
   }
 
