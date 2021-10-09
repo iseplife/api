@@ -34,7 +34,7 @@ public class Club implements Feedable, Author {
   @Enumerated(EnumType.STRING)
   private ClubType type;
 
-  @OneToOne(cascade = CascadeType.ALL)
+  @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
   private Feed feed;
 
   private String facebook_token;
@@ -49,7 +49,7 @@ public class Club implements Feedable, Author {
   @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ClubMember> members;
 
-  @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = false)
+  @OneToMany(mappedBy = "club", cascade = CascadeType.ALL)
   private List<Event> events;
 
   @OneToMany(mappedBy = "linkedClub", cascade = CascadeType.ALL, orphanRemoval = true)

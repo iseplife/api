@@ -6,6 +6,7 @@ import com.iseplife.api.dao.club.ClubFactory;
 import com.iseplife.api.dao.club.projection.ClubMemberProjection;
 import com.iseplife.api.dto.club.ClubAdminDTO;
 import com.iseplife.api.dto.club.ClubDTO;
+import com.iseplife.api.dto.club.ClubMemberCreationDTO;
 import com.iseplife.api.dto.club.ClubMemberDTO;
 import com.iseplife.api.dto.club.view.ClubPreview;
 import com.iseplife.api.dto.club.view.ClubView;
@@ -114,10 +115,10 @@ public class ClubController {
     return clubService.getAdmins(id);
   }
 
-  @PutMapping("/{id}/member/{student}")
+  @PostMapping("/{id}/member")
   @RolesAllowed({Roles.STUDENT})
-  public ClubMember addMember(@PathVariable Long id, @PathVariable Long student) {
-    return clubService.addMember(id, student);
+  public ClubMember addMember(@PathVariable Long id, @RequestBody ClubMemberCreationDTO dto) {
+    return clubService.addMember(id, dto);
   }
 
   @PutMapping("/member/{member}")

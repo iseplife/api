@@ -52,7 +52,7 @@ public interface EventRepository extends CrudRepository<Event, Long> {
 
   @Query(
     "select e from Event e join e.targets t " +
-      "where lower(e.title) like %lower(?1)% " +
+      "where lower(e.title) like %?1% " +
       "and ((?2 = true) or (" +
         "e.published < CURRENT_TIMESTAMP " +
         "and (e.targets is empty or e.closed = false or t.id in ?2)" +

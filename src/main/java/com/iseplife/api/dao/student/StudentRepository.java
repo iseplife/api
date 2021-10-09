@@ -22,7 +22,7 @@ public interface StudentRepository extends CrudRepository<Student, Long> {
     "select s from Student s " +
       "join s.roles r " +
       "where lower(concat(s.firstName, ' ', s.lastName)) " +
-      "like %lower(?1)% and r in ?2 and s.promo in ?3 " +
+      "like %?1% and r in ?2 and s.promo in ?3 " +
       "and s.archivedAt is null"
   )
   Page<Student> searchStudentRolePromo(String name, Set<Role> roles, List<Integer> promo, Pageable pageable);
@@ -31,7 +31,7 @@ public interface StudentRepository extends CrudRepository<Student, Long> {
     "select s from Student s " +
       "join s.roles r " +
       "where lower(concat(s.firstName, ' ', s.lastName)) " +
-      "like %lower(?1)% and r in ?2 " +
+      "like %?1% and r in ?2 " +
       "and s.archivedAt is null"
   )
   Page<Student> searchStudentRole(String name, Set<Role> roles, Pageable pageable);
@@ -39,20 +39,20 @@ public interface StudentRepository extends CrudRepository<Student, Long> {
   @Query(
     "select s from Student s " +
       "where lower(concat(s.firstName, ' ', s.lastName)) " +
-      "like %lower(?1)%"
+      "like %?1%"
   )
   Page<Student> searchStudent(String name, Pageable pageable);
 
   @Query(
     "select s from Student s " +
-      "where lower(concat(s.firstName, ' ', s.lastName)) like %lower(?1)% " +
+      "where lower(concat(s.firstName, ' ', s.lastName)) like %?1% " +
       "and (?2 = true or s.archivedAt is null)"
   )
   List<Student> searchStudent(String name, Boolean active);
 
   @Query(
     "select s from Student s " +
-      "where lower(concat(s.firstName, ' ', s.lastName)) like %lower(?1)% " +
+      "where lower(concat(s.firstName, ' ', s.lastName)) like %?1% " +
       "and s.promo in ?2 "
   )
   List<Student> searchStudent(String name, List<String> promo);

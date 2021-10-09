@@ -6,6 +6,7 @@ import com.iseplife.api.dao.club.ClubMemberFactory;
 import com.iseplife.api.dao.club.projection.ClubMemberProjection;
 import com.iseplife.api.dto.club.ClubAdminDTO;
 import com.iseplife.api.dto.club.ClubDTO;
+import com.iseplife.api.dto.club.ClubMemberCreationDTO;
 import com.iseplife.api.dto.club.ClubMemberDTO;
 import com.iseplife.api.dto.club.view.ClubMemberPreview;
 import com.iseplife.api.dto.club.view.ClubView;
@@ -186,17 +187,19 @@ public class ClubService {
     return club.getLogoUrl();
   }
 
-  public ClubMember addMember(Long clubId, Long studentId) {
+  public ClubMember addMember(Long clubId, ClubMemberCreationDTO dto) {
     // Ensure that student is not already member of the club this year
-    if (clubMemberRepository.existsByClubIdAndStudentIdAndFromYear(clubId, studentId, getCurrentSchoolYear()))
+    if (clubMemberRepository.existsByClubIdAndStudentIdAndFromYear(clubId, dto.getStudent(), getCurrentSchoolYear()))
       throw new IllegalArgumentException("this student is already part of this club" );
 
     ClubMember clubMember = new ClubMember();
     clubMember.setClub(getClub(clubId));
-    clubMember.setStudent(studentService.getStudent(studentId));
-    clubMember.setRole(ClubRole.MEMBER);
-    clubMember.setFrom(getCurrentSchoolYear());
-    clubMember.setTo(clubMember.getFrom());
+    clubMember.setStudent(studentService.getStudent(dto.getStudent()));
+
+    clubMember.setRole(dto.getRole());
+    clubMember.setPosition(dto.getPosition());
+    clubMember.setFrom(dto.getYear());
+    clubMember.setTo(dto.getYear());
 
     return clubMemberRepository.save(clubMember);
   }

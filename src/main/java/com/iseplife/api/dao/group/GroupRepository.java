@@ -25,7 +25,7 @@ public interface GroupRepository extends CrudRepository<Group, Long> {
 
   @Query(
     "select distinct g from Group g join g.members m " +
-      "where lower(g.name) like %lower(?1)% " +
+      "where lower(g.name) like %?1% " +
       "and (?3 = true or g.restricted = false or m.student.id = ?2)"
   )
   Page<Group> searchGroup(String name, Long student, Boolean admin, Pageable pageable);
