@@ -27,15 +27,20 @@ public class SearchController {
   public Page<SearchItemView> globalSearch(
     @AuthenticationPrincipal TokenPayload token,
     @RequestParam String name,
-    @RequestParam(defaultValue = "0") Integer page,
-    @RequestParam(defaultValue = "0") Boolean allAnswer
+    @RequestParam(required = false, defaultValue = "0") Integer page,
+    @RequestParam(required = false, defaultValue = "0") Boolean allAnswer
   ) {
     return searchService.globalSearch(name, page, allAnswer, token);
   }
 
   @GetMapping("/student")
   @RolesAllowed({Roles.STUDENT})
-  public Page<SearchItemView> userSearch(@RequestParam String name, @RequestParam String promos, @RequestParam Integer page, @RequestParam Boolean atoz) {
+  public Page<SearchItemView> userSearch(
+    @RequestParam String name,
+    @RequestParam(required = false, defaultValue = "") String promos,
+    @RequestParam(required = false, defaultValue = "0") Integer page,
+    @RequestParam(required = false, defaultValue = "0") Boolean atoz
+  ) {
     return searchService.searchUser(name, promos, atoz, page);
   }
 
@@ -47,8 +52,11 @@ public class SearchController {
 
   @GetMapping("/club")
   @RolesAllowed({Roles.STUDENT})
-  public Page<SearchItemView> clubSearch(@RequestParam String name, @RequestParam(defaultValue = "0") Integer page,
-                                         @RequestParam(defaultValue = "0") Boolean allAnswer) {
+  public Page<SearchItemView> clubSearch(
+    @RequestParam String name,
+    @RequestParam(required = false, defaultValue = "0") Integer page,
+    @RequestParam(required = false, defaultValue = "0") Boolean allAnswer
+  ) {
     return searchService.searchClub(name, page, allAnswer);
   }
 
@@ -57,8 +65,8 @@ public class SearchController {
   public Page<SearchItemView> eventSearch(
     @AuthenticationPrincipal TokenPayload token,
     @RequestParam String name,
-    @RequestParam(defaultValue = "0") Integer page,
-    @RequestParam(defaultValue = "0") Boolean allAnswer
+    @RequestParam(required = false, defaultValue = "0") Integer page,
+    @RequestParam(required = false, defaultValue = "0") Boolean allAnswer
   ) {
     return searchService.searchEvent(name, page, allAnswer, token);
   }
