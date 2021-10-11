@@ -16,8 +16,9 @@ import com.iseplife.api.dto.group.view.GroupPreview;
 import com.iseplife.api.dto.group.view.GroupView;
 import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.GroupMember;
-import com.iseplife.api.exceptions.AuthException;
-import com.iseplife.api.exceptions.IllegalArgumentException;
+import com.iseplife.api.exceptions.HttpUnauthorizedException;
+import com.iseplife.api.exceptions.HttpBadRequestException;
+import com.iseplife.api.exceptions.HttpNotFoundException;
 import com.iseplife.api.services.fileHandler.FileHandler;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -54,7 +55,7 @@ public class GroupService {
   public Group getGroup(Long id) {
     Optional<Group> group = groupRepository.findById(id);
     if (group.isEmpty() || (group.get().isRestricted() && !groupMemberRepository.isMemberOfGroup(id, SecurityService.getLoggedId())))
-      throw new IllegalArgumentException("could not find the group with id: " + id);
+      throw new HttpNotFoundException("gallery_not_found");
 
     return group.get();
   }
@@ -69,7 +70,7 @@ public class GroupService {
   public GroupMember getGroupMember(Long id) {
     Optional<GroupMember> member = groupMemberRepository.findById(id);
     if (member.isEmpty())
-      throw new IllegalArgumentException("could not find the group member with id: " + id);
+      throw new HttpNotFoundException("member_not_found");
 
     return member.get();
   }
@@ -149,7 +150,7 @@ public class GroupService {
   public String updateCover(Long id, MultipartFile cover) {
     Group group = getGroup(id);
     if (!SecurityService.hasRightOn(group))
-      throw new AuthException("You have not sufficient rights on this group (id:" + id + ")");
+      throw new HttpUnauthorizedException("insufficient_rights");
 
     if (group.getCover() != null)
       fileHandler.delete(group.getCover());
@@ -171,7 +172,7 @@ public class GroupService {
   public Boolean toggleArchive(Long id) {
     Group group = getGroup(id);
     if (group.getType() != GroupType.DEFAULT)
-      throw new IllegalArgumentException("This type of group cannot be archive");
+      throw new HttpBadRequestException("archiving_impossible");
 
 
     group.setArchivedAt(group.isArchived() ? null : new Date());
@@ -183,7 +184,7 @@ public class GroupService {
   public void deleteGroup(Long id) {
     Group group = getGroup(id);
     if (group.getType() != GroupType.DEFAULT) {
-      throw new IllegalArgumentException("This type of group cannot be delete");
+      throw new HttpBadRequestException("deletion_impossible");
     }
 
     groupRepository.delete(group);
@@ -193,7 +194,7 @@ public class GroupService {
   public Boolean promoteMember(Long id, Long member) {
     GroupMember groupMember = getGroupMember(member);
     if (!SecurityService.hasRightOn(groupMember.getGroup()))
-      throw new AuthException("You have not sufficient rights on this group (id:" + id + ")");
+      throw new HttpUnauthorizedException("insufficient_rights");
 
     groupMember.setAdmin(true);
     groupMemberRepository.save(groupMember);
@@ -204,10 +205,10 @@ public class GroupService {
   public Boolean demoteMember(Long id, Long member) {
     GroupMember groupMember = getGroupMember(member);
     if (!SecurityService.hasRightOn(groupMember.getGroup()))
-      throw new AuthException("You have not sufficient rights on this group (id:" + id + ")");
+      throw new HttpUnauthorizedException("insufficient_rights");
 
     if (groupMember.isAdmin() && groupMemberRepository.findGroupAdminCount(groupMember.getGroup()) < 1)
-      throw new IllegalArgumentException("Could not demote member as group must have at least 1 admin");
+      throw new HttpBadRequestException("minimum_admins_size_required");
 
     groupMember.setAdmin(false);
     groupMemberRepository.save(groupMember);
@@ -217,7 +218,7 @@ public class GroupService {
   public GroupMemberView addMember(Long id, GroupMemberDTO dto) {
     Group group = getGroup(id);
     if (!SecurityService.hasRightOn(group))
-      throw new AuthException("You have not sufficient rights on this group (id:" + id + ")");
+      throw new HttpUnauthorizedException("insufficient_rights");
 
     GroupMember member = new GroupMember();
     member.setAdmin(false);
@@ -230,10 +231,10 @@ public class GroupService {
   public Boolean removeMember(Long id, Long member) {
     GroupMember groupMember = getGroupMember(member);
     if (!SecurityService.hasRightOn(groupMember.getGroup()))
-      throw new AuthException("You have not sufficient rights on this group (id:" + id + ")");
+      throw new HttpUnauthorizedException("insufficient_rights");
 
     if (groupMember.isAdmin() && groupMemberRepository.findGroupAdminCount(groupMember.getGroup()) < 1)
-      throw new IllegalArgumentException("Could not delete member as group must have at least 1 admin");
+      throw new HttpBadRequestException("minimum_admins_size_required");
 
     groupMemberRepository.delete(groupMember);
     return true;

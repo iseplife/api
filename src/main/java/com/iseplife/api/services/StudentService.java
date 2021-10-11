@@ -21,7 +21,8 @@ import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.dao.student.RoleRepository;
 import com.iseplife.api.dao.student.StudentFactory;
 import com.iseplife.api.dao.student.StudentRepository;
-import com.iseplife.api.exceptions.IllegalArgumentException;
+import com.iseplife.api.exceptions.HttpBadRequestException;
+import com.iseplife.api.exceptions.HttpNotFoundException;
 import com.iseplife.api.services.fileHandler.FileHandler;
 import com.iseplife.api.utils.MediaUtils;
 import org.modelmapper.ModelMapper;
@@ -81,7 +82,7 @@ public class StudentService {
   public Student getStudent(Long id) {
     Optional<Student> student = studentRepository.findById(id);
     if (student.isEmpty())
-      throw new IllegalArgumentException("could not find the student with id: " + id);
+      throw new HttpNotFoundException("student_not_found");
 
     return student.get();
   }
@@ -91,7 +92,7 @@ public class StudentService {
     List<Student> students = (List<Student>) studentRepository.findAllById(ids);
 
     if (students.size() != ids.size())
-      throw new IllegalArgumentException("could not find one of the user");
+      throw new HttpNotFoundException("students_not_found");
 
     return students;
   }
@@ -119,7 +120,7 @@ public class StudentService {
 
   public StudentAdminView createStudent(StudentDTO dto) {
     if (studentRepository.existsById(dto.getId()))
-      throw new IllegalArgumentException("Student already exist with this id (" + dto.getId() + ")");
+      throw new HttpBadRequestException("student_id_already_exist");
 
     Student student = studentFactory.dtoToEntity(dto);
     student.setRoles(roleRepository.findAllByRoleIn(dto.getRoles()));

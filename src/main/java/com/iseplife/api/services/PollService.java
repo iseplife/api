@@ -14,11 +14,11 @@ import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.dao.poll.PollChoiceRepository;
 import com.iseplife.api.dao.poll.PollRepository;
 import com.iseplife.api.dao.poll.PollVoteRepository;
-import com.iseplife.api.exceptions.AuthException;
-import com.iseplife.api.exceptions.IllegalArgumentException;
+import com.iseplife.api.exceptions.HttpUnauthorizedException;
+import com.iseplife.api.exceptions.HttpBadRequestException;
+import com.iseplife.api.exceptions.HttpNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ public class PollService {
   public Poll getPoll(Long id) {
     Optional<Poll> poll = pollRepository.findById(id);
     if (poll.isEmpty() || !SecurityService.hasReadAccess(poll.get()))
-      throw new IllegalArgumentException("Could not find this poll (id:" + id + ")");
+      throw new HttpNotFoundException("poll_not_found");
 
     return poll.get();
   }
@@ -74,15 +74,15 @@ public class PollService {
     Poll poll = getPoll(pollId);
 
     if (poll.getEndsAt().before(new Date()))
-      throw new AuthException("You are not allowed to vote on this poll anymore");
+      throw new HttpBadRequestException("poll_finished");
 
     if (pollVoteRepository.findByChoice_IdAndStudent_Id(choiceId, studentId).isPresent())
-      throw new IllegalArgumentException("This choice has already been chosen");
+      throw new HttpBadRequestException("choice_already_picked");
 
 
     Optional<PollChoice> pollAnswer = pollChoiceRepository.findById(choiceId);
     if (pollAnswer.isEmpty())
-      throw new IllegalArgumentException("Could not find this poll's choice (id:" + choiceId + ")");
+      throw new HttpNotFoundException("poll_not_found");
 
     if (!poll.getMultiple()) {
       List<PollVote> voteList = pollVoteRepository.findByChoice_Poll_IdAndStudent_Id(poll.getId(), studentId).stream()
@@ -104,11 +104,11 @@ public class PollService {
     Poll poll = getPoll(pollId);
 
     if (poll.getEndsAt().before(new Date()))
-      throw new AuthException("You are not allowed to vote on this poll anymore");
+      throw new HttpBadRequestException("poll_finished");
 
     Optional<PollVote> vote = pollVoteRepository.findByChoice_IdAndStudent_Id(choiceId, studentId);
     if (vote.isEmpty())
-      throw new IllegalArgumentException("Could not find this answer's vote in this poll");
+      throw new HttpBadRequestException("student_answer_not_found");
 
     pollVoteRepository.delete(vote.get());
   }
@@ -141,7 +141,7 @@ public class PollService {
     Poll poll = getPoll(dto.getId());
 
     if (!SecurityService.hasRightOn(postService.getPostFromEmbed(poll)))
-      throw new AuthException("You have not sufficient rights on this post");
+      throw new HttpUnauthorizedException("You have not sufficient rights on this post");
 
     poll.setTitle(dto.getTitle());
     poll.setAnonymous(dto.getAnonymous());

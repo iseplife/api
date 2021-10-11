@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * back
  */
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-public class IllegalArgumentException extends RuntimeException {
-  public IllegalArgumentException(String message) {
+public class HttpBadRequestException extends RuntimeException {
+  public HttpBadRequestException(String message) {
     super(message);
   }
 
-  public IllegalArgumentException(String message, Throwable cause) {
+  public HttpBadRequestException(String message, Throwable cause) {
     super(message, cause);
   }
 

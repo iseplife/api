@@ -7,7 +7,7 @@ import com.iseplife.api.dao.student.RoleRepository;
 import com.iseplife.api.dto.CASUserDTO;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.exceptions.AuthException;
+import com.iseplife.api.exceptions.HttpUnauthorizedException;
 import com.iseplife.api.services.CASService;
 import com.iseplife.api.services.StudentService;
 import org.slf4j.Logger;
@@ -67,7 +67,7 @@ public class AuthController {
         student = new Student();
         studentService.hydrateStudent(student, user);
       } else {
-        throw new AuthException("Identified User not found");
+        throw new HttpUnauthorizedException("user_not_found");
       }
     }
 
@@ -77,7 +77,7 @@ public class AuthController {
     }
 
     if (student.isArchived())
-      throw new AuthException("User archived");
+      throw new HttpUnauthorizedException("user_archived");
 
     return jwtTokenUtil.generateToken(student);
   }
@@ -96,7 +96,7 @@ public class AuthController {
   @PostMapping("/refresh")
   public TokenSet getRefreshedTokens(@CookieValue(value = "refresh-token", defaultValue = "") String refreshToken) {
     if (refreshToken.equals(""))
-      throw new AuthException("refresh token missing or expired");
+      throw new HttpUnauthorizedException("refresh_token_expired");
 
     return jwtTokenUtil.refreshWithToken(refreshToken);
   }

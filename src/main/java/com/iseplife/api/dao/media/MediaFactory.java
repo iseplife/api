@@ -9,7 +9,7 @@ import com.iseplife.api.entity.post.embed.media.Document;
 import com.iseplife.api.entity.post.embed.media.Image;
 import com.iseplife.api.entity.post.embed.media.Media;
 import com.iseplife.api.entity.post.embed.media.Video;
-import com.iseplife.api.exceptions.IllegalArgumentException;
+import com.iseplife.api.exceptions.HttpBadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -45,7 +45,7 @@ public class MediaFactory {
           ((ImageView) view).setThread(image.getThread().getId());
         break;
       default:
-        throw new IllegalArgumentException("Invalid attachments");
+        throw new HttpBadRequestException("invalid_attachment");
     }
 
     view.setId(media.getId());

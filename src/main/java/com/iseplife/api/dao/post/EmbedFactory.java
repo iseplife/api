@@ -9,7 +9,7 @@ import com.iseplife.api.entity.post.embed.Embedable;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.post.embed.media.Media;
 import com.iseplife.api.entity.post.embed.poll.Poll;
-import com.iseplife.api.exceptions.IllegalArgumentException;
+import com.iseplife.api.exceptions.HttpBadRequestException;
 
 public class EmbedFactory {
 
@@ -33,7 +33,7 @@ public class EmbedFactory {
         view = MediaFactory.toView((Media) embed);
         break;
       default:
-        throw new IllegalArgumentException("Invalid attachments");
+        throw new HttpBadRequestException("invalid_attachment");
     }
     return view;
 

@@ -13,7 +13,7 @@ import com.iseplife.api.dao.student.StudentRepository;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.exceptions.IllegalArgumentException;
+import com.iseplife.api.exceptions.HttpBadRequestException;
 import com.iseplife.api.services.ClubService;
 import com.iseplife.api.services.StudentService;
 import org.slf4j.Logger;
@@ -141,7 +141,7 @@ public class JwtTokenUtil {
         verifier.verify(token);
         return generateToken(student);
       }
-    } catch (JWTVerificationException | IllegalArgumentException e) {
+    } catch (JWTVerificationException | HttpBadRequestException e) {
       LOG.error("could not refresh token", e);
     }
     throw new JWTVerificationException("token invalid");
