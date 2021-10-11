@@ -1,6 +1,8 @@
 package com.iseplife.api.exceptions;
 
-public class CASServiceException extends RuntimeException {
+import com.iseplife.api.exceptions.http.HttpInternalServerErrorException;
+
+public class CASServiceException extends HttpInternalServerErrorException {
     public CASServiceException(String message) {
       super(message);
     }

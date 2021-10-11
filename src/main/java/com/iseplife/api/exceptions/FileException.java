@@ -1,5 +1,7 @@
 package com.iseplife.api.exceptions;
 
+import com.iseplife.api.exceptions.http.HttpInternalServerErrorException;
+
 import java.io.IOException;
 
 public class FileException extends HttpInternalServerErrorException {

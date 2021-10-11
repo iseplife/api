@@ -1,7 +1,7 @@
 package com.iseplife.api.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.iseplife.api.exceptions.HttpBadRequestException;
+import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;

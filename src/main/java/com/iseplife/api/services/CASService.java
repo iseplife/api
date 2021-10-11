@@ -2,8 +2,8 @@ package com.iseplife.api.services;
 
 import com.iseplife.api.dto.CASAuthentificationDTO;
 import com.iseplife.api.dto.CASUserDTO;
-import com.iseplife.api.exceptions.HttpInternalServerErrorException;
-import com.iseplife.api.exceptions.HttpUnauthorizedException;
+import com.iseplife.api.exceptions.http.HttpInternalServerErrorException;
+import com.iseplife.api.exceptions.http.HttpUnauthorizedException;
 import com.iseplife.api.exceptions.CASServiceException;
 import com.iseplife.api.utils.JsonUtils;
 import org.slf4j.Logger;

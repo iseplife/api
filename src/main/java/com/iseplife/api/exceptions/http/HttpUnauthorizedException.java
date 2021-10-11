@@ -1,4 +1,4 @@
-package com.iseplife.api.exceptions;
+package com.iseplife.api.exceptions.http;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

@@ -9,7 +9,7 @@ import com.iseplife.api.entity.post.embed.Embedable;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.post.embed.media.Media;
 import com.iseplife.api.entity.post.embed.poll.Poll;
-import com.iseplife.api.exceptions.HttpBadRequestException;
+import com.iseplife.api.exceptions.http.HttpBadRequestException;
 
 public class EmbedFactory {
 
