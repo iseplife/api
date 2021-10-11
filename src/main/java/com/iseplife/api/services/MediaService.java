@@ -24,10 +24,7 @@ import com.iseplife.api.dao.media.image.ImageRepository;
 import com.iseplife.api.dao.media.image.MatchedRepository;
 import com.iseplife.api.dao.media.MediaRepository;
 import com.iseplife.api.dao.post.PostRepository;
-import com.iseplife.api.exceptions.HttpUnauthorizedException;
-import com.iseplife.api.exceptions.HttpBadRequestException;
-import com.iseplife.api.exceptions.MediaMaxUploadException;
-import com.iseplife.api.exceptions.HttpNotFoundException;
+import com.iseplife.api.exceptions.*;
 import com.iseplife.api.services.fileHandler.FileHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,7 +133,7 @@ public class MediaService {
   private Boolean isAllowedToCreateMedia(Author author) {
     boolean isStudent = author instanceof Student;
     if (!isStudent && !SecurityService.hasRightOn((Club) author))
-      throw new HttpUnauthorizedException("insufficient_rights");
+      throw new HttpForbiddenException("insufficient_rights");
 
     if (author.getMediaCooldown() == null || Duration.between(author.getMediaCooldown().toInstant(), Instant.now()).toHours() > 24) {
       author.setMediaCooldown(new Date());
@@ -168,7 +165,7 @@ public class MediaService {
       studentService.getStudent(SecurityService.getLoggedId());
 
     if (gallery && club <= 0)
-      throw new HttpUnauthorizedException("insufficient_rights");
+      throw new HttpForbiddenException("insufficient_rights");
 
     if (isAllowedToCreateMedia(author)) {
       String name, mime = file.getContentType().split("/")[0];

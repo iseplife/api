@@ -16,7 +16,7 @@ import com.iseplife.api.dto.group.view.GroupPreview;
 import com.iseplife.api.dto.group.view.GroupView;
 import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.GroupMember;
-import com.iseplife.api.exceptions.HttpUnauthorizedException;
+import com.iseplife.api.exceptions.HttpForbiddenException;
 import com.iseplife.api.exceptions.HttpBadRequestException;
 import com.iseplife.api.exceptions.HttpNotFoundException;
 import com.iseplife.api.services.fileHandler.FileHandler;
@@ -150,7 +150,7 @@ public class GroupService {
   public String updateCover(Long id, MultipartFile cover) {
     Group group = getGroup(id);
     if (!SecurityService.hasRightOn(group))
-      throw new HttpUnauthorizedException("insufficient_rights");
+      throw new HttpForbiddenException("insufficient_rights");
 
     if (group.getCover() != null)
       fileHandler.delete(group.getCover());
@@ -194,7 +194,7 @@ public class GroupService {
   public Boolean promoteMember(Long id, Long member) {
     GroupMember groupMember = getGroupMember(member);
     if (!SecurityService.hasRightOn(groupMember.getGroup()))
-      throw new HttpUnauthorizedException("insufficient_rights");
+      throw new HttpForbiddenException("insufficient_rights");
 
     groupMember.setAdmin(true);
     groupMemberRepository.save(groupMember);
@@ -205,7 +205,7 @@ public class GroupService {
   public Boolean demoteMember(Long id, Long member) {
     GroupMember groupMember = getGroupMember(member);
     if (!SecurityService.hasRightOn(groupMember.getGroup()))
-      throw new HttpUnauthorizedException("insufficient_rights");
+      throw new HttpForbiddenException("insufficient_rights");
 
     if (groupMember.isAdmin() && groupMemberRepository.findGroupAdminCount(groupMember.getGroup()) < 1)
       throw new HttpBadRequestException("minimum_admins_size_required");
@@ -218,7 +218,7 @@ public class GroupService {
   public GroupMemberView addMember(Long id, GroupMemberDTO dto) {
     Group group = getGroup(id);
     if (!SecurityService.hasRightOn(group))
-      throw new HttpUnauthorizedException("insufficient_rights");
+      throw new HttpForbiddenException("insufficient_rights");
 
     GroupMember member = new GroupMember();
     member.setAdmin(false);
@@ -231,7 +231,7 @@ public class GroupService {
   public Boolean removeMember(Long id, Long member) {
     GroupMember groupMember = getGroupMember(member);
     if (!SecurityService.hasRightOn(groupMember.getGroup()))
-      throw new HttpUnauthorizedException("insufficient_rights");
+      throw new HttpForbiddenException("insufficient_rights");
 
     if (groupMember.isAdmin() && groupMemberRepository.findGroupAdminCount(groupMember.getGroup()) < 1)
       throw new HttpBadRequestException("minimum_admins_size_required");

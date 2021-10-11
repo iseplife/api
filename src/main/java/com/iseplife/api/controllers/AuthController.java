@@ -7,6 +7,7 @@ import com.iseplife.api.dao.student.RoleRepository;
 import com.iseplife.api.dto.CASUserDTO;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
+import com.iseplife.api.exceptions.HttpNotFoundException;
 import com.iseplife.api.exceptions.HttpUnauthorizedException;
 import com.iseplife.api.services.CASService;
 import com.iseplife.api.services.StudentService;
@@ -63,21 +64,21 @@ public class AuthController {
       student = studentService.getStudent(user.getNumero());
     } catch (IllegalArgumentException e) {
       if (autoGeneration) {
-        LOG.info("User {} {} not found but pass authentification, creating account", user.getPrenom(), user.getPrenom());
+        LOG.info("User {} {} not found but pass authentication, creating account", user.getPrenom(), user.getPrenom());
         student = new Student();
         studentService.hydrateStudent(student, user);
       } else {
-        throw new HttpUnauthorizedException("user_not_found");
+        throw new HttpNotFoundException("user_not_found");
       }
     }
+
+    if (student.isArchived())
+      throw new HttpNotFoundException("user_not_found");
 
     if (student.getLastConnection() == null) {
       LOG.info("First connection for user {}, hydrating account", student.getId());
       studentService.hydrateStudent(student, user);
     }
-
-    if (student.isArchived())
-      throw new HttpUnauthorizedException("user_archived");
 
     return jwtTokenUtil.generateToken(student);
   }

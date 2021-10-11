@@ -21,7 +21,7 @@ import com.iseplife.api.constants.PostState;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.media.MediaRepository;
 import com.iseplife.api.dao.student.StudentRepository;
-import com.iseplife.api.exceptions.HttpUnauthorizedException;
+import com.iseplife.api.exceptions.HttpForbiddenException;
 import com.iseplife.api.exceptions.HttpBadRequestException;
 import com.iseplife.api.exceptions.HttpNotFoundException;
 import com.iseplife.api.websocket.PostMessageService;
@@ -101,14 +101,14 @@ public class PostService {
     Feed feed = feedService.getFeed(dto.getFeed());
 
     if (!SecurityService.hasRightOn(feed))
-      throw new HttpUnauthorizedException("insufficient_rights");
+      throw new HttpForbiddenException("insufficient_rights");
 
     post.setFeed(feed);
     post.setAuthor(securityService.getLoggedUser());
 
     // Author should be an admin or club publisher
     if (dto.getLinkedClub() != null && !SecurityService.hasAuthorAccessOn(dto.getLinkedClub()))
-      throw new HttpUnauthorizedException("insufficient rights");
+      throw new HttpForbiddenException("insufficient_rights");
 
     post.setLinkedClub(dto.getLinkedClub() != null ? clubService.getClub(dto.getLinkedClub()) : null);
 
@@ -125,11 +125,11 @@ public class PostService {
   public PostFormView updatePost(Long postID, PostUpdateDTO dto) {
     Post post = getPost(postID);
     if (!SecurityService.hasRightOn(post))
-      throw new HttpUnauthorizedException("insufficient_rights");
+      throw new HttpForbiddenException("insufficient_rights");
 
     // Author should be an admin or club publisher
     if (dto.getLinkedClub() != null && !SecurityService.hasAuthorAccessOn(dto.getLinkedClub()))
-      throw new HttpUnauthorizedException("insufficient rights");
+      throw new HttpForbiddenException("insufficient_rights");
 
     post.setLinkedClub(dto.getLinkedClub() != null ? clubService.getClub(dto.getLinkedClub()) : null);
 
@@ -170,7 +170,7 @@ public class PostService {
   public void deletePost(Long postID) {
     Post post = getPost(postID);
     if (!SecurityService.hasRightOn(post))
-      throw new HttpUnauthorizedException("insufficient_rights");
+      throw new HttpForbiddenException("insufficient_rights");
 
     Embedable embed = post.getEmbed();
     if (embed != null)
@@ -183,7 +183,7 @@ public class PostService {
   public void togglePinnedPost(Long postID) {
     Post post = getPost(postID);
     if (SecurityService.hasRightOn(post) && post.getLinkedClub() != null)
-      throw new HttpUnauthorizedException("insufficient_rights");
+      throw new HttpForbiddenException("insufficient_rights");
 
 
     post.setPinned(!post.getPinned());

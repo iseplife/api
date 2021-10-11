@@ -14,7 +14,7 @@ import com.iseplife.api.entity.ThreadInterface;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.post.Comment;
 import com.iseplife.api.entity.post.Like;
-import com.iseplife.api.exceptions.HttpUnauthorizedException;
+import com.iseplife.api.exceptions.HttpForbiddenException;
 import com.iseplife.api.exceptions.CommentMaxDepthException;
 import com.iseplife.api.exceptions.HttpNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -147,7 +147,7 @@ public class ThreadService {
     if (dto.getAsClub() != null) {
       Club club = clubService.getClub(dto.getAsClub());
       if (!SecurityService.hasRightOn(club))
-        throw new HttpUnauthorizedException("insufficient_rights");
+        throw new HttpForbiddenException("insufficient_rights");
 
       comment.setAsClub(club);
     }
@@ -163,7 +163,7 @@ public class ThreadService {
 
     Comment comment = optional.get();
     if (!SecurityService.hasRightOn(comment))
-      throw new HttpUnauthorizedException("insufficient_rights");
+      throw new HttpForbiddenException("insufficient_rights");
 
     comment.setMessage(dto.getMessage());
     comment.setLastEdition(new Date());
@@ -179,7 +179,7 @@ public class ThreadService {
 
     Comment comment = optional.get();
     if (!comment.getStudent().getId().equals(auth.getId()) && !auth.getRoles().contains(Roles.ADMIN))
-      throw new HttpUnauthorizedException("insufficient_rights");
+      throw new HttpForbiddenException("insufficient_rights");
 
     commentRepository.deleteById(comID);
   }

@@ -14,7 +14,7 @@ import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.dao.event.EventFactory;
 import com.iseplife.api.dao.event.EventRepository;
-import com.iseplife.api.exceptions.HttpUnauthorizedException;
+import com.iseplife.api.exceptions.HttpForbiddenException;
 import com.iseplife.api.exceptions.HttpNotFoundException;
 import com.iseplife.api.services.fileHandler.FileHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +61,7 @@ public class EventService {
   public EventView createEvent(EventDTO dto) {
     Club club = clubService.getClub(dto.getClub());
     if (club == null || !SecurityService.hasRightOn(club))
-      throw new HttpUnauthorizedException("insufficient_rights");
+      throw new HttpForbiddenException("insufficient_rights");
 
 
     Event event = dto.getPreviousEditionId() == null ?
@@ -184,7 +184,7 @@ public class EventService {
   public Event updateEvent(Long id, EventDTO dto) {
     Event event = getEvent(id);
     if (!SecurityService.hasRightOn(event))
-      throw new HttpUnauthorizedException("insufficient_rights");
+      throw new HttpForbiddenException("insufficient_rights");
 
     event.setTitle(dto.getTitle());
     event.setDescription(dto.getDescription());

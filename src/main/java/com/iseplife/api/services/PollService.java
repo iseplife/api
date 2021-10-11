@@ -14,7 +14,7 @@ import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.dao.poll.PollChoiceRepository;
 import com.iseplife.api.dao.poll.PollRepository;
 import com.iseplife.api.dao.poll.PollVoteRepository;
-import com.iseplife.api.exceptions.HttpUnauthorizedException;
+import com.iseplife.api.exceptions.HttpForbiddenException;
 import com.iseplife.api.exceptions.HttpBadRequestException;
 import com.iseplife.api.exceptions.HttpNotFoundException;
 import org.modelmapper.ModelMapper;
@@ -141,7 +141,7 @@ public class PollService {
     Poll poll = getPoll(dto.getId());
 
     if (!SecurityService.hasRightOn(postService.getPostFromEmbed(poll)))
-      throw new HttpUnauthorizedException("You have not sufficient rights on this post");
+      throw new HttpForbiddenException("insufficient_rights");
 
     poll.setTitle(dto.getTitle());
     poll.setAnonymous(dto.getAnonymous());

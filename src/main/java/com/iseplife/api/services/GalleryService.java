@@ -14,7 +14,7 @@ import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.post.embed.media.Image;
 import com.iseplife.api.entity.post.embed.Gallery;
-import com.iseplife.api.exceptions.HttpUnauthorizedException;
+import com.iseplife.api.exceptions.HttpForbiddenException;
 import com.iseplife.api.exceptions.HttpBadRequestException;
 import com.iseplife.api.exceptions.HttpNotFoundException;
 import com.iseplife.api.services.fileHandler.FileHandler;
@@ -66,7 +66,7 @@ public class GalleryService {
 
   private void checkIfHasRightsOnGallery(Gallery gallery){
     if ((gallery.getPseudo() && !SecurityService.hasRightOn(postService.getPostFromEmbed(gallery))) || !SecurityService.hasRightOn(gallery))
-      throw new HttpUnauthorizedException("insufficient_rights");
+      throw new HttpForbiddenException("insufficient_rights");
   }
 
   public Gallery getGallery(Long id) {
@@ -109,7 +109,7 @@ public class GalleryService {
     if (!dto.getPseudo()) {
       Club club = clubService.getClub(dto.getClub());
       if (!SecurityService.hasRightOn(club))
-        throw new HttpUnauthorizedException("insufficient_rights");
+        throw new HttpForbiddenException("insufficient_rights");
 
       gallery.setClub(club);
       gallery.setName(dto.getName());

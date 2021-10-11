@@ -21,7 +21,7 @@ import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.club.ClubFactory;
 import com.iseplife.api.dao.club.ClubMemberRepository;
 import com.iseplife.api.dao.club.ClubRepository;
-import com.iseplife.api.exceptions.HttpUnauthorizedException;
+import com.iseplife.api.exceptions.HttpForbiddenException;
 import com.iseplife.api.exceptions.HttpBadRequestException;
 import com.iseplife.api.exceptions.HttpNotFoundException;
 import com.iseplife.api.services.fileHandler.FileHandler;
@@ -121,7 +121,7 @@ public class ClubService {
   public ClubView updateClub(Long id, ClubDTO dto) {
     Club club = getClub(id);
     if (!SecurityService.hasRightOn(club))
-      throw new HttpUnauthorizedException("insufficient_rights");
+      throw new HttpForbiddenException("insufficient_rights");
 
     // Update through reference so we don't need to get return value
     ClubFactory.fromDTO(dto, club);
@@ -136,7 +136,7 @@ public class ClubService {
   public ClubView updateClubAdmin(Long id, ClubAdminDTO dto) {
     Club club = getClub(id);
     if (!SecurityService.hasRightOn(club))
-      throw new HttpUnauthorizedException("insufficient_rights");
+      throw new HttpForbiddenException("insufficient_rights");
 
     // Update through reference so we don't need to get return value
     ClubFactory.fromAdminDTO(dto, club);
@@ -152,7 +152,7 @@ public class ClubService {
   public String updateLogo(Long id, MultipartFile file) {
     Club club = getClub(id);
     if (!SecurityService.hasRightOn(club))
-      throw new HttpUnauthorizedException("insufficient_rights");
+      throw new HttpForbiddenException("insufficient_rights");
 
     if (club.getLogoUrl() != null)
       fileHandler.delete(club.getLogoUrl());
@@ -169,7 +169,7 @@ public class ClubService {
   public String updateCover(Long id, MultipartFile file) {
     Club club = getClub(id);
     if (!SecurityService.hasRightOn(club))
-      throw new HttpUnauthorizedException("insufficient_rights");
+      throw new HttpForbiddenException("insufficient_rights");
 
     if (club.getCoverUrl() != null || file == null)
       fileHandler.delete(club.getCoverUrl());
@@ -212,7 +212,7 @@ public class ClubService {
 
     ClubMember member = optionalClubMember.get();
     if (!SecurityService.hasRightOn(member.getClub()))
-      throw new HttpUnauthorizedException("insufficient_rights");
+      throw new HttpForbiddenException("insufficient_rights");
 
     if (member.getRole() == ClubRole.ADMIN &&
       dto.getRole() != member.getRole() &&
@@ -280,7 +280,7 @@ public class ClubService {
     ClubMember clubMember = getMember(member);
     if (!payload.getRoles().contains(Roles.ADMIN)) {
       if (!payload.getClubsAdmin().contains(clubMember.getClub().getId())) {
-        throw new HttpUnauthorizedException("insufficient_rights");
+        throw new HttpForbiddenException("insufficient_rights");
       }
     }
     clubMember.setRole(role);
@@ -300,7 +300,7 @@ public class ClubService {
     Club club = clubMember.getClub();
     if (!payload.getRoles().contains(Roles.ADMIN)) {
       if (!payload.getClubsAdmin().contains(club.getId())) {
-        throw new HttpUnauthorizedException("insufficient_rights");
+        throw new HttpForbiddenException("insufficient_rights");
       }
     }
     clubMemberRepository.delete(clubMember);
