@@ -4,6 +4,7 @@ package com.iseplife.api.services;
 import com.google.common.collect.Sets;
 import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.dao.event.EventPreviewProjection;
 import com.iseplife.api.dao.feed.FeedRepository;
 import com.iseplife.api.dto.event.EventDTO;
 import com.iseplife.api.dto.gallery.view.GalleryPreview;
@@ -83,13 +84,13 @@ public class EventService {
       "sizes", StorageConfig.MEDIAS_CONF.get("feed_cover").sizes
     );
 
-    if (event.getImageUrl() != null)
-      fileHandler.delete(event.getImageUrl());
+    if (event.getCover() != null)
+      fileHandler.delete(event.getCover());
 
-    event.setImageUrl(fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("feed_cover").path, false, params));
+    event.setCover(fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("feed_cover").path, false, params));
     eventRepository.save(event);
 
-    return event.getImageUrl();
+    return event.getCover();
   }
 
 
@@ -101,14 +102,11 @@ public class EventService {
   }
 
 
-  public List<EventPreview> getMonthEvents(Date date, TokenPayload token) {
-    return eventRepository.findAllInMonth(date, token.getRoles().contains("ROLE_ADMIN"), token.getFeeds())
-      .stream()
-      .map(EventFactory::entityToPreviewView)
-      .collect(Collectors.toList());
+  public List<EventPreviewProjection> getMonthEvents(Date date, TokenPayload token) {
+    return eventRepository.findAllInMonth(date, token.getRoles().contains("ROLE_ADMIN"), token.getFeeds());
   }
 
-  public List<EventPreview> getIncomingEvents(TokenPayload token, Long feed) {
+  public List<EventPreviewProjection> getIncomingEvents(TokenPayload token, Long feed) {
     if (feed != 1)
       return getFeedIncomingEvents(token, feedService.getFeed(feed));
 
@@ -116,12 +114,10 @@ public class EventService {
       token.getRoles().contains("ROLE_ADMIN"),
       token.getFeeds(),
       PageRequest.of(0, EVENTS_PER_PAGE)
-    )
-      .map(EventFactory::entityToPreviewView)
-      .toList();
+    ).toList();
   }
 
-  public List<EventPreview> getFeedIncomingEvents(TokenPayload token, Feed feed) {
+  public List<EventPreviewProjection> getFeedIncomingEvents(TokenPayload token, Feed feed) {
     if (!SecurityService.hasReadAccess(feed))
       throw new HttpNotFoundException("feed_not_found");
 
@@ -129,9 +125,7 @@ public class EventService {
       token.getRoles().contains("ROLE_ADMIN"),
       feed,
       PageRequest.of(0, EVENTS_PER_PAGE)
-    )
-      .map(EventFactory::entityToPreviewView)
-      .toList();
+    ).toList();
   }
 
 
@@ -201,8 +195,8 @@ public class EventService {
 
   public void removeEvent(Long id) {
     Event event = getEvent(id);
-    if (event.getImageUrl() != null) {
-      fileHandler.delete(event.getImageUrl());
+    if (event.getCover() != null) {
+      fileHandler.delete(event.getCover());
     }
     eventRepository.deleteById(id);
   }

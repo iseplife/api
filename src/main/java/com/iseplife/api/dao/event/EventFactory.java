@@ -33,7 +33,7 @@ public class EventFactory {
     event.setCoordinates(dto.getCoordinates()[0] + ";" + dto.getCoordinates()[1]);
 
     event.setClosed(dto.getClosed());
-    event.setPublished(dto.getPublished());
+    event.setPublishedAt(dto.getPublished());
     return event;
   }
 
@@ -63,8 +63,8 @@ public class EventFactory {
     preview.setTargets(event.getTargets().stream().map(Feed::getId).collect(Collectors.toSet()));
     preview.setStart(event.getStartsAt());
     preview.setEnd(event.getEndsAt());
-    preview.setCover(event.getImageUrl());
-    preview.setPublished(event.getPublished().before(new Date()));
+    preview.setCover(event.getCover());
+    preview.setPublished(event.getPublishedAt().before(new Date()));
     return preview;
   }
 
@@ -74,7 +74,7 @@ public class EventFactory {
     view.setType(event.getType().name());
     view.setTitle(event.getTitle());
     view.setDescription(event.getDescription());
-    view.setCover(event.getImageUrl());
+    view.setCover(event.getCover());
 
     view.setStart(event.getStartsAt());
     view.setEnd(event.getEndsAt());
@@ -85,7 +85,7 @@ public class EventFactory {
       view.setCoordinates(Arrays.stream(event.getCoordinates().split(";")).map(Float::valueOf).toArray(Float[]::new));
     view.setTicketURL(event.getTicketUrl());
     view.setPrice(event.getPrice());
-    view.setPublished(event.getPublished());
+    view.setPublished(event.getPublishedAt());
     view.setClosed(event.getClosed());
 
     view.setSubscribed(isSubscribed);

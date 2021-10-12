@@ -18,44 +18,46 @@ public interface EventRepository extends CrudRepository<Event, Long> {
 
   // Request unoptimised as we always check if each target if it's inside user's feeds list while
   @Query(
-    "select distinct e from Event e left join e.targets t " +
-      "where FUNCTION('MONTH', e.startsAt) = FUNCTION('MONTH', ?1) and FUNCTION('YEAR', e.startsAt) = function('YEAR', ?1) " +
+    "select distinct e " +
+      "from Event e left join e.targets t " +
+      "where YEAR(e.startsAt) = YEAR(CAST(?1 as timestamp)) " +
+      "and MONTH(e.startsAt) = MONTH(CAST(?1 as timestamp))" +
       "and ((?2 = true) or (" +
-        "e.published < current_time " +
+        "e.publishedAt < CURRENT_TIMESTAMP " +
         "and (e.targets is empty or e.closed = false or t.id in ?3)" +
       ")) " +
       "order by e.startsAt"
   )
-  List<Event> findAllInMonth(Date date, Boolean admin, List<Long> feeds);
+  List<EventPreviewProjection> findAllInMonth(Date date, Boolean admin, List<Long> feeds);
 
 
   @Query(
     "select e from Event e left join e.targets t " +
       "where e.startsAt >= CURRENT_TIMESTAMP " +
       "and ((?1 = true) or (" +
-        "e.published < CURRENT_TIMESTAMP " +
+        "e.publishedAt < CURRENT_TIMESTAMP " +
         "and (e.targets is empty or e.closed = false or t.id in ?2)" +
       ")) " +
       "order by e.startsAt"
   )
-  Page<Event> findIncomingEvents(Boolean admin, List<Long> feeds, Pageable p);
+  Page<EventPreviewProjection> findIncomingEvents(Boolean admin, List<Long> feeds, Pageable p);
 
   @Query(
     "select e from Event e " +
       "where e.startsAt >= CURRENT_TIMESTAMP " +
       "and (((?1 = true) " +
-        "or (e.published < CURRENT_TIMESTAMP and ?2 member of e.targets) " +
-      "))" +
+        "or (e.publishedAt < CURRENT_TIMESTAMP and ?2 member of e.targets) " +
+      ")) " +
       "order by e.startsAt"
   )
-  Page<Event> findFeedIncomingEvents(Boolean admin, Feed feed, Pageable p);
+  Page<EventPreviewProjection> findFeedIncomingEvents(Boolean admin, Feed feed, Pageable p);
 
   @Query(
     "select e from Event e join e.targets t " +
       "where lower(e.title) like %?1% " +
       "and ((?2 = true) or (" +
-        "e.published < CURRENT_TIMESTAMP " +
-        "and (e.targets is empty or e.closed = false or t.id in ?3)" +
+        "e.publishedAt < CURRENT_TIMESTAMP " +
+        "and (e.targets is empty or e.closed = false or t.id in ?2)" +
       ")) "
   )
   Page<Event> searchEvent(String name, Boolean admin, List<Long> feed, Pageable pageable);

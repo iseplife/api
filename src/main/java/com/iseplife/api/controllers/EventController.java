@@ -2,6 +2,7 @@ package com.iseplife.api.controllers;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
+import com.iseplife.api.dao.event.EventPreviewProjection;
 import com.iseplife.api.dto.event.EventDTO;
 import com.iseplife.api.dto.gallery.view.GalleryPreview;
 import com.iseplife.api.dto.event.view.EventPreview;
@@ -43,13 +44,13 @@ public class EventController {
 
   @GetMapping("/m/{timestamp}")
   @RolesAllowed({Roles.STUDENT})
-  public  List<EventPreview> getMonthEvents(@PathVariable Long timestamp, @AuthenticationPrincipal TokenPayload token) {
+  public  List<EventPreviewProjection> getMonthEvents(@PathVariable Long timestamp, @AuthenticationPrincipal TokenPayload token) {
     return eventService.getMonthEvents(new Date(timestamp), token);
   }
 
   @GetMapping("/incoming")
   @RolesAllowed({Roles.STUDENT})
-  public  List<EventPreview> getIncomingEvents(@AuthenticationPrincipal TokenPayload token, @RequestParam(name = "feed", defaultValue = "1") Long feed) {
+  public List<EventPreviewProjection> getIncomingEvents(@AuthenticationPrincipal TokenPayload token, @RequestParam(name = "feed", defaultValue = "1") Long feed) {
     return eventService.getIncomingEvents(token, feed);
   }
 

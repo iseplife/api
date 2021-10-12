@@ -1,5 +1,7 @@
 package com.iseplife.api.dto.event.view;
 
+import com.iseplife.api.dao.event.EventPreviewProjection;
+
 import java.util.Date;
 import java.util.Set;
 
