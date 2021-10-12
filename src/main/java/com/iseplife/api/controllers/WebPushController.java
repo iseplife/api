@@ -8,6 +8,7 @@ import javax.annotation.security.RolesAllowed;
 
 import org.jose4j.lang.JoseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,13 +25,13 @@ public class WebPushController {
 
   @Autowired
   WebPushService webpushService;
-
-  @PostMapping("register/init")
+  
+  @PostMapping("/register/init")
   @RolesAllowed({ Roles.STUDENT })
   public void registerPushService(@RequestBody RegisterPushServiceDTO register) throws GeneralSecurityException, IOException, JoseException, ExecutionException, InterruptedException {
     webpushService.registerWebPushService(register);
   }
-  @PostMapping("register/validate")
+  @PostMapping("/register/validate")
   @RolesAllowed({ Roles.STUDENT })
   public void validatePushService(@RequestParam String key) {
     webpushService.validatePushService(key);

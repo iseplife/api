@@ -4,6 +4,7 @@ import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PublicKey;
+import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 
@@ -68,6 +69,11 @@ public class WebPushSubscription {
 
   public byte[] getKeyAsBytes() {
     return Base64.getDecoder().decode(getKey());
+  }
+  static {
+    if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
+        Security.addProvider(new BouncyCastleProvider());
+    }
   }
 
   public PublicKey getUserPublicKey()

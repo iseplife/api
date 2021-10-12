@@ -3,6 +3,7 @@ package com.iseplife.api.services;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -45,7 +46,9 @@ public class WebPushService {
 
     PushService pushService = new PushService();
 
+    System.out.println("doo");
     pushService.send(notification);
+    System.out.println("done");
     
     pushServiceRegistration.put(key, wpsub);
   }
@@ -57,6 +60,5 @@ public class WebPushService {
     student.addWebPushSubscription(sub);
     
     webPushSubscriptionRepository.save(sub);
-    
   }
 }
