@@ -30,7 +30,6 @@ public interface EventRepository extends CrudRepository<Event, Long> {
   )
   List<EventPreviewProjection> findAllInMonth(Date date, Boolean admin, List<Long> feeds);
 
-
   @Query(
     "select e from Event e left join e.targets t " +
       "where e.startsAt >= CURRENT_TIMESTAMP " +

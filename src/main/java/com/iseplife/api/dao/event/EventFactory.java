@@ -55,14 +55,14 @@ public class EventFactory {
     return event;
   }
 
-  static public EventPreview entityToPreviewView(Event event) {
+  static public EventPreview toPreview(Event event) {
     EventPreview preview = new EventPreview();
     preview.setId(event.getId());
     preview.setTitle(event.getTitle());
     preview.setType(event.getType().name());
     preview.setTargets(event.getTargets().stream().map(Feed::getId).collect(Collectors.toSet()));
-    preview.setStart(event.getStartsAt());
-    preview.setEnd(event.getEndsAt());
+    preview.setStartsAt(event.getStartsAt());
+    preview.setEndsAt(event.getEndsAt());
     preview.setCover(event.getCover());
     preview.setPublished(event.getPublishedAt().before(new Date()));
     return preview;

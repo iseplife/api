@@ -19,10 +19,7 @@ import javax.annotation.security.RolesAllowed;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by Guillaume on 31/07/2017.
- * back
- */
+
 @RestController
 @RequestMapping("/event")
 public class EventController {
@@ -62,13 +59,13 @@ public class EventController {
 
   @GetMapping("/{id}/previous")
   @RolesAllowed({Roles.STUDENT})
-  public List<EventPreview> getPreviousEditions(@PathVariable Long id) {
+  public List<EventPreviewProjection> getPreviousEditions(@PathVariable Long id) {
     return eventService.getPreviousEditions(id);
   }
 
   @GetMapping("/{id}/children")
   @RolesAllowed({Roles.STUDENT})
-  public List<EventPreview> getChildrenEvents(@PathVariable Long id) {
+  public List<EventPreviewProjection> getChildrenEvents(@PathVariable Long id) {
     return eventService.getChildrenEvents(id);
   }
 

@@ -28,10 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Created by Guillaume on 01/08/2017.
- * back
- */
+
 @Service
 public class EventService {
 
@@ -97,7 +94,7 @@ public class EventService {
   public List<EventPreview> getEvents() {
     return eventRepository.findAll()
       .stream()
-      .map(EventFactory::entityToPreviewView)
+      .map(EventFactory::toPreview)
       .collect(Collectors.toList());
   }
 
@@ -131,7 +128,6 @@ public class EventService {
 
   private Event getEvent(Long id) {
     Optional<Event> event = eventRepository.findById(id);
-
     if (event.isEmpty() || !SecurityService.hasReadAccessOn(event.get()))
       throw new HttpNotFoundException("not_found");
 
@@ -148,19 +144,18 @@ public class EventService {
     return galleryService.getEventGalleries(getEvent(id), page);
   }
 
-  public List<EventPreview> getChildrenEvents(Long id) {
+  public List<EventPreviewProjection> getChildrenEvents(Long id) {
     Event event = getEvent(id);
 
     return event.getChildren()
       .stream()
-      .map(EventFactory::entityToPreviewView)
+      .map(EventFactory::toPreview)
       .collect(Collectors.toList());
   }
 
-  public List<EventPreview> getPreviousEditions(Long id) {
+  public List<EventPreviewProjection> getPreviousEditions(Long id) {
     Event event = getEvent(id);
     List<Event> previousEditions = new LinkedList<>();
-
 
     //Only return the 5 last edition
     for (int i = 0; i < 5; i++) {
@@ -171,7 +166,7 @@ public class EventService {
     }
 
     return previousEditions.stream()
-      .map(EventFactory::entityToPreviewView)
+      .map(EventFactory::toPreview)
       .collect(Collectors.toList());
   }
 
