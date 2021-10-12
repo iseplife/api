@@ -67,7 +67,7 @@ public class EventService {
       EventFactory.dtoToEntity(dto, getEvent(dto.getPreviousEditionId()));
 
     event.setClub(club);
-    event.setFeed(new Feed());
+    event.setFeed(new Feed(dto.getTitle()));
     if (dto.getTargets().size() > 0)
       event.setTargets(Sets.newHashSet(feedRepository.findAllById(dto.getTargets())));
 

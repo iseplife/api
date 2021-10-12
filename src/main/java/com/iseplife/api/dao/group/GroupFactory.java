@@ -24,7 +24,7 @@ public class GroupFactory {
     Group group = new Group();
     group.setName(dto.getName());
     group.setRestricted(dto.getRestricted());
-    group.setFeed(new Feed());
+    group.setFeed(new Feed(dto.getName()));
 
     return group;
   }

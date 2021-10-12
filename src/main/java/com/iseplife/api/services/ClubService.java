@@ -109,7 +109,7 @@ public class ClubService {
       members.add(member);
     });
     club.setMembers(members);
-    club.setFeed(new Feed());
+    club.setFeed(new Feed(dto.getName()));
 
     return ClubFactory.toView(
       clubRepository.save(club),

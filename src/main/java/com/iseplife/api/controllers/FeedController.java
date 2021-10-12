@@ -2,6 +2,7 @@ package com.iseplife.api.controllers;
 
 
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.dao.feed.FeedProjection;
 import com.iseplife.api.dto.post.view.PostView;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.entity.feed.Feed;
@@ -28,8 +29,8 @@ public class FeedController {
 
   @GetMapping
   @RolesAllowed({Roles.STUDENT})
-  public Iterable<Feed> getUserFeed(@AuthenticationPrincipal TokenPayload token){
-    return feedService.getUserFeed(token);
+  public Iterable<FeedProjection> getUserFeeds(@AuthenticationPrincipal TokenPayload token){
+    return feedService.getUserFeeds(token);
   }
 
   @GetMapping("/main/post")

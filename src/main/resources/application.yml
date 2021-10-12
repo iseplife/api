@@ -4,13 +4,8 @@ spring:
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:root}
   jpa:
-    properties:
-      hibernate:
-        show_sql: true
-        format_sql: true
-
     hibernate:
-      ddl-auto: update
+      ddl-auto:
   servlet:
     multipart:
       max-file-size: 2000MB

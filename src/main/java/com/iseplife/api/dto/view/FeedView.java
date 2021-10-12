@@ -1,6 +1,8 @@
 package com.iseplife.api.dto.view;
 
-public class FeedView {
+import com.iseplife.api.dao.feed.FeedProjection;
+
+public class FeedView implements FeedProjection {
   private Long id;
   private String name;
 

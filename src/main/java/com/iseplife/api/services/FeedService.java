@@ -1,6 +1,7 @@
 package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.dao.feed.FeedProjection;
 import com.iseplife.api.dao.feed.SubscriptionRepository;
 import com.iseplife.api.dto.post.view.PostView;
 import com.iseplife.api.entity.feed.Feed;
@@ -42,16 +43,14 @@ public class FeedService {
 
   public Feed getFeed(Long id) {
     Optional<Feed> feed = feedRepository.findById(id);
-    if (feed.isEmpty())
+    if (feed.isEmpty() || !SecurityService.hasReadAccess(feed.get()))
       throw new HttpNotFoundException("feed_not_found");
 
     return feed.get();
   }
 
-  public Iterable<Feed> getUserFeed(TokenPayload token) {
-    Iterable<Feed> feeds = feedRepository.findAllById(token.getFeeds());
-
-    return feeds;
+  public Iterable<FeedProjection> getUserFeeds(TokenPayload token) {
+    return feedRepository.findAllByIdIn(token.getFeeds());
   }
 
   @Cacheable("main-posts")
