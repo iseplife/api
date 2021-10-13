@@ -8,7 +8,6 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -53,9 +52,15 @@ public class WebPushService {
   private Cache<String, WebPushSubscription> pushServiceRegistration = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
 
   public void registerWebPushService(RegisterPushServiceDTO sub) throws GeneralSecurityException, IOException, JoseException, ExecutionException, InterruptedException {
-    String key = RandomString.make(10);
+    String key = RandomString.make(32);
     
-    WebPushSubscription wpsub = new WebPushSubscription();
+    WebPushSubscription wpsub = webPushSubscriptionRepository.findByAuthAndKeyAndEndpoint(sub.getAuth(), sub.getKey(), sub.getEndpoint()).orElse(null);
+    if(wpsub != null) {
+      System.out.println("already");
+      return;
+    }
+    System.out.println("not");
+    wpsub = new WebPushSubscription();
     wpsub.setAuth(sub.getAuth());
     wpsub.setEndpoint(sub.getEndpoint());
     wpsub.setKey(sub.getKey());
@@ -74,7 +79,9 @@ public class WebPushService {
   }
   public void validatePushService(String key) {
     Student student = studentService.getStudent(SecurityService.getLoggedId());
-    
+    System.out.println("save");
+
+    System.out.println(key);
     WebPushSubscription sub = pushServiceRegistration.getIfPresent(key);
     pushServiceRegistration.invalidate(key);
     student.addWebPushSubscription(sub);

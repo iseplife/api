@@ -8,6 +8,7 @@ import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -30,6 +31,7 @@ public class WebPushSubscription {
 
   private String auth;
   private String key;
+  @Column(name="endpoint", length = 512)
   private String endpoint;
 
   @ManyToOne

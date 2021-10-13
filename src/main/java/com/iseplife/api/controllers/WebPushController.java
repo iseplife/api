@@ -8,18 +8,19 @@ import javax.annotation.security.RolesAllowed;
 
 import org.jose4j.lang.JoseException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.github.lambdaexpression.annotation.EnableRequestBodyParam;
+import com.github.lambdaexpression.annotation.RequestBodyParam;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dto.webpush.RegisterPushServiceDTO;
 import com.iseplife.api.services.WebPushService;
 
 @RestController
+@EnableRequestBodyParam
 @RequestMapping("/webpush")
 public class WebPushController {
 
@@ -32,8 +33,7 @@ public class WebPushController {
     webpushService.registerWebPushService(register);
   }
   @PostMapping("/register/validate")
-  @RolesAllowed({ Roles.STUDENT })
-  public void validatePushService(@RequestParam String key) {
+  public void validatePushService(@RequestBodyParam String key) {
     webpushService.validatePushService(key);
   }
 }
