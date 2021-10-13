@@ -3,6 +3,11 @@ package com.iseplife.api.services;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -21,6 +26,7 @@ import com.iseplife.api.entity.user.Student;
 import net.bytebuddy.utility.RandomString;
 import nl.martijndwars.webpush.Notification;
 import nl.martijndwars.webpush.PushService;
+import nl.martijndwars.webpush.Utils;
 
 @Service
 public class WebPushService {
@@ -30,6 +36,19 @@ public class WebPushService {
   
   @Autowired
   private WebPushSubscriptionRepository webPushSubscriptionRepository;
+
+  private PublicKey publicKey;
+  private PrivateKey privateKey;
+  
+  public WebPushService() {
+    try {
+      publicKey = Utils.loadPublicKey("BLWwNN2_bMjIeoh9JDxSVIx2qwrBchWDMHrb6nD1nDijSMoq6ZidqapvWMv5Git2SrObd8Do9glexD9wT-jECnY");
+      privateKey = Utils.loadPrivateKey("6WCXXQvA_RxtTBH2i9si-yHu-Kzd36uzHM5CRE68dp4");
+    } catch (NoSuchProviderException | NoSuchAlgorithmException | InvalidKeySpecException e) {
+      e.printStackTrace();
+    }
+  }
+  
   
   private Cache<String, WebPushSubscription> pushServiceRegistration = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
 
@@ -45,7 +64,8 @@ public class WebPushService {
         ("{\"type\":\"register\", \"key\":\""+key+"\"}").getBytes(StandardCharsets.UTF_8));
 
     PushService pushService = new PushService();
-
+    pushService.setPublicKey(publicKey);
+    pushService.setPrivateKey(privateKey);
     System.out.println("doo");
     pushService.send(notification);
     System.out.println("done");
