@@ -22,6 +22,7 @@ import com.iseplife.api.dao.webpush.WebPushSubscriptionRepository;
 import com.iseplife.api.dto.webpush.RegisterPushServiceDTO;
 import com.iseplife.api.entity.subscription.WebPushSubscription;
 import com.iseplife.api.entity.user.Student;
+import com.iseplife.api.exceptions.IllegalArgumentException;
 
 import net.bytebuddy.utility.RandomString;
 import nl.martijndwars.webpush.Notification;
@@ -62,27 +63,35 @@ public class WebPushService {
     WebPushSubscription wpsub = webPushSubscriptionRepository.findByAuthAndKeyAndEndpointAndOwner_IdOrFingerprint(
         sub.getAuth(), sub.getKey(), sub.getEndpoint(), loggedId, sub.getFingerprint()).orElse(null);
     if (wpsub != null) {
-      if (!sub.getAuth().equals(wpsub.getAuth()) || !sub.getFingerprint().equals(wpsub.getFingerprint())
-          || !sub.getEndpoint().equals(wpsub.getEndpoint())) {
-        wpsub.setAuth(sub.getAuth());
-        wpsub.setEndpoint(sub.getEndpoint());
-        wpsub.setKey(sub.getKey());
-        wpsub.setFingerprint(sub.getFingerprint());
+      breaking: {
+        boolean sameSubscription = sub.getAuth().equals(wpsub.getAuth()) && sub.getEndpoint().equals(wpsub.getEndpoint());
+        if (!sameSubscription || !sub.getFingerprint().equals(wpsub.getFingerprint())) {
+          wpsub.setAuth(sub.getAuth());
+          wpsub.setEndpoint(sub.getEndpoint());
+          wpsub.setKey(sub.getKey());
+          wpsub.setFingerprint(sub.getFingerprint());
 
-        wpsub.setLastUpdate(new Date());
+          wpsub.setLastUpdate(new Date());
 
-        webPushSubscriptionRepository.save(wpsub);
-      } else
-        webPushSubscriptionRepository.updateDate(wpsub.getId(), new Date());
-
-      return;
+          if(sameSubscription)
+            webPushSubscriptionRepository.save(wpsub);
+          else
+            break breaking;
+        } else
+          webPushSubscriptionRepository.updateDate(wpsub.getId(), new Date());
+        
+        return;
+      }
     }
+    
     Student student = studentService.getStudent(loggedId);
-    wpsub = new WebPushSubscription();
+    if(wpsub == null)
+      wpsub = new WebPushSubscription();
     wpsub.setAuth(sub.getAuth());
     wpsub.setEndpoint(sub.getEndpoint());
     wpsub.setKey(sub.getKey());
     wpsub.setOwner(student);
+    wpsub.setFingerprint(sub.getFingerprint());
 
     sendSyncNotification(new Notification(wpsub.getEndpoint(), wpsub.getUserPublicKey(), wpsub.getAuthAsBytes(),
         ("{\"type\":\"register\", \"key\":\"" + key + "\"}").getBytes(StandardCharsets.UTF_8)));
@@ -95,7 +104,9 @@ public class WebPushService {
     PushService pushService = new PushService();
     pushService.setPublicKey(publicKey);
     pushService.setPrivateKey(privateKey);
-    pushService.send(notification);
+    int code = pushService.send(notification).getStatusLine().getStatusCode();
+    if(code != 201)
+      throw new IllegalArgumentException("bad_subscription");
   }
 
   public void validatePushService(String key) {
