@@ -66,11 +66,7 @@ public class WebPushService {
       breaking: {
         boolean sameSubscription = sub.getAuth().equals(wpsub.getAuth()) && sub.getEndpoint().equals(wpsub.getEndpoint());
         if (!sameSubscription || !sub.getFingerprint().equals(wpsub.getFingerprint())) {
-          wpsub.setAuth(sub.getAuth());
-          wpsub.setEndpoint(sub.getEndpoint());
-          wpsub.setKey(sub.getKey());
           wpsub.setFingerprint(sub.getFingerprint());
-
           wpsub.setLastUpdate(new Date());
 
           if(sameSubscription)
