@@ -8,6 +8,7 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -32,60 +33,76 @@ public class WebPushService {
 
   @Autowired
   private StudentService studentService;
-  
+
   @Autowired
   private WebPushSubscriptionRepository webPushSubscriptionRepository;
 
   private PublicKey publicKey;
   private PrivateKey privateKey;
-  
+
   public WebPushService() {
     try {
-      publicKey = Utils.loadPublicKey("BLWwNN2_bMjIeoh9JDxSVIx2qwrBchWDMHrb6nD1nDijSMoq6ZidqapvWMv5Git2SrObd8Do9glexD9wT-jECnY");
+      publicKey = Utils
+          .loadPublicKey("BLWwNN2_bMjIeoh9JDxSVIx2qwrBchWDMHrb6nD1nDijSMoq6ZidqapvWMv5Git2SrObd8Do9glexD9wT-jECnY");
       privateKey = Utils.loadPrivateKey("6WCXXQvA_RxtTBH2i9si-yHu-Kzd36uzHM5CRE68dp4");
     } catch (NoSuchProviderException | NoSuchAlgorithmException | InvalidKeySpecException e) {
       e.printStackTrace();
     }
   }
-  
-  
-  private Cache<String, WebPushSubscription> pushServiceRegistration = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
 
-  public void registerWebPushService(RegisterPushServiceDTO sub) throws GeneralSecurityException, IOException, JoseException, ExecutionException, InterruptedException {
+  private Cache<String, WebPushSubscription> pushServiceRegistration = CacheBuilder.newBuilder()
+      .expireAfterWrite(10, TimeUnit.MINUTES).build();
+
+  public void registerWebPushService(RegisterPushServiceDTO sub)
+      throws GeneralSecurityException, IOException, JoseException, ExecutionException, InterruptedException {
     String key = RandomString.make(32);
-    
-    WebPushSubscription wpsub = webPushSubscriptionRepository.findByAuthAndKeyAndEndpoint(sub.getAuth(), sub.getKey(), sub.getEndpoint()).orElse(null);
-    if(wpsub != null) {
-      System.out.println("already");
+
+    Long loggedId = SecurityService.getLoggedId();
+
+    WebPushSubscription wpsub = webPushSubscriptionRepository.findByAuthAndKeyAndEndpointAndOwner_IdOrFingerprint(
+        sub.getAuth(), sub.getKey(), sub.getEndpoint(), loggedId, sub.getFingerprint()).orElse(null);
+    if (wpsub != null) {
+      if (!sub.getAuth().equals(wpsub.getAuth()) || !sub.getFingerprint().equals(wpsub.getFingerprint())
+          || !sub.getEndpoint().equals(wpsub.getEndpoint())) {
+        wpsub.setAuth(sub.getAuth());
+        wpsub.setEndpoint(sub.getEndpoint());
+        wpsub.setKey(sub.getKey());
+        wpsub.setFingerprint(sub.getFingerprint());
+
+        wpsub.setLastUpdate(new Date());
+
+        webPushSubscriptionRepository.save(wpsub);
+      } else
+        webPushSubscriptionRepository.updateDate(wpsub.getId(), new Date());
+
       return;
     }
-    System.out.println("not");
+    Student student = studentService.getStudent(loggedId);
     wpsub = new WebPushSubscription();
     wpsub.setAuth(sub.getAuth());
     wpsub.setEndpoint(sub.getEndpoint());
     wpsub.setKey(sub.getKey());
-    
-    Notification notification = new Notification(wpsub.getEndpoint(), wpsub.getUserPublicKey(), wpsub.getAuthAsBytes(),
-        ("{\"type\":\"register\", \"key\":\""+key+"\"}").getBytes(StandardCharsets.UTF_8));
+    wpsub.setOwner(student);
 
+    sendSyncNotification(new Notification(wpsub.getEndpoint(), wpsub.getUserPublicKey(), wpsub.getAuthAsBytes(),
+        ("{\"type\":\"register\", \"key\":\"" + key + "\"}").getBytes(StandardCharsets.UTF_8)));
+
+    pushServiceRegistration.put(key, wpsub);
+  }
+
+  private void sendSyncNotification(Notification notification)
+      throws GeneralSecurityException, IOException, JoseException, ExecutionException, InterruptedException {
     PushService pushService = new PushService();
     pushService.setPublicKey(publicKey);
     pushService.setPrivateKey(privateKey);
-    System.out.println("doo");
     pushService.send(notification);
-    System.out.println("done");
-    
-    pushServiceRegistration.put(key, wpsub);
   }
-  public void validatePushService(String key) {
-    Student student = studentService.getStudent(SecurityService.getLoggedId());
-    System.out.println("save");
 
-    System.out.println(key);
+  public void validatePushService(String key) {
     WebPushSubscription sub = pushServiceRegistration.getIfPresent(key);
     pushServiceRegistration.invalidate(key);
-    student.addWebPushSubscription(sub);
-    
+    sub.getOwner().addWebPushSubscription(sub);
+
     webPushSubscriptionRepository.save(sub);
   }
 }

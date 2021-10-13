@@ -1,23 +1,11 @@
 package com.iseplife.api.dto.webpush;
 
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.util.Base64;
-
-import org.bouncycastle.jce.ECNamedCurveTable;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
-import org.bouncycastle.jce.spec.ECPublicKeySpec;
-import org.bouncycastle.math.ec.ECPoint;
-
 public class RegisterPushServiceDTO {
 
   private String auth;
   private String key;
   private String endpoint;
+  private String fingerprint;
 
   public void setAuth(String auth) {
     this.auth = auth;
@@ -41,5 +29,13 @@ public class RegisterPushServiceDTO {
 
   public String getEndpoint() {
     return endpoint;
+  }
+  
+  public void setFingerprint(String fingerprint) {
+    this.fingerprint = fingerprint;
+  }
+  
+  public String getFingerprint() {
+    return fingerprint;
   }
 }

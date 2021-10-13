@@ -7,9 +7,11 @@ import java.security.PublicKey;
 import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -19,6 +21,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
 import org.bouncycastle.jce.spec.ECPublicKeySpec;
 import org.bouncycastle.math.ec.ECPoint;
+import org.hibernate.annotations.CreationTimestamp;
 
 import com.iseplife.api.entity.user.Student;
 
@@ -31,11 +34,32 @@ public class WebPushSubscription {
 
   private String auth;
   private String key;
-  @Column(name="endpoint", length = 512)
+  @Column(length = 512)
   private String endpoint;
+  @Column(unique = true)
+  private String fingerprint;
+  
+  @CreationTimestamp
+  private Date lastUpdate;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   private Student owner;
+  
+  public Long getId() {
+    return id;
+  }
+  
+  public Date getLastUpdate() {
+    return lastUpdate;
+  }
+  
+  public void setLastUpdate(Date lastUpdate) {
+    this.lastUpdate = lastUpdate;
+  }
+  
+  public void setOwner(Student owner) {
+    this.owner = owner;
+  }
 
   public Student getOwner() {
     return owner;
@@ -63,6 +87,14 @@ public class WebPushSubscription {
 
   public String getEndpoint() {
     return endpoint;
+  }
+  
+  public void setFingerprint(String fingerprint) {
+    this.fingerprint = fingerprint;
+  }
+  
+  public String getFingerprint() {
+    return fingerprint;
   }
 
   public byte[] getAuthAsBytes() {
