@@ -12,7 +12,9 @@ public class ClubMemberFactory {
       view.setRole(member.getRole());
       view.setPosition(member.getPosition());
       view.setStudent(StudentFactory.toPreview(member.getStudent()));
-      view.setParent(member.getParent().getId());
+
+      if(member.getParent() != null)
+        view.setParent(member.getParent().getId());
 
       return view;
     }

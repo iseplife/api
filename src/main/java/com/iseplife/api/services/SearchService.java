@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -80,7 +81,7 @@ public class SearchService {
   }
 
   public List<SearchItemView> searchUserAll(String name){
-    return studentRepository.searchStudent(name, true)
+    return studentRepository.searchStudent(name.toLowerCase(), true)
       .stream()
       .map(SearchFactory::toSearchItemView)
       .collect(Collectors.toList());
@@ -98,9 +99,9 @@ public class SearchService {
       List<Integer> promoArray = Arrays.stream(promos.split(","))
         .map(Integer::parseInt)
         .collect(Collectors.toList());
-      students = studentRepository.searchStudent(filter, promoArray, pr);
+      students = studentRepository.searchStudent(filter.toLowerCase(), promoArray, pr);
     } else {
-      students = studentRepository.searchStudent(filter, pr);
+      students = studentRepository.searchStudent(filter.toLowerCase(), pr);
     }
 
     return students.map(SearchFactory::toSearchItemView);
@@ -108,7 +109,7 @@ public class SearchService {
 
   public Page<SearchItemView> searchEvent(String filter, int page, Boolean returnAll, TokenPayload token) {
     Page<Event> events = eventRepository.searchEvent(
-      filter,
+      filter.toLowerCase(),
       token.getRoles().contains("ROLE_ADMIN"),
       token.getFeeds(),
       PageRequest.of(page, RESULTS_PER_PAGE)
@@ -118,14 +119,17 @@ public class SearchService {
   }
 
   public Page<SearchItemView> searchClub(String filter, int page, Boolean returnAll) {
-    Page<Club> clubs = clubRepository.findAllByNameContainingIgnoringCase(filter, PageRequest.of(page, RESULTS_PER_PAGE));
+    Page<Club> clubs = clubRepository.findAllByNameContainingIgnoringCase(
+      filter.toLowerCase(),
+      PageRequest.of(page, RESULTS_PER_PAGE)
+    );
 
     return clubs.map(SearchFactory::toSearchItemView);
   }
 
   public Page<SearchItemView> searchGroup(String filter, int page, Boolean returnAll, TokenPayload token) {
     Page<Group> groups = groupRepository.searchGroup(
-      filter,
+      filter.toLowerCase(),
       token.getId(),
       token.getRoles().contains("ROLE_ADMIN"),
       PageRequest.of(page, RESULTS_PER_PAGE)

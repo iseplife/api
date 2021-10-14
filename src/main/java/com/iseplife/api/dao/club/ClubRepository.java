@@ -39,6 +39,14 @@ public interface ClubRepository extends CrudRepository<Club, Long> {
   List<Club> findByMemberRole(@Param("student") Student student, @Param("role") Set<ClubRole> roles);
 
   @Query(
+    "select " +
+      "distinct cast(function('generate_series', cm.fromYear, cm.toYear) as int) as sessions " +
+      "from Club c join c.members cm where c.id = ?1 " +
+      "order by sessions desc"
+  )
+  Set<Integer> findClubSessions(Long club);
+
+  @Query(
     "select c from Club c " +
       "join c.members m " +
       "where m.student = :#{#student} " +

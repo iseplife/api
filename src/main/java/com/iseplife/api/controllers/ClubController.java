@@ -2,16 +2,18 @@ package com.iseplife.api.controllers;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
+import com.iseplife.api.dao.club.ClubFactory;
+import com.iseplife.api.dao.club.ClubMemberFactory;
 import com.iseplife.api.dao.club.projection.ClubMemberProjection;
 import com.iseplife.api.dto.club.ClubAdminDTO;
 import com.iseplife.api.dto.club.ClubDTO;
+import com.iseplife.api.dto.club.ClubMemberCreationDTO;
 import com.iseplife.api.dto.club.ClubMemberDTO;
+import com.iseplife.api.dto.club.view.ClubPreview;
 import com.iseplife.api.dto.club.view.ClubView;
 import com.iseplife.api.dto.gallery.view.GalleryPreview;
 import com.iseplife.api.dto.student.view.StudentPreview;
 import com.iseplife.api.dto.post.view.PostView;
-import com.iseplife.api.entity.club.Club;
-import com.iseplife.api.entity.club.ClubMember;
 import com.iseplife.api.services.ClubService;
 import com.iseplife.api.services.PostService;
 import com.iseplife.api.utils.JsonUtils;
@@ -22,9 +24,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.security.RolesAllowed;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by Guillaume on 30/07/2017.
@@ -45,15 +47,15 @@ public class ClubController {
 
   @GetMapping
   @RolesAllowed({Roles.STUDENT})
-  public List<Club> getAllClub() {
-    return clubService.getAll();
+  public List<ClubPreview> getAllClubs() {
+    return clubService.getAll().stream()
+      .map(ClubFactory::toPreview)
+      .collect(Collectors.toList());
   }
 
   @PostMapping
   @RolesAllowed({Roles.ADMIN})
-  public ClubView createClub(
-    @RequestBody ClubAdminDTO dto
-  ) {
+  public ClubView createClub(@RequestBody ClubAdminDTO dto) {
     return clubService.createClub(dto);
   }
 
@@ -111,22 +113,28 @@ public class ClubController {
     return clubService.getAdmins(id);
   }
 
-  @PutMapping("/{id}/member/{student}")
+  @PostMapping("/{id}/member")
   @RolesAllowed({Roles.STUDENT})
-  public ClubMember addMember(@PathVariable Long id, @PathVariable Long student) {
-    return clubService.addMember(id, student);
+  public ClubMemberProjection addMember(@PathVariable Long id, @RequestBody ClubMemberCreationDTO dto) {
+    return ClubMemberFactory.toView(clubService.addMember(id, dto));
   }
 
   @PutMapping("/member/{member}")
   @RolesAllowed({Roles.STUDENT})
-  public ClubMember updateMember(@PathVariable Long member, @RequestBody ClubMemberDTO dto) {
-    return clubService.updateMember(member, dto);
+  public ClubMemberProjection updateMember(@PathVariable Long member, @RequestBody ClubMemberDTO dto) {
+    return ClubMemberFactory.toView(clubService.updateMember(member, dto));
   }
 
   @GetMapping("/{id}/member")
   @RolesAllowed({Roles.STUDENT})
   public List<ClubMemberProjection> getYearlyMembers(@PathVariable Long id, @RequestParam(name = "y", required = false) Integer year) {
-    return clubService.getYearlyMembers(id, year == null ? ClubService.getCurrentSchoolYear(): year);
+    return clubService.getYearlyMembers(id, year);
+  }
+
+  @GetMapping("/{id}/school-sessions")
+  @RolesAllowed({Roles.STUDENT})
+  public Set<Integer> getClubSchoolSessions(@PathVariable Long id) {
+    return clubService.getClubAllSchoolSessions(id);
   }
 
 
