@@ -2,7 +2,8 @@ package com.iseplife.api.services;
 
 import com.iseplife.api.dto.CASAuthentificationDTO;
 import com.iseplife.api.dto.CASUserDTO;
-import com.iseplife.api.exceptions.AuthException;
+import com.iseplife.api.exceptions.http.HttpInternalServerErrorException;
+import com.iseplife.api.exceptions.http.HttpUnauthorizedException;
 import com.iseplife.api.exceptions.CASServiceException;
 import com.iseplife.api.utils.JsonUtils;
 import org.slf4j.Logger;
@@ -48,17 +49,19 @@ public class CASService {
         .exchange()
         .flatMap(clientResponse -> clientResponse.bodyToMono(String.class).flatMap(json -> {
             /*
-             * We parse manually as the wrong content-type header is given when authentification failed
+             * We parse manually as the wrong content-type header is given when authentication failed
              * (Content-Type	application/javascript)
              */
             CASAuthentificationDTO body = jsonUtils.deserialize(json, CASAuthentificationDTO.class);
             if (body == null || body.getResult() == 0)
-              return Mono.error(new AuthException("Authentification failed"));
+              return Mono.error(new HttpUnauthorizedException("authentication_failed"));
 
             ResponseCookie CASCookie = clientResponse.cookies().getFirst("lemonldap");
             if (CASCookie == null) {
               LOG.error("CAS cookie (lemonldap) not found");
-              return Mono.error(new AuthException("CAS cookie has been missing from the response"));
+              return Mono.error(
+                new CASServiceException("CAS cookie's missing from the response")
+              );
             }
 
             return accessUser(CASCookie);
@@ -68,13 +71,13 @@ public class CASService {
 
       if(response == null){
         LOG.warn("CAS user's information not accessed");
-        throw new AuthException("Authentification failed");
+        throw new HttpUnauthorizedException("authentication_failed");
       }
 
       return response;
     } catch (WebClientException e) {
       LOG.error("CAS unavailable");
-      throw new CASServiceException("CAS unavailable", e);
+      throw new HttpInternalServerErrorException("isep_cas_unavailable", e);
     }
   }
 

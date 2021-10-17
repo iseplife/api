@@ -14,9 +14,8 @@ import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.dao.event.EventFactory;
 import com.iseplife.api.dao.event.EventRepository;
-import com.iseplife.api.exceptions.AuthException;
-import com.iseplife.api.exceptions.IllegalArgumentException;
-import com.iseplife.api.exceptions.NotFoundException;
+import com.iseplife.api.exceptions.http.HttpForbiddenException;
+import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import com.iseplife.api.services.fileHandler.FileHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -62,7 +61,7 @@ public class EventService {
   public EventView createEvent(EventDTO dto) {
     Club club = clubService.getClub(dto.getClub());
     if (club == null || !SecurityService.hasRightOn(club))
-      throw new AuthException("Insufficient rights for club (" + dto.getClub() + ")");
+      throw new HttpForbiddenException("insufficient_rights");
 
 
     Event event = dto.getPreviousEditionId() == null ?
@@ -124,7 +123,7 @@ public class EventService {
 
   public List<EventPreview> getFeedIncomingEvents(TokenPayload token, Feed feed) {
     if (!SecurityService.hasReadAccess(feed))
-      throw new NotFoundException("Could not find feed with id: " + feed);
+      throw new HttpNotFoundException("feed_not_found");
 
     return eventRepository.findFeedIncomingEvents(
       token.getRoles().contains("ROLE_ADMIN"),
@@ -140,7 +139,7 @@ public class EventService {
     Optional<Event> event = eventRepository.findById(id);
 
     if (event.isEmpty() || !SecurityService.hasReadAccessOn(event.get()))
-      throw new IllegalArgumentException("could not find event with id: " + id);
+      throw new HttpNotFoundException("not_found");
 
     return event.get();
   }
@@ -185,7 +184,7 @@ public class EventService {
   public Event updateEvent(Long id, EventDTO dto) {
     Event event = getEvent(id);
     if (!SecurityService.hasRightOn(event))
-      throw new AuthException("You are not allowed to edit this event");
+      throw new HttpForbiddenException("insufficient_rights");
 
     event.setTitle(dto.getTitle());
     event.setDescription(dto.getDescription());

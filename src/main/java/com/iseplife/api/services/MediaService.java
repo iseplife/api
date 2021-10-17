@@ -24,9 +24,10 @@ import com.iseplife.api.dao.media.image.ImageRepository;
 import com.iseplife.api.dao.media.image.MatchedRepository;
 import com.iseplife.api.dao.media.MediaRepository;
 import com.iseplife.api.dao.post.PostRepository;
-import com.iseplife.api.exceptions.AuthException;
-import com.iseplife.api.exceptions.IllegalArgumentException;
-import com.iseplife.api.exceptions.MediaMaxUploadException;
+import com.iseplife.api.exceptions.*;
+import com.iseplife.api.exceptions.http.HttpBadRequestException;
+import com.iseplife.api.exceptions.http.HttpForbiddenException;
+import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import com.iseplife.api.services.fileHandler.FileHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,11 +40,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.cache.annotation.Cacheable;
 
-import java.security.InvalidParameterException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -101,7 +100,7 @@ public class MediaService {
   public Media getMedia(Long id) {
     Optional<Media> media = mediaRepository.findById(id);
     if (media.isEmpty())
-      throw new InvalidParameterException("could not get the image with id: " + id);
+      throw new HttpNotFoundException("media_not_found");
 
     return media.get();
   }
@@ -128,7 +127,7 @@ public class MediaService {
   private Image getImage(Long id) {
     Optional<Image> img = imageRepository.findById(id);
     if (img.isEmpty())
-      throw new RuntimeException("could not get the image with id: " + id);
+      throw new HttpNotFoundException("image_not_found");
 
     return img.get();
   }
@@ -137,7 +136,7 @@ public class MediaService {
   private Boolean isAllowedToCreateMedia(Author author) {
     boolean isStudent = author instanceof Student;
     if (!isStudent && !SecurityService.hasRightOn((Club) author))
-      throw new AuthException("You have not sufficient rights on this club (id:" + author.getId() + ")");
+      throw new HttpForbiddenException("insufficient_rights");
 
     if (author.getMediaCooldown() == null || Duration.between(author.getMediaCooldown().toInstant(), Instant.now()).toHours() > 24) {
       author.setMediaCooldown(new Date());
@@ -169,7 +168,7 @@ public class MediaService {
       studentService.getStudent(SecurityService.getLoggedId());
 
     if (gallery && club <= 0)
-      throw new IllegalArgumentException("Club need to be specified when creating a gallery image");
+      throw new HttpForbiddenException("insufficient_rights");
 
     if (isAllowedToCreateMedia(author)) {
       String name, mime = file.getContentType().split("/")[0];
@@ -210,7 +209,7 @@ public class MediaService {
       return mediaFactory.toBasicView(mediaRepository.save(media));
     }
 
-    throw new MediaMaxUploadException("You've reached your maximum daily upload");
+    throw new MediaMaxUploadException("daily_upload_reached");
   }
 
   public boolean toggleNSFW(Long id) {
@@ -280,7 +279,7 @@ public class MediaService {
       .count();
 
     if (res > 0) {
-      throw new IllegalArgumentException("this user is already tagged");
+      throw new HttpBadRequestException("already_tagged");
     }
     Student match = studentService.getStudent(studentId);
     Student owner = studentService.getStudent(auth.getId());

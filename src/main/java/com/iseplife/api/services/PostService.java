@@ -21,8 +21,9 @@ import com.iseplife.api.constants.PostState;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.media.MediaRepository;
 import com.iseplife.api.dao.student.StudentRepository;
-import com.iseplife.api.exceptions.AuthException;
-import com.iseplife.api.exceptions.IllegalArgumentException;
+import com.iseplife.api.exceptions.http.HttpForbiddenException;
+import com.iseplife.api.exceptions.http.HttpBadRequestException;
+import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import com.iseplife.api.websocket.PostMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -81,15 +82,16 @@ public class PostService {
   private Post getPost(Long postID) {
     Optional<Post> post = postRepository.findById(postID);
     if (post.isEmpty())
-      throw new IllegalArgumentException("Could not find this post (id:" + postID + ")");
+      throw new HttpNotFoundException("poll_not_found");
 
     return post.get();
   }
 
+
   public Post getPostFromEmbed(Embedable embed) {
     Optional<Post> post = postRepository.findByEmbed(embed);
     if (post.isEmpty())
-      throw new IllegalArgumentException("Could not find a post related to this embed)");
+      throw new HttpNotFoundException("post_related_not_found");
 
     return post.get();
   }
@@ -99,14 +101,14 @@ public class PostService {
     Feed feed = feedService.getFeed(dto.getFeed());
 
     if (!SecurityService.hasRightOn(feed))
-      throw new AuthException("You are not allow to create a post here");
+      throw new HttpForbiddenException("insufficient_rights");
 
     post.setFeed(feed);
     post.setAuthor(securityService.getLoggedUser());
 
     // Author should be an admin or club publisher
     if (dto.getLinkedClub() != null && !SecurityService.hasAuthorAccessOn(dto.getLinkedClub()))
-      throw new AuthException("insufficient rights");
+      throw new HttpForbiddenException("insufficient_rights");
 
     post.setLinkedClub(dto.getLinkedClub() != null ? clubService.getClub(dto.getLinkedClub()) : null);
 
@@ -122,13 +124,12 @@ public class PostService {
 
   public PostFormView updatePost(Long postID, PostUpdateDTO dto) {
     Post post = getPost(postID);
-    if (!SecurityService.hasRightOn(post)) {
-      throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");
-    }
+    if (!SecurityService.hasRightOn(post))
+      throw new HttpForbiddenException("insufficient_rights");
 
     // Author should be an admin or club publisher
     if (dto.getLinkedClub() != null && !SecurityService.hasAuthorAccessOn(dto.getLinkedClub()))
-      throw new AuthException("insufficient rights");
+      throw new HttpForbiddenException("insufficient_rights");
 
     post.setLinkedClub(dto.getLinkedClub() != null ? clubService.getClub(dto.getLinkedClub()) : null);
 
@@ -169,7 +170,7 @@ public class PostService {
   public void deletePost(Long postID) {
     Post post = getPost(postID);
     if (!SecurityService.hasRightOn(post))
-      throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");
+      throw new HttpForbiddenException("insufficient_rights");
 
     Embedable embed = post.getEmbed();
     if (embed != null)
@@ -181,9 +182,9 @@ public class PostService {
 
   public void togglePinnedPost(Long postID) {
     Post post = getPost(postID);
-    if (SecurityService.hasRightOn(post) && post.getLinkedClub() != null) {
-      throw new AuthException("You have not sufficient rights on this post (id:" + postID + ")");
-    }
+    if (SecurityService.hasRightOn(post) && post.getLinkedClub() != null)
+      throw new HttpForbiddenException("insufficient_rights");
+
 
     post.setPinned(!post.getPinned());
     postRepository.save(post);
@@ -206,7 +207,7 @@ public class PostService {
         attachement = mediaService.getMedia(id);
         break;
       default:
-        throw new IllegalArgumentException("embed type (" + type + ") doesn't exist");
+        throw new HttpBadRequestException("invalid_embed_type");
     }
     post.setEmbed(attachement);
   }

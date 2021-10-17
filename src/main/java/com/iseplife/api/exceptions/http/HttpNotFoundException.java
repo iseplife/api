@@ -1,4 +1,4 @@
-package com.iseplife.api.exceptions;
+package com.iseplife.api.exceptions.http;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * back
  */
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
-public class NotFoundException extends RuntimeException {
-  public NotFoundException(String message) {
+public class HttpNotFoundException extends RuntimeException {
+  public HttpNotFoundException(String message) {
     super(message);
   }
 }

@@ -14,12 +14,11 @@ import com.iseplife.api.entity.ThreadInterface;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.post.Comment;
 import com.iseplife.api.entity.post.Like;
-import com.iseplife.api.exceptions.AuthException;
+import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.CommentMaxDepthException;
-import com.iseplife.api.exceptions.IllegalArgumentException;
+import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -60,7 +59,7 @@ public class ThreadService {
   private Thread getThread(Long id) {
     Optional<Thread> thread = threadRepository.findById(id);
     if (thread.isEmpty() || !SecurityService.hasReadAccess(thread.get().getFeed()))
-      throw new IllegalArgumentException("Could not find a thread with id: " + id);
+      throw new HttpNotFoundException("thread_not_found");
 
     return thread.get();
   }
@@ -71,7 +70,7 @@ public class ThreadService {
     else if (entityThread instanceof Thread)
       return (Thread) entityThread;
 
-    throw new IllegalArgumentException("Could not find a thread as this object doesn't seem to have one!");
+    throw new RuntimeException("Could not find a thread as this object doesn't seem to have one!");
   }
 
   public List<Like> getLikes(Long threadID) {
@@ -148,7 +147,7 @@ public class ThreadService {
     if (dto.getAsClub() != null) {
       Club club = clubService.getClub(dto.getAsClub());
       if (!SecurityService.hasRightOn(club))
-        throw new AuthException("You are not allowed to comment as this club (id:" + club.getId() + ")");
+        throw new HttpForbiddenException("insufficient_rights");
 
       comment.setAsClub(club);
     }
@@ -160,11 +159,11 @@ public class ThreadService {
     Optional<Comment> optional = commentRepository.findById(comID);
 
     if (optional.isEmpty())
-      throw new IllegalArgumentException("could not find this comment");
+      throw new HttpNotFoundException("comment_not_found");
 
     Comment comment = optional.get();
     if (!SecurityService.hasRightOn(comment))
-      throw new AuthException("you cannot edit this comment");
+      throw new HttpForbiddenException("insufficient_rights");
 
     comment.setMessage(dto.getMessage());
     comment.setLastEdition(new Date());
@@ -176,12 +175,12 @@ public class ThreadService {
     Optional<Comment> optional = commentRepository.findById(comID);
 
     if (optional.isEmpty())
-      throw new IllegalArgumentException("could not find this comment");
+      throw new HttpNotFoundException("comment_not_found");
 
     Comment comment = optional.get();
-    if (!comment.getStudent().getId().equals(auth.getId()) && !auth.getRoles().contains(Roles.ADMIN)) {
-      throw new AuthException("you cannot delete this comment");
-    }
+    if (!comment.getStudent().getId().equals(auth.getId()) && !auth.getRoles().contains(Roles.ADMIN))
+      throw new HttpForbiddenException("insufficient_rights");
+
     commentRepository.deleteById(comID);
   }
 

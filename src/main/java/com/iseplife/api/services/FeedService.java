@@ -8,8 +8,8 @@ import com.iseplife.api.entity.subscription.Subscription;
 import com.iseplife.api.entity.feed.Feedable;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.dao.feed.FeedRepository;
-import com.iseplife.api.exceptions.AuthException;
-import com.iseplife.api.exceptions.IllegalArgumentException;
+import com.iseplife.api.exceptions.http.HttpForbiddenException;
+import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import com.iseplife.api.services.fileHandler.FileHandler;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -43,7 +43,7 @@ public class FeedService {
   public Feed getFeed(Long id) {
     Optional<Feed> feed = feedRepository.findById(id);
     if (feed.isEmpty())
-      throw new IllegalArgumentException("could not find the feed with id: " + id);
+      throw new HttpNotFoundException("feed_not_found");
 
     return feed.get();
   }
@@ -84,7 +84,7 @@ public class FeedService {
   public Boolean toggleSubscription(Long id, Long studentID) {
     Feed feed = getFeed(id);
     if(!SecurityService.hasReadAccess(feed))
-      throw new AuthException("You have not sufficient rights on this feed (id:" + id + ")");
+      throw new HttpForbiddenException("insufficient_rights");
 
     Subscription sub = subscriptionRepository.findByFeedIdAndListenerId(feed.getId(), studentID);
     if (sub != null) {

@@ -1,6 +1,5 @@
 package com.iseplife.api.services;
 
-import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.constants.PostState;
 import com.iseplife.api.dao.gallery.GalleryFactory;
 import com.iseplife.api.dao.gallery.GalleryRepository;
@@ -15,8 +14,9 @@ import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.post.embed.media.Image;
 import com.iseplife.api.entity.post.embed.Gallery;
-import com.iseplife.api.exceptions.AuthException;
-import com.iseplife.api.exceptions.IllegalArgumentException;
+import com.iseplife.api.exceptions.http.HttpForbiddenException;
+import com.iseplife.api.exceptions.http.HttpBadRequestException;
+import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import com.iseplife.api.services.fileHandler.FileHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,13 +66,13 @@ public class GalleryService {
 
   private void checkIfHasRightsOnGallery(Gallery gallery){
     if ((gallery.getPseudo() && !SecurityService.hasRightOn(postService.getPostFromEmbed(gallery))) || !SecurityService.hasRightOn(gallery))
-      throw new AuthException("You have not sufficient rights on this gallery (id:" + gallery.getId() + ")");
+      throw new HttpForbiddenException("insufficient_rights");
   }
 
   public Gallery getGallery(Long id) {
     Optional<Gallery> gallery = galleryRepository.findById(id);
     if (gallery.isEmpty())
-      throw new IllegalArgumentException("Could not find this gallery (id:" + id + ")");
+      throw new HttpNotFoundException("gallery_not_found");
 
     return gallery.get();
   }
@@ -100,7 +100,7 @@ public class GalleryService {
   public GalleryView createGallery(GalleryDTO dto) {
     Gallery gallery = new Gallery();
     if (dto.getPseudo() && dto.getImages().size() > PSEUDO_GALLERY_MAX_SIZE)
-      throw new IllegalArgumentException("pseudo gallery can't have more than " + PSEUDO_GALLERY_MAX_SIZE + " images");
+      throw new HttpBadRequestException("pseudo_gallery_max_size_reached");
 
 
     gallery.setCreation(new Date());
@@ -109,7 +109,7 @@ public class GalleryService {
     if (!dto.getPseudo()) {
       Club club = clubService.getClub(dto.getClub());
       if (!SecurityService.hasRightOn(club))
-        throw new AuthException("You have not sufficient rights on this club (id:" + dto.getClub() + ")");
+        throw new HttpForbiddenException("insufficient_rights");
 
       gallery.setClub(club);
       gallery.setName(dto.getName());
@@ -149,7 +149,7 @@ public class GalleryService {
     Iterable<Image> medias = imageRepository.findAllById(images);
     medias.forEach(img -> {
         if(img.getGallery() != null)
-          throw new IllegalArgumentException("Image already in a gallery");
+          throw new HttpBadRequestException("image_already_attached");
 
         img.setGallery(gallery);
     });
@@ -172,7 +172,6 @@ public class GalleryService {
 
   public void deleteImagesGallery(Long id, List<Long> images) {
     Gallery gallery = getGallery(id);
-
     checkIfHasRightsOnGallery(gallery);
 
     long imageSize = gallery.getImages()
@@ -180,7 +179,7 @@ public class GalleryService {
       .filter(img -> images.contains(img.getId()))
       .count();
     if (images.size() != imageSize)
-      throw new IllegalArgumentException("images does not belong to this gallery");
+      throw new HttpBadRequestException("images_not_attached_to_gallery");
 
     imageRepository.findAllById(images).forEach(img ->
       mediaService.deleteMedia(img)

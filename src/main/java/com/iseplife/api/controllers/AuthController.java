@@ -7,7 +7,8 @@ import com.iseplife.api.dao.student.RoleRepository;
 import com.iseplife.api.dto.CASUserDTO;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.exceptions.AuthException;
+import com.iseplife.api.exceptions.http.HttpNotFoundException;
+import com.iseplife.api.exceptions.http.HttpUnauthorizedException;
 import com.iseplife.api.services.CASService;
 import com.iseplife.api.services.StudentService;
 import org.slf4j.Logger;
@@ -63,21 +64,21 @@ public class AuthController {
       student = studentService.getStudent(user.getNumero());
     } catch (IllegalArgumentException e) {
       if (autoGeneration) {
-        LOG.info("User {} {} not found but pass authentification, creating account", user.getPrenom(), user.getPrenom());
+        LOG.info("User {} {} not found but pass authentication, creating account", user.getPrenom(), user.getPrenom());
         student = new Student();
         studentService.hydrateStudent(student, user);
       } else {
-        throw new AuthException("Identified User not found");
+        throw new HttpNotFoundException("user_not_found");
       }
     }
+
+    if (student.isArchived())
+      throw new HttpNotFoundException("user_not_found");
 
     if (student.getLastConnection() == null) {
       LOG.info("First connection for user {}, hydrating account", student.getId());
       studentService.hydrateStudent(student, user);
     }
-
-    if (student.isArchived())
-      throw new AuthException("User archived");
 
     return jwtTokenUtil.generateToken(student);
   }
@@ -96,7 +97,7 @@ public class AuthController {
   @PostMapping("/refresh")
   public TokenSet getRefreshedTokens(@CookieValue(value = "refresh-token", defaultValue = "") String refreshToken) {
     if (refreshToken.equals(""))
-      throw new AuthException("refresh token missing or expired");
+      throw new HttpUnauthorizedException("refresh_token_expired");
 
     return jwtTokenUtil.refreshWithToken(refreshToken);
   }
