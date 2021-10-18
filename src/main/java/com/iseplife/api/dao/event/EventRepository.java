@@ -55,7 +55,7 @@ public interface EventRepository extends CrudRepository<Event, Long> {
       "where lower(e.title) like %?1% " +
       "and ((?2 = true) or (" +
         "e.published < CURRENT_TIMESTAMP " +
-        "and (e.targets is empty or e.closed = false or t.id in ?2)" +
+        "and (e.targets is empty or e.closed = false or t.id in ?3)" +
       ")) "
   )
   Page<Event> searchEvent(String name, Boolean admin, List<Long> feed, Pageable pageable);
