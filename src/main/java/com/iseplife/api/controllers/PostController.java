@@ -8,6 +8,10 @@ import com.iseplife.api.dto.view.*;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.services.PostService;
 import com.iseplife.api.services.SecurityService;
+import com.iseplife.api.services.StudentService;
+import com.iseplife.api.services.ThreadService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,7 +58,7 @@ public class PostController {
 
   @GetMapping("/authors")
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
-  public Set<AuthorView> getAuthors() {
-    return postService.getAuthorizedPublish(SecurityService.getLoggedId());
+  public Set<AuthorView> getAuthors(@RequestParam(name = "club") Boolean clubOnly) {
+    return postService.getAuthorizedPublish(SecurityService.getLoggedId(), clubOnly);
   }
 }

@@ -282,12 +282,30 @@ public class PostService {
     post.setEmbed(attachement);
   }
 
-  public Set<AuthorView> getAuthorizedPublish(Long studentId) {
-    Student student = studentService.getStudent(studentId);
-    return studentService.getPublisherClubs(student)
-      .stream()
-      .map(AuthorFactory::toView)
-      .collect(Collectors.toSet());
+  public Set<AuthorView> getAuthorizedPublish(Long id, Boolean clubOnly) {
+    Student student = studentService.getStudent(id);
+    Set<AuthorView> authorStatus = new HashSet<>();
+
+    if (student.getRoles().contains(Roles.ADMIN)) {
+      if (!clubOnly)
+        authorStatus.add(AuthorFactory.adminToView());
+
+      authorStatus.addAll(
+        clubService.getAll()
+          .stream()
+          .map(AuthorFactory::toView)
+          .collect(Collectors.toSet())
+      );
+    } else {
+      authorStatus.addAll(
+        studentService.getPublisherClubs(student)
+          .stream()
+          .map(AuthorFactory::toView)
+          .collect(Collectors.toSet())
+      );
+    }
+
+    return authorStatus;
   }
 
   public Page<PostProjection> getMainFeedPost(Long loggedUser, int page){

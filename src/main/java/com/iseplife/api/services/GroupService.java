@@ -74,8 +74,12 @@ public class GroupService {
     return groupRepository.findAll(PageRequest.of(page, RESULTS_PER_PAGE));
   }
 
-  public List<Group> getUserGroups(TokenPayload token) {
-    return groupRepository.findAllUserGroups(token.getId());
+  public List<GroupPreview> getUserGroups(Long id) {
+    return groupRepository
+      .findAllUserGroups(id)
+      .stream()
+      .map(GroupFactory::toPreview)
+      .collect(Collectors.toList());
   }
 
 
