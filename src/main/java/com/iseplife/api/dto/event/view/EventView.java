@@ -13,8 +13,8 @@ public class EventView {
   private String description;
   private String cover;
 
-  private Date start;
-  private Date end;
+  private Date startsAt;
+  private Date endsAt;
   private String location;
   private Float[] coordinates;
   private String ticketURL = null;
@@ -60,20 +60,20 @@ public class EventView {
     this.description = description;
   }
 
-  public Date getStart() {
-    return start;
+  public Date getStartsAt() {
+    return startsAt;
   }
 
-  public void setStart(Date start) {
-    this.start = start;
+  public void setStartsAt(Date startsAt) {
+    this.startsAt = startsAt;
   }
 
-  public Date getEnd() {
-    return end;
+  public Date getEndsAt() {
+    return endsAt;
   }
 
-  public void setEnd(Date end) {
-    this.end = end;
+  public void setEndsAt(Date endsAt) {
+    this.endsAt = endsAt;
   }
 
   public String getLocation() {

@@ -179,7 +179,7 @@ public class EventService {
     event.setDescription(dto.getDescription());
     event.setLocation(dto.getLocation());
     event.setCoordinates(dto.getCoordinates()[0] + ";" + dto.getCoordinates()[1]);
-    event.setStartsAt(dto.getStart());
+    event.setStartsAt(dto.getStartsAt());
     if (dto.getPreviousEditionId() != null) {
       Event prev = getEvent(dto.getPreviousEditionId());
       event.setPreviousEdition(prev);

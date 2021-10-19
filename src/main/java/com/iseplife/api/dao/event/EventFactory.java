@@ -23,8 +23,8 @@ public class EventFactory {
     event.setTitle(dto.getTitle());
     event.setType(EventType.valueOf(dto.getType()));
     event.setDescription(dto.getDescription());
-    event.setStartsAt(dto.getStart());
-    event.setEndsAt(dto.getEnd());
+    event.setStartsAt(dto.getStartsAt());
+    event.setEndsAt(dto.getEndsAt());
     event.setPrice(dto.getPrice());
     event.setTicketUrl(dto.getTicketUrl());
     event.setLocation(dto.getLocation());
@@ -42,8 +42,8 @@ public class EventFactory {
     event.setPreviousEdition(previous);
 
     event.setTitle(dto.getTitle() != null ? dto.getTitle() : previous.getTitle());
-    event.setStartsAt(dto.getStart() != null ? dto.getStart() : previous.getStartsAt());
-    event.setEndsAt(dto.getEnd() != null ? dto.getEnd() : previous.getEndsAt());
+    event.setStartsAt(dto.getStartsAt() != null ? dto.getStartsAt() : previous.getStartsAt());
+    event.setEndsAt(dto.getEndsAt() != null ? dto.getEndsAt() : previous.getEndsAt());
     event.setPrice(dto.getPrice() != null ? dto.getPrice() : previous.getPrice());
     event.setLocation(dto.getLocation() != null ? dto.getLocation() : previous.getLocation());
 
@@ -76,8 +76,8 @@ public class EventFactory {
     view.setDescription(event.getDescription());
     view.setCover(event.getCover());
 
-    view.setStart(event.getStartsAt());
-    view.setEnd(event.getEndsAt());
+    view.setStartsAt(event.getStartsAt());
+    view.setEndsAt(event.getEndsAt());
     view.setLocation(event.getLocation());
 
     // Split string containing long & lag and parsing it into float
