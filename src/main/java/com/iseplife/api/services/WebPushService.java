@@ -9,9 +9,18 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Date;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
+import org.apache.http.HttpResponse;
+import org.asynchttpclient.Response;
 import org.jose4j.lang.JoseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +35,7 @@ import com.iseplife.api.exceptions.IllegalArgumentException;
 
 import net.bytebuddy.utility.RandomString;
 import nl.martijndwars.webpush.Notification;
+import nl.martijndwars.webpush.PushAsyncService;
 import nl.martijndwars.webpush.PushService;
 import nl.martijndwars.webpush.Utils;
 
@@ -40,6 +50,8 @@ public class WebPushService {
 
   private PublicKey publicKey;
   private PrivateKey privateKey;
+  
+  private PushAsyncService pushService;
 
   public WebPushService() {
     try {
@@ -49,13 +61,16 @@ public class WebPushService {
     } catch (NoSuchProviderException | NoSuchAlgorithmException | InvalidKeySpecException e) {
       e.printStackTrace();
     }
+    pushService = new PushAsyncService();
+    pushService.setPublicKey(publicKey);
+    pushService.setPrivateKey(privateKey);
   }
-
+  
   private Cache<String, WebPushSubscription> pushServiceRegistration = CacheBuilder.newBuilder()
       .expireAfterWrite(10, TimeUnit.MINUTES).build();
 
   public void registerWebPushService(RegisterPushServiceDTO sub)
-      throws GeneralSecurityException, IOException, JoseException, ExecutionException, InterruptedException {
+      throws GeneralSecurityException, IOException, JoseException, ExecutionException, InterruptedException, TimeoutException {
     String key = RandomString.make(32);
 
     Long loggedId = SecurityService.getLoggedId();
@@ -96,13 +111,29 @@ public class WebPushService {
   }
 
   private void sendSyncNotification(Notification notification)
-      throws GeneralSecurityException, IOException, JoseException, ExecutionException, InterruptedException {
-    PushService pushService = new PushService();
-    pushService.setPublicKey(publicKey);
-    pushService.setPrivateKey(privateKey);
-    int code = pushService.send(notification).getStatusLine().getStatusCode();
+      throws GeneralSecurityException, IOException, JoseException, ExecutionException, InterruptedException, TimeoutException {
+    int code = sendAsyncNotification(notification).get(10, TimeUnit.SECONDS).getStatusCode();
     if(code != 201)
       throw new IllegalArgumentException("bad_subscription");
+  }
+  private CompletableFuture<Response> sendAsyncNotification(Notification notification) throws GeneralSecurityException, IOException, JoseException {
+    return pushService.send(notification);
+  }
+  
+  public void sendAsyncNotification(WebPushSubscription sub, String payload) {
+    try {
+      pushService.send(new Notification(sub.getEndpoint(), sub.getKey(), sub.getAuth(), payload)).thenAccept(response -> {
+        if(response.getStatusCode() != 201)
+          webPushSubscriptionRepository.delete(sub);
+      }).exceptionally(e->{
+        System.out.println("Error on exceptionally, webpush sub deleted !");
+        webPushSubscriptionRepository.delete(sub);
+        return null;
+      });
+    } catch (GeneralSecurityException | IOException | JoseException e) {
+      System.out.println("Error, webpush sub deleted !");
+      webPushSubscriptionRepository.delete(sub);
+    }
   }
 
   public void validatePushService(String key) {
