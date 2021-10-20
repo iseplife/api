@@ -171,17 +171,18 @@ public class ClubService {
     if (!SecurityService.hasRightOn(club))
       throw new HttpForbiddenException("insufficient_rights");
 
+    // Delete previous cover
     if (club.getCoverUrl() != null || file == null)
       fileHandler.delete(club.getCoverUrl());
 
     if (file == null) {
-      club.setLogoUrl(null);
+      club.setCoverUrl(null);
     } else {
       Map params = Map.of(
         "process", "compress",
         "sizes", StorageConfig.MEDIAS_CONF.get("club_cover").sizes
       );
-      club.setLogoUrl(fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("club_cover").path, false, params));
+      club.setCoverUrl(fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("club_cover").path, false, params));
     }
 
     clubRepository.save(club);
