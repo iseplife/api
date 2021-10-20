@@ -2,6 +2,8 @@ package com.iseplife.api.controllers;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
+import com.iseplife.api.dao.media.MediaFactory;
+import com.iseplife.api.dto.embed.view.media.MediaNameView;
 import com.iseplife.api.dao.event.EventPreviewProjection;
 import com.iseplife.api.dto.event.EventDTO;
 import com.iseplife.api.dto.gallery.view.GalleryPreview;
@@ -35,8 +37,8 @@ public class EventController {
 
   @PostMapping("/{id}/image")
   @RolesAllowed({Roles.STUDENT})
-  public String updateLogo(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
-    return eventService.updateImage(id, file);
+  public MediaNameView updateLogo(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+    return MediaFactory.toNameView(eventService.updateImage(id, file));
   }
 
   @GetMapping("/m/{timestamp}")

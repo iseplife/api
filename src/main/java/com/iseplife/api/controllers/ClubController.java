@@ -5,12 +5,14 @@ import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.club.ClubFactory;
 import com.iseplife.api.dao.club.ClubMemberFactory;
 import com.iseplife.api.dao.club.projection.ClubMemberProjection;
+import com.iseplife.api.dao.media.MediaFactory;
 import com.iseplife.api.dto.club.ClubAdminDTO;
 import com.iseplife.api.dto.club.ClubDTO;
 import com.iseplife.api.dto.club.ClubMemberCreationDTO;
 import com.iseplife.api.dto.club.ClubMemberDTO;
 import com.iseplife.api.dto.club.view.ClubPreview;
 import com.iseplife.api.dto.club.view.ClubView;
+import com.iseplife.api.dto.embed.view.media.MediaNameView;
 import com.iseplife.api.dto.gallery.view.GalleryPreview;
 import com.iseplife.api.dto.student.view.StudentPreview;
 import com.iseplife.api.dto.post.view.PostView;
@@ -28,10 +30,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * Created by Guillaume on 30/07/2017.
- * back
- */
 @RestController
 @RequestMapping("/club")
 public class ClubController {
@@ -79,14 +77,14 @@ public class ClubController {
 
   @PostMapping("/{id}/logo")
   @RolesAllowed({Roles.STUDENT})
-  public String updateLogo(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
-    return clubService.updateLogo(id, file);
+  public MediaNameView updateLogo(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+    return MediaFactory.toNameView(clubService.updateLogo(id, file));
   }
 
   @PostMapping("/{id}/cover")
   @RolesAllowed({Roles.STUDENT})
-  public String updateCover(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
-    return clubService.updateCover(id, file);
+  public MediaNameView updateCover(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+    return MediaFactory.toNameView(clubService.updateCover(id, file));
   }
 
   @PutMapping("/{id}/archive")

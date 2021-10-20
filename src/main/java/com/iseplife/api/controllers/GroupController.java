@@ -2,6 +2,8 @@ package com.iseplife.api.controllers;
 
 
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.dao.media.MediaFactory;
+import com.iseplife.api.dto.embed.view.media.MediaNameView;
 import com.iseplife.api.dto.group.GroupCreationDTO;
 import com.iseplife.api.dto.group.GroupMemberDTO;
 import com.iseplife.api.dto.group.GroupUpdateDTO;
@@ -71,8 +73,8 @@ public class GroupController {
 
   @PostMapping("/{id}/cover")
   @RolesAllowed({Roles.STUDENT})
-  public String updateCover(@PathVariable Long id, @RequestParam(value = "file") MultipartFile file) {
-    return groupService.updateCover(id, file);
+  public MediaNameView updateCover(@PathVariable Long id, @RequestParam(value = "file") MultipartFile file) {
+    return MediaFactory.toNameView(groupService.updateCover(id, file));
   }
 
   @GetMapping("/{id}/member")
