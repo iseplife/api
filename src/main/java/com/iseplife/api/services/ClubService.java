@@ -172,7 +172,7 @@ public class ClubService {
       throw new HttpForbiddenException("insufficient_rights");
 
     // Delete previous cover
-    if (club.getCoverUrl() != null || file == null)
+    if (club.getCoverUrl() != null)
       fileHandler.delete(club.getCoverUrl());
 
     if (file == null) {
@@ -186,7 +186,7 @@ public class ClubService {
     }
 
     clubRepository.save(club);
-    return club.getLogoUrl();
+    return club.getCoverUrl();
   }
 
   public ClubMember addMember(Long clubId, ClubMemberCreationDTO dto) {

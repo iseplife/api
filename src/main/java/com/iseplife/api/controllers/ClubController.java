@@ -77,13 +77,13 @@ public class ClubController {
 
   @PutMapping("/{id}/logo")
   @RolesAllowed({Roles.STUDENT})
-  public MediaNameView updateLogo(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+  public MediaNameView updateLogo(@PathVariable Long id, @RequestParam(value="file", required = false) MultipartFile file) {
     return MediaFactory.toNameView(clubService.updateLogo(id, file));
   }
 
   @PutMapping("/{id}/cover")
   @RolesAllowed({Roles.STUDENT})
-  public MediaNameView updateCover(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+  public MediaNameView updateCover(@PathVariable Long id, @RequestParam(value = "file", required = false) MultipartFile file) {
     return MediaFactory.toNameView(clubService.updateCover(id, file));
   }
 
