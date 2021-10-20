@@ -1,15 +1,17 @@
 package com.iseplife.api.dto.event.view;
 
+import com.iseplife.api.dao.event.EventPreviewProjection;
+
 import java.util.Date;
 import java.util.Set;
 
-public class EventPreview {
+public class EventPreview implements EventPreviewProjection {
   private Long id;
   private String title;
   private String type;
   private Set<Long> targets;
-  private Date start;
-  private Date end;
+  private Date startsAt;
+  private Date endsAt;
   private String cover;
   private Boolean published;
 
@@ -29,20 +31,20 @@ public class EventPreview {
     this.title = title;
   }
 
-  public Date getStart() {
-    return start;
+  public Date getStartsAt() {
+    return startsAt;
   }
 
-  public void setStart(Date start) {
-    this.start = start;
+  public void setStartsAt(Date startsAt) {
+    this.startsAt = startsAt;
   }
 
-  public Date getEnd() {
-    return end;
+  public Date getEndsAt() {
+    return endsAt;
   }
 
-  public void setEnd(Date end) {
-    this.end = end;
+  public void setEndsAt(Date endsAt) {
+    this.endsAt = endsAt;
   }
 
   public String getType() {

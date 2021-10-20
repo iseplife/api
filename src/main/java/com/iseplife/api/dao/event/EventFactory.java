@@ -23,8 +23,8 @@ public class EventFactory {
     event.setTitle(dto.getTitle());
     event.setType(EventType.valueOf(dto.getType()));
     event.setDescription(dto.getDescription());
-    event.setStartsAt(dto.getStart());
-    event.setEndsAt(dto.getEnd());
+    event.setStartsAt(dto.getStartsAt());
+    event.setEndsAt(dto.getEndsAt());
     event.setPrice(dto.getPrice());
     event.setTicketUrl(dto.getTicketUrl());
     event.setLocation(dto.getLocation());
@@ -33,7 +33,7 @@ public class EventFactory {
     event.setCoordinates(dto.getCoordinates()[0] + ";" + dto.getCoordinates()[1]);
 
     event.setClosed(dto.getClosed());
-    event.setPublished(dto.getPublished());
+    event.setPublishedAt(dto.getPublished());
     return event;
   }
 
@@ -42,8 +42,8 @@ public class EventFactory {
     event.setPreviousEdition(previous);
 
     event.setTitle(dto.getTitle() != null ? dto.getTitle() : previous.getTitle());
-    event.setStartsAt(dto.getStart() != null ? dto.getStart() : previous.getStartsAt());
-    event.setEndsAt(dto.getEnd() != null ? dto.getEnd() : previous.getEndsAt());
+    event.setStartsAt(dto.getStartsAt() != null ? dto.getStartsAt() : previous.getStartsAt());
+    event.setEndsAt(dto.getEndsAt() != null ? dto.getEndsAt() : previous.getEndsAt());
     event.setPrice(dto.getPrice() != null ? dto.getPrice() : previous.getPrice());
     event.setLocation(dto.getLocation() != null ? dto.getLocation() : previous.getLocation());
 
@@ -55,16 +55,16 @@ public class EventFactory {
     return event;
   }
 
-  static public EventPreview entityToPreviewView(Event event) {
+  static public EventPreview toPreview(Event event) {
     EventPreview preview = new EventPreview();
     preview.setId(event.getId());
     preview.setTitle(event.getTitle());
     preview.setType(event.getType().name());
     preview.setTargets(event.getTargets().stream().map(Feed::getId).collect(Collectors.toSet()));
-    preview.setStart(event.getStartsAt());
-    preview.setEnd(event.getEndsAt());
-    preview.setCover(event.getImageUrl());
-    preview.setPublished(event.getPublished().before(new Date()));
+    preview.setStartsAt(event.getStartsAt());
+    preview.setEndsAt(event.getEndsAt());
+    preview.setCover(event.getCover());
+    preview.setPublished(event.getPublishedAt().before(new Date()));
     return preview;
   }
 
@@ -74,10 +74,10 @@ public class EventFactory {
     view.setType(event.getType().name());
     view.setTitle(event.getTitle());
     view.setDescription(event.getDescription());
-    view.setCover(event.getImageUrl());
+    view.setCover(event.getCover());
 
-    view.setStart(event.getStartsAt());
-    view.setEnd(event.getEndsAt());
+    view.setStartsAt(event.getStartsAt());
+    view.setEndsAt(event.getEndsAt());
     view.setLocation(event.getLocation());
 
     // Split string containing long & lag and parsing it into float
@@ -85,7 +85,7 @@ public class EventFactory {
       view.setCoordinates(Arrays.stream(event.getCoordinates().split(";")).map(Float::valueOf).toArray(Float[]::new));
     view.setTicketURL(event.getTicketUrl());
     view.setPrice(event.getPrice());
-    view.setPublished(event.getPublished());
+    view.setPublished(event.getPublishedAt());
     view.setClosed(event.getClosed());
 
     view.setSubscribed(isSubscribed);

@@ -4,6 +4,7 @@ package com.iseplife.api.services;
 import com.google.common.collect.Sets;
 import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.dao.event.EventPreviewProjection;
 import com.iseplife.api.dao.feed.FeedRepository;
 import com.iseplife.api.dto.event.EventDTO;
 import com.iseplife.api.dto.gallery.view.GalleryPreview;
@@ -27,10 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Created by Guillaume on 01/08/2017.
- * back
- */
+
 @Service
 public class EventService {
 
@@ -69,7 +67,7 @@ public class EventService {
       EventFactory.dtoToEntity(dto, getEvent(dto.getPreviousEditionId()));
 
     event.setClub(club);
-    event.setFeed(new Feed());
+    event.setFeed(new Feed(dto.getTitle()));
     if (dto.getTargets().size() > 0)
       event.setTargets(Sets.newHashSet(feedRepository.findAllById(dto.getTargets())));
 
@@ -83,32 +81,29 @@ public class EventService {
       "sizes", StorageConfig.MEDIAS_CONF.get("feed_cover").sizes
     );
 
-    if (event.getImageUrl() != null)
-      fileHandler.delete(event.getImageUrl());
+    if (event.getCover() != null)
+      fileHandler.delete(event.getCover());
 
-    event.setImageUrl(fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("feed_cover").path, false, params));
+    event.setCover(fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("feed_cover").path, false, params));
     eventRepository.save(event);
 
-    return event.getImageUrl();
+    return event.getCover();
   }
 
 
   public List<EventPreview> getEvents() {
     return eventRepository.findAll()
       .stream()
-      .map(EventFactory::entityToPreviewView)
+      .map(EventFactory::toPreview)
       .collect(Collectors.toList());
   }
 
 
-  public List<EventPreview> getMonthEvents(Date date, TokenPayload token) {
-    return eventRepository.findAllInMonth(date, token.getRoles().contains("ROLE_ADMIN"), token.getFeeds())
-      .stream()
-      .map(EventFactory::entityToPreviewView)
-      .collect(Collectors.toList());
+  public List<EventPreviewProjection> getMonthEvents(Date date, TokenPayload token) {
+    return eventRepository.findAllInMonth(date, token.getRoles().contains("ROLE_ADMIN"), token.getFeeds());
   }
 
-  public List<EventPreview> getIncomingEvents(TokenPayload token, Long feed) {
+  public List<EventPreviewProjection> getIncomingEvents(TokenPayload token, Long feed) {
     if (feed != 1)
       return getFeedIncomingEvents(token, feedService.getFeed(feed));
 
@@ -116,12 +111,10 @@ public class EventService {
       token.getRoles().contains("ROLE_ADMIN"),
       token.getFeeds(),
       PageRequest.of(0, EVENTS_PER_PAGE)
-    )
-      .map(EventFactory::entityToPreviewView)
-      .toList();
+    ).toList();
   }
 
-  public List<EventPreview> getFeedIncomingEvents(TokenPayload token, Feed feed) {
+  public List<EventPreviewProjection> getFeedIncomingEvents(TokenPayload token, Feed feed) {
     if (!SecurityService.hasReadAccess(feed))
       throw new HttpNotFoundException("feed_not_found");
 
@@ -129,15 +122,12 @@ public class EventService {
       token.getRoles().contains("ROLE_ADMIN"),
       feed,
       PageRequest.of(0, EVENTS_PER_PAGE)
-    )
-      .map(EventFactory::entityToPreviewView)
-      .toList();
+    ).toList();
   }
 
 
   private Event getEvent(Long id) {
     Optional<Event> event = eventRepository.findById(id);
-
     if (event.isEmpty() || !SecurityService.hasReadAccessOn(event.get()))
       throw new HttpNotFoundException("not_found");
 
@@ -154,19 +144,18 @@ public class EventService {
     return galleryService.getEventGalleries(getEvent(id), page);
   }
 
-  public List<EventPreview> getChildrenEvents(Long id) {
+  public List<EventPreviewProjection> getChildrenEvents(Long id) {
     Event event = getEvent(id);
 
     return event.getChildren()
       .stream()
-      .map(EventFactory::entityToPreviewView)
+      .map(EventFactory::toPreview)
       .collect(Collectors.toList());
   }
 
-  public List<EventPreview> getPreviousEditions(Long id) {
+  public List<EventPreviewProjection> getPreviousEditions(Long id) {
     Event event = getEvent(id);
     List<Event> previousEditions = new LinkedList<>();
-
 
     //Only return the 5 last edition
     for (int i = 0; i < 5; i++) {
@@ -177,7 +166,7 @@ public class EventService {
     }
 
     return previousEditions.stream()
-      .map(EventFactory::entityToPreviewView)
+      .map(EventFactory::toPreview)
       .collect(Collectors.toList());
   }
 
@@ -190,7 +179,7 @@ public class EventService {
     event.setDescription(dto.getDescription());
     event.setLocation(dto.getLocation());
     event.setCoordinates(dto.getCoordinates()[0] + ";" + dto.getCoordinates()[1]);
-    event.setStartsAt(dto.getStart());
+    event.setStartsAt(dto.getStartsAt());
     if (dto.getPreviousEditionId() != null) {
       Event prev = getEvent(dto.getPreviousEditionId());
       event.setPreviousEdition(prev);
@@ -201,8 +190,8 @@ public class EventService {
 
   public void removeEvent(Long id) {
     Event event = getEvent(id);
-    if (event.getImageUrl() != null) {
-      fileHandler.delete(event.getImageUrl());
+    if (event.getCover() != null) {
+      fileHandler.delete(event.getCover());
     }
     eventRepository.deleteById(id);
   }

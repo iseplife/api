@@ -2,6 +2,7 @@ package com.iseplife.api.controllers;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
+import com.iseplife.api.dao.event.EventPreviewProjection;
 import com.iseplife.api.dto.event.EventDTO;
 import com.iseplife.api.dto.gallery.view.GalleryPreview;
 import com.iseplife.api.dto.event.view.EventPreview;
@@ -18,10 +19,7 @@ import javax.annotation.security.RolesAllowed;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by Guillaume on 31/07/2017.
- * back
- */
+
 @RestController
 @RequestMapping("/event")
 public class EventController {
@@ -43,13 +41,13 @@ public class EventController {
 
   @GetMapping("/m/{timestamp}")
   @RolesAllowed({Roles.STUDENT})
-  public  List<EventPreview> getMonthEvents(@PathVariable Long timestamp, @AuthenticationPrincipal TokenPayload token) {
+  public  List<EventPreviewProjection> getMonthEvents(@PathVariable Long timestamp, @AuthenticationPrincipal TokenPayload token) {
     return eventService.getMonthEvents(new Date(timestamp), token);
   }
 
   @GetMapping("/incoming")
   @RolesAllowed({Roles.STUDENT})
-  public  List<EventPreview> getIncomingEvents(@AuthenticationPrincipal TokenPayload token, @RequestParam(name = "feed", defaultValue = "1") Long feed) {
+  public List<EventPreviewProjection> getIncomingEvents(@AuthenticationPrincipal TokenPayload token, @RequestParam(name = "feed", defaultValue = "1") Long feed) {
     return eventService.getIncomingEvents(token, feed);
   }
 
@@ -61,13 +59,13 @@ public class EventController {
 
   @GetMapping("/{id}/previous")
   @RolesAllowed({Roles.STUDENT})
-  public List<EventPreview> getPreviousEditions(@PathVariable Long id) {
+  public List<EventPreviewProjection> getPreviousEditions(@PathVariable Long id) {
     return eventService.getPreviousEditions(id);
   }
 
   @GetMapping("/{id}/children")
   @RolesAllowed({Roles.STUDENT})
-  public List<EventPreview> getChildrenEvents(@PathVariable Long id) {
+  public List<EventPreviewProjection> getChildrenEvents(@PathVariable Long id) {
     return eventService.getChildrenEvents(id);
   }
 

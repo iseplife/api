@@ -18,7 +18,7 @@ public class Event implements Feedable {
   private Long id;
 
   private String title;
-  private String imageUrl;
+  private String cover;
 
   @Enumerated(EnumType.STRING)
   private EventType type;
@@ -30,7 +30,7 @@ public class Event implements Feedable {
   private String ticketUrl = null;
   private Float price = null;
 
-  private Date published = new Date();
+  private Date publishedAt = new Date();
   private Boolean closed = false;
 
   @Column(columnDefinition = "TEXT")
@@ -100,12 +100,12 @@ public class Event implements Feedable {
     this.club = club;
   }
 
-  public String getImageUrl() {
-    return imageUrl;
+  public String getCover() {
+    return cover;
   }
 
-  public void setImageUrl(String imageUrl) {
-    this.imageUrl = imageUrl;
+  public void setCover(String imageUrl) {
+    this.cover = imageUrl;
   }
 
   public Date getEndsAt() {
@@ -156,12 +156,12 @@ public class Event implements Feedable {
     this.feed = feed;
   }
 
-  public Date getPublished() {
-    return published;
+  public Date getPublishedAt() {
+    return publishedAt;
   }
 
-  public void setPublished(Date published) {
-    this.published = published;
+  public void setPublishedAt(Date published) {
+    this.publishedAt = published;
   }
 
   public Boolean getClosed() {

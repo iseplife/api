@@ -18,6 +18,8 @@ public class Feed {
   @GeneratedValue
   private Long id;
 
+  private String name;
+
   @OneToOne(mappedBy = "feed", orphanRemoval = true)
   private Event event;
 
@@ -27,17 +29,10 @@ public class Feed {
   @OneToOne(mappedBy = "feed", orphanRemoval = true)
   private Group group;
 
-  @ManyToMany(mappedBy = "targets")
-  private Set<Event> events;
-
-  @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Post> posts;
-
-  @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Media> media;
-
-  @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Gallery> galleries;
+  public Feed() {}
+  public Feed(String name) {
+    this.name = name;
+  }
 
   public Long getId() {
     return id;
@@ -47,16 +42,12 @@ public class Feed {
     this.id = id;
   }
 
-  public List<Post> getPosts() {
-    return posts;
+  public String getName() {
+    return name;
   }
 
-  public void addPost(Post post) {
-    posts.add(post);
-  }
-
-  public void setPosts(List<Post> posts) {
-    this.posts = posts;
+  public void setName(String name) {
+    this.name = name;
   }
 
   public Event getEvent() {
@@ -75,14 +66,4 @@ public class Feed {
     this.group = group;
   }
 
-  //TODO optimisation needed as it trigger SQL call
-  public String getName() {
-    if (club != null)
-      return club.getName();
-    if (event != null)
-      return event.getTitle();
-    if (group != null)
-      return group.getName();
-    return null;
-  }
 }

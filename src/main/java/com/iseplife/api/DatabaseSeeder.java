@@ -58,7 +58,7 @@ class DatabaseSeeder {
 
   private void runSeedDatabase() {
     /* Create main/homepage feed */
-    Feed mainFeed = new Feed();
+    Feed mainFeed = new Feed("Homepage");
     mainFeed.setId(1L);
 
     feedRepository.save(mainFeed);
@@ -106,7 +106,7 @@ class DatabaseSeeder {
         if(!existingTypes.contains(type) && type != GroupType.DEFAULT){
           Group g = new Group();
           g.setName(type.getName());
-          g.setFeed(new Feed());
+          g.setFeed(new Feed(type.getName()));
           g.setRestricted(true);
           g.setType(type);
 
