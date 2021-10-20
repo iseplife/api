@@ -35,9 +35,9 @@ public class EventController {
     return eventService.createEvent(dto);
   }
 
-  @PostMapping("/{id}/image")
+  @PutMapping("/{id}/image")
   @RolesAllowed({Roles.STUDENT})
-  public MediaNameView updateLogo(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+  public MediaNameView updateCover(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
     return MediaFactory.toNameView(eventService.updateImage(id, file));
   }
 

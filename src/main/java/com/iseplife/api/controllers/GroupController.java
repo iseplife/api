@@ -71,7 +71,7 @@ public class GroupController {
     return groupService.updateGroup(id, dto);
   }
 
-  @PostMapping("/{id}/cover")
+  @PutMapping("/{id}/cover")
   @RolesAllowed({Roles.STUDENT})
   public MediaNameView updateCover(@PathVariable Long id, @RequestParam(value = "file") MultipartFile file) {
     return MediaFactory.toNameView(groupService.updateCover(id, file));

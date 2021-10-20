@@ -75,13 +75,13 @@ public class ClubController {
     return clubService.updateClubAdmin(id, dto);
   }
 
-  @PostMapping("/{id}/logo")
+  @PutMapping("/{id}/logo")
   @RolesAllowed({Roles.STUDENT})
   public MediaNameView updateLogo(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
     return MediaFactory.toNameView(clubService.updateLogo(id, file));
   }
 
-  @PostMapping("/{id}/cover")
+  @PutMapping("/{id}/cover")
   @RolesAllowed({Roles.STUDENT})
   public MediaNameView updateCover(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
     return MediaFactory.toNameView(clubService.updateCover(id, file));
