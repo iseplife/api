@@ -1,5 +1,6 @@
 package com.iseplife.api.dao.event;
 
+import com.iseplife.api.dao.post.PostRepository;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.feed.Feed;
 import org.springframework.cache.annotation.CacheEvict;
@@ -70,9 +71,18 @@ public interface EventRepository extends CrudRepository<Event, Long> {
   Page<Event> searchEvent(String name, Boolean admin, List<Long> feed, Pageable pageable);
 
   @Override
-    @Caching(evict = {
-      @CacheEvict(value = FIND_INCOMING_EVENTS_CACHE, allEntries = true),
-      @CacheEvict(value = FIND_ALL_IN_MONTH_CACHE, allEntries = true)
-    })
+  @Caching(evict = {
+    @CacheEvict(value = FIND_INCOMING_EVENTS_CACHE, allEntries = true),
+    @CacheEvict(value = FIND_ALL_IN_MONTH_CACHE, allEntries = true),
+    @CacheEvict(value =  PostRepository.GET_AUTHORIZED_PUBLISH_CACHE, allEntries = true)
+  })
   <T extends Event> T save(T event);
+
+  @Override
+  @Caching(evict = {
+    @CacheEvict(value = FIND_INCOMING_EVENTS_CACHE, allEntries = true),
+    @CacheEvict(value = FIND_ALL_IN_MONTH_CACHE, allEntries = true),
+    @CacheEvict(value =  PostRepository.GET_AUTHORIZED_PUBLISH_CACHE, allEntries = true)
+  })
+  void deleteById(Long id);
 }
