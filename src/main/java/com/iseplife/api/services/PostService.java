@@ -295,7 +295,7 @@ public class PostService {
     post.setEmbed(attachement);
   }
 
-  @Cacheable(cacheNames = PostRepository.GET_AUTHORIZED_PUBLISH_CACHE)
+  @Cacheable(cacheNames = PostRepository.GET_AUTHORIZED_PUBLISH_CACHE, key = "'id_'.concat(#id).concat('_clubOnly_').concat(#clubOnly.booleanValue())")
   public Set<AuthorView> getAuthorizedPublish(Long id, Boolean clubOnly) {
     Student student = studentService.getStudent(id);
     Set<AuthorView> authorStatus = new HashSet<>();

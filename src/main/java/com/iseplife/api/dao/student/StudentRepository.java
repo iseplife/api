@@ -1,5 +1,6 @@
 package com.iseplife.api.dao.student;
 
+import com.iseplife.api.dao.post.PostRepository;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
 import org.springframework.cache.annotation.CacheEvict;
@@ -32,7 +33,8 @@ public interface StudentRepository extends CrudRepository<Student, Long> {
   @Override
   @Caching(evict = {
     @CacheEvict(value = GET_STUDENT_CACHE, key = "#s.id"),
-    @CacheEvict(value = GET_STUDENT_BY_PROMO_CACHE, key = "#s.promo")
+    @CacheEvict(value = GET_STUDENT_BY_PROMO_CACHE, key = "#s.promo"),
+    @CacheEvict(value = PostRepository.GET_AUTHORIZED_PUBLISH_CACHE, key = "'id_'.concat(#s.id).concat('_*')")
   })
   <S extends Student> S save(S s);
 
