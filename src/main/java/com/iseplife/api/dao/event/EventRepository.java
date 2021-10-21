@@ -2,6 +2,9 @@ package com.iseplife.api.dao.event;
 
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.feed.Feed;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -16,7 +19,11 @@ import java.util.List;
 public interface EventRepository extends CrudRepository<Event, Long> {
   List<Event> findAll();
 
+  String FIND_INCOMING_EVENTS_CACHE = "findIncomingEventsCache";
+  String FIND_ALL_IN_MONTH_CACHE = "findAllInMonthCache";
+
   // Request unoptimised as we always check if each target if it's inside user's feeds list while
+  @Cacheable(cacheNames = FIND_ALL_IN_MONTH_CACHE, key = "{#date.month, #date.year, #admin, #feeds}")
   @Query(
     "select distinct e " +
       "from Event e left join e.targets t " +
@@ -30,6 +37,7 @@ public interface EventRepository extends CrudRepository<Event, Long> {
   )
   List<EventPreviewProjection> findAllInMonth(Date date, Boolean admin, List<Long> feeds);
 
+  @Cacheable(cacheNames = FIND_INCOMING_EVENTS_CACHE, key = "{#admin, #feeds, #p}")
   @Query(
     "select e from Event e left join e.targets t " +
       "where e.startsAt >= CURRENT_TIMESTAMP " +
@@ -60,4 +68,11 @@ public interface EventRepository extends CrudRepository<Event, Long> {
       ")) "
   )
   Page<Event> searchEvent(String name, Boolean admin, List<Long> feed, Pageable pageable);
+
+  @Override
+    @Caching(evict = {
+      @CacheEvict(value = FIND_INCOMING_EVENTS_CACHE, allEntries = true),
+      @CacheEvict(value = FIND_ALL_IN_MONTH_CACHE, allEntries = true)
+    })
+  <T extends Event> T save(T event);
 }
