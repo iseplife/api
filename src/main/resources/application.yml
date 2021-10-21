@@ -22,6 +22,7 @@ app:
 logging:
   level:
     com.iseplife.api: INFO
+    org.springframework.cache: TRACE
 
 media_limit:
   club:
