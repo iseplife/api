@@ -20,6 +20,9 @@ import com.iseplife.api.websocket.services.WSGroupService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -130,6 +133,9 @@ public class GroupService {
     group.getMembers().addAll(createGroupAdminMembers(dto.getAdmins(), group));
 
     return groupRepository.save(group);
+    group.getMembers().addAll(createGroupAdminMembers(dto.getAdmins()));
+  this.evictUserGroupsCache(group);
+    return GroupFactory.toAdminView(groupRepository.save(group));
   }
 
   public String updateCover(Long id, MultipartFile cover) {
@@ -162,6 +168,7 @@ public class GroupService {
 
     group.setArchivedAt(group.isArchived() ? null : new Date());
     groupRepository.save(group);
+    this.evictUserGroupsCache(group);
 
     return group.isArchived();
   }
@@ -171,6 +178,7 @@ public class GroupService {
     if (group.getType() != GroupType.DEFAULT) {
       throw new HttpBadRequestException("deletion_impossible");
     }
+    this.evictUserGroupsCache(group);
     
     for(GroupMember member : group.getMembers()) {
       subService.unsubscribe(group.getId(), member.getStudent().getId());
@@ -205,7 +213,8 @@ public class GroupService {
     return true;
   }
 
-  public GroupMember addMember(Long id, GroupMemberDTO dto) {
+  @CacheEvict(value = GroupRepository.FIND_ALL_USER_GROUPS_CACHE, key = "#id")
+  public GroupMemberView addMember(Long id, GroupMemberDTO dto) {
     Group group = getGroup(id);
     if (!SecurityService.hasRightOn(group))
       throw new HttpForbiddenException("insufficient_rights");
@@ -226,6 +235,7 @@ public class GroupService {
     return member;
   }
 
+  @CacheEvict(value = GroupRepository.FIND_ALL_USER_GROUPS_CACHE, key = "#id")
   public Boolean removeMember(Long id, Long member) {
     GroupMember groupMember = getGroupMember(member);
     if (!SecurityService.hasRightOn(groupMember.getGroup()))
@@ -239,6 +249,14 @@ public class GroupService {
     
     groupMemberRepository.delete(groupMember);
     return true;
+  }
+
+  public void evictUserGroupsCache(Group group) {
+    Cache cache = cacheManager.getCache(GroupRepository.FIND_ALL_USER_GROUPS_CACHE);
+    group.getMembers().forEach(m -> {
+      Objects.requireNonNull(cache).evictIfPresent(m.getStudent().getId());
+    });
+
   }
 
 }

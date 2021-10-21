@@ -1,6 +1,7 @@
 package com.iseplife.api.dao.group;
 
 import com.iseplife.api.entity.group.Group;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -13,6 +14,9 @@ import java.util.Optional;
 
 @Repository
 public interface GroupRepository extends CrudRepository<Group, Long> {
+
+  String FIND_ALL_USER_GROUPS_CACHE = "findAllUserGroupsCache";
+
   Page<Group> findAll(Pageable page);
 
   Optional<Group> findOneByName(String name);
@@ -31,10 +35,11 @@ public interface GroupRepository extends CrudRepository<Group, Long> {
   Page<Group> searchGroup(String name, Long student, Boolean admin, Pageable pageable);
 
 
+  @Cacheable(value = FIND_ALL_USER_GROUPS_CACHE, key = "#studentId")
   @Query(
     "select g from Group g left join g.members gm where " +
-      "gm.student.id = ?1"
+      "gm.student.id = :studentId"
   )
-  List<Group> findAllUserGroups(Long student);
+  List<Group> findAllUserGroups(Long studentId);
 
 }
