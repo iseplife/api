@@ -40,6 +40,19 @@ import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
+import com.iseplife.api.constants.PostState;
+import com.iseplife.api.constants.Roles;
+import com.iseplife.api.dao.media.MediaRepository;
+import com.iseplife.api.dao.student.StudentRepository;
+import com.iseplife.api.exceptions.AuthException;
+import com.iseplife.api.exceptions.IllegalArgumentException;
+import com.iseplife.api.websocket.PostMessageService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 import com.iseplife.api.websocket.services.WSPostService;
 
 import lombok.RequiredArgsConstructor;
@@ -282,6 +295,7 @@ public class PostService {
     post.setEmbed(attachement);
   }
 
+  @Cacheable(cacheNames = PostRepository.GET_AUTHORIZED_PUBLISH_CACHE)
   public Set<AuthorView> getAuthorizedPublish(Long id, Boolean clubOnly) {
     Student student = studentService.getStudent(id);
     Set<AuthorView> authorStatus = new HashSet<>();

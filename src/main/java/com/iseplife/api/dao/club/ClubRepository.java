@@ -1,8 +1,11 @@
 package com.iseplife.api.dao.club;
 
 import com.iseplife.api.constants.ClubRole;
+import com.iseplife.api.dao.post.PostRepository;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.user.Student;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -58,4 +61,15 @@ public interface ClubRepository extends CrudRepository<Club, Long> {
 
   Page<Club> findAllByNameContainingIgnoringCase(String name, Pageable pageable);
 
+  @Override
+    @Caching(evict = {
+      @CacheEvict(value = PostRepository.GET_AUTHORIZED_PUBLISH_CACHE, allEntries = true)
+    })
+  <C extends Club> C save(C club);
+
+  @Override
+  @Caching(evict = {
+    @CacheEvict(value = PostRepository.GET_AUTHORIZED_PUBLISH_CACHE, allEntries = true)
+  })
+  void deleteById(Long id);
 }

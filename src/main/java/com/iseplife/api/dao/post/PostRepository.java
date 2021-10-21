@@ -27,6 +27,8 @@ import com.iseplife.api.entity.post.embed.Embedable;
 @Repository
 public interface PostRepository extends CrudRepository<Post, Long> {
 
+  String GET_AUTHORIZED_PUBLISH_CACHE = "getAuthorizedPublishCache";
+
   List<Post> findAll();
 
   @Query(
