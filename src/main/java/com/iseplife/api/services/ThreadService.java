@@ -21,6 +21,9 @@ import com.iseplife.api.websocket.services.WSPostService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
+import com.iseplife.api.exceptions.IllegalArgumentException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -78,6 +81,7 @@ public class ThreadService {
     return isLiked(getThread(entity));
   }
 
+  @CacheEvict(value = LikeRepository.EXISTS_BY_THREAD_AND_STUDENT_CACHE, key = "{#threadID, #studentID}")
   public Boolean toggleLike(Long threadID, Long studentID) {
     Like like = likeRepository.findOneByThreadIdAndStudentId(threadID, studentID);
 
