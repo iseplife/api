@@ -7,6 +7,8 @@ import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.feed.Feedable;
 import com.iseplife.api.entity.post.Post;
+import com.iseplife.api.entity.subscription.Subscribable;
+import com.iseplife.api.entity.subscription.Subscription;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,7 +20,7 @@ import java.util.List;
 
 @Entity
 @Getter @Setter @NoArgsConstructor
-public class Club implements Feedable, Author {
+public class Club implements Feedable, Author, Subscribable {
   @Id
   @GeneratedValue
   private Long id;
@@ -56,6 +58,9 @@ public class Club implements Feedable, Author {
 
   @OneToMany(mappedBy = "linkedClub", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Post> posts;
+  
+  @OneToMany(mappedBy = "listener", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Subscription> subscriptions;
 
   @Override
   public AuthorType getAuthorType() {

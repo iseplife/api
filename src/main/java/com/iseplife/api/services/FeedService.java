@@ -80,7 +80,7 @@ public class FeedService {
     } else {
       Student student = studentService.getStudent(studentID);
       sub = new Subscription();
-      sub.setFeed(getFeed(id));
+      sub.setSubscribed(getFeed(id));
       sub.setListener(student);
 
       subscriptionRepository.save(sub);

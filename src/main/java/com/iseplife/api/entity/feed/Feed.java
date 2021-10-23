@@ -4,6 +4,8 @@ import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.post.embed.media.Media;
+import com.iseplife.api.entity.subscription.Subscribable;
+import com.iseplife.api.entity.subscription.Subscription;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.post.embed.Gallery;
 import lombok.Getter;
@@ -16,7 +18,7 @@ import java.util.Set;
 
 @Entity
 @Getter @Setter @NoArgsConstructor
-public class Feed {
+public class Feed implements Subscribable {
 
   public Feed(String name) {
     this.name = name;
@@ -36,4 +38,7 @@ public class Feed {
 
   @OneToOne(mappedBy = "feed", orphanRemoval = true)
   private Group group;
+
+  @OneToMany(mappedBy = "listener", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Subscription> subscriptions;
 }

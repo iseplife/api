@@ -4,6 +4,8 @@ import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.constants.EventType;
 import com.iseplife.api.entity.feed.Feedable;
+import com.iseplife.api.entity.subscription.Subscribable;
+import com.iseplife.api.entity.subscription.Subscription;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,7 +17,7 @@ import java.util.Set;
 
 @Entity
 @Getter @Setter @NoArgsConstructor
-public class Event implements Feedable {
+public class Event implements Feedable, Subscribable {
   @Id
   @GeneratedValue
   private Long id;
@@ -54,4 +56,7 @@ public class Event implements Feedable {
 
   @OneToOne
   private Event previousEdition;
+  
+  @OneToMany(mappedBy = "listener", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Subscription> subscriptions;
 }

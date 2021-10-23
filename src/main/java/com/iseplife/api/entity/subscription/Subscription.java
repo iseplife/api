@@ -54,6 +54,9 @@ public class Subscription {
   public Subscribable getSubscribed() {
     return subscribed;
   }
+  public void setSubscribed(Subscribable subscribed) {
+    this.subscribed = subscribed;
+  }
 
   public Student getListener() {
     return listener;

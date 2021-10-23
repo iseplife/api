@@ -3,6 +3,7 @@ package com.iseplife.api.controllers;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import javax.annotation.security.RolesAllowed;
 
@@ -29,7 +30,7 @@ public class WebPushController {
   
   @PostMapping("/register/init")
   @RolesAllowed({ Roles.STUDENT })
-  public void registerPushService(@RequestBody RegisterPushServiceDTO register) throws GeneralSecurityException, IOException, JoseException, ExecutionException, InterruptedException {
+  public void registerPushService(@RequestBody RegisterPushServiceDTO register) throws GeneralSecurityException, IOException, JoseException, ExecutionException, InterruptedException, TimeoutException {
     webpushService.registerWebPushService(register);
   }
   @PostMapping("/register/validate")
