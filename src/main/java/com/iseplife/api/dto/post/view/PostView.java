@@ -23,7 +23,6 @@ public class PostView implements PostProjection {
   private Integer nbLikes;
   private Boolean isLiked;
   private Boolean isPinned;
-  private Boolean isPrivate;
 
   private Integer nbComments;
   private CommentView trendingComment;
@@ -98,9 +97,6 @@ public class PostView implements PostProjection {
     this.nbComments = nbComments;
   }
 
-  public Boolean getPrivate() { return isPrivate;  }
-
-  public void setPrivate(Boolean isPrivate) { this.isPrivate = isPrivate;  }
 
 
   public Long getThread() {

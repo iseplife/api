@@ -1,6 +1,5 @@
-package com.iseplife.api.entity;
+package com.iseplife.api.entity.group;
 
-import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.user.Student;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +14,7 @@ public class GroupMember {
   @GeneratedValue
   private Long id;
 
-  private Boolean admin;
+  private boolean admin;
 
   @ManyToOne
   private Student student;

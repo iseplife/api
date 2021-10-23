@@ -2,7 +2,7 @@ package com.iseplife.api.dao.group;
 
 import com.iseplife.api.dao.student.StudentFactory;
 import com.iseplife.api.dto.group.view.GroupMemberView;
-import com.iseplife.api.entity.GroupMember;
+import com.iseplife.api.entity.group.GroupMember;
 
 public class GroupMemberFactory {
 

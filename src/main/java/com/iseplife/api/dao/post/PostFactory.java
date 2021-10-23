@@ -25,7 +25,6 @@ public class PostFactory {
   public Post dtoToEntity(PostCreationDTO post) {
     Post p = new Post();
     p.setDescription(post.getDescription());
-    p.setPrivate(post.getPrivate());
     return p;
   }
 

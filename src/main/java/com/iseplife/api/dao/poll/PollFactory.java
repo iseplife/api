@@ -22,13 +22,13 @@ public class PollFactory {
     view.setTitle(poll.getTitle());
 
     view.setEndsAt(poll.getEndsAt());
-    view.setMultiple(poll.getMultiple());
-    view.setAnonymous(poll.getAnonymous());
+    view.setMultiple(poll.isMultiple());
+    view.setAnonymous(poll.isAnonymous());
 
 
     List<PollChoiceView> choices = new ArrayList<>();
     poll.getChoices().forEach(option -> {
-      choices.add(poll.getAnonymous() ? toAnonymousView(option): toView(option));
+      choices.add(poll.isAnonymous() ? toAnonymousView(option): toView(option));
     });
     view.setChoices(choices);
     view.setEmbedType(EmbedType.POLL);

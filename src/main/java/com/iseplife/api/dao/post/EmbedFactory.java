@@ -20,7 +20,7 @@ public class EmbedFactory {
     EmbedView view;
     switch (embed.getEmbedType()) {
       case EmbedType.GALLERY:
-        view = ((Gallery) embed).getPseudo() ?
+        view = ((Gallery) embed).isPseudo() ?
           GalleryFactory.toPseudoView((Gallery) embed) :
           GalleryFactory.toPreview((Gallery) embed);
         break;

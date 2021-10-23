@@ -11,7 +11,6 @@ import java.util.Map;
 public class PostUpdateDTO {
   private String description;
   private Date publicationDate;
-  private Boolean isPrivate = true;
   private Long linkedClub;
   private Boolean removeEmbed = false;
   private Map<String, Long> attachements = new HashMap<>();
@@ -23,10 +22,6 @@ public class PostUpdateDTO {
   public void setDescription(String description) {
     this.description = description;
   }
-
-  public Boolean getPrivate() { return isPrivate;  }
-
-  public void setPrivate(Boolean aPrivate) {  isPrivate = aPrivate; }
 
   public Date getPublicationDate() {
     return publicationDate;

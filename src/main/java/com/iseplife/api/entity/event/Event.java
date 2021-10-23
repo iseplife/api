@@ -4,6 +4,9 @@ import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.constants.EventType;
 import com.iseplife.api.entity.feed.Feedable;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -11,8 +14,8 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
+@Getter @Setter @NoArgsConstructor
 public class Event implements Feedable {
-
   @Id
   @GeneratedValue
   private Long id;
@@ -31,7 +34,7 @@ public class Event implements Feedable {
   private Float price = null;
 
   private Date publishedAt = new Date();
-  private Boolean closed = false;
+  private boolean closed = false;
 
   @Column(columnDefinition = "TEXT")
   private String description;
@@ -51,148 +54,4 @@ public class Event implements Feedable {
 
   @OneToOne
   private Event previousEdition;
-
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public String getTitle() {
-    return title;
-  }
-
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
-  public String getLocation() {
-    return location;
-  }
-
-  public void setLocation(String location) {
-    this.location = location;
-  }
-
-  public Date getStartsAt() {
-    return startsAt;
-  }
-
-  public void setStartsAt(Date startsAt) {
-    this.startsAt = startsAt;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public Club getClub() {
-    return club;
-  }
-
-  public void setClub(Club club) {
-    this.club = club;
-  }
-
-  public String getCover() {
-    return cover;
-  }
-
-  public void setCover(String imageUrl) {
-    this.cover = imageUrl;
-  }
-
-  public Date getEndsAt() {
-    return endsAt;
-  }
-
-  public void setEndsAt(Date endsAt) {
-    this.endsAt = endsAt;
-  }
-
-  public Event getPreviousEdition() {
-    return previousEdition;
-  }
-
-  public void setPreviousEdition(Event previousEdition) {
-    this.previousEdition = previousEdition;
-  }
-
-  public EventType getType() {
-    return type;
-  }
-
-  public void setType(EventType type) {
-    this.type = type;
-  }
-
-  public String getTicketUrl() {
-    return ticketUrl;
-  }
-
-  public void setTicketUrl(String ticketUrl) {
-    this.ticketUrl = ticketUrl;
-  }
-
-  public Float getPrice() {
-    return price;
-  }
-
-  public void setPrice(Float price) {
-    this.price = price;
-  }
-
-  public Feed getFeed() {
-    return feed;
-  }
-
-  public void setFeed(Feed feed) {
-    this.feed = feed;
-  }
-
-  public Date getPublishedAt() {
-    return publishedAt;
-  }
-
-  public void setPublishedAt(Date published) {
-    this.publishedAt = published;
-  }
-
-  public Boolean getClosed() {
-    return closed;
-  }
-
-  public void setClosed(Boolean closed) {
-    this.closed = closed;
-  }
-
-  public Set<Feed> getTargets() {
-    return targets;
-  }
-
-  public void setTargets(Set<Feed> targets) {
-    this.targets = targets;
-  }
-
-  public String getCoordinates() {
-    return coordinates;
-  }
-
-  public void setCoordinates(String coordinates) {
-    this.coordinates = coordinates;
-  }
-
-  public List<Event> getChildren() {
-    return children;
-  }
-
-  public void setChildren(List<Event> children) {
-    this.children = children;
-  }
 }

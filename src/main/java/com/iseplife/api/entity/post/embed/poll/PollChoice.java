@@ -1,16 +1,18 @@
 package com.iseplife.api.entity.post.embed.poll;
 
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Created by Guillaume on 31/07/2017.
- * back
- */
+
 @Entity
+@Getter @Setter @NoArgsConstructor
 public class PollChoice {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
@@ -23,41 +25,13 @@ public class PollChoice {
   @OneToMany(mappedBy = "choice", cascade = CascadeType.ALL)
   private List<PollVote> votes = new ArrayList<>();
 
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public String getContent() {
-    return content;
-  }
-
-  public void setContent(String content) {
-    this.content = content;
-  }
-
-  public Poll getPoll() {
-    return poll;
-  }
-
-  public void setPoll(Poll poll) {
-    this.poll = poll;
-  }
-
   public int getVotesNb() {
     return votes.size();
   }
 
   public List<Long> getVoters() {
     return votes.stream()
-      .map(PollVote::getStudentId)
+      .map(v -> v.getStudent().getId())
       .collect(Collectors.toList());
-  }
-
-  public void setVotes(List<PollVote> votes) {
-    this.votes = votes;
   }
 }

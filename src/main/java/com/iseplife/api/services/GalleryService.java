@@ -66,7 +66,7 @@ public class GalleryService {
   private static final int PSEUDO_GALLERY_MAX_SIZE = 5;
 
   private void checkIfHasRightsOnGallery(Gallery gallery){
-    if ((gallery.getPseudo() && !SecurityService.hasRightOn(postService.getPostFromEmbed(gallery))) || !SecurityService.hasRightOn(gallery))
+    if ((gallery.isPseudo() && !SecurityService.hasRightOn(postService.getPostFromEmbed(gallery))) || !SecurityService.hasRightOn(gallery))
       throw new HttpForbiddenException("insufficient_rights");
   }
 

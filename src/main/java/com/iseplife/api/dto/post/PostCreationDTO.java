@@ -10,7 +10,6 @@ public class PostCreationDTO {
   private Date publicationDate = new Date();
   private Long linkedClub = null;
   private Map<String, Long> attachements = new HashMap<>();
-  private Boolean isPrivate;
   private Boolean isDraft = false;
 
   public String getDescription() {
@@ -21,13 +20,6 @@ public class PostCreationDTO {
     this.description = description;
   }
 
-  public Boolean getPrivate() {
-    return isPrivate;
-  }
-
-  public void setPrivate(Boolean aPrivate) {
-    isPrivate = aPrivate;
-  }
 
   public Long getLinkedClub() { return linkedClub; }
 

@@ -100,8 +100,8 @@ public class ClubService {
     List<ClubMember> members = new ArrayList<>();
     admins.forEach(a -> {
       ClubMember member = new ClubMember();
-      member.setFrom(getCurrentSchoolYear());
-      member.setTo(member.getFrom());
+      member.setFromYear(getCurrentSchoolYear());
+      member.setToYear(member.getFromYear());
       member.setStudent(a);
       member.setRole(ClubRole.SUPER_ADMIN);
       member.setClub(club);
@@ -200,8 +200,8 @@ public class ClubService {
 
     clubMember.setRole(dto.getRole());
     clubMember.setPosition(dto.getPosition());
-    clubMember.setFrom(dto.getYear());
-    clubMember.setTo(dto.getYear());
+    clubMember.setFromYear(dto.getYear());
+    clubMember.setToYear(dto.getYear());
 
     return clubMemberRepository.save(clubMember);
   }

@@ -86,7 +86,7 @@ public class EventFactory {
     view.setTicketURL(event.getTicketUrl());
     view.setPrice(event.getPrice());
     view.setPublished(event.getPublishedAt());
-    view.setClosed(event.getClosed());
+    view.setClosed(event.isClosed());
 
     view.setSubscribed(isSubscribed);
     view.setFeed(event.getFeed().getId());

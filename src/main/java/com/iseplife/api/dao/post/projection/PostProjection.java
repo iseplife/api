@@ -15,8 +15,6 @@ public interface PostProjection {
     String getDescription();
     @Value("#{target.post.pinned}")
     Boolean getPinned();
-    @Value("#{target.post.private}")
-    Boolean getPrivate();
     @Value("#{target.post.embed}")
     Embedable getEmbed();
 

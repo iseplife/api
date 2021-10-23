@@ -136,7 +136,6 @@ public class PostService {
 
     post.setDescription(dto.getDescription());
     post.setPublicationDate(dto.getPublicationDate());
-    post.setPrivate(dto.getPrivate());
 
     if (!dto.getAttachements().isEmpty()) {
       removeEmbed(post.getEmbed());
@@ -187,7 +186,7 @@ public class PostService {
       throw new HttpForbiddenException("insufficient_rights");
 
 
-    post.setPinned(!post.getPinned());
+    post.setPinned(!post.isPinned());
     postRepository.save(post);
   }
 

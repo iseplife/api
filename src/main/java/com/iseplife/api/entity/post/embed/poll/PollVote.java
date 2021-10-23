@@ -1,14 +1,14 @@
 package com.iseplife.api.entity.post.embed.poll;
 
 import com.iseplife.api.entity.user.Student;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
-/**
- * Created by Guillaume on 31/07/2017.
- * back
- */
 @Entity
+@Getter @Setter @NoArgsConstructor
 public class PollVote {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
@@ -19,32 +19,4 @@ public class PollVote {
 
   @ManyToOne
   private PollChoice choice;
-
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public Student getStudent() {
-    return student;
-  }
-
-  public Long getStudentId() {
-    return student.getId();
-  }
-
-  public void setStudent(Student student) {
-    this.student = student;
-  }
-
-  public PollChoice getChoice() {
-    return choice;
-  }
-
-  public void setChoice(PollChoice choice) {
-    this.choice = choice;
-  }
 }

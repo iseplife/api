@@ -15,7 +15,7 @@ import com.iseplife.api.dto.group.view.GroupMemberView;
 import com.iseplife.api.dto.group.view.GroupPreview;
 import com.iseplife.api.dto.group.view.GroupView;
 import com.iseplife.api.entity.group.Group;
-import com.iseplife.api.entity.GroupMember;
+import com.iseplife.api.entity.group.GroupMember;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;

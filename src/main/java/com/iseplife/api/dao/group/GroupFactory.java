@@ -6,7 +6,7 @@ import com.iseplife.api.dto.group.GroupUpdateDTO;
 import com.iseplife.api.dto.group.view.GroupAdminView;
 import com.iseplife.api.dto.group.view.GroupPreview;
 import com.iseplife.api.dto.group.view.GroupView;
-import com.iseplife.api.entity.GroupMember;
+import com.iseplife.api.entity.group.GroupMember;
 import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.services.SecurityService;

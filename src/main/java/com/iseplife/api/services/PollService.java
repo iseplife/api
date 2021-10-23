@@ -84,7 +84,7 @@ public class PollService {
     if (pollAnswer.isEmpty())
       throw new HttpNotFoundException("poll_not_found");
 
-    if (!poll.getMultiple()) {
+    if (!poll.isMultiple()) {
       List<PollVote> voteList = pollVoteRepository.findByChoice_Poll_IdAndStudent_Id(poll.getId(), studentId).stream()
         .filter(votes -> !votes.getChoice().getId().equals(choiceId))
         .collect(Collectors.toList());
@@ -184,7 +184,7 @@ public class PollService {
     Poll poll = getPoll(pollId);
 
     return poll.getChoices().stream()
-      .map(choice -> poll.getAnonymous() ? PollFactory.toAnonymousView(choice) : PollFactory.toView(choice))
+      .map(choice -> poll.isAnonymous() ? PollFactory.toAnonymousView(choice) : PollFactory.toView(choice))
       .collect(Collectors.toList());
   }
 

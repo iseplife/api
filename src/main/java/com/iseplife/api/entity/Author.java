@@ -5,7 +5,6 @@ import com.iseplife.api.constants.AuthorType;
 import java.util.Date;
 
 public interface Author {
-
   Long getId();
   String getName();
   AuthorType getAuthorType();

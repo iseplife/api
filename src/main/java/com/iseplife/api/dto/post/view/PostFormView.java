@@ -15,7 +15,6 @@ public class PostFormView {
   private AuthorView author;
 
   private Boolean isPinned;
-  private Boolean isPrivate;
 
 
   public Long getId() {
@@ -66,13 +65,7 @@ public class PostFormView {
     isPinned = pinned;
   }
 
-  public Boolean getPrivate() {
-    return isPrivate;
-  }
 
-  public void setPrivate(Boolean aPrivate) {
-    isPrivate = aPrivate;
-  }
 
   public Long getThread() {
     return thread;
