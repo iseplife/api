@@ -1,12 +1,11 @@
 package com.iseplife.api;
 
-import com.google.common.collect.Sets;
 import com.iseplife.api.constants.GroupType;
 import com.iseplife.api.dao.feed.FeedRepository;
 import com.iseplife.api.dao.group.GroupRepository;
 import com.iseplife.api.dao.student.RoleRepository;
 import com.iseplife.api.dao.student.StudentRepository;
-import com.iseplife.api.entity.GroupMember;
+import com.iseplife.api.entity.group.GroupMember;
 import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.user.Role;
@@ -88,7 +87,7 @@ class DatabaseSeeder {
 
     Role roleStudent = roleRepository.findByRole(Roles.STUDENT);
     Role roleAdmin = roleRepository.findByRole(Roles.ADMIN);
-    student.setRoles(Sets.newHashSet(roleStudent, roleAdmin));
+    student.setRoles(Set.of(roleAdmin, roleStudent));
 
     studentRepository.save(student);
 

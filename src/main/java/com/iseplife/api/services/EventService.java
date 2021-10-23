@@ -1,7 +1,6 @@
 package com.iseplife.api.services;
 
 
-import com.google.common.collect.Sets;
 import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dao.event.EventPreviewProjection;
@@ -68,8 +67,13 @@ public class EventService {
 
     event.setClub(club);
     event.setFeed(new Feed(dto.getTitle()));
-    if (dto.getTargets().size() > 0)
-      event.setTargets(Sets.newHashSet(feedRepository.findAllById(dto.getTargets())));
+    if (dto.getTargets().size() > 0) {
+      Set<Feed> targets = new HashSet<>();
+      feedRepository.findAllById(dto.getTargets()).forEach(targets::add);
+
+      event.setTargets(targets);
+    }
+
 
     return EventFactory.toView(eventRepository.save(event), false);
   }
