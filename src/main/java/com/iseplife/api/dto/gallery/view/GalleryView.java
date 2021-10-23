@@ -1,7 +1,7 @@
 package com.iseplife.api.dto.gallery.view;
 
 import com.iseplife.api.dto.club.view.ClubPreview;
-import com.iseplife.api.dto.embed.view.media.ImageView;
+import com.iseplife.api.dto.media.view.ImageView;
 import lombok.Data;
 
 import java.util.Date;

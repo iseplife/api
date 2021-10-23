@@ -1,7 +1,7 @@
 package com.iseplife.api.services;
 
-import com.iseplife.api.dto.CASAuthentificationDTO;
-import com.iseplife.api.dto.CASUserDTO;
+import com.iseplife.api.dto.ISEPCAS.CASAuthentificationDTO;
+import com.iseplife.api.dto.ISEPCAS.CASUserDTO;
 import com.iseplife.api.exceptions.http.HttpInternalServerErrorException;
 import com.iseplife.api.exceptions.http.HttpUnauthorizedException;
 import com.iseplife.api.exceptions.CASServiceException;

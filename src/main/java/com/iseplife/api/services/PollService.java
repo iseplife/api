@@ -1,11 +1,11 @@
 package com.iseplife.api.services;
 
 import com.iseplife.api.dao.poll.PollFactory;
-import com.iseplife.api.dto.embed.PollChoiceDTO;
-import com.iseplife.api.dto.embed.PollCreationDTO;
-import com.iseplife.api.dto.embed.PollEditionDTO;
-import com.iseplife.api.dto.embed.view.PollChoiceView;
-import com.iseplife.api.dto.embed.view.PollView;
+import com.iseplife.api.dto.poll.PollChoiceDTO;
+import com.iseplife.api.dto.poll.PollCreationDTO;
+import com.iseplife.api.dto.poll.PollEditionDTO;
+import com.iseplife.api.dto.poll.view.PollChoiceView;
+import com.iseplife.api.dto.poll.view.PollView;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.post.embed.poll.Poll;
 import com.iseplife.api.entity.post.embed.poll.PollChoice;

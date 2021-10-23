@@ -1,7 +1,7 @@
 package com.iseplife.api.dto.post.view;
 
 import com.iseplife.api.dao.post.projection.PostProjection;
-import com.iseplife.api.dto.embed.view.EmbedView;
+import com.iseplife.api.dto.view.EmbedView;
 import com.iseplife.api.dto.view.AuthorView;
 import com.iseplife.api.dto.thread.view.CommentView;
 import lombok.Data;

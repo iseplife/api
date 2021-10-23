@@ -1,5 +1,6 @@
-package com.iseplife.api.dto.embed.view;
+package com.iseplife.api.dto.poll.view;
 
+import com.iseplife.api.dto.view.EmbedView;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

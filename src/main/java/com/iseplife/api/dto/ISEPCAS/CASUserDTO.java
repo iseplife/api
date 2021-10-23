@@ -1,4 +1,4 @@
-package com.iseplife.api.dto;
+package com.iseplife.api.dto.ISEPCAS;
 
 import lombok.Data;
 

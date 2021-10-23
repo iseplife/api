@@ -1,7 +1,7 @@
 package com.iseplife.api.dto.gallery.view;
 
-import com.iseplife.api.dto.embed.view.EmbedView;
-import com.iseplife.api.dto.embed.view.media.ImageView;
+import com.iseplife.api.dto.view.EmbedView;
+import com.iseplife.api.dto.media.view.ImageView;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

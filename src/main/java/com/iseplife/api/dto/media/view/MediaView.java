@@ -1,6 +1,6 @@
-package com.iseplife.api.dto.embed.view.media;
+package com.iseplife.api.dto.media.view;
 
-import com.iseplife.api.dto.embed.view.EmbedView;
+import com.iseplife.api.dto.view.EmbedView;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

@@ -1,14 +1,10 @@
 package com.iseplife.api.controllers.embed;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
-import com.iseplife.api.dao.poll.PollFactory;
-import com.iseplife.api.dto.embed.PollCreationDTO;
-import com.iseplife.api.dto.embed.PollEditionDTO;
-import com.iseplife.api.dto.embed.view.PollChoiceView;
-import com.iseplife.api.dto.embed.view.PollView;
-import com.iseplife.api.entity.post.embed.poll.Poll;
-import com.iseplife.api.entity.post.embed.poll.PollChoice;
-import com.iseplife.api.entity.post.embed.poll.PollVote;
+import com.iseplife.api.dto.poll.PollCreationDTO;
+import com.iseplife.api.dto.poll.PollEditionDTO;
+import com.iseplife.api.dto.poll.view.PollChoiceView;
+import com.iseplife.api.dto.poll.view.PollView;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.services.PollService;
 import org.springframework.beans.factory.annotation.Autowired;

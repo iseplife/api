@@ -1,8 +1,8 @@
 package com.iseplife.api.dao.poll;
 
 import com.iseplife.api.constants.EmbedType;
-import com.iseplife.api.dto.embed.view.PollChoiceView;
-import com.iseplife.api.dto.embed.view.PollView;
+import com.iseplife.api.dto.poll.view.PollChoiceView;
+import com.iseplife.api.dto.poll.view.PollView;
 import com.iseplife.api.entity.post.embed.poll.Poll;
 import com.iseplife.api.entity.post.embed.poll.PollChoice;
 import com.iseplife.api.services.SecurityService;

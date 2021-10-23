@@ -7,7 +7,7 @@ import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.club.ClubMemberRepository;
 import com.iseplife.api.dao.club.ClubRepository;
 import com.iseplife.api.dao.group.GroupRepository;
-import com.iseplife.api.dto.CASUserDTO;
+import com.iseplife.api.dto.ISEPCAS.CASUserDTO;
 import com.iseplife.api.dto.student.StudentDTO;
 import com.iseplife.api.dto.student.StudentSettingsDTO;
 import com.iseplife.api.dto.student.StudentUpdateAdminDTO;

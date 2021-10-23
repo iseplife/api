@@ -8,7 +8,7 @@ import com.iseplife.api.dao.club.ClubRepository;
 import com.iseplife.api.dao.gallery.GalleryRepository;
 import com.iseplife.api.dao.media.MediaFactory;
 import com.iseplife.api.dao.student.StudentRepository;
-import com.iseplife.api.dto.embed.view.media.MediaView;
+import com.iseplife.api.dto.media.view.MediaView;
 import com.iseplife.api.dto.view.MatchedView;
 import com.iseplife.api.entity.Author;
 import com.iseplife.api.entity.Thread;

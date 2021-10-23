@@ -4,7 +4,7 @@ import com.iseplife.api.conf.jwt.JwtAuthRequest;
 import com.iseplife.api.conf.jwt.JwtTokenUtil;
 import com.iseplife.api.conf.jwt.TokenSet;
 import com.iseplife.api.dao.student.RoleRepository;
-import com.iseplife.api.dto.CASUserDTO;
+import com.iseplife.api.dto.ISEPCAS.CASUserDTO;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;

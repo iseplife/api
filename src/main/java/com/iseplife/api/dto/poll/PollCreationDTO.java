@@ -1,4 +1,4 @@
-package com.iseplife.api.dto.embed;
+package com.iseplife.api.dto.poll;
 
 import lombok.Data;
 

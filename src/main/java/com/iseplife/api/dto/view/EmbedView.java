@@ -1,4 +1,4 @@
-package com.iseplife.api.dto.embed.view;
+package com.iseplife.api.dto.view;
 
 import com.iseplife.api.entity.post.embed.Embedable;
 import lombok.Data;
