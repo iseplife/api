@@ -142,7 +142,7 @@ public class PostService {
       dto.getAttachements().forEach((type, id) -> bindAttachementToPost(type, id, post));
     }
 
-    if (dto.isRemoveEmbed()) {
+    if (dto.getRemoveEmbed()) {
       removeEmbed(post.getEmbed());
       post.setEmbed(null);
     }

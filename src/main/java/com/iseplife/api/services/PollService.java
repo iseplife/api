@@ -144,8 +144,8 @@ public class PollService {
       throw new HttpForbiddenException("insufficient_rights");
 
     poll.setTitle(dto.getTitle());
-    poll.setAnonymous(dto.getAnonymous());
-    poll.setMultiple(dto.getMultiple());
+    poll.setAnonymous(dto.isAnonymous());
+    poll.setMultiple(dto.isMultiple());
     poll.setEndsAt(dto.getEndsAt());
 
     // Edit or remove existing choices

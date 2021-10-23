@@ -1,13 +1,8 @@
 package com.iseplife.api.dto.thread;
 
+import lombok.Data;
+
+@Data
 public class CommentEditDTO {
   private String message;
-
-  public String getMessage() {
-    return message;
-  }
-
-  public void setMessage(String message) {
-    this.message = message;
-  }
 }

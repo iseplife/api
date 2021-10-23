@@ -11,7 +11,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@DiscriminatorColumn(name = "mediaType")
+@DiscriminatorColumn(name = "media_type")
 @Getter @Setter @NoArgsConstructor
 public abstract class Media implements Embedable {
   @Id

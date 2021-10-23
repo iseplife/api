@@ -100,14 +100,14 @@ public class GalleryService {
 
   public GalleryView createGallery(GalleryDTO dto) {
     Gallery gallery = new Gallery();
-    if (dto.getPseudo() && dto.getImages().size() > PSEUDO_GALLERY_MAX_SIZE)
+    if (dto.isPseudo() && dto.getImages().size() > PSEUDO_GALLERY_MAX_SIZE)
       throw new HttpBadRequestException("pseudo_gallery_max_size_reached");
 
 
     gallery.setCreation(new Date());
-    gallery.setPseudo(dto.getPseudo());
+    gallery.setPseudo(dto.isPseudo());
     gallery.setFeed(feedService.getFeed(dto.getFeed()));
-    if (!dto.getPseudo()) {
+    if (!dto.isPseudo()) {
       Club club = clubService.getClub(dto.getClub());
       if (!SecurityService.hasRightOn(club))
         throw new HttpForbiddenException("insufficient_rights");
@@ -126,7 +126,7 @@ public class GalleryService {
     });
 
     imageRepository.saveAll(images);
-    if(!dto.getPseudo() && dto.getGeneratePost()){
+    if(!dto.isPseudo() && dto.getGeneratePost()){
       Post post = new Post();
       post.setFeed(gallery.getFeed());
       post.setThread(new Thread(ThreadType.POST));

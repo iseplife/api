@@ -1,44 +1,16 @@
 package com.iseplife.api.dto.embed.view.media;
 
 import com.iseplife.api.dto.embed.view.EmbedView;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.Date;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class MediaView extends EmbedView {
-  Long id;
-  Date creation;
-  String name;
-  Boolean NSFW;
-
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public Date getCreation() {
-    return creation;
-  }
-
-  public void setCreation(Date creation) {
-    this.creation = creation;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public Boolean getNSFW() {
-    return NSFW;
-  }
-
-  public void setNSFW(Boolean NSFW) {
-    this.NSFW = NSFW;
-  }
+  protected Long id;
+  protected Date creation;
+  protected String name;
+  protected boolean NSFW;
 }

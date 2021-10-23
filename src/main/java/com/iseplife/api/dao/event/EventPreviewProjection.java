@@ -12,7 +12,7 @@ public interface EventPreviewProjection {
   Date getEndsAt();
 
   @Value("#{target.publishedAt.before(new java.util.Date())}")
-  Boolean getPublished();
+  boolean isPublished();
 
   @Value("#{target.targets.![id]}")
   Set<Long> getTargets();

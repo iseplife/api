@@ -32,7 +32,7 @@ public class EventFactory {
     // Generic version: Stream.of(dto.getCoordinates()).map(String::valueOf).collect(Collectors.joining(";")
     event.setCoordinates(dto.getCoordinates()[0] + ";" + dto.getCoordinates()[1]);
 
-    event.setClosed(dto.getClosed());
+    event.setClosed(dto.isClosed());
     event.setPublishedAt(dto.getPublished());
     return event;
   }

@@ -17,13 +17,13 @@ public class GroupFactory {
 
   static public void updateFromDTO(Group group, GroupUpdateDTO dto){
     group.setName(dto.getName());
-    group.setRestricted(dto.getRestricted());
+    group.setRestricted(dto.isRestricted());
   }
 
   static public Group fromDTO(GroupCreationDTO dto){
     Group group = new Group();
     group.setName(dto.getName());
-    group.setRestricted(dto.getRestricted());
+    group.setRestricted(dto.isRestricted());
     group.setFeed(new Feed(dto.getName()));
 
     return group;
