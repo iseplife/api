@@ -8,7 +8,7 @@ import com.iseplife.api.dto.thread.view.CommentFormView;
 import com.iseplife.api.dto.thread.view.CommentView;
 import com.iseplife.api.entity.post.Like;
 import com.iseplife.api.services.ThreadService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,10 +18,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/thread")
+@RequiredArgsConstructor
 public class ThreadController {
-
-  @Autowired
-  ThreadService threadService;
+  final private ThreadService threadService;
 
   @GetMapping("/{id}/likes")
   @RolesAllowed({Roles.STUDENT})

@@ -4,7 +4,7 @@ import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dto.view.SearchItemView;
 import com.iseplife.api.services.SearchService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,10 +17,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/search")
+@RequiredArgsConstructor
 public class SearchController {
-
-  @Autowired
-  SearchService searchService;
+  final private SearchService searchService;
 
   @GetMapping
   @RolesAllowed({Roles.STUDENT})

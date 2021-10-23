@@ -1,14 +1,12 @@
 package com.iseplife.api.controllers;
 
-
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dao.feed.FeedProjection;
 import com.iseplife.api.dto.post.view.PostView;
 import com.iseplife.api.constants.Roles;
-import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.services.SecurityService;
 import com.iseplife.api.services.FeedService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -19,13 +17,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/feed")
+@RequiredArgsConstructor
 public class FeedController {
-
-  @Autowired
-  private FeedService feedService;
-
-  @Autowired
-  SecurityService securityService;
+  final private FeedService feedService;
 
   @GetMapping
   @RolesAllowed({Roles.STUDENT})

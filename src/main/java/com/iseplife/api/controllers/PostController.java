@@ -9,7 +9,7 @@ import com.iseplife.api.constants.Roles;
 import com.iseplife.api.services.PostService;
 import com.iseplife.api.services.StudentService;
 import com.iseplife.api.services.ThreadService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,16 +19,11 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/post")
+@RequiredArgsConstructor
 public class PostController {
-
-  @Autowired
-  PostService postService;
-
-  @Autowired
-  ThreadService threadService;
-
-  @Autowired
-  StudentService studentService;
+  final private PostService postService;
+  final private ThreadService threadService;
+  final private StudentService studentService;
 
   @PostMapping
   @RolesAllowed({Roles.STUDENT})

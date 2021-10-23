@@ -3,7 +3,6 @@ package com.iseplife.api.controllers;
 import com.iseplife.api.conf.jwt.JwtAuthRequest;
 import com.iseplife.api.conf.jwt.JwtTokenUtil;
 import com.iseplife.api.conf.jwt.TokenSet;
-import com.iseplife.api.dao.student.RoleRepository;
 import com.iseplife.api.dto.ISEPCAS.CASUserDTO;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
@@ -11,9 +10,9 @@ import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import com.iseplife.api.exceptions.http.HttpUnauthorizedException;
 import com.iseplife.api.services.CASService;
 import com.iseplife.api.services.StudentService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,29 +23,17 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthController {
-
-  private final Logger LOG = LoggerFactory.getLogger(AuthController.class);
-
-  @Autowired
-  JwtTokenUtil jwtTokenUtil;
-
-  @Autowired
-  CASService casService;
-
-  @Autowired
-  StudentService studentService;
-
-  @Autowired
-  RoleRepository roleRepository;
-
+  final private JwtTokenUtil jwtTokenUtil;
+  final private CASService casService;
+  final private StudentService studentService;
+  final private Logger LOG = LoggerFactory.getLogger(AuthController.class);
 
   @Value("${auth.password-root}")
   String defaultPassword;
-
   @Value("${auth.enable-root}")
   Boolean passwordEnable;
-
   @Value("${auth.auto-generation}")
   Boolean autoGeneration;
 

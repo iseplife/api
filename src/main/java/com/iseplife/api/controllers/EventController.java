@@ -7,11 +7,10 @@ import com.iseplife.api.dto.embed.view.media.MediaNameView;
 import com.iseplife.api.dao.event.EventPreviewProjection;
 import com.iseplife.api.dto.event.EventDTO;
 import com.iseplife.api.dto.gallery.view.GalleryPreview;
-import com.iseplife.api.dto.event.view.EventPreview;
 import com.iseplife.api.dto.event.view.EventView;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.services.EventService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -24,10 +23,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/event")
+@RequiredArgsConstructor
 public class EventController {
-
-  @Autowired
-  EventService eventService;
+  final private EventService eventService;
 
   @PostMapping
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})

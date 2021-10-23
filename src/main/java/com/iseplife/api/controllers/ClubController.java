@@ -18,8 +18,7 @@ import com.iseplife.api.dto.student.view.StudentPreview;
 import com.iseplife.api.dto.post.view.PostView;
 import com.iseplife.api.services.ClubService;
 import com.iseplife.api.services.PostService;
-import com.iseplife.api.utils.JsonUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -32,16 +31,10 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/club")
+@RequiredArgsConstructor
 public class ClubController {
-
-  @Autowired
-  ClubService clubService;
-
-  @Autowired
-  PostService postService;
-
-  @Autowired
-  JsonUtils jsonUtils;
+  final private ClubService clubService;
+  final private PostService postService;
 
   @GetMapping
   @RolesAllowed({Roles.STUDENT})

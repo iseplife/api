@@ -1,11 +1,11 @@
-package com.iseplife.api.controllers.media;
+package com.iseplife.api.controllers;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dto.media.view.MediaView;
 import com.iseplife.api.entity.post.embed.media.Matched;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.services.MediaService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +16,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/media")
+@RequiredArgsConstructor
 public class MediaController {
-  @Autowired
-  MediaService mediaService;
+  final private MediaService mediaService;
 
   @GetMapping
   public Page<MediaView> getAllMedia(@RequestParam(defaultValue = "0") int page,
