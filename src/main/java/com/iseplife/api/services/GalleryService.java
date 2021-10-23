@@ -1,6 +1,7 @@
 package com.iseplife.api.services;
 
 import com.iseplife.api.constants.PostState;
+import com.iseplife.api.constants.ThreadType;
 import com.iseplife.api.dao.gallery.GalleryFactory;
 import com.iseplife.api.dao.gallery.GalleryRepository;
 import com.iseplife.api.dao.media.image.ImageRepository;
@@ -128,7 +129,7 @@ public class GalleryService {
     if(!dto.getPseudo() && dto.getGeneratePost()){
       Post post = new Post();
       post.setFeed(gallery.getFeed());
-      post.setThread(new Thread());
+      post.setThread(new Thread(ThreadType.POST));
       post.setDescription(gallery.getDescription());
       post.setEmbed(gallery);
       post.setAuthor(studentService.getStudent(SecurityService.getLoggedId()));

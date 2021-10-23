@@ -2,6 +2,7 @@ package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
+import com.iseplife.api.constants.ThreadType;
 import com.iseplife.api.dao.media.image.ImageRepository;
 import com.iseplife.api.dao.post.*;
 import com.iseplife.api.dao.post.projection.CommentProjection;
@@ -140,7 +141,7 @@ public class ThreadService {
 
     Comment comment = new Comment();
     comment.setParentThread(thread);
-    comment.setThread(new Thread());
+    comment.setThread(new Thread(ThreadType.COMMENT));
     comment.setMessage(dto.getMessage());
     comment.setStudent(studentService.getStudent(studentID));
 

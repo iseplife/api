@@ -2,6 +2,7 @@ package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.EmbedType;
+import com.iseplife.api.constants.ThreadType;
 import com.iseplife.api.dao.post.*;
 import com.iseplife.api.dao.post.projection.PostProjection;
 import com.iseplife.api.dto.post.PostCreationDTO;
@@ -114,7 +115,7 @@ public class PostService {
 
     dto.getAttachements().forEach((type, id) -> bindAttachementToPost(type, id, post));
 
-    post.setThread(new Thread());
+    post.setThread(new Thread(ThreadType.POST));
     post.setCreationDate(new Date());
     post.setPublicationDate(dto.getPublicationDate() == null ? new Date() : dto.getPublicationDate());
     post.setState(dto.isDraft() ? PostState.DRAFT : PostState.READY);

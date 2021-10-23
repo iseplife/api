@@ -3,6 +3,7 @@ package com.iseplife.api.services;
 import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.MediaType;
+import com.iseplife.api.constants.ThreadType;
 import com.iseplife.api.dao.club.ClubRepository;
 import com.iseplife.api.dao.gallery.GalleryRepository;
 import com.iseplife.api.dao.media.MediaFactory;
@@ -180,7 +181,7 @@ public class MediaService {
           break;
         case "image":
           media = new Image();
-          ((Image)media).setThread(new Thread());
+          ((Image)media).setThread(new Thread(ThreadType.MEDIA));
           if (gallery) {
             name = fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("gallery").path, false,
               Map.of(
