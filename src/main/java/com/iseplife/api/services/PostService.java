@@ -20,13 +20,11 @@ import com.iseplife.api.entity.post.embed.poll.Poll;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.PostState;
 import com.iseplife.api.constants.Roles;
-import com.iseplife.api.dao.media.MediaRepository;
-import com.iseplife.api.dao.student.StudentRepository;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
-import com.iseplife.api.websocket.PostMessageService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -36,46 +34,17 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class PostService {
-
-  @Autowired
-  PostRepository postRepository;
-
-  @Autowired
-  ThreadRepository threadRepository;
-
-  @Autowired
-  MediaRepository mediaRepository;
-
-  @Autowired
-  StudentRepository studentRepository;
-
-  @Autowired
-  PostFactory postFactory;
-
-  @Autowired
-  StudentService studentService;
-
-  @Autowired
-  ClubService clubService;
-
-  @Autowired
-  MediaService mediaService;
-
-  @Autowired
-  PollService pollService;
-
-  @Autowired
-  GalleryService galleryService;
-
-  @Autowired
-  FeedService feedService;
-
-  @Autowired
-  SecurityService securityService;
-
-  @Autowired
-  PostMessageService postMessageService;
+  @Lazy final private StudentService studentService;
+  @Lazy final private ClubService clubService;
+  @Lazy final private MediaService mediaService;
+  @Lazy final private PollService pollService;
+  @Lazy final private GalleryService galleryService;
+  @Lazy final private FeedService feedService;
+  @Lazy final private SecurityService securityService;
+  final private PostFactory postFactory;
+  final private PostRepository postRepository;
 
   private final int POSTS_PER_PAGE = 5;
 
@@ -87,7 +56,6 @@ public class PostService {
 
     return post.get();
   }
-
 
   public Post getPostFromEmbed(Embedable embed) {
     Optional<Post> post = postRepository.findByEmbed(embed);

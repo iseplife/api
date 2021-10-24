@@ -25,7 +25,7 @@ public abstract class Media implements Embedable {
    * We can ignore this field in json as the Embeddable interface
    * will already give use the media type by giving us the embed type
    */
-  @Column(insertable = false, updatable = false)
+  @Column(insertable = false, updatable = false, name="media_type")
   private String mediaType;
 
   private boolean NSFW = false;

@@ -18,11 +18,10 @@ import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
-import com.iseplife.api.services.fileHandler.FileHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -30,40 +29,19 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class GalleryService {
+  @Lazy final private PostService postService;
+  @Lazy final private StudentService studentService;
+  @Lazy final private MediaService mediaService;
+  @Lazy final private FeedService feedService;
+  @Lazy final private ClubService clubService;
+  final private GalleryRepository galleryRepository;
+  final private ImageRepository imageRepository;
+  final private PostRepository postRepository;
 
-  private final Logger LOG = LoggerFactory.getLogger(GalleryService.class);
-
-  @Autowired
-  GalleryRepository galleryRepository;
-
-  @Autowired
-  ImageRepository imageRepository;
-
-  @Autowired
-  PostRepository postRepository;
-
-  @Autowired
-  PostService postService;
-
-  @Autowired
-  StudentService studentService;
-
-  @Autowired
-  MediaService mediaService;
-
-  @Autowired
-  FeedService feedService;
-
-  @Autowired
-  ClubService clubService;
-
-  @Qualifier("FileHandlerBean")
-  @Autowired
-  FileHandler fileHandler;
-
-  private static final int GALLERY_PER_PAGE = 5;
-  private static final int PSEUDO_GALLERY_MAX_SIZE = 5;
+  final private static int GALLERY_PER_PAGE = 5;
+  final private static int PSEUDO_GALLERY_MAX_SIZE = 5;
 
   private void checkIfHasRightsOnGallery(Gallery gallery){
     if ((gallery.isPseudo() && !SecurityService.hasRightOn(postService.getPostFromEmbed(gallery))) || !SecurityService.hasRightOn(gallery))

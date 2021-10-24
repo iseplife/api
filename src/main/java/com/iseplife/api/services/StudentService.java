@@ -4,7 +4,6 @@ import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.ClubRole;
 import com.iseplife.api.constants.Roles;
-import com.iseplife.api.dao.club.ClubMemberRepository;
 import com.iseplife.api.dao.club.ClubRepository;
 import com.iseplife.api.dao.group.GroupRepository;
 import com.iseplife.api.dto.ISEPCAS.CASUserDTO;
@@ -25,9 +24,11 @@ import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import com.iseplife.api.services.fileHandler.FileHandler;
 import com.iseplife.api.utils.MediaUtils;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -38,34 +39,20 @@ import java.util.stream.Collectors;
 
 
 @Service
+@RequiredArgsConstructor
 public class StudentService {
-
-  @Autowired
-  StudentRepository studentRepository;
-
-  @Autowired
-  GroupRepository groupRepository;
-
-  @Autowired
-  ModelMapper mapper;
-
-  @Autowired
-  StudentFactory studentFactory;
-
-  @Autowired
-  RoleRepository roleRepository;
-
-  @Autowired
-  ClubMemberRepository clubMemberRepository;
-
-  @Autowired
-  ClubRepository clubRepository;
+  @Lazy final private StudentFactory studentFactory;
+  final private ModelMapper mapper;
+  final private StudentRepository studentRepository;
+  final private GroupRepository groupRepository;
+  final private RoleRepository roleRepository;
+  final private ClubRepository clubRepository;
 
   @Qualifier("FileHandlerBean")
   @Autowired
-  FileHandler fileHandler;
+  private FileHandler fileHandler;
 
-  private static final int RESULTS_PER_PAGE = 20;
+  final private static int RESULTS_PER_PAGE = 20;
 
   private Page<Student> getAllStudent(int page) {
     return studentRepository.findAllByOrderByLastName(PageRequest.of(page, RESULTS_PER_PAGE));

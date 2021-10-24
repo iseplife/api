@@ -10,10 +10,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Map;
-import java.util.Optional;
 
 public abstract class FileHandler {
-  protected final Logger LOG = LoggerFactory.getLogger(FileHandler.class);
+  final protected Logger LOG = LoggerFactory.getLogger(FileHandler.class);
 
   @Value("${storage.api-key}")
   protected String key;
@@ -51,7 +50,7 @@ public abstract class FileHandler {
       int pos = (int) (Math.random() * random.length());
       out.append(random.charAt(pos));
     }
-    return out.toString() + "." + getFileExtension(file.getName());
+    return out + "." + getFileExtension(file.getName());
   }
 
   public String getFileExtension(String filename) {

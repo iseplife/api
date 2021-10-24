@@ -11,10 +11,9 @@ import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.dao.feed.FeedRepository;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
-import com.iseplife.api.services.fileHandler.FileHandler;
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.cache.annotation.Cacheable;
 
@@ -22,24 +21,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class FeedService {
-
-  @Autowired
-  private FeedRepository feedRepository;
-
-  @Autowired
-  private SubscriptionRepository subscriptionRepository;
-
-
-  @Autowired
-  private PostService postService;
-
-  @Qualifier("FileHandlerBean")
-  @Autowired
-  FileHandler fileHandler;
-
-  @Autowired
-  private StudentService studentService;
+  @Lazy final private PostService postService;
+  @Lazy final private StudentService studentService;
+  final private FeedRepository feedRepository;
+  final private SubscriptionRepository subscriptionRepository;
 
   public Feed getFeed(Long id) {
     Optional<Feed> feed = feedRepository.findById(id);

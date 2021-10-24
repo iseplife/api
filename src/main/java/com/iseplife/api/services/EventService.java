@@ -1,6 +1,5 @@
 package com.iseplife.api.services;
 
-
 import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dao.event.EventPreviewProjection;
@@ -17,8 +16,11 @@ import com.iseplife.api.dao.event.EventRepository;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import com.iseplife.api.services.fileHandler.FileHandler;
+import com.sun.istack.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -27,33 +29,18 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
 @Service
+@RequiredArgsConstructor
 public class EventService {
+  @Lazy final private ClubService clubService;
+  @Lazy final private GalleryService galleryService;
+  @Lazy final private FeedService feedService;
+  final private FeedRepository feedRepository;
+  final private EventRepository eventRepository;
 
-  @Autowired
-  ClubService clubService;
+  @Qualifier("FileHandlerBean") @NotNull final private FileHandler fileHandler;
 
-  @Autowired
-  GalleryService galleryService;
-
-  @Autowired
-  SubscriptionService subscriptionService;
-
-  @Autowired
-  FeedService feedService;
-
-  @Autowired
-  FeedRepository feedRepository;
-
-  @Autowired
-  EventRepository eventRepository;
-
-  @Qualifier("FileHandlerBean")
-  @Autowired
-  FileHandler fileHandler;
-
-  private final int EVENTS_PER_PAGE = 10;
+  final private static int EVENTS_PER_PAGE = 10;
 
   public EventView createEvent(EventDTO dto) {
     Club club = clubService.getClub(dto.getClub());

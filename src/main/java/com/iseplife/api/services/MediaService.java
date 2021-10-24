@@ -24,17 +24,16 @@ import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.media.image.ImageRepository;
 import com.iseplife.api.dao.media.image.MatchedRepository;
 import com.iseplife.api.dao.media.MediaRepository;
-import com.iseplife.api.dao.post.PostRepository;
 import com.iseplife.api.exceptions.*;
 import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import com.iseplife.api.services.fileHandler.FileHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -47,9 +46,20 @@ import java.util.*;
 
 
 @Service
+@RequiredArgsConstructor
 public class MediaService {
+  @Lazy final private MediaFactory mediaFactory;
+  @Lazy final private StudentService studentService;
+  @Lazy final private ClubService clubService;
+  final private MediaRepository mediaRepository;
+  final private MatchedRepository matchedRepository;
+  final private ImageRepository imageRepository;
+  final private StudentRepository studentRepository;
+  final private ClubRepository clubRepository;
 
-  private final Logger LOG = LoggerFactory.getLogger(MediaService.class);
+  @Qualifier("FileHandlerBean")
+  @Autowired
+  private FileHandler fileHandler;
 
   @Value("${media_limit.club}")
   private Integer DAILY_CLUB_MEDIA;
@@ -57,46 +67,8 @@ public class MediaService {
   @Value("${media_limit.user}")
   private Integer DAILY_USER_MEDIA;
 
-  @Autowired
-  MediaFactory mediaFactory;
-
-  @Autowired
-  MediaRepository mediaRepository;
-
-  @Autowired
-  MatchedRepository matchedRepository;
-
-  @Autowired
-  ImageRepository imageRepository;
-
-  @Autowired
-  PostRepository postRepository;
-
-  @Autowired
-  GalleryRepository galleryRepository;
-
-  @Autowired
-  StudentRepository studentRepository;
-
-  @Autowired
-  ClubRepository clubRepository;
-
-  @Autowired
-  PostService postService;
-
-  @Autowired
-  StudentService studentService;
-
-  @Autowired
-  ClubService clubService;
-
-  @Qualifier("FileHandlerBean")
-  @Autowired
-  FileHandler fileHandler;
-
-  private static final int ALL_MEDIA_PAGE_SIZE = 20;
-
-  private static final int PHOTOS_PER_PAGE = 30;
+  final private static int ALL_MEDIA_PAGE_SIZE = 20;
+  final private static int PHOTOS_PER_PAGE = 30;
 
   public Media getMedia(Long id) {
     Optional<Media> media = mediaRepository.findById(id);

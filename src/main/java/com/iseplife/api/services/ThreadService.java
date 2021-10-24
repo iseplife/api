@@ -3,7 +3,6 @@ package com.iseplife.api.services;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.constants.ThreadType;
-import com.iseplife.api.dao.media.image.ImageRepository;
 import com.iseplife.api.dao.post.*;
 import com.iseplife.api.dao.post.projection.CommentProjection;
 import com.iseplife.api.dto.thread.CommentDTO;
@@ -18,7 +17,8 @@ import com.iseplife.api.entity.post.Like;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.CommentMaxDepthException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -28,34 +28,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ThreadService {
-
-  @Autowired
-  ThreadRepository threadRepository;
-
-  @Autowired
-  PostRepository postRepository;
-
-  @Autowired
-  CommentRepository commentRepository;
-
-  @Autowired
-  ImageRepository imageRepository;
-
-  @Autowired
-  LikeRepository likeRepository;
-
-  @Autowired
-  StudentService studentService;
-
-  @Autowired
-  SecurityService securityService;
-
-  @Autowired
-  ClubService clubService;
-
-  @Autowired
-  CommentFactory commentFactory;
+  @Lazy final private StudentService studentService;
+  @Lazy final private ClubService clubService;
+  @Lazy final private CommentFactory commentFactory;
+  final private ThreadRepository threadRepository;
+  final private CommentRepository commentRepository;
+  final private LikeRepository likeRepository;
 
   private Thread getThread(Long id) {
     Optional<Thread> thread = threadRepository.findById(id);

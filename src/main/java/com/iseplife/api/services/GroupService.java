@@ -20,7 +20,10 @@ import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import com.iseplife.api.services.fileHandler.FileHandler;
+import com.sun.istack.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -31,26 +34,17 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class GroupService {
+  @Lazy final private StudentService studentService;
+  @Lazy final private FeedService feedService;
+  final private GroupRepository groupRepository;
+  final private GroupMemberRepository groupMemberRepository;
 
-  @Autowired
-  GroupRepository groupRepository;
+  @Qualifier("FileHandlerBean") @NotNull
+  final private FileHandler fileHandler;
 
-  @Autowired
-  GroupMemberRepository groupMemberRepository;
-
-  @Qualifier("FileHandlerBean")
-  @Autowired
-  FileHandler fileHandler;
-
-  @Autowired
-  private StudentService studentService;
-
-  @Autowired
-  private FeedService feedService;
-
-
-  private static final int RESULTS_PER_PAGE = 20;
+  final private static int RESULTS_PER_PAGE = 20;
 
   public Group getGroup(Long id) {
     Optional<Group> group = groupRepository.findById(id);

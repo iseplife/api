@@ -6,9 +6,9 @@ import com.iseplife.api.exceptions.http.HttpInternalServerErrorException;
 import com.iseplife.api.exceptions.http.HttpUnauthorizedException;
 import com.iseplife.api.exceptions.CASServiceException;
 import com.iseplife.api.utils.JsonUtils;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -21,13 +21,13 @@ import reactor.core.publisher.Mono;
 import javax.annotation.PostConstruct;
 
 @Service
+@RequiredArgsConstructor
 public class CASService {
-  @Autowired
-  JsonUtils jsonUtils;
+  final private JsonUtils jsonUtils;
+  final private Logger LOG = LoggerFactory.getLogger(CASService.class);
+  final private static String ISEP_CAS_URL = "https://sso-portal.isep.fr";
 
   private WebClient client;
-  private final Logger LOG = LoggerFactory.getLogger(CASService.class);
-  private final String ISEP_CAS_URL = "https://sso-portal.isep.fr";
 
   @PostConstruct
   public void initializeCASClient() {

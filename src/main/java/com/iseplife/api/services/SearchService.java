@@ -11,7 +11,7 @@ import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.user.Student;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -21,36 +21,26 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
+@RequiredArgsConstructor
 public class SearchService {
+  final private StudentRepository studentRepository;
+  final private EventRepository eventRepository;
+  final private ClubRepository clubRepository;
+  final private GroupRepository groupRepository;
 
-  //TODO: potentially paginate results
-  private static final int RESULTS_PER_PAGE = 10;
-  @Autowired
-  StudentRepository studentRepository;
+  final private static int RESULTS_PER_PAGE = 10;
 
-  @Autowired
-  EventRepository eventRepository;
-
-  @Autowired
-  ClubRepository clubRepository;
-
-  @Autowired
-  GroupRepository groupRepository;
-
-  @Autowired
-  SearchFactory searchFactory;
 
   public Page<SearchItemView> globalSearch(String filter, Integer page, Boolean returnAll, TokenPayload token) {
     try {
       CompletableFuture<List<SearchItemView>> userAsync = CompletableFuture.supplyAsync(() ->
-        searchUser(filter, "", true,  page).getContent()
+        searchUser(filter, "", true, page).getContent()
       );
 
       CompletableFuture<List<SearchItemView>> eventAsync = CompletableFuture.supplyAsync(() ->
@@ -80,7 +70,7 @@ public class SearchService {
     }
   }
 
-  public List<SearchItemView> searchUserAll(String name){
+  public List<SearchItemView> searchUserAll(String name) {
     return studentRepository.searchStudent(name.toLowerCase(), true)
       .stream()
       .map(SearchFactory::toSearchItemView)
@@ -92,7 +82,7 @@ public class SearchService {
     PageRequest pr = PageRequest.of(
       page, RESULTS_PER_PAGE,
       Sort.by(Sort.Direction.DESC, "promo").and(
-        Sort.by(atoz ? Sort.Direction.ASC: Sort.Direction.DESC, "lastName")
+        Sort.by(atoz ? Sort.Direction.ASC : Sort.Direction.DESC, "lastName")
       )
     );
     if (!promos.isEmpty()) {

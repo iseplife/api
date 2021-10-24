@@ -25,8 +25,10 @@ import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import com.iseplife.api.services.fileHandler.FileHandler;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.sun.istack.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,34 +37,16 @@ import org.springframework.cache.annotation.Cacheable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Created by Guillaume on 30/07/2017.
- * back
- */
 @Service
+@RequiredArgsConstructor
 public class ClubService {
+  @Lazy final private StudentService studentService;
+  @Lazy final private FeedService feedService;
+  @Lazy final private GalleryService galleryService;
+  final private ClubRepository clubRepository;
+  final private ClubMemberRepository clubMemberRepository;
 
-  @Autowired
-  ClubRepository clubRepository;
-
-  @Autowired
-  ClubMemberRepository clubMemberRepository;
-
-  @Autowired
-  ClubFactory clubFactory;
-
-  @Autowired
-  StudentService studentService;
-
-  @Autowired
-  FeedService feedService;
-
-  @Autowired
-  GalleryService galleryService;
-
-  @Qualifier("FileHandlerBean")
-  @Autowired
-  FileHandler fileHandler;
+  @Qualifier("FileHandlerBean") @NotNull final private FileHandler fileHandler;
 
   @Cacheable("club")
   public Club getClub(Long id) {

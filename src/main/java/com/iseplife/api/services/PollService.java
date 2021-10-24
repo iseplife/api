@@ -17,8 +17,10 @@ import com.iseplife.api.dao.poll.PollVoteRepository;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -28,25 +30,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class PollService {
-
-  @Autowired
-  ModelMapper mapper;
-
-  @Autowired
-  PollRepository pollRepository;
-
-  @Autowired
-  PollChoiceRepository pollChoiceRepository;
-
-  @Autowired
-  PollVoteRepository pollVoteRepository;
-
-  @Autowired
-  StudentService studentService;
-
-  @Autowired
-  PostService postService;
+  @Lazy final private StudentService studentService;
+  @Lazy final private PostService postService;
+  final private ModelMapper mapper;
+  final private PollRepository pollRepository;
+  final private PollChoiceRepository pollChoiceRepository;
+  final private PollVoteRepository pollVoteRepository;
 
   public Poll getPoll(Long id) {
     Optional<Poll> poll = pollRepository.findById(id);
