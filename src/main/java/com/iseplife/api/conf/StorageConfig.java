@@ -34,8 +34,8 @@ public class StorageConfig implements WebMvcConfigurer {
     "post", new MediaConf("img", POST_SIZES),
     "user_avatar", new MediaConf("img/usr", AVATAR_SIZES),
     "user_original", new MediaConf("img/usr/org",AVATAR_SIZES),
-    "club_avatar", new MediaConf("img/usr/clb", AVATAR_SIZES),
-    "club_cover", new MediaConf("img/usr/clb", COVER_SIZES),
+    "club_avatar", new MediaConf("img/clb", AVATAR_SIZES),
+    "club_cover", new MediaConf("img/clb/cvr", COVER_SIZES),
     "feed_cover", new MediaConf("img/" + COVER_SIZES, COVER_SIZES),
     "gallery", new MediaConf("img/g", GALLERY_SIZES)
   );

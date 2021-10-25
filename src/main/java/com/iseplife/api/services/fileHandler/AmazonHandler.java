@@ -76,8 +76,6 @@ public class AmazonHandler extends FileHandler {
             }
           }
         }
-
-
       });
     }
     return true;

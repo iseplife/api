@@ -1,10 +1,7 @@
 package com.iseplife.api.dao.media;
 
 import com.iseplife.api.constants.EmbedType;
-import com.iseplife.api.dto.embed.view.media.DocumentView;
-import com.iseplife.api.dto.embed.view.media.ImageView;
-import com.iseplife.api.dto.embed.view.media.MediaView;
-import com.iseplife.api.dto.embed.view.media.VideoView;
+import com.iseplife.api.dto.embed.view.media.*;
 import com.iseplife.api.entity.post.embed.media.Document;
 import com.iseplife.api.entity.post.embed.media.Image;
 import com.iseplife.api.entity.post.embed.media.Media;
@@ -22,6 +19,20 @@ public class MediaFactory {
 
   public MediaView toBasicView(Media media) {
     return mapper.map(media, MediaView.class);
+  }
+
+  public static MediaNameView toNameView(String name){
+    MediaNameView v = new MediaNameView();
+    v.setName(name);
+
+    return v;
+  }
+
+  public static MediaNameView toNameView(Media media){
+    MediaNameView v = new MediaNameView();
+    v.setName(media.getName());
+
+    return v;
   }
 
   public static MediaView toView(Media media) {
