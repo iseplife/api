@@ -41,8 +41,7 @@ public class GroupService {
   final private GroupRepository groupRepository;
   final private GroupMemberRepository groupMemberRepository;
 
-  @Qualifier("FileHandlerBean") @NotNull
-  final private FileHandler fileHandler;
+  @Qualifier("FileHandlerBean") final private FileHandler fileHandler;
 
   final private static int RESULTS_PER_PAGE = 20;
 

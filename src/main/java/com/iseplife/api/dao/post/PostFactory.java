@@ -1,32 +1,23 @@
 package com.iseplife.api.dao.post;
 
 import com.iseplife.api.dao.post.projection.PostProjection;
-import com.iseplife.api.dto.post.PostCreationDTO;
 import com.iseplife.api.dto.post.view.PostFormView;
 import com.iseplife.api.dto.post.view.PostView;
+import com.iseplife.api.dto.thread.view.CommentView;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.post.embed.Embedable;
 import com.iseplife.api.services.*;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 
 @Component
+@RequiredArgsConstructor
 public class PostFactory {
+  final private ThreadService threadService;
+  final private ModelMapper mapper;
 
-  @Autowired
-  ThreadService threadService;
-
-  @Autowired
-  ModelMapper mapper;
-
-
-  public Post dtoToEntity(PostCreationDTO post) {
-    Post p = new Post();
-    p.setDescription(post.getDescription());
-    return p;
-  }
 
   public PostFormView toPostFormView(Post post) {
     mapper.typeMap(Post.class, PostFormView.class).addMappings(mapper -> {

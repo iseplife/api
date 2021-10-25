@@ -18,6 +18,7 @@ import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import com.iseplife.api.services.fileHandler.FileHandler;
 import com.sun.istack.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
@@ -35,10 +36,11 @@ public class EventService {
   @Lazy final private ClubService clubService;
   @Lazy final private GalleryService galleryService;
   @Lazy final private FeedService feedService;
+  final private ModelMapper mapper;
   final private FeedRepository feedRepository;
   final private EventRepository eventRepository;
 
-  @Qualifier("FileHandlerBean") @NotNull final private FileHandler fileHandler;
+  @Qualifier("FileHandlerBean") final private FileHandler fileHandler;
 
   final private static int EVENTS_PER_PAGE = 10;
 
@@ -47,10 +49,8 @@ public class EventService {
     if (club == null || !SecurityService.hasRightOn(club))
       throw new HttpForbiddenException("insufficient_rights");
 
+    Event event = mapper.map(dto, Event.class);
 
-    Event event = dto.getPreviousEditionId() == null ?
-      EventFactory.dtoToEntity(dto) :
-      EventFactory.dtoToEntity(dto, getEvent(dto.getPreviousEditionId()));
 
     event.setClub(club);
     event.setFeed(new Feed(dto.getTitle()));

@@ -1,59 +1,19 @@
 package com.iseplife.api.dao.student;
 
 import com.iseplife.api.conf.StorageConfig;
-import com.iseplife.api.dto.student.StudentDTO;
-import com.iseplife.api.dto.student.StudentUpdateAdminDTO;
-import com.iseplife.api.dto.student.StudentUpdateDTO;
 import com.iseplife.api.dto.student.view.*;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.utils.MediaUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
-/**
- * Created by Guillaume on 16/10/2017.
- * back
- */
+
 @Component
+@RequiredArgsConstructor
 public class StudentFactory {
-  public Student dtoToEntity(StudentDTO dto) {
-    Student student = new Student();
-    student.setId(dto.getId());
-    student.setBirthDate(dto.getBirthDate());
-    student.setFirstName(dto.getFirstName());
-    student.setLastName(dto.getLastName());
-    student.setPromo(dto.getPromo());
-    student.setMail(dto.getMail());
-    return student;
-  }
-
-  public void updateDtoToEntity(Student student, StudentUpdateDTO dto) {
-    student.setBirthDate(dto.getBirthDate());
-    student.setMail(dto.getMail());
-
-    student.setFacebook(dto.getFacebook());
-    student.setTwitter(dto.getTwitter());
-    student.setSnapchat(dto.getSnapchat());
-    student.setInstagram(dto.getInstagram());
-  }
-
-  public void updateAdminDtoToEntity(Student student, StudentUpdateAdminDTO dto) {
-    student.setFirstName(dto.getFirstName());
-    student.setLastName(dto.getLastName());
-
-    student.setBirthDate(dto.getBirthDate());
-
-    student.setPromo(dto.getPromo());
-    student.setMail(dto.getMail());
-
-    student.setFacebook(dto.getFacebook());
-    student.setTwitter(dto.getTwitter());
-    student.setSnapchat(dto.getSnapchat());
-    student.setInstagram(dto.getInstagram());
-  }
-
 
   public static StudentPictures toPictures(String picture, Boolean hasDefaultPicture) {
     if (MediaUtils.isOriginalPicture(picture)) {

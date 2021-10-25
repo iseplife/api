@@ -25,6 +25,7 @@ import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -44,6 +45,7 @@ public class PostService {
   @Lazy final private FeedService feedService;
   @Lazy final private SecurityService securityService;
   final private PostFactory postFactory;
+  final private ModelMapper mapper;
   final private PostRepository postRepository;
 
   private final int POSTS_PER_PAGE = 5;
@@ -66,7 +68,7 @@ public class PostService {
   }
 
   public PostFormView createPost(PostCreationDTO dto) {
-    Post post = postFactory.dtoToEntity(dto);
+    Post post = mapper.map(dto, Post.class);
     Feed feed = feedService.getFeed(dto.getFeed());
 
     if (!SecurityService.hasRightOn(feed))
@@ -216,23 +218,23 @@ public class PostService {
       PageRequest.of(page, POSTS_PER_PAGE,  Sort.by(Sort.Direction.DESC, "publicationDate"))
     );
 
-    return posts.map(post -> postFactory.toView(post));
+    return posts.map(postFactory::toView);
   }
 
   public List<PostView> getFeedPostsPinned(Feed feed) {
     List<PostProjection> posts = postRepository.findFeedPinnedPosts(feed, SecurityService.getLoggedId());
 
-    return posts.stream().map(post -> postFactory.toView(post)).collect(Collectors.toList());
+    return posts.stream().map(postFactory::toView).collect(Collectors.toList());
   }
 
   public PostView getFeedDrafts(Feed feed, Long author) {
     Optional<PostProjection> post = postRepository.findFeedDraft(feed, author);
 
-    return post.map(postProjection -> postFactory.toView(postProjection)).orElse(null);
+    return post.map(postFactory::toView).orElse(null);
   }
 
   public Page<PostView> getAuthorPosts(Long id, int page, TokenPayload token) {
     Page<PostProjection> posts = postRepository.findAuthorPosts(id, SecurityService.getLoggedId(), token.getFeeds(), PageRequest.of(page, POSTS_PER_PAGE));
-    return posts.map(p -> postFactory.toView(p));
+    return posts.map(postFactory::toView);
   }
 }

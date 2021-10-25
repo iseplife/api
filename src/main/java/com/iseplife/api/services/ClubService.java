@@ -46,7 +46,7 @@ public class ClubService {
   final private ClubRepository clubRepository;
   final private ClubMemberRepository clubMemberRepository;
 
-  @Qualifier("FileHandlerBean") @NotNull final private FileHandler fileHandler;
+  @Qualifier("FileHandlerBean") final private FileHandler fileHandler;
 
   @Cacheable("club")
   public Club getClub(Long id) {

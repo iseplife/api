@@ -7,15 +7,15 @@ import com.iseplife.api.entity.post.embed.media.Image;
 import com.iseplife.api.entity.post.embed.media.Media;
 import com.iseplife.api.entity.post.embed.media.Video;
 import com.iseplife.api.exceptions.http.HttpBadRequestException;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class MediaFactory {
-
-  @Autowired
-  ModelMapper mapper;
+  final private ModelMapper mapper;
 
   public MediaView toBasicView(Media media) {
     return mapper.map(media, MediaView.class);

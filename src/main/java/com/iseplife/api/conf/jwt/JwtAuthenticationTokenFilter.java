@@ -3,10 +3,13 @@ package com.iseplife.api.conf.jwt;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -15,14 +18,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- * Created by Guillaume on 07/08/2017.
- * back
- */
+@Component
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
-
-
-  private final Logger LOG = LoggerFactory.getLogger(JwtAuthenticationTokenFilter.class);
+  final private Logger LOG = LoggerFactory.getLogger(JwtAuthenticationTokenFilter.class);
 
   @Autowired
   private JwtTokenUtil jwtTokenUtil;

@@ -2,6 +2,7 @@ package com.iseplife.api.websocket;
 
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.utils.JsonUtils;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,19 +15,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Created by Guillaume on 29/10/2017.
- * back
- */
+
 @Service
+@RequiredArgsConstructor
 public class PostMessageService {
+  final private JsonUtils jsonUtils;
+  final private Logger LOG = LoggerFactory.getLogger(PostMessageService.class);
 
-  private final Logger LOG = LoggerFactory.getLogger(PostMessageService.class);
+  final private Map<Long, Set<WebSocketSession>> clients = new ConcurrentHashMap<>();
 
-  private Map<Long, Set<WebSocketSession>> clients = new ConcurrentHashMap<>();
-
-  @Autowired
-  private JsonUtils jsonUtils;
 
   void addSession(Long id, WebSocketSession session) {
     clients.computeIfAbsent(id, k -> ConcurrentHashMap.newKeySet());

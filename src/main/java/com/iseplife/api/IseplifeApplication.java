@@ -13,6 +13,7 @@ public class IseplifeApplication {
 
   public static void main(String[] args) {
     ConfigurableApplicationContext ac = SpringApplication.run(IseplifeApplication.class, args);
+
     DatabaseSeeder tdbs = ac.getBeanFactory().createBean(DatabaseSeeder.class);
     tdbs.seedDatabase();
   }

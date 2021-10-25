@@ -6,19 +6,17 @@ import com.iseplife.api.dto.thread.view.CommentView;
 import com.iseplife.api.entity.post.Comment;
 import com.iseplife.api.services.SecurityService;
 import com.iseplife.api.services.ThreadService;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 
 @Component
+@RequiredArgsConstructor
 public class CommentFactory {
-
-  @Autowired
-  ThreadService threadService;
-
-  @Autowired
-  ModelMapper mapper;
+  final private ThreadService threadService;
+  final private ModelMapper mapper;
 
   public CommentView toView(CommentProjection comment) {
     mapper.typeMap(CommentProjection.class, CommentView.class).addMappings(mapper -> {

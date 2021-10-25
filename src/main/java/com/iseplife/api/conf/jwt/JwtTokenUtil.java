@@ -16,6 +16,7 @@ import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.services.ClubService;
 import com.iseplife.api.services.StudentService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,44 +34,29 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-/**
- * Created by Guillaume on 07/08/2017.
- * back
- */
 @Service
+@RequiredArgsConstructor
 public class JwtTokenUtil {
+  final private HttpServletResponse response;
+  final private StudentRepository studentRepository;
+  final private StudentService studentService;
+  final private ClubService clubService;
 
-  private static final Logger LOG = LoggerFactory.getLogger(JwtTokenUtil.class);
+  final private static Logger LOG = LoggerFactory.getLogger(JwtTokenUtil.class);
 
-  @Autowired
-  HttpServletResponse response;
-
-  @Autowired
-  StudentRepository studentRepository;
-
-  @Autowired
-  StudentService studentService;
-
-  @Autowired
-  ClubService clubService;
-
-  public static final String CLAIM_PAYLOAD = "payload";
-  private static final String CLAIM_USER_ID = "userID";
-  private static final String SECRET_HASHING_ALGORITHM = "SHA-256";
-  private final Locale locale = Locale.FRANCE;
+  final public static  String CLAIM_PAYLOAD = "payload";
+  final private static String CLAIM_USER_ID = "userID";
+  final private static String SECRET_HASHING_ALGORITHM = "SHA-256";
+  final private Locale locale = Locale.FRANCE;
 
   @Value("${jwt.secret}")
   private String secret;
-
   @Value("${jwt.refresh-secret}")
   private String refreshSecret;
-
   @Value("${jwt.issuer}")
   private String issuer;
-
   @Value("${jwt.token-duration}")
   private int tokenDuration;
-
   @Value("${jwt.refresh-token-duration}")
   private int refreshTokenDuration;
 

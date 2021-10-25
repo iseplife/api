@@ -7,10 +7,7 @@ import com.iseplife.api.dto.club.view.ClubView;
 import com.iseplife.api.entity.club.Club;
 import org.springframework.stereotype.Component;
 
-/**
- * Created by Guillaume on 30/07/2017.
- * back
- */
+
 @Component
 public class ClubFactory {
   static public Club fromDTO(ClubDTO dto, Club club) {

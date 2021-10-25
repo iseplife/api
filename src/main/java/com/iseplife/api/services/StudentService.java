@@ -10,7 +10,6 @@ import com.iseplife.api.dto.ISEPCAS.CASUserDTO;
 import com.iseplife.api.dto.student.StudentDTO;
 import com.iseplife.api.dto.student.StudentSettingsDTO;
 import com.iseplife.api.dto.student.StudentUpdateAdminDTO;
-import com.iseplife.api.dto.student.StudentUpdateDTO;
 import com.iseplife.api.dto.student.view.*;
 import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.club.Club;
@@ -41,16 +40,13 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class StudentService {
-  @Lazy final private StudentFactory studentFactory;
   final private ModelMapper mapper;
   final private StudentRepository studentRepository;
   final private GroupRepository groupRepository;
   final private RoleRepository roleRepository;
   final private ClubRepository clubRepository;
 
-  @Qualifier("FileHandlerBean")
-  @Autowired
-  private FileHandler fileHandler;
+  @Qualifier("FileHandlerBean") final private FileHandler fileHandler;
 
   final private static int RESULTS_PER_PAGE = 20;
 
@@ -109,7 +105,7 @@ public class StudentService {
     if (studentRepository.existsById(dto.getId()))
       throw new HttpBadRequestException("student_id_already_exist");
 
-    Student student = studentFactory.dtoToEntity(dto);
+    Student student = mapper.map(dto, Student.class);
     student.setRoles(roleRepository.findAllByRoleIn(dto.getRoles()));
 
     return StudentFactory.toAdminView(
@@ -236,12 +232,6 @@ public class StudentService {
     return student.isArchived();
   }
 
-  public Student updateStudent(StudentUpdateDTO dto, Long id) {
-    Student student = getStudent(id);
-    studentFactory.updateDtoToEntity(student, dto);
-    return studentRepository.save(student);
-  }
-
   public Role getRole(String role) {
     return roleRepository.findByRole(role);
   }
@@ -267,7 +257,7 @@ public class StudentService {
 
   public StudentAdminView updateStudentAdmin(StudentUpdateAdminDTO dto) {
     Student student = getStudent(dto.getId());
-    studentFactory.updateAdminDtoToEntity(student, dto);
+    mapper.map(dto, student);
 
     Set<Role> roles = roleRepository.findAllByRoleIn(dto.getRoles());
     student.setRoles(roles);
