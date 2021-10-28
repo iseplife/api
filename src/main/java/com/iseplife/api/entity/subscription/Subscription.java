@@ -31,7 +31,7 @@ public class Subscription {
 
   @Any(
     fetch = FetchType.EAGER,
-    metaColumn = @Column(name = "sub_type")
+    metaColumn = @Column(name = "subscribed_type")
   )
   @AnyMetaDef(
     idType = "long",
@@ -43,7 +43,7 @@ public class Subscription {
       @MetaValue(value = SubscribableType.GROUP, targetEntity = Group.class),
     }
   )
-  @JoinColumn(name = "sub_id")
+  @JoinColumn(name = "subscribed_id")
   private Subscribable subscribed;
 
 

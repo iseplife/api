@@ -11,15 +11,9 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
-import org.apache.http.HttpResponse;
 import org.asynchttpclient.Response;
 import org.jose4j.lang.JoseException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,12 +25,10 @@ import com.iseplife.api.dao.webpush.WebPushSubscriptionRepository;
 import com.iseplife.api.dto.webpush.RegisterPushServiceDTO;
 import com.iseplife.api.entity.subscription.WebPushSubscription;
 import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.exceptions.IllegalArgumentException;
 
 import net.bytebuddy.utility.RandomString;
 import nl.martijndwars.webpush.Notification;
 import nl.martijndwars.webpush.PushAsyncService;
-import nl.martijndwars.webpush.PushService;
 import nl.martijndwars.webpush.Utils;
 
 @Service

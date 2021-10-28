@@ -10,6 +10,6 @@ public class SubscriptionService {
   final private SubscriptionRepository subscriptionRepository;
 
   public Boolean isSubscribedToFeed(Long id){
-    return subscriptionRepository.existsSubscriptionByFeedIdAndListenerId(id, SecurityService.getLoggedId());
+    return subscriptionRepository.existsSubscriptionBySubscribedIdAndListenerId(id, SecurityService.getLoggedId());
   }
 }

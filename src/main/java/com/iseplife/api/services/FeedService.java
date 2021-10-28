@@ -61,7 +61,7 @@ public class FeedService {
   }
 
   public Boolean isSubscribedToFeed(Long id, Long studentID) {
-    return subscriptionRepository.existsSubscriptionByFeedIdAndListenerId(id, studentID);
+    return subscriptionRepository.existsSubscriptionBySubscribedIdAndListenerId(id, studentID);
   }
 
   public Boolean isSubscribedToFeed(Feedable feedable) {
