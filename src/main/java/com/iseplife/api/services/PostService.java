@@ -7,9 +7,7 @@ import com.iseplife.api.dao.post.*;
 import com.iseplife.api.dao.post.projection.PostProjection;
 import com.iseplife.api.dto.post.PostCreationDTO;
 import com.iseplife.api.dto.post.PostUpdateDTO;
-import com.iseplife.api.dto.post.view.PostFormView;
 import com.iseplife.api.dto.view.AuthorView;
-import com.iseplife.api.dto.post.view.PostView;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.post.embed.Embedable;
@@ -67,7 +65,7 @@ public class PostService {
     return post.get();
   }
 
-  public PostFormView createPost(PostCreationDTO dto) {
+  public Post createPost(PostCreationDTO dto) {
     Post post = mapper.map(dto, Post.class);
     Feed feed = feedService.getFeed(dto.getFeed());
 
@@ -90,10 +88,10 @@ public class PostService {
     post.setPublicationDate(dto.getPublicationDate() == null ? new Date() : dto.getPublicationDate());
     post.setState(dto.isDraft() ? PostState.DRAFT : PostState.READY);
 
-    return postFactory.toPostFormView(postRepository.save(post));
+    return postRepository.save(post);
   }
 
-  public PostFormView updatePost(Long postID, PostUpdateDTO dto) {
+  public Post updatePost(Long postID, PostUpdateDTO dto) {
     Post post = getPost(postID);
     if (!SecurityService.hasRightOn(post))
       throw new HttpForbiddenException("insufficient_rights");
@@ -117,7 +115,7 @@ public class PostService {
       post.setEmbed(null);
     }
 
-    return postFactory.toPostFormView(postRepository.save(post));
+    return postRepository.save(post);
   }
 
   private void removeEmbed(Embedable embed) {
@@ -209,32 +207,27 @@ public class PostService {
   }
 
 
-  public Page<PostView> getFeedPosts(Long feed, int page) {
-    Page<PostProjection> posts = postRepository.findCurrentFeedPost(
+  public Page<PostProjection> getFeedPosts(Long feed, int page) {
+    return postRepository.findCurrentFeedPost(
       feed,
       PostState.READY,
       SecurityService.getLoggedId(),
       SecurityService.hasRoles(Roles.ADMIN),
       PageRequest.of(page, POSTS_PER_PAGE,  Sort.by(Sort.Direction.DESC, "publicationDate"))
     );
-
-    return posts.map(postFactory::toView);
   }
 
-  public List<PostView> getFeedPostsPinned(Feed feed) {
-    List<PostProjection> posts = postRepository.findFeedPinnedPosts(feed, SecurityService.getLoggedId());
-
-    return posts.stream().map(postFactory::toView).collect(Collectors.toList());
+  public List<PostProjection> getFeedPostsPinned(Feed feed) {
+    return postRepository.findFeedPinnedPosts(feed, SecurityService.getLoggedId());
   }
 
-  public PostView getFeedDrafts(Feed feed, Long author) {
+  public PostProjection getFeedDrafts(Feed feed, Long author) {
     Optional<PostProjection> post = postRepository.findFeedDraft(feed, author);
 
-    return post.map(postFactory::toView).orElse(null);
+    return post.orElse(null);
   }
 
-  public Page<PostView> getAuthorPosts(Long id, int page, TokenPayload token) {
-    Page<PostProjection> posts = postRepository.findAuthorPosts(id, SecurityService.getLoggedId(), token.getFeeds(), PageRequest.of(page, POSTS_PER_PAGE));
-    return posts.map(postFactory::toView);
+  public Page<PostProjection> getAuthorPosts(Long id, int page, TokenPayload token) {
+    return  postRepository.findAuthorPosts(id, SecurityService.getLoggedId(), token.getFeeds(), PageRequest.of(page, POSTS_PER_PAGE));
   }
 }

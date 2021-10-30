@@ -6,6 +6,8 @@ import com.iseplife.api.dto.poll.view.PollView;
 import com.iseplife.api.entity.post.embed.poll.Poll;
 import com.iseplife.api.entity.post.embed.poll.PollChoice;
 import com.iseplife.api.services.SecurityService;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -13,7 +15,9 @@ import java.util.Collections;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class PollFactory {
+  final private ModelMapper mapper;
 
   static public PollView toView(Poll poll) {
     PollView view = new PollView();
@@ -28,7 +32,7 @@ public class PollFactory {
 
     List<PollChoiceView> choices = new ArrayList<>();
     poll.getChoices().forEach(option -> {
-      choices.add(poll.isAnonymous() ? toAnonymousView(option): toView(option));
+      choices.add(poll.isAnonymous() ? toAnonymousView(option) : toView(option));
     });
     view.setChoices(choices);
     view.setEmbedType(EmbedType.POLL);

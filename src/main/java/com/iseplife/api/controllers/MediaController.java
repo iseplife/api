@@ -1,12 +1,12 @@
 package com.iseplife.api.controllers;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.dao.media.MediaFactory;
 import com.iseplife.api.dto.media.view.MediaView;
 import com.iseplife.api.entity.post.embed.media.Matched;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.services.MediaService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,15 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MediaController {
   final private MediaService mediaService;
-
-  @GetMapping
-  public Page<MediaView> getAllMedia(@RequestParam(defaultValue = "0") int page,
-                                 @AuthenticationPrincipal TokenPayload auth) {
-    if(!auth.getRoles().contains(Roles.ADMIN)){
-      return mediaService.getAllGalleryGazetteVideoPublished(page);
-    }
-    return mediaService.getAllGalleryGazetteVideo(page);
-  }
+  final private MediaFactory factory;
 
   @PostMapping
   @RolesAllowed({Roles.STUDENT})
@@ -37,7 +29,7 @@ public class MediaController {
     @RequestParam(defaultValue = "0") Boolean nsfw,
     @RequestParam("file") MultipartFile file
   ){
-    return mediaService.createMedia(file, club, gallery,  nsfw);
+    return factory.toBasicView(mediaService.createMedia(file, club, gallery,  nsfw));
   }
 
   @PutMapping("/{id}/nsfw")

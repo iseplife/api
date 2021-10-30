@@ -2,8 +2,8 @@ package com.iseplife.api.controllers;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
+import com.iseplife.api.dao.post.projection.PostProjection;
 import com.iseplife.api.dao.student.StudentFactory;
-import com.iseplife.api.dto.club.view.ClubMemberPreview;
 import com.iseplife.api.dto.student.StudentDTO;
 import com.iseplife.api.dto.student.StudentSettingsDTO;
 import com.iseplife.api.dto.student.StudentUpdateAdminDTO;
@@ -11,7 +11,6 @@ import com.iseplife.api.dto.student.view.*;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.dto.view.MatchedView;
-import com.iseplife.api.dto.post.view.PostView;
 import com.iseplife.api.services.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,28 +26,28 @@ import java.util.Set;
 @RequestMapping("/student")
 @RequiredArgsConstructor
 public class StudentController {
-  final private StudentService studentService;
   final private PostService postService;
-  final private ClubService clubService;
   final private StudentImportService studentImportService;
   final private MediaService mediaService;
+  final private StudentService studentService;
+  final private StudentFactory factory;
 
   @GetMapping("/me")
   @RolesAllowed({Roles.STUDENT})
   public StudentPreview getLoggedStudentPreview(@AuthenticationPrincipal TokenPayload token) {
-    return StudentFactory.toPreview(studentService.getStudent(token.getId()));
+    return factory.toPreview(studentService.getStudent(token.getId()));
   }
 
   @GetMapping("/me/full")
   @RolesAllowed({Roles.STUDENT})
   public StudentView getLoggedStudent(@AuthenticationPrincipal TokenPayload token) {
-    return StudentFactory.toView(studentService.getStudent(token.getId()));
+    return factory.toView(studentService.getStudent(token.getId()));
   }
 
   @GetMapping("/{id}")
   @RolesAllowed({Roles.STUDENT})
   public StudentOverview getStudent(@PathVariable Long id) {
-    return StudentFactory.toOverview(studentService.getStudent(id));
+    return factory.toOverview(studentService.getStudent(id));
   }
 
   @PostMapping("/me/picture")
@@ -65,7 +64,7 @@ public class StudentController {
 
   @GetMapping("/{id}/post")
   @RolesAllowed({Roles.STUDENT})
-  public Page<PostView> getPostsStudent(@PathVariable Long id, @RequestParam(defaultValue = "0") int page, @AuthenticationPrincipal TokenPayload token) {
+  public Page<PostProjection> getPostsStudent(@PathVariable Long id, @RequestParam(defaultValue = "0") int page, @AuthenticationPrincipal TokenPayload token) {
     return postService.getAuthorPosts(id, page, token);
   }
 
@@ -73,12 +72,6 @@ public class StudentController {
   @RolesAllowed({Roles.STUDENT})
   public Page<MatchedView> getPhotosStudent(@PathVariable Long id, @RequestParam(defaultValue = "0") int page) {
     return mediaService.getPhotosTaggedByStudent(id, page);
-  }
-
-  @GetMapping("/{id}/club")
-  @RolesAllowed({Roles.STUDENT})
-  public List<ClubMemberPreview> getStudentClubs(@PathVariable Long id) {
-    return clubService.getStudentClubs(id);
   }
 
   @PutMapping("/{id}/archive")
@@ -94,30 +87,28 @@ public class StudentController {
   }
 
 
-
-
   @PostMapping
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
   public StudentAdminView createStudent(@RequestParam StudentDTO dto) {
-    return studentService.createStudent(dto);
+    return factory.toAdminView(studentService.createStudent(dto));
   }
 
   @GetMapping("/admin")
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
   public Page<StudentPreviewAdmin> getAllStudentsAdmin(@RequestParam(defaultValue = "0") int page) {
-    return studentService.getAllForAdmin(page);
+    return studentService.getAllStudent(page).map(factory::toPreviewAdmin);
   }
 
   @GetMapping("/{id}/admin")
   @RolesAllowed({Roles.ADMIN})
   public StudentAdminView getStudentAdmin(@PathVariable Long id) {
-    return StudentFactory.toAdminView(studentService.getStudent(id));
+    return factory.toAdminView(studentService.getStudent(id));
   }
 
   @PutMapping("/admin")
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
   public StudentAdminView updateStudentAdmin(@RequestBody StudentUpdateAdminDTO dto) {
-    return studentService.updateStudentAdmin(dto);
+    return factory.toAdminView(studentService.updateStudentAdmin(dto));
   }
 
   @PutMapping("/{id}/admin/picture")
@@ -144,7 +135,7 @@ public class StudentController {
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
   public StudentAdminView importStudent(@ModelAttribute Student student, @RequestParam(value = "file",
           required = false) MultipartFile file) {
-    return StudentFactory.toAdminView(studentImportService.importStudents(student, file));
+    return factory.toAdminView(studentImportService.importStudents(student, file));
   }
 
   @PostMapping("/import/multiple")
@@ -169,7 +160,7 @@ public class StudentController {
       student.setLastName(lastName[x]);
       student.setPromo(promos[x]);
 
-      studentAdminViews[x] = StudentFactory.toAdminView(studentImportService.importStudents(student, hasFiles[x] ? files[fileIndex] : null));
+      studentAdminViews[x] = factory.toAdminView(studentImportService.importStudents(student, hasFiles[x] ? files[fileIndex] : null));
 
       if(hasFiles[x]){
         fileIndex++;

@@ -15,18 +15,14 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class CommentFactory {
-  final private ThreadService threadService;
   final private ModelMapper mapper;
 
-  public CommentView toView(CommentProjection comment) {
-    mapper.typeMap(CommentProjection.class, CommentView.class).addMappings(mapper -> {
-      mapper
-        .using(ctx -> threadService.isLiked((Long) ctx.getSource()))
-        .map(CommentProjection::getThread, CommentView::setLiked);
-      mapper.map(SecurityService::hasRightOn, CommentView::setHasWriteAccess);
-    });
+  public CommentView toView(CommentProjection comment, Boolean isLiked) {
+    CommentView view = mapper.map(comment, CommentView.class);
+    view.setLiked(isLiked);
+    view.setHasWriteAccess(SecurityService.hasRightOn(comment));
 
-    return mapper.map(comment, CommentView.class);
+    return view;
   }
 
   public CommentFormView toView(Comment comment) {

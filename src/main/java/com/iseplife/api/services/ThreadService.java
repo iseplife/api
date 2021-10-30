@@ -7,8 +7,6 @@ import com.iseplife.api.dao.post.*;
 import com.iseplife.api.dao.post.projection.CommentProjection;
 import com.iseplife.api.dto.thread.CommentDTO;
 import com.iseplife.api.dto.thread.CommentEditDTO;
-import com.iseplife.api.dto.thread.view.CommentFormView;
-import com.iseplife.api.dto.thread.view.CommentView;
 import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.ThreadInterface;
 import com.iseplife.api.entity.club.Club;
@@ -25,14 +23,12 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ThreadService {
   @Lazy final private StudentService studentService;
   @Lazy final private ClubService clubService;
-  @Lazy final private CommentFactory commentFactory;
   final private ThreadRepository threadRepository;
   final private CommentRepository commentRepository;
   final private LikeRepository likeRepository;
@@ -89,21 +85,18 @@ public class ThreadService {
     }
   }
 
-  public List<CommentView> getComments(Long threadID) {
-    List<CommentProjection> comments = commentRepository.findThreadComments(threadID);
-    return comments.stream()
-      .map(commentFactory::toView)
-      .collect(Collectors.toList());
+  public List<CommentProjection> getComments(Long threadID) {
+    return commentRepository.findThreadComments(threadID);
   }
 
-  public CommentView getTrendingComment(Long thread) {
+  public CommentProjection getTrendingComment(Long thread) {
     List<CommentProjection> comment = commentRepository.findTrendingComments(
       thread,
       SecurityService.getLoggedId(),
       PageRequest.of(0, 1)
     );
 
-    return comment.isEmpty() ? null : commentFactory.toView(comment.get(0));
+    return comment.isEmpty() ? null : comment.get(0);
   }
 
   private Boolean canCommentOnThread(Thread thread) {
@@ -113,7 +106,7 @@ public class ThreadService {
     return true;
   }
 
-  public CommentFormView comment(Long threadID, CommentDTO dto, Long studentID) {
+  public Comment comment(Long threadID, CommentDTO dto, Long studentID) {
     Thread thread = getThread(threadID);
 
     if (!canCommentOnThread(thread))
@@ -133,10 +126,10 @@ public class ThreadService {
       comment.setAsClub(club);
     }
 
-    return commentFactory.toView(commentRepository.save(comment));
+    return commentRepository.save(comment);
   }
 
-  public CommentFormView editComment(Long id, Long comID, CommentEditDTO dto) {
+  public Comment editComment(Long id, Long comID, CommentEditDTO dto) {
     Optional<Comment> optional = commentRepository.findById(comID);
 
     if (optional.isEmpty())
@@ -149,7 +142,7 @@ public class ThreadService {
     comment.setMessage(dto.getMessage());
     comment.setLastEdition(new Date());
 
-    return commentFactory.toView(commentRepository.save(comment));
+    return commentRepository.save(comment);
   }
 
   public void deleteComment(Long comID, TokenPayload auth) {

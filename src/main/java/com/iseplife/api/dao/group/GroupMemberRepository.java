@@ -19,6 +19,8 @@ public interface GroupMemberRepository extends CrudRepository<GroupMember, Long>
 
   List<GroupMember> findByGroup_Id(Long groupId);
 
+  List<GroupMember> findByGroup_IdAndAdminIsTrue(Long groupId);
+
   @Query(
     "select count(m) from GroupMember m " +
       "where m.group = ?1 and " +

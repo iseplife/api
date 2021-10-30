@@ -6,14 +6,16 @@ import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.utils.MediaUtils;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
+import java.util.Set;
 import java.util.stream.Collectors;
-
 
 @Component
 @RequiredArgsConstructor
 public class StudentFactory {
+  final private ModelMapper mapper;
 
   public static StudentPictures toPictures(String picture, Boolean hasDefaultPicture) {
     if (MediaUtils.isOriginalPicture(picture)) {
@@ -31,115 +33,52 @@ public class StudentFactory {
     }
   }
 
-  public static StudentPreview toPreview(Student student) {
-    StudentPreview studentPreview = new StudentPreview();
-
-    studentPreview.setId(student.getId());
-    studentPreview.setFirstName(student.getFirstName());
-    studentPreview.setLastName(student.getLastName());
-    studentPreview.setPromo(student.getPromo());
-    studentPreview.setPicture(student.getPicture());
-
-    return studentPreview;
+  public StudentPreview toPreview(Student student) {
+    return mapper.map(student, StudentPreview.class);
   }
 
 
-  public static StudentView toView(Student student) {
-    StudentView view = new StudentView();
-
-    view.setId(student.getId());
-    view.setFirstName(student.getFirstName());
-    view.setLastName(student.getLastName());
-    view.setPromo(student.getPromo());
-
-
-    view.setPictures(toPictures(student.getPicture(), student.getHasDefaultPicture()));
-
-
-    view.setBirthDate(student.getBirthDate());
-    view.setFacebook(student.getFacebook());
-    view.setTwitter(student.getTwitter());
-    view.setInstagram(student.getInstagram());
-
-    view.setNotification(student.getNotification());
-    view.setRecognition(student.getRecognition());
-
-    view.setRoles(
-      student.getRoles()
-        .stream()
-        .map(Role::getRole)
-        .collect(Collectors.toList())
-    );
-
-    return view;
+  public StudentView toView(Student student) {
+    mapper
+      .typeMap(Student.class, StudentView.class)
+      .addMappings(mapper -> {
+        mapper.map(
+          Student::getPicture,
+          (dest, v) -> dest.setPictures(toPictures((String) v, student.getHasDefaultPicture()))
+        );
+        mapper
+          .using(ctx -> ((Set<Role>) ctx.getSource()).stream().map(Role::getRole).collect(Collectors.toList()))
+          .map(Student::getRoles, StudentView::setRoles);
+      });
+    return mapper.map(student, StudentView.class);
   }
 
-  public static StudentPreviewAdmin toPreviewAdmin(Student student) {
-    StudentPreviewAdmin studentPreviewAdmin = new StudentPreviewAdmin();
+  public StudentPreviewAdmin toPreviewAdmin(Student student) {
+    mapper
+      .typeMap(Student.class, StudentPreviewAdmin.class)
+      .addMappings(mapper -> {
+        mapper
+          .using(ctx -> ((Set<Role>) ctx.getSource()).stream().map(Role::getRole).collect(Collectors.toList()))
+          .map(Student::getRoles, StudentPreviewAdmin::setRoles);
+      });
 
-    studentPreviewAdmin.setId(student.getId());
-    studentPreviewAdmin.setFirstName(student.getFirstName());
-    studentPreviewAdmin.setLastName(student.getLastName());
-    studentPreviewAdmin.setPromo(student.getPromo());
-    studentPreviewAdmin.setPicture(student.getPicture());
-    studentPreviewAdmin.setArchived(student.isArchived());
-    studentPreviewAdmin.setRoles(
-      student.getRoles()
-        .stream()
-        .map(Role::getRole)
-        .collect(Collectors.toList())
-    );
-
-    return studentPreviewAdmin;
+    return mapper.map(student, StudentPreviewAdmin.class);
   }
 
-  public static StudentAdminView toAdminView(Student student) {
-    StudentAdminView studentAdmin = new StudentAdminView();
+  public StudentAdminView toAdminView(Student student) {
+    mapper
+      .typeMap(Student.class, StudentAdminView.class)
+      .addMappings(mapper -> {
+        mapper
+          .using(ctx -> ((Set<Role>) ctx.getSource()).stream().map(Role::getRole).collect(Collectors.toList()))
+          .map(Student::getRoles, StudentAdminView::setRoles);
+      });
 
-    studentAdmin.setId(student.getId());
-
-    studentAdmin.setFirstName(student.getFirstName());
-    studentAdmin.setLastName(student.getLastName());
-    studentAdmin.setPromo(student.getPromo());
-    studentAdmin.setPictures(toPictures(student.getPicture(), student.getHasDefaultPicture()));
-
-    studentAdmin.setMail(student.getMail());
-
-    studentAdmin.setBirthDate(student.getBirthDate());
-    studentAdmin.setFacebook(student.getFacebook());
-    studentAdmin.setTwitter(student.getTwitter());
-    studentAdmin.setInstagram(student.getInstagram());
-
-    studentAdmin.setArchived(student.isArchived());
-    studentAdmin.setRoles(
-      student.getRoles()
-        .stream()
-        .map(Role::getRole)
-        .collect(Collectors.toList())
-    );
-
-    return studentAdmin;
+    return mapper.map(student, StudentAdminView.class);
   }
 
-  public static StudentOverview toOverview(Student student) {
-    StudentOverview overview = new StudentOverview();
-
-    overview.setId(student.getId());
-    overview.setPromo(student.getPromo());
-    overview.setPicture(student.getPicture());
-    overview.setArchived(student.isArchived());
-
-    overview.setFirstName(student.getFirstName());
-    overview.setLastName(student.getLastName());
-
-    overview.setMail(student.getMail());
-
-    overview.setFacebook(student.getFacebook());
-    overview.setTwitter(student.getTwitter());
-    overview.setSnapchat(student.getSnapchat());
-    overview.setInstagram(student.getInstagram());
-
-    return overview;
+  public StudentOverview toOverview(Student student) {
+    return mapper.map(student, StudentOverview.class);
   }
 
 }

@@ -3,7 +3,8 @@ package com.iseplife.api.services;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dao.feed.FeedProjection;
 import com.iseplife.api.dao.feed.SubscriptionRepository;
-import com.iseplife.api.dto.post.view.PostView;
+import com.iseplife.api.dao.post.PostRepository;
+import com.iseplife.api.dao.post.projection.PostProjection;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.subscription.Subscription;
 import com.iseplife.api.entity.feed.Feedable;
@@ -41,20 +42,20 @@ public class FeedService {
   }
 
   @Cacheable("main-posts")
-  public Page<PostView> getMainFeedPosts(int page) {
+  public Page<PostProjection> getMainFeedPosts(int page) {
     return postService.getFeedPosts(1L, page);
   }
 
-  public Page<PostView> getFeedPosts(Long id, int page) {
+  public Page<PostProjection> getFeedPosts(Long id, int page) {
     return postService.getFeedPosts(id, page);
   }
 
-  public List<PostView> getFeedPostsPinned(Long id) {
+  public List<PostProjection> getFeedPostsPinned(Long id) {
     Feed feed = getFeed(id);
     return postService.getFeedPostsPinned(feed);
   }
 
-  public PostView getFeedDrafts(Long id, Long author) {
+  public PostProjection getFeedDrafts(Long id, Long author) {
     Feed feed = getFeed(id);
     return postService.getFeedDrafts(feed, author);
   }

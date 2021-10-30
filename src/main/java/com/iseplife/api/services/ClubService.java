@@ -2,31 +2,27 @@ package com.iseplife.api.services;
 
 import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
-import com.iseplife.api.dao.club.ClubMemberFactory;
 import com.iseplife.api.dao.club.projection.ClubMemberProjection;
+import com.iseplife.api.dao.student.projection.StudentPreviewProjection;
 import com.iseplife.api.dto.club.ClubAdminDTO;
 import com.iseplife.api.dto.club.ClubDTO;
 import com.iseplife.api.dto.club.ClubMemberCreationDTO;
 import com.iseplife.api.dto.club.ClubMemberDTO;
-import com.iseplife.api.dto.club.view.ClubMemberPreview;
-import com.iseplife.api.dto.club.view.ClubView;
-import com.iseplife.api.dto.gallery.view.GalleryPreview;
-import com.iseplife.api.dto.student.view.StudentPreview;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.club.ClubMember;
+import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.ClubRole;
 import com.iseplife.api.constants.Roles;
-import com.iseplife.api.dao.club.ClubFactory;
 import com.iseplife.api.dao.club.ClubMemberRepository;
 import com.iseplife.api.dao.club.ClubRepository;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import com.iseplife.api.services.fileHandler.FileHandler;
-import com.sun.istack.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -41,8 +37,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ClubService {
   @Lazy final private StudentService studentService;
-  @Lazy final private FeedService feedService;
   @Lazy final private GalleryService galleryService;
+  final private ModelMapper mapper;
   final private ClubRepository clubRepository;
   final private ClubMemberRepository clubMemberRepository;
 
@@ -64,19 +60,9 @@ public class ClubService {
       c.get(Calendar.YEAR) - 1;
   }
 
-  public ClubView getClubView(Long id) {
-    Club club = getClub(id);
 
-    return ClubFactory.toView(
-      club,
-      SecurityService.hasRightOn(club),
-      feedService.isSubscribedToFeed(club)
-    );
-  }
-
-
-  public ClubView createClub(ClubAdminDTO dto) {
-    Club club = ClubFactory.fromAdminDTO(dto, new Club());
+  public Club createClub(ClubAdminDTO dto) {
+    Club club = mapper.map(dto, Club.class);
     if (dto.getAdmins().size() == 0)
       throw new HttpBadRequestException("admins_required");
 
@@ -95,41 +81,27 @@ public class ClubService {
     club.setMembers(members);
     club.setFeed(new Feed(dto.getName()));
 
-    return ClubFactory.toView(
-      clubRepository.save(club),
-      true,
-      feedService.isSubscribedToFeed(club)
-    );
+    return clubRepository.save(club);
   }
 
-  public ClubView updateClub(Long id, ClubDTO dto) {
+  public Club updateClub(Long id, ClubDTO dto) {
+    Club club = getClub(id);
+    if (!SecurityService.hasRightOn(club))
+      throw new HttpForbiddenException("insufficient_rights");
+
+    mapper.map(dto, club);
+    return clubRepository.save(club);
+  }
+
+  public Club updateClubAdmin(Long id, ClubAdminDTO dto) {
     Club club = getClub(id);
     if (!SecurityService.hasRightOn(club))
       throw new HttpForbiddenException("insufficient_rights");
 
     // Update through reference so we don't need to get return value
-    ClubFactory.fromDTO(dto, club);
+    mapper.map(dto, club);
 
-    return ClubFactory.toView(
-      clubRepository.save(club),
-      true,
-      feedService.isSubscribedToFeed(club)
-    );
-  }
-
-  public ClubView updateClubAdmin(Long id, ClubAdminDTO dto) {
-    Club club = getClub(id);
-    if (!SecurityService.hasRightOn(club))
-      throw new HttpForbiddenException("insufficient_rights");
-
-    // Update through reference so we don't need to get return value
-    ClubFactory.fromAdminDTO(dto, club);
-
-    return ClubFactory.toView(
-      clubRepository.save(club),
-      true,
-      feedService.isSubscribedToFeed(club)
-    );
+    return clubRepository.save(club);
   }
 
 
@@ -242,14 +214,14 @@ public class ClubService {
     return clubMemberRepository.findClubYearlyMembers(id, year);
   }
 
-  public Page<GalleryPreview> getClubGalleries(Long id, int page) {
+  public Page<Gallery> getClubGalleries(Long id, int page) {
     return galleryService.getClubGalleries(getClub(id), page);
   }
 
-  public Set<StudentPreview> getAdmins(Long clubId) {
+  public Set<StudentPreviewProjection> getAdmins(Long clubId) {
     return clubMemberRepository.findByClubIdAndRole(clubId, ClubRole.ADMIN)
       .stream()
-      .map(m -> (StudentPreview) m.getStudent())
+      .map(ClubMemberProjection::getStudent)
       .collect(Collectors.toSet());
   }
 
@@ -292,11 +264,8 @@ public class ClubService {
     clubRepository.save(club);
   }
 
-  public List<ClubMemberPreview> getStudentClubs(Long id) {
-    return clubMemberRepository.findByStudentId(id)
-      .stream()
-      .map(ClubMemberFactory::toPreview)
-      .collect(Collectors.toList());
+  public List<ClubMember> getStudentClubs(Long id) {
+    return clubMemberRepository.findByStudentId(id);
   }
 
   public Set<Integer> getClubAllSchoolSessions(Long id) {

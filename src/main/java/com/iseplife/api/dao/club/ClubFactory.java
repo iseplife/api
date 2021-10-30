@@ -1,68 +1,70 @@
 package com.iseplife.api.dao.club;
 
-import com.iseplife.api.dto.club.ClubAdminDTO;
-import com.iseplife.api.dto.club.ClubDTO;
-import com.iseplife.api.dto.club.view.ClubPreview;
-import com.iseplife.api.dto.club.view.ClubView;
+import com.iseplife.api.dao.student.StudentFactory;
+import com.iseplife.api.dto.club.view.*;
 import com.iseplife.api.entity.club.Club;
+import com.iseplife.api.entity.club.ClubMember;
+import com.iseplife.api.entity.user.Student;
+import com.iseplife.api.services.SecurityService;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 
 @Component
+@RequiredArgsConstructor
 public class ClubFactory {
-  static public Club fromDTO(ClubDTO dto, Club club) {
-    club.setName(dto.getName());
-    club.setDescription(dto.getDescription());
+  @Lazy final private StudentFactory studentFactory;
+  final private ModelMapper mapper;
 
-    club.setWebsite(dto.getWebsite());
-    club.setFacebook(dto.getFacebook());
-    club.setInstagram(dto.getInstagram());
 
-    return club;
-  }
+  public ClubView toView(Club club, Boolean isSubscribed){
+    mapper
+      .typeMap(Club.class, ClubView.class)
+      .addMappings(mapper ->
+        mapper.map(src -> src.getFeed().getId(), ClubView::setFeed)
+      );
 
-  static public Club fromAdminDTO(ClubAdminDTO dto, Club club) {
-    club.setType(dto.getType());
-    club.setName(dto.getName());
-    club.setDescription(dto.getDescription());
-    club.setCreation(dto.getCreation());
-
-    club.setWebsite(dto.getWebsite());
-    club.setFacebook(dto.getFacebook());
-    club.setInstagram(dto.getInstagram());
-
-    return club;
-  }
-
-  static public ClubView toView(Club c, Boolean canEdit, Boolean isSubscribed){
-    ClubView view = new ClubView();
-    view.setId(c.getId());
-    view.setName(c.getName());
-    view.setDescription(c.getDescription());
-    view.setLogoUrl(c.getLogoUrl());
-    view.setCoverUrl(c.getCoverUrl());
-    view.setType(c.getType());
-    view.setArchived(c.isArchived());
-
-    view.setCanEdit(canEdit);
-    view.setFeed(c.getFeed().getId());
-    view.setCreation(c.getCreation());
+    ClubView view = mapper.map(club, ClubView.class);
     view.setSubscribed(isSubscribed);
+    view.setCanEdit(SecurityService.hasRightOn(club));
 
-    view.setInstagram(c.getInstagram());
-    view.setFacebook(c.getFacebook());
-    view.setWebsite(c.getWebsite());
     return view;
   }
 
-  static public ClubPreview toPreview(Club c){
-    ClubPreview view = new ClubPreview();
-    view.setId(c.getId());
-    view.setName(c.getName());
-    view.setDescription(c.getDescription());
-    view.setLogoUrl(c.getLogoUrl());
+  public ClubAdminView toAdminView(Club club){
+    return mapper.map(club, ClubAdminView.class);
+  }
 
-    return view;
+  public ClubPreview toPreview(Club club){
+    return mapper.map(club, ClubPreview.class);
+  }
+
+  public ClubMemberView toView(ClubMember member) {
+    mapper
+      .typeMap(ClubMember.class, ClubMemberView.class)
+      .addMappings(mapper -> {
+        mapper
+          .when(src -> src.getParent() != null)
+          .map(src -> src.getParent().getId(), ClubMemberView::setParent);
+        mapper
+          .using(ctx -> studentFactory.toPreview((Student) ctx.getSource()))
+          .map(ClubMember::getStudent, ClubMemberView::setStudent);
+      });
+
+    return mapper.map(member, ClubMemberView.class);
+  }
+
+  public ClubMemberPreview toPreview(ClubMember member) {
+    mapper
+      .typeMap(ClubMember.class, ClubMemberPreview.class)
+      .addMappings(mapper -> {
+        mapper
+          .using(ctx -> toPreview((Club) ctx.getSource()))
+          .map(ClubMember::getClub, ClubMemberPreview::setClub);
+      });
+    return mapper.map(member, ClubMemberPreview.class);
   }
 
 }

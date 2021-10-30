@@ -1,14 +1,13 @@
 package com.iseplife.api.controllers;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.dao.post.PostFactory;
 import com.iseplife.api.dto.post.PostCreationDTO;
 import com.iseplife.api.dto.post.PostUpdateDTO;
 import com.iseplife.api.dto.post.view.PostFormView;
 import com.iseplife.api.dto.view.*;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.services.PostService;
-import com.iseplife.api.services.StudentService;
-import com.iseplife.api.services.ThreadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -22,19 +21,18 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class PostController {
   final private PostService postService;
-  final private ThreadService threadService;
-  final private StudentService studentService;
+  final private PostFactory factory;
 
   @PostMapping
   @RolesAllowed({Roles.STUDENT})
   public PostFormView createPost(@RequestBody PostCreationDTO dto) {
-    return postService.createPost(dto);
+    return factory.toFormView(postService.createPost(dto));
   }
 
   @PutMapping("/{id}")
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
   public PostFormView updatePost(@PathVariable Long id, @RequestBody PostUpdateDTO update) {
-    return postService.updatePost(id, update);
+    return factory.toFormView(postService.updatePost(id, update));
   }
 
   @DeleteMapping("/{id}")

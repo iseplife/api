@@ -2,13 +2,10 @@ package com.iseplife.api.services;
 
 import com.iseplife.api.constants.PostState;
 import com.iseplife.api.constants.ThreadType;
-import com.iseplife.api.dao.gallery.GalleryFactory;
 import com.iseplife.api.dao.gallery.GalleryRepository;
 import com.iseplife.api.dao.media.image.ImageRepository;
 import com.iseplife.api.dao.post.PostRepository;
 import com.iseplife.api.dto.gallery.GalleryDTO;
-import com.iseplife.api.dto.gallery.view.GalleryPreview;
-import com.iseplife.api.dto.gallery.view.GalleryView;
 import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
@@ -18,9 +15,7 @@ import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -56,27 +51,21 @@ public class GalleryService {
     return gallery.get();
   }
 
-  public GalleryView getGalleryView(Long id) {
-    return GalleryFactory.toView(getGallery(id));
-  }
-
   public List<Image> getGalleryImages(Long id) {
     return getGallery(id)
       .getImages();
   }
 
-  public Page<GalleryPreview> getEventGalleries(Event event, int page) {
-    return galleryRepository.findAllByFeedAndPseudoIsFalse(event.getFeed(), PageRequest.of(page, GALLERY_PER_PAGE))
-      .map(GalleryFactory::toPreview);
+  public Page<Gallery> getEventGalleries(Event event, int page) {
+    return galleryRepository.findAllByFeedAndPseudoIsFalse(event.getFeed(), PageRequest.of(page, GALLERY_PER_PAGE));
   }
 
-  public Page<GalleryPreview> getClubGalleries(Club club, int page) {
-    return galleryRepository.findAllByClubOrderByCreationDesc(club, PageRequest.of(page, GALLERY_PER_PAGE))
-      .map(GalleryFactory::toPreview);
+  public Page<Gallery> getClubGalleries(Club club, int page) {
+    return galleryRepository.findAllByClubOrderByCreationDesc(club, PageRequest.of(page, GALLERY_PER_PAGE));
   }
 
 
-  public GalleryView createGallery(GalleryDTO dto) {
+  public Gallery createGallery(GalleryDTO dto) {
     Gallery gallery = new Gallery();
     if (dto.isPseudo() && dto.getImages().size() > PSEUDO_GALLERY_MAX_SIZE)
       throw new HttpBadRequestException("pseudo_gallery_max_size_reached");
@@ -118,7 +107,7 @@ public class GalleryService {
       postRepository.save(post);
     }
 
-    return GalleryFactory.toView(gallery);
+    return gallery;
   }
 
   public void addImagesGallery(Long galleryID, List<Long> images) {
@@ -142,7 +131,7 @@ public class GalleryService {
 
     gallery
       .getImages()
-      .forEach(img -> mediaService.deleteMedia(img));
+      .forEach(mediaService::deleteMedia);
     gallery.setImages(null);
 
     galleryRepository.delete(gallery);
@@ -160,8 +149,9 @@ public class GalleryService {
     if (images.size() != imageSize)
       throw new HttpBadRequestException("images_not_attached_to_gallery");
 
-    imageRepository.findAllById(images).forEach(img ->
-      mediaService.deleteMedia(img)
-    );
+    imageRepository
+      .findAllById(images)
+      .forEach(mediaService::deleteMedia);
   }
+
 }

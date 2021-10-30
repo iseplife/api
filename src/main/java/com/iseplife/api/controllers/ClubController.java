@@ -3,21 +3,23 @@ package com.iseplife.api.controllers;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.club.ClubFactory;
-import com.iseplife.api.dao.club.ClubMemberFactory;
 import com.iseplife.api.dao.club.projection.ClubMemberProjection;
-import com.iseplife.api.dao.media.MediaFactory;
+import com.iseplife.api.dao.gallery.GalleryFactory;
+import com.iseplife.api.dao.post.PostFactory;
+import com.iseplife.api.dao.post.projection.PostProjection;
+import com.iseplife.api.dao.student.projection.StudentPreviewProjection;
 import com.iseplife.api.dto.club.ClubAdminDTO;
 import com.iseplife.api.dto.club.ClubDTO;
 import com.iseplife.api.dto.club.ClubMemberCreationDTO;
 import com.iseplife.api.dto.club.ClubMemberDTO;
+import com.iseplife.api.dto.club.view.ClubAdminView;
+import com.iseplife.api.dto.club.view.ClubMemberPreview;
 import com.iseplife.api.dto.club.view.ClubPreview;
 import com.iseplife.api.dto.club.view.ClubView;
 import com.iseplife.api.dto.embed.view.media.MediaNameView;
 import com.iseplife.api.dto.gallery.view.GalleryPreview;
-import com.iseplife.api.dto.student.view.StudentPreview;
-import com.iseplife.api.dto.post.view.PostView;
-import com.iseplife.api.services.ClubService;
-import com.iseplife.api.services.PostService;
+import com.iseplife.api.entity.club.Club;
+import com.iseplife.api.services.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -33,39 +35,46 @@ import java.util.stream.Collectors;
 @RequestMapping("/club")
 @RequiredArgsConstructor
 public class ClubController {
-  final private ClubService clubService;
   final private PostService postService;
+  final private FeedService feedService;
+  final private ThreadService threadService;
+  final private ClubService clubService;
+  final private PostFactory postFactory;
+  final private GalleryFactory galleryFactory;
+  final private ClubFactory factory;
 
   @GetMapping
   @RolesAllowed({Roles.STUDENT})
   public List<ClubPreview> getAllClubs() {
     return clubService.getAll().stream()
-      .map(ClubFactory::toPreview)
+      .map(factory::toPreview)
       .collect(Collectors.toList());
   }
 
   @PostMapping
   @RolesAllowed({Roles.ADMIN})
   public ClubView createClub(@RequestBody ClubAdminDTO dto) {
-    return clubService.createClub(dto);
+    return factory.toView(clubService.createClub(dto), false);
   }
 
   @GetMapping("/{id}")
   @RolesAllowed({Roles.STUDENT})
   public ClubView getClub(@PathVariable Long id) {
-    return clubService.getClubView(id);
+    Club club = clubService.getClub(id);
+    return factory.toView(club, feedService.isSubscribedToFeed(club));
   }
 
   @PutMapping("/{id}")
   @RolesAllowed({Roles.STUDENT})
   public ClubView updateClub(@PathVariable Long id, @RequestBody ClubDTO dto) {
-    return clubService.updateClub(id, dto);
+    Club club = clubService.updateClub(id, dto);
+    return factory.toView(club, feedService.isSubscribedToFeed(club));
   }
 
   @PutMapping("/{id}/admin")
   @RolesAllowed({Roles.ADMIN})
-  public ClubView updateAdminClub(@PathVariable Long id, @RequestBody ClubAdminDTO dto) {
-    return clubService.updateClubAdmin(id, dto);
+  public ClubAdminView updateAdminClub(@PathVariable Long id, @RequestBody ClubAdminDTO dto) {
+    return factory.toAdminView(clubService.updateClubAdmin(id, dto));
   }
 
   @PutMapping("/{id}/logo")
@@ -95,25 +104,33 @@ public class ClubController {
   @GetMapping("/{id}/galleries")
   @RolesAllowed({Roles.STUDENT})
   public Page<GalleryPreview> getGalleries(@PathVariable Long id, @RequestParam(defaultValue = "0") int page) {
-    return clubService.getClubGalleries(id, page);
+    return clubService.getClubGalleries(id, page).map(galleryFactory::toPreview);
   }
 
   @GetMapping("/{id}/admins")
   @RolesAllowed({Roles.STUDENT})
-  public Set<StudentPreview> getAdmins(@PathVariable Long id) {
+  public Set<StudentPreviewProjection> getAdmins(@PathVariable Long id) {
     return clubService.getAdmins(id);
   }
 
   @PostMapping("/{id}/member")
   @RolesAllowed({Roles.STUDENT})
   public ClubMemberProjection addMember(@PathVariable Long id, @RequestBody ClubMemberCreationDTO dto) {
-    return ClubMemberFactory.toView(clubService.addMember(id, dto));
+    return factory.toView(clubService.addMember(id, dto));
+  }
+
+  @GetMapping("/student/{id}")
+  @RolesAllowed({Roles.STUDENT})
+  public List<ClubMemberPreview> getStudentClubs(@PathVariable Long id) {
+    return clubService.getStudentClubs(id).stream()
+      .map(factory::toPreview)
+      .collect(Collectors.toList());
   }
 
   @PutMapping("/member/{member}")
   @RolesAllowed({Roles.STUDENT})
   public ClubMemberProjection updateMember(@PathVariable Long member, @RequestBody ClubMemberDTO dto) {
-    return ClubMemberFactory.toView(clubService.updateMember(member, dto));
+    return factory.toView(clubService.updateMember(member, dto));
   }
 
   @GetMapping("/{id}/member")
@@ -138,7 +155,7 @@ public class ClubController {
 
   @GetMapping("/{id}/post")
   @RolesAllowed({Roles.STUDENT})
-  public Page<PostView> getPosts(@PathVariable Long id, @RequestParam(defaultValue = "0") int page, @AuthenticationPrincipal TokenPayload token) {
-    return postService.getAuthorPosts(id, page, token);
+  public Page<PostProjection> getPosts(@PathVariable Long id, @RequestParam(defaultValue = "0") int page, @AuthenticationPrincipal TokenPayload token) {
+    return postService.getAuthorPosts(id, page, token).map(p -> postFactory.toView(p, threadService.isLiked(p)));
   }
 }

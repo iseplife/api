@@ -1,6 +1,7 @@
 package com.iseplife.api.controllers.embed;
 
 import com.iseplife.api.constants.Roles;
+import com.iseplife.api.dao.gallery.GalleryFactory;
 import com.iseplife.api.dto.gallery.GalleryDTO;
 import com.iseplife.api.dto.gallery.view.GalleryView;
 import com.iseplife.api.entity.post.embed.media.Image;
@@ -19,16 +20,17 @@ import java.util.List;
 public class GalleryController {
   final private GalleryService galleryService;
   final private PostService postService;
+  final private GalleryFactory factory;
 
   @PostMapping
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
   public GalleryView createGallery(@RequestBody GalleryDTO dto) {
-    return galleryService.createGallery(dto);
+    return factory.toView(galleryService.createGallery(dto));
   }
 
   @GetMapping("/{id}")
   public GalleryView getGallery(@PathVariable Long id) {
-    return galleryService.getGalleryView(id);
+    return factory.toView(galleryService.getGallery(id));
   }
 
   @DeleteMapping("/{id}")

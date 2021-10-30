@@ -17,7 +17,6 @@ import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.dao.student.RoleRepository;
-import com.iseplife.api.dao.student.StudentFactory;
 import com.iseplife.api.dao.student.StudentRepository;
 import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
@@ -25,9 +24,7 @@ import com.iseplife.api.services.fileHandler.FileHandler;
 import com.iseplife.api.utils.MediaUtils;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -50,16 +47,8 @@ public class StudentService {
 
   final private static int RESULTS_PER_PAGE = 20;
 
-  private Page<Student> getAllStudent(int page) {
+  public Page<Student> getAllStudent(int page) {
     return studentRepository.findAllByOrderByLastName(PageRequest.of(page, RESULTS_PER_PAGE));
-  }
-
-  public Page<StudentPreview> getAll(int page) {
-    return getAllStudent(page).map(StudentFactory::toPreview);
-  }
-
-  public Page<StudentPreviewAdmin> getAllForAdmin(int page) {
-    return getAllStudent(page).map(StudentFactory::toPreviewAdmin);
   }
 
   public Student getStudent(Long id) {
@@ -101,16 +90,14 @@ public class StudentService {
     studentRepository.save(student);
   }
 
-  public StudentAdminView createStudent(StudentDTO dto) {
+  public Student createStudent(StudentDTO dto) {
     if (studentRepository.existsById(dto.getId()))
       throw new HttpBadRequestException("student_id_already_exist");
 
     Student student = mapper.map(dto, Student.class);
     student.setRoles(roleRepository.findAllByRoleIn(dto.getRoles()));
 
-    return StudentFactory.toAdminView(
-      studentRepository.save(student)
-    );
+    return studentRepository.save(student);
   }
 
 
@@ -255,14 +242,14 @@ public class StudentService {
     return roleRepository.findAll();
   }
 
-  public StudentAdminView updateStudentAdmin(StudentUpdateAdminDTO dto) {
+  public Student updateStudentAdmin(StudentUpdateAdminDTO dto) {
     Student student = getStudent(dto.getId());
     mapper.map(dto, student);
 
     Set<Role> roles = roleRepository.findAllByRoleIn(dto.getRoles());
     student.setRoles(roles);
 
-    return StudentFactory.toAdminView(studentRepository.save(student));
+    return studentRepository.save(student);
   }
 
 
