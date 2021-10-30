@@ -41,7 +41,7 @@ public class ThreadController {
   @RolesAllowed({Roles.STUDENT})
   public List<CommentProjection> getComments(@PathVariable Long id) {
     return threadService.getComments(id).stream()
-      .map(c -> commentFactory.toView(c, threadService.isLiked(c)))
+      .map(c -> commentFactory.toView(c, threadService.isLiked(c.getThread())))
       .collect(Collectors.toList());
   }
 

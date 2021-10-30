@@ -157,6 +157,6 @@ public class ClubController {
   @GetMapping("/{id}/post")
   @RolesAllowed({Roles.STUDENT})
   public Page<PostProjection> getPosts(@PathVariable Long id, @RequestParam(defaultValue = "0") int page, @AuthenticationPrincipal TokenPayload token) {
-    return postService.getAuthorPosts(id, page, token).map(p -> postFactory.toView(p, threadService.isLiked(p)));
+    return postService.getAuthorPosts(id, page, token).map(p -> postFactory.toView(p, threadService.isLiked(p.getThread())));
   }
 }

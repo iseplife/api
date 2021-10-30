@@ -35,20 +35,20 @@ public class FeedController {
   @GetMapping("/main/post")
   @RolesAllowed({Roles.STUDENT})
   public Page<PostProjection> getMainFeedPosts(@RequestParam(defaultValue = "0") int page){
-    return feedService.getMainFeedPosts(page).map(p -> factory.toView(p, threadService.isLiked(p)));
+    return feedService.getMainFeedPosts(page).map(p -> factory.toView(p, threadService.isLiked(p.getThread())));
   }
 
   @GetMapping("/{id}/post")
   @RolesAllowed({Roles.STUDENT})
   public Page<PostProjection> getFeedPosts(@PathVariable Long id, @RequestParam(defaultValue = "0") int page) {
-    return feedService.getFeedPosts(id, page).map(p -> factory.toView(p, threadService.isLiked(p)));
+    return feedService.getFeedPosts(id, page).map(p -> factory.toView(p, threadService.isLiked(p.getThread())));
   }
 
   @GetMapping("/{id}/post/pinned")
   @RolesAllowed({Roles.STUDENT})
   public List<PostProjection> getFeedPostsPinned(@PathVariable Long id) {
     return feedService.getFeedPostsPinned(id).stream()
-      .map(p -> factory.toView(p, threadService.isLiked(p)))
+      .map(p -> factory.toView(p, threadService.isLiked(p.getThread())))
       .collect(Collectors.toList());
   }
 

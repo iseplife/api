@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class PostFactory {
-  @Lazy final private CommentFactory commentFactory;
   @Lazy final private EmbedFactory embedFactory;
   final private ModelMapper mapper;
 
@@ -36,6 +35,7 @@ public class PostFactory {
     mapper
       .typeMap(PostProjection.class, PostView.class)
       .addMappings(mapper -> {
+        mapper.skip(PostView::setLiked);
         mapper
           .using(ctx -> SecurityService.hasRightOn((PostProjection) ctx.getSource()))
           .map(src -> src, PostView::setHasWriteAccess);

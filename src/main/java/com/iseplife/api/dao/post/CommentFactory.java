@@ -26,10 +26,12 @@ public class CommentFactory {
   }
 
   public CommentFormView toView(Comment comment) {
-    mapper.typeMap(Comment.class, CommentFormView.class).addMappings(mapper -> {
-      mapper.map(src -> src.getThread().getId(), CommentFormView::setThread);
-      mapper.skip(CommentFormView::setAuthor);
-    });
+    mapper
+      .typeMap(Comment.class, CommentFormView.class)
+      .addMappings(mapper -> {
+        mapper.map(src -> src.getThread().getId(), CommentFormView::setThread);
+        mapper.skip(CommentFormView::setAuthor);
+      });
     CommentFormView view = mapper.map(comment, CommentFormView.class);
     view.setAuthor(comment.getAsClub() != null ?
       AuthorFactory.toView(comment.getAsClub()) :
