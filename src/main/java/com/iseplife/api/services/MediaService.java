@@ -169,25 +169,13 @@ public class MediaService {
     mediaRepository.delete(media);
   }
 
-  /**
-   * Get all people linked to an image
-   *
-   * @param id
-   * @return
-   */
+
   public List<Matched> getImageTags(Long id) {
     Image image = getImage(id);
 
     return image.getMatched();
   }
 
-  /**
-   * Get all photos tagged by a student
-   *
-   * @param studentId
-   * @param page
-   * @return
-   */
   public Page<MatchedView> getPhotosTaggedByStudent(Long studentId, int page) {
     return matchedRepository.findAllByMatchId(studentId, PageRequest.of(page, PHOTOS_PER_PAGE)).map(m -> {
       MatchedView matchedView = new MatchedView();
@@ -202,13 +190,7 @@ public class MediaService {
     });
   }
 
-  /**
-   * Tag a student in an image
-   *
-   * @param imageId
-   * @param studentId
-   * @param auth
-   */
+
   public void tagStudentInImage(Long imageId, Long studentId, TokenPayload auth) {
     Image image = getImage(imageId);
     List<Matched> matchedList = matchedRepository.findAllByImage(image);
@@ -228,13 +210,7 @@ public class MediaService {
     matchedRepository.save(matched);
   }
 
-  /**
-   * Untag a student in an image
-   *
-   * @param imageId
-   * @param studentId
-   * @param auth
-   */
+
   public void untagStudentInImage(Long imageId, Long studentId, TokenPayload auth) {
     Image image = getImage(imageId);
     List<Matched> matchedList = matchedRepository.findAllByImage(image);
