@@ -1,6 +1,8 @@
 package com.iseplife.api.dao.post;
 
 import com.iseplife.api.dao.post.projection.CommentProjection;
+import com.iseplife.api.dao.post.projection.PostProjection;
+import com.iseplife.api.dto.post.view.PostView;
 import com.iseplife.api.dto.thread.view.CommentFormView;
 import com.iseplife.api.dto.thread.view.CommentView;
 import com.iseplife.api.entity.post.Comment;
@@ -18,9 +20,17 @@ public class CommentFactory {
   final private ModelMapper mapper;
 
   public CommentView toView(CommentProjection comment, Boolean isLiked) {
+    mapper
+      .typeMap(CommentProjection.class, CommentView.class)
+      .addMappings(mapper -> {
+        mapper.skip(CommentView::setLiked);
+        mapper
+          .using(ctx -> SecurityService.hasRightOn((CommentProjection) ctx.getSource()))
+          .map(src -> src, CommentView::setHasWriteAccess);
+      });
+
     CommentView view = mapper.map(comment, CommentView.class);
     view.setLiked(isLiked);
-    view.setHasWriteAccess(SecurityService.hasRightOn(comment));
 
     return view;
   }
