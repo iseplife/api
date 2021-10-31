@@ -3,50 +3,73 @@ package com.iseplife.api.dao.gallery;
 import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.dao.club.ClubFactory;
 import com.iseplife.api.dao.media.MediaFactory;
-import com.iseplife.api.dto.embed.view.media.ImageView;
 import com.iseplife.api.dto.gallery.view.GalleryPreview;
 import com.iseplife.api.dto.gallery.view.GalleryView;
 import com.iseplife.api.dto.gallery.view.PseudoGalleryView;
+import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.post.embed.Gallery;
+import com.iseplife.api.entity.post.embed.media.Image;
 import com.iseplife.api.services.SecurityService;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
+@RequiredArgsConstructor
 public class GalleryFactory {
+  @Lazy final private ClubFactory clubFactory;
+  @Lazy final private MediaFactory mediaFactory;
+  final private ModelMapper mapper;
 
-  static public GalleryView toView(Gallery gallery){
-    GalleryView view = new GalleryView();
-    view.setId(gallery.getId());
-    view.setName(gallery.getName());
-    view.setCreation(gallery.getCreation());
-    view.setClub(gallery.getClub() == null ? null : ClubFactory.toPreview(gallery.getClub()));
-    view.setImages(
-      gallery.getImages().stream().map(MediaFactory::toView).collect(Collectors.toList())
-    );
+  public GalleryView toView(Gallery gallery) {
+    mapper
+      .typeMap(Gallery.class, GalleryView.class)
+      .addMappings(mapper -> {
+        mapper
+          .using(ctx -> ctx != null ?
+            clubFactory.toPreview((Club) ctx.getSource()) :
+            null
+          ).map(Gallery::getClub, GalleryView::setClub);
+        mapper
+          .using(ctx -> ((List<Image>) ctx.getSource()).stream().map(mediaFactory::toView).collect(Collectors.toList()))
+          .map(Gallery::getImages, GalleryView::setImages);
+      });
+
+    GalleryView view = mapper.map(gallery, GalleryView.class);
     view.setHasRight(SecurityService.hasRightOn(gallery));
 
     return view;
   }
 
-  static public PseudoGalleryView toPseudoView(Gallery gallery){
-    PseudoGalleryView view = new PseudoGalleryView();
-    view.setId(gallery.getId());
+  public PseudoGalleryView toPseudoView(Gallery gallery) {
+    mapper
+      .typeMap(Gallery.class, PseudoGalleryView.class)
+      .addMappings(mapper -> {
+        mapper
+          .using(ctx -> ((List<Image>) ctx.getSource()).stream().map(mediaFactory::toView).collect(Collectors.toList()))
+          .map(Gallery::getImages, PseudoGalleryView::setImages);
+      });
+
+    PseudoGalleryView view = mapper.map(gallery, PseudoGalleryView.class);
     view.setEmbedType(EmbedType.IMAGE);
-    view.setImages(
-      gallery.getImages().stream().map(MediaFactory::toView).collect(Collectors.toList())
-    );
+
     return view;
   }
 
-  static public GalleryPreview toPreview(Gallery gallery){
-    GalleryPreview preview = new GalleryPreview();
-    preview.setId(gallery.getId());
-    preview.setName(gallery.getName());
+  public GalleryPreview toPreview(Gallery gallery) {
+    mapper
+      .typeMap(Gallery.class, GalleryPreview.class)
+      .addMappings(mapper -> {
+        mapper
+          .using(ctx -> ((List<Image>) ctx.getSource()).stream().map(mediaFactory::toView).collect(Collectors.toList()))
+          .map(Gallery::getPreview, GalleryPreview::setPreview);
+      });
+    GalleryPreview preview = mapper.map(gallery, GalleryPreview.class);
     preview.setEmbedType(EmbedType.GALLERY);
-    preview.setPreview(
-      gallery.getPreview().stream().map(MediaFactory::toView).collect(Collectors.toList())
-    );
 
     return preview;
   }

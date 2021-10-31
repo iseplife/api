@@ -3,85 +3,36 @@ package com.iseplife.api.entity.post.embed.media;
 import com.iseplife.api.constants.MediaStatus;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.post.embed.Embedable;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@DiscriminatorColumn(name = "mediaType")
+@DiscriminatorColumn(name = "media_type")
+@Getter @Setter @NoArgsConstructor
 public abstract class Media implements Embedable {
   @Id
   @GeneratedValue
   private Long id;
 
+  @Enumerated(EnumType.STRING)
+  private MediaStatus status = MediaStatus.UNPROCESSED;
+
   /**
    * We can ignore this field in json as the Embeddable interface
    * will already give use the media type by giving us the embed type
    */
-  @Column(insertable = false, updatable = false)
+  @Column(insertable = false, updatable = false, name="media_type")
   private String mediaType;
 
-  private Boolean NSFW = false;
-
+  private boolean NSFW = false;
   private Date creation;
-
   private String name;
 
-  @Enumerated(EnumType.STRING)
-  private MediaStatus status = MediaStatus.UNPROCESSED;
 
   @ManyToOne
   private Feed feed;
-
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public String getMediaType() {
-    return mediaType;
-  }
-
-  public Date getCreation() {
-    return creation;
-  }
-
-  public void setCreation(Date creation) {
-    this.creation = creation;
-  }
-
-  public Boolean isNSFW() {
-    return NSFW;
-  }
-
-  public void setNSFW(Boolean NSFW) {
-    this.NSFW = NSFW;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public Feed getFeed(){
-    return feed;
-  }
-
-  public void setFeed(Feed feed){
-    this.feed = feed;
-  }
-
-  public MediaStatus getStatus() {
-    return status;
-  }
-
-  public void setStatus(MediaStatus status) {
-    this.status = status;
-  }
 }

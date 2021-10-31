@@ -1,77 +1,62 @@
 package com.iseplife.api.services;
 
-
-import com.google.common.collect.Sets;
 import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dao.event.EventPreviewProjection;
 import com.iseplife.api.dao.feed.FeedRepository;
 import com.iseplife.api.dto.event.EventDTO;
-import com.iseplife.api.dto.gallery.view.GalleryPreview;
-import com.iseplife.api.dto.event.view.EventPreview;
-import com.iseplife.api.dto.event.view.EventView;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
-import com.iseplife.api.dao.event.EventFactory;
 import com.iseplife.api.dao.event.EventRepository;
+import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import com.iseplife.api.services.fileHandler.FileHandler;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
-import java.util.stream.Collectors;
-
 
 @Service
+@RequiredArgsConstructor
 public class EventService {
+  @Lazy final private ClubService clubService;
+  @Lazy final private GalleryService galleryService;
+  @Lazy final private FeedService feedService;
+  final private ModelMapper mapper;
+  final private FeedRepository feedRepository;
+  final private EventRepository eventRepository;
 
-  @Autowired
-  ClubService clubService;
+  @Qualifier("FileHandlerBean") final private FileHandler fileHandler;
 
-  @Autowired
-  GalleryService galleryService;
+  final private static int EVENTS_PER_PAGE = 10;
 
-  @Autowired
-  SubscriptionService subscriptionService;
-
-  @Autowired
-  FeedService feedService;
-
-  @Autowired
-  FeedRepository feedRepository;
-
-  @Autowired
-  EventRepository eventRepository;
-
-  @Qualifier("FileHandlerBean")
-  @Autowired
-  FileHandler fileHandler;
-
-  private final int EVENTS_PER_PAGE = 10;
-
-  public EventView createEvent(EventDTO dto) {
+  public Event createEvent(EventDTO dto) {
     Club club = clubService.getClub(dto.getClub());
     if (club == null || !SecurityService.hasRightOn(club))
       throw new HttpForbiddenException("insufficient_rights");
 
+    Event event = mapper.map(dto, Event.class);
 
-    Event event = dto.getPreviousEditionId() == null ?
-      EventFactory.dtoToEntity(dto) :
-      EventFactory.dtoToEntity(dto, getEvent(dto.getPreviousEditionId()));
 
     event.setClub(club);
     event.setFeed(new Feed(dto.getTitle()));
-    if (dto.getTargets().size() > 0)
-      event.setTargets(Sets.newHashSet(feedRepository.findAllById(dto.getTargets())));
+    if (dto.getTargets().size() > 0) {
+      Set<Feed> targets = new HashSet<>();
+      feedRepository.findAllById(dto.getTargets()).forEach(targets::add);
 
-    return EventFactory.toView(eventRepository.save(event), false);
+      event.setTargets(targets);
+    }
+
+
+    return eventRepository.save(event);
   }
 
   public String updateImage(Long id, MultipartFile file) {
@@ -91,11 +76,8 @@ public class EventService {
   }
 
 
-  public List<EventPreview> getEvents() {
-    return eventRepository.findAll()
-      .stream()
-      .map(EventFactory::toPreview)
-      .collect(Collectors.toList());
+  public List<Event> getEvents() {
+    return eventRepository.findAll();
   }
 
 
@@ -126,7 +108,7 @@ public class EventService {
   }
 
 
-  private Event getEvent(Long id) {
+  public Event getEvent(Long id) {
     Optional<Event> event = eventRepository.findById(id);
     if (event.isEmpty() || !SecurityService.hasReadAccessOn(event.get()))
       throw new HttpNotFoundException("not_found");
@@ -134,26 +116,15 @@ public class EventService {
     return event.get();
   }
 
-  public EventView getEventView(Long id) {
-    Event event = getEvent(id);
-
-    return EventFactory.toView(event, feedService.isSubscribedToFeed(event));
-  }
-
-  public Page<GalleryPreview> getEventGalleries(Long id, int page) {
+  public Page<Gallery> getEventGalleries(Long id, int page) {
     return galleryService.getEventGalleries(getEvent(id), page);
   }
 
-  public List<EventPreviewProjection> getChildrenEvents(Long id) {
-    Event event = getEvent(id);
-
-    return event.getChildren()
-      .stream()
-      .map(EventFactory::toPreview)
-      .collect(Collectors.toList());
+  public List<Event> getChildrenEvents(Long id) {
+    return getEvent(id).getChildren();
   }
 
-  public List<EventPreviewProjection> getPreviousEditions(Long id) {
+  public List<Event> getPreviousEditions(Long id) {
     Event event = getEvent(id);
     List<Event> previousEditions = new LinkedList<>();
 
@@ -165,9 +136,7 @@ public class EventService {
       } else break;
     }
 
-    return previousEditions.stream()
-      .map(EventFactory::toPreview)
-      .collect(Collectors.toList());
+    return previousEditions;
   }
 
   public Event updateEvent(Long id, EventDTO dto) {

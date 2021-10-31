@@ -1,11 +1,11 @@
 package com.iseplife.api.services;
 
 import com.iseplife.api.dao.poll.PollFactory;
-import com.iseplife.api.dto.embed.PollChoiceDTO;
-import com.iseplife.api.dto.embed.PollCreationDTO;
-import com.iseplife.api.dto.embed.PollEditionDTO;
-import com.iseplife.api.dto.embed.view.PollChoiceView;
-import com.iseplife.api.dto.embed.view.PollView;
+import com.iseplife.api.dto.poll.PollChoiceDTO;
+import com.iseplife.api.dto.poll.PollCreationDTO;
+import com.iseplife.api.dto.poll.PollEditionDTO;
+import com.iseplife.api.dto.poll.view.PollChoiceView;
+import com.iseplife.api.dto.poll.view.PollView;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.post.embed.poll.Poll;
 import com.iseplife.api.entity.post.embed.poll.PollChoice;
@@ -17,8 +17,10 @@ import com.iseplife.api.dao.poll.PollVoteRepository;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -28,25 +30,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class PollService {
-
-  @Autowired
-  ModelMapper mapper;
-
-  @Autowired
-  PollRepository pollRepository;
-
-  @Autowired
-  PollChoiceRepository pollChoiceRepository;
-
-  @Autowired
-  PollVoteRepository pollVoteRepository;
-
-  @Autowired
-  StudentService studentService;
-
-  @Autowired
-  PostService postService;
+  @Lazy final private StudentService studentService;
+  @Lazy final private PostService postService;
+  final private ModelMapper mapper;
+  final private PollRepository pollRepository;
+  final private PollChoiceRepository pollChoiceRepository;
+  final private PollVoteRepository pollVoteRepository;
 
   public Poll getPoll(Long id) {
     Optional<Poll> poll = pollRepository.findById(id);
@@ -84,7 +75,7 @@ public class PollService {
     if (pollAnswer.isEmpty())
       throw new HttpNotFoundException("poll_not_found");
 
-    if (!poll.getMultiple()) {
+    if (!poll.isMultiple()) {
       List<PollVote> voteList = pollVoteRepository.findByChoice_Poll_IdAndStudent_Id(poll.getId(), studentId).stream()
         .filter(votes -> !votes.getChoice().getId().equals(choiceId))
         .collect(Collectors.toList());
@@ -144,8 +135,8 @@ public class PollService {
       throw new HttpForbiddenException("insufficient_rights");
 
     poll.setTitle(dto.getTitle());
-    poll.setAnonymous(dto.getAnonymous());
-    poll.setMultiple(dto.getMultiple());
+    poll.setAnonymous(dto.isAnonymous());
+    poll.setMultiple(dto.isMultiple());
     poll.setEndsAt(dto.getEndsAt());
 
     // Edit or remove existing choices
@@ -184,7 +175,7 @@ public class PollService {
     Poll poll = getPoll(pollId);
 
     return poll.getChoices().stream()
-      .map(choice -> poll.getAnonymous() ? PollFactory.toAnonymousView(choice) : PollFactory.toView(choice))
+      .map(choice -> poll.isAnonymous() ? PollFactory.toAnonymousView(choice) : PollFactory.toView(choice))
       .collect(Collectors.toList());
   }
 

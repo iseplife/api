@@ -1,17 +1,17 @@
 package com.iseplife.api;
 
-import com.google.common.collect.Sets;
 import com.iseplife.api.constants.GroupType;
 import com.iseplife.api.dao.feed.FeedRepository;
 import com.iseplife.api.dao.group.GroupRepository;
 import com.iseplife.api.dao.student.RoleRepository;
 import com.iseplife.api.dao.student.StudentRepository;
-import com.iseplife.api.entity.GroupMember;
+import com.iseplife.api.entity.group.GroupMember;
 import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.Roles;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,21 +22,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 class DatabaseSeeder {
-
-  private final Logger LOG = LoggerFactory.getLogger(DatabaseSeeder.class);
-
-  @Autowired
-  private StudentRepository studentRepository;
-
-  @Autowired
-  private RoleRepository roleRepository;
-
-  @Autowired
-  private FeedRepository feedRepository;
-
-  @Autowired
-  private GroupRepository groupRepository;
+  final private StudentRepository studentRepository;
+  final private RoleRepository roleRepository;
+  final private FeedRepository feedRepository;
+  final private GroupRepository groupRepository;
+  final private Logger LOG = LoggerFactory.getLogger(DatabaseSeeder.class);
 
   void seedDatabase() {
     if (isDatabaseSeeded()) {
@@ -53,7 +45,7 @@ class DatabaseSeeder {
   }
 
   private boolean isDatabaseSeeded() {
-    return studentRepository.findById(1L).isPresent();
+    return studentRepository.existsById(1L);
   }
 
   private void runSeedDatabase() {
@@ -88,7 +80,7 @@ class DatabaseSeeder {
 
     Role roleStudent = roleRepository.findByRole(Roles.STUDENT);
     Role roleAdmin = roleRepository.findByRole(Roles.ADMIN);
-    student.setRoles(Sets.newHashSet(roleStudent, roleAdmin));
+    student.setRoles(Set.of(roleAdmin, roleStudent));
 
     studentRepository.save(student);
 

@@ -14,9 +14,7 @@ public interface PostProjection {
     @Value("#{target.post.description}")
     String getDescription();
     @Value("#{target.post.pinned}")
-    Boolean getPinned();
-    @Value("#{target.post.private}")
-    Boolean getPrivate();
+    boolean isPinned();
     @Value("#{target.post.embed}")
     Embedable getEmbed();
 
@@ -25,5 +23,5 @@ public interface PostProjection {
     Long getThread();
     Integer getNbLikes();
     Integer getNbComments();
-    Boolean getLiked();
+    boolean isLiked();
 }

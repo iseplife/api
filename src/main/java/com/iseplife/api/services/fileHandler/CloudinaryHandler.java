@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.Map;
 
 public class CloudinaryHandler extends FileHandler {
-  private final int VIDEO_THRESHOLD_SIZE = 100000000;
+  final private int VIDEO_THRESHOLD_SIZE = 100000000;
 
   private Cloudinary cloudinary;
 

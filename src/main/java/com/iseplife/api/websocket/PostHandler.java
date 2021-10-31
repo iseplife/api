@@ -4,21 +4,17 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.iseplife.api.conf.jwt.JwtTokenUtil;
 import com.iseplife.api.conf.jwt.TokenPayload;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-/**
- * Created by Guillaume on 29/10/2017.
- * back
- */
 public class PostHandler extends TextWebSocketHandler {
-
   @Autowired
   private PostMessageService postMessageService;
-
   @Autowired
   private JwtTokenUtil jwtTokenUtil;
 

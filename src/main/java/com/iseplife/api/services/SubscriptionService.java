@@ -1,14 +1,13 @@
 package com.iseplife.api.services;
 
 import com.iseplife.api.dao.feed.SubscriptionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class SubscriptionService {
-  @Autowired
-  SubscriptionRepository subscriptionRepository;
-
+  final private SubscriptionRepository subscriptionRepository;
 
   public Boolean isSubscribedToFeed(Long id){
     return subscriptionRepository.existsSubscriptionByFeedIdAndListenerId(id, SecurityService.getLoggedId());

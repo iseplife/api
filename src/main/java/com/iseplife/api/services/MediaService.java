@@ -2,12 +2,9 @@ package com.iseplife.api.services;
 
 import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
-import com.iseplife.api.constants.MediaType;
+import com.iseplife.api.constants.ThreadType;
 import com.iseplife.api.dao.club.ClubRepository;
-import com.iseplife.api.dao.gallery.GalleryRepository;
-import com.iseplife.api.dao.media.MediaFactory;
 import com.iseplife.api.dao.student.StudentRepository;
-import com.iseplife.api.dto.embed.view.media.MediaView;
 import com.iseplife.api.dto.view.MatchedView;
 import com.iseplife.api.entity.Author;
 import com.iseplife.api.entity.Thread;
@@ -23,22 +20,19 @@ import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.media.image.ImageRepository;
 import com.iseplife.api.dao.media.image.MatchedRepository;
 import com.iseplife.api.dao.media.MediaRepository;
-import com.iseplife.api.dao.post.PostRepository;
 import com.iseplife.api.exceptions.*;
 import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import com.iseplife.api.services.fileHandler.FileHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.cache.annotation.Cacheable;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -46,9 +40,17 @@ import java.util.*;
 
 
 @Service
+@RequiredArgsConstructor
 public class MediaService {
+  @Lazy final private StudentService studentService;
+  @Lazy final private ClubService clubService;
+  final private MediaRepository mediaRepository;
+  final private MatchedRepository matchedRepository;
+  final private ImageRepository imageRepository;
+  final private StudentRepository studentRepository;
+  final private ClubRepository clubRepository;
 
-  private final Logger LOG = LoggerFactory.getLogger(MediaService.class);
+  @Qualifier("FileHandlerBean") final private FileHandler fileHandler;
 
   @Value("${media_limit.club}")
   private Integer DAILY_CLUB_MEDIA;
@@ -56,46 +58,7 @@ public class MediaService {
   @Value("${media_limit.user}")
   private Integer DAILY_USER_MEDIA;
 
-  @Autowired
-  MediaFactory mediaFactory;
-
-  @Autowired
-  MediaRepository mediaRepository;
-
-  @Autowired
-  MatchedRepository matchedRepository;
-
-  @Autowired
-  ImageRepository imageRepository;
-
-  @Autowired
-  PostRepository postRepository;
-
-  @Autowired
-  GalleryRepository galleryRepository;
-
-  @Autowired
-  StudentRepository studentRepository;
-
-  @Autowired
-  ClubRepository clubRepository;
-
-  @Autowired
-  PostService postService;
-
-  @Autowired
-  StudentService studentService;
-
-  @Autowired
-  ClubService clubService;
-
-  @Qualifier("FileHandlerBean")
-  @Autowired
-  FileHandler fileHandler;
-
-  private static final int ALL_MEDIA_PAGE_SIZE = 20;
-
-  private static final int PHOTOS_PER_PAGE = 30;
+  final private static int PHOTOS_PER_PAGE = 30;
 
   public Media getMedia(Long id) {
     Optional<Media> media = mediaRepository.findById(id);
@@ -105,25 +68,6 @@ public class MediaService {
     return media.get();
   }
 
-  @Cacheable("media-list-published")
-  public Page<MediaView> getAllGalleryGazetteVideoPublished(int page) {
-    Page<Media> list = mediaRepository.findAllByMediaTypeInOrderByCreationDesc(
-      Arrays.asList(MediaType.IMAGE, MediaType.VIDEO),
-      PageRequest.of(page, ALL_MEDIA_PAGE_SIZE)
-    );
-
-    return list.map(MediaFactory::toView);
-  }
-
-  @Cacheable("media-list-all")
-  public Page<MediaView> getAllGalleryGazetteVideo(int page) {
-    Page<Media> list =  mediaRepository.findAllByMediaTypeInOrderByCreationDesc(
-      Arrays.asList(MediaType.IMAGE, MediaType.VIDEO),
-      PageRequest.of(page, ALL_MEDIA_PAGE_SIZE)
-    );
-    return list.map(MediaFactory::toView);
-  }
-
   private Image getImage(Long id) {
     Optional<Image> img = imageRepository.findById(id);
     if (img.isEmpty())
@@ -131,7 +75,6 @@ public class MediaService {
 
     return img.get();
   }
-
 
   private Boolean isAllowedToCreateMedia(Author author) {
     boolean isStudent = author instanceof Student;
@@ -162,7 +105,7 @@ public class MediaService {
     return false;
   }
 
-  public MediaView createMedia(MultipartFile file, Long club, Boolean gallery, Boolean nsfw) {
+  public Media createMedia(MultipartFile file, Long club, Boolean gallery, Boolean nsfw) {
     Author author = club > 0 ?
       clubService.getClub(club) :
       studentService.getStudent(SecurityService.getLoggedId());
@@ -180,7 +123,7 @@ public class MediaService {
           break;
         case "image":
           media = new Image();
-          ((Image)media).setThread(new Thread());
+          ((Image)media).setThread(new Thread(ThreadType.MEDIA));
           if (gallery) {
             name = fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("gallery").path, false,
               Map.of(
@@ -206,7 +149,7 @@ public class MediaService {
       media.setName(name);
       media.setNSFW(nsfw);
       media.setCreation(new Date());
-      return mediaFactory.toBasicView(mediaRepository.save(media));
+      return mediaRepository.save(media);
     }
 
     throw new MediaMaxUploadException("daily_upload_reached");
@@ -220,36 +163,19 @@ public class MediaService {
     return media.isNSFW();
   }
 
-  public boolean removeMedia(String filename) {
-    return fileHandler.delete(filename);
-  }
-
-
   void deleteMedia(Media media) {
     String name = media.getName();
     fileHandler.delete(name);
     mediaRepository.delete(media);
   }
 
-  /**
-   * Get all people linked to an image
-   *
-   * @param id
-   * @return
-   */
+
   public List<Matched> getImageTags(Long id) {
     Image image = getImage(id);
 
     return image.getMatched();
   }
 
-  /**
-   * Get all photos tagged by a student
-   *
-   * @param studentId
-   * @param page
-   * @return
-   */
   public Page<MatchedView> getPhotosTaggedByStudent(Long studentId, int page) {
     return matchedRepository.findAllByMatchId(studentId, PageRequest.of(page, PHOTOS_PER_PAGE)).map(m -> {
       MatchedView matchedView = new MatchedView();
@@ -264,13 +190,7 @@ public class MediaService {
     });
   }
 
-  /**
-   * Tag a student in an image
-   *
-   * @param imageId
-   * @param studentId
-   * @param auth
-   */
+
   public void tagStudentInImage(Long imageId, Long studentId, TokenPayload auth) {
     Image image = getImage(imageId);
     List<Matched> matchedList = matchedRepository.findAllByImage(image);
@@ -290,13 +210,7 @@ public class MediaService {
     matchedRepository.save(matched);
   }
 
-  /**
-   * Untag a student in an image
-   *
-   * @param imageId
-   * @param studentId
-   * @param auth
-   */
+
   public void untagStudentInImage(Long imageId, Long studentId, TokenPayload auth) {
     Image image = getImage(imageId);
     List<Matched> matchedList = matchedRepository.findAllByImage(image);

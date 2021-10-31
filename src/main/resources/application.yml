@@ -1,11 +1,13 @@
 spring:
+  main:
+    lazy-initialization: true
   datasource:
     url: jdbc:postgresql://${DB_HOST:localhost:5432}/${DB_NAME:iseplife}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:root}
   jpa:
     hibernate:
-      ddl-auto:
+      ddl-auto: update
   servlet:
     multipart:
       max-file-size: 2000MB
@@ -39,6 +41,6 @@ jwt:
   issuer:               iseplife
 
 auth:
-  enable-root:   ${ENABLE_ROOT:false}    # Disable in production
+  enable-root:   ${ENABLE_ROOT:false}
   password-root: ${ROOT_PASS:password}
   auto-generation: ${AUTO_GEN:true}

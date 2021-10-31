@@ -13,16 +13,16 @@ import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.post.embed.poll.Poll;
 import com.iseplife.api.entity.user.Student;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 
 @Service
+@RequiredArgsConstructor
 public class SecurityService {
-
-  @Autowired
-  StudentService studentService;
+  @Lazy final private StudentService studentService;
 
   /**
    * Check if user has one of the roles listed

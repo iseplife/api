@@ -1,13 +1,11 @@
 package com.iseplife.api.services;
 
 import com.iseplife.api.constants.PostState;
-import com.iseplife.api.dao.gallery.GalleryFactory;
+import com.iseplife.api.constants.ThreadType;
 import com.iseplife.api.dao.gallery.GalleryRepository;
 import com.iseplife.api.dao.media.image.ImageRepository;
 import com.iseplife.api.dao.post.PostRepository;
 import com.iseplife.api.dto.gallery.GalleryDTO;
-import com.iseplife.api.dto.gallery.view.GalleryPreview;
-import com.iseplife.api.dto.gallery.view.GalleryView;
 import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
@@ -17,11 +15,8 @@ import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
-import com.iseplife.api.services.fileHandler.FileHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -29,43 +24,22 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class GalleryService {
+  @Lazy final private PostService postService;
+  @Lazy final private StudentService studentService;
+  @Lazy final private MediaService mediaService;
+  @Lazy final private FeedService feedService;
+  @Lazy final private ClubService clubService;
+  final private GalleryRepository galleryRepository;
+  final private ImageRepository imageRepository;
+  final private PostRepository postRepository;
 
-  private final Logger LOG = LoggerFactory.getLogger(GalleryService.class);
-
-  @Autowired
-  GalleryRepository galleryRepository;
-
-  @Autowired
-  ImageRepository imageRepository;
-
-  @Autowired
-  PostRepository postRepository;
-
-  @Autowired
-  PostService postService;
-
-  @Autowired
-  StudentService studentService;
-
-  @Autowired
-  MediaService mediaService;
-
-  @Autowired
-  FeedService feedService;
-
-  @Autowired
-  ClubService clubService;
-
-  @Qualifier("FileHandlerBean")
-  @Autowired
-  FileHandler fileHandler;
-
-  private static final int GALLERY_PER_PAGE = 5;
-  private static final int PSEUDO_GALLERY_MAX_SIZE = 5;
+  final private static int GALLERY_PER_PAGE = 5;
+  final private static int PSEUDO_GALLERY_MAX_SIZE = 5;
 
   private void checkIfHasRightsOnGallery(Gallery gallery){
-    if ((gallery.getPseudo() && !SecurityService.hasRightOn(postService.getPostFromEmbed(gallery))) || !SecurityService.hasRightOn(gallery))
+    if ((gallery.isPseudo() && !SecurityService.hasRightOn(postService.getPostFromEmbed(gallery))) || !SecurityService.hasRightOn(gallery))
       throw new HttpForbiddenException("insufficient_rights");
   }
 
@@ -77,36 +51,30 @@ public class GalleryService {
     return gallery.get();
   }
 
-  public GalleryView getGalleryView(Long id) {
-    return GalleryFactory.toView(getGallery(id));
-  }
-
   public List<Image> getGalleryImages(Long id) {
     return getGallery(id)
       .getImages();
   }
 
-  public Page<GalleryPreview> getEventGalleries(Event event, int page) {
-    return galleryRepository.findAllByFeedAndPseudoIsFalse(event.getFeed(), PageRequest.of(page, GALLERY_PER_PAGE))
-      .map(GalleryFactory::toPreview);
+  public Page<Gallery> getEventGalleries(Event event, int page) {
+    return galleryRepository.findAllByFeedAndPseudoIsFalse(event.getFeed(), PageRequest.of(page, GALLERY_PER_PAGE));
   }
 
-  public Page<GalleryPreview> getClubGalleries(Club club, int page) {
-    return galleryRepository.findAllByClubOrderByCreationDesc(club, PageRequest.of(page, GALLERY_PER_PAGE))
-      .map(GalleryFactory::toPreview);
+  public Page<Gallery> getClubGalleries(Club club, int page) {
+    return galleryRepository.findAllByClubOrderByCreationDesc(club, PageRequest.of(page, GALLERY_PER_PAGE));
   }
 
 
-  public GalleryView createGallery(GalleryDTO dto) {
+  public Gallery createGallery(GalleryDTO dto) {
     Gallery gallery = new Gallery();
-    if (dto.getPseudo() && dto.getImages().size() > PSEUDO_GALLERY_MAX_SIZE)
+    if (dto.isPseudo() && dto.getImages().size() > PSEUDO_GALLERY_MAX_SIZE)
       throw new HttpBadRequestException("pseudo_gallery_max_size_reached");
 
 
     gallery.setCreation(new Date());
-    gallery.setPseudo(dto.getPseudo());
+    gallery.setPseudo(dto.isPseudo());
     gallery.setFeed(feedService.getFeed(dto.getFeed()));
-    if (!dto.getPseudo()) {
+    if (!dto.isPseudo()) {
       Club club = clubService.getClub(dto.getClub());
       if (!SecurityService.hasRightOn(club))
         throw new HttpForbiddenException("insufficient_rights");
@@ -125,10 +93,10 @@ public class GalleryService {
     });
 
     imageRepository.saveAll(images);
-    if(!dto.getPseudo() && dto.getGeneratePost()){
+    if(!dto.isPseudo() && dto.getGeneratePost()){
       Post post = new Post();
       post.setFeed(gallery.getFeed());
-      post.setThread(new Thread());
+      post.setThread(new Thread(ThreadType.POST));
       post.setDescription(gallery.getDescription());
       post.setEmbed(gallery);
       post.setAuthor(studentService.getStudent(SecurityService.getLoggedId()));
@@ -139,7 +107,7 @@ public class GalleryService {
       postRepository.save(post);
     }
 
-    return GalleryFactory.toView(gallery);
+    return gallery;
   }
 
   public void addImagesGallery(Long galleryID, List<Long> images) {
@@ -163,7 +131,7 @@ public class GalleryService {
 
     gallery
       .getImages()
-      .forEach(img -> mediaService.deleteMedia(img));
+      .forEach(mediaService::deleteMedia);
     gallery.setImages(null);
 
     galleryRepository.delete(gallery);
@@ -181,8 +149,9 @@ public class GalleryService {
     if (images.size() != imageSize)
       throw new HttpBadRequestException("images_not_attached_to_gallery");
 
-    imageRepository.findAllById(images).forEach(img ->
-      mediaService.deleteMedia(img)
-    );
+    imageRepository
+      .findAllById(images)
+      .forEach(mediaService::deleteMedia);
   }
+
 }

@@ -13,12 +13,12 @@
     {
       "name": "media_limit.club",
       "type": "java.lang.Integer",
-      "description": "Maximum object's daily upload allowed by a club."
+      "description": "Maximum everyday media amount a club can upload everyday."
     },
     {
       "name": "media_limit.user",
       "type": "java.lang.Integer",
-      "description": "Maximum object's daily upload allowed by an user."
+      "description": "Maximum everyday media amount an user can upload."
     },
     {
       "name": "storage.name",
@@ -54,7 +54,7 @@
     {
       "name": "jwt.token-duration",
       "type": "java.lang.Integer",
-      "description": "Duration of the JWT, in seconds."
+      "description": "JWT duration, in seconds."
     },
     {
       "name": "jwt.refresh-token-duration",
@@ -69,7 +69,7 @@
     {
       "name": "auth.enable-root",
       "type": "java.lang.Boolean",
-      "description": "Allow to authenticate with the root user."
+      "description": "Allow to authenticate with the root user. It's recommended to disable it in production."
     },
     {
       "name": "auth.password-root",

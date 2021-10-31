@@ -3,26 +3,22 @@ package com.iseplife.api.services;
 import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.GroupType;
-import com.iseplife.api.dao.group.GroupFactory;
-import com.iseplife.api.dao.group.GroupMemberFactory;
 import com.iseplife.api.dao.group.GroupMemberRepository;
 import com.iseplife.api.dao.group.GroupRepository;
 import com.iseplife.api.dto.group.GroupCreationDTO;
 import com.iseplife.api.dto.group.GroupMemberDTO;
 import com.iseplife.api.dto.group.GroupUpdateDTO;
-import com.iseplife.api.dto.group.view.GroupAdminView;
-import com.iseplife.api.dto.group.view.GroupMemberView;
-import com.iseplife.api.dto.group.view.GroupPreview;
-import com.iseplife.api.dto.group.view.GroupView;
 import com.iseplife.api.entity.group.Group;
-import com.iseplife.api.entity.GroupMember;
+import com.iseplife.api.entity.group.GroupMember;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import com.iseplife.api.services.fileHandler.FileHandler;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,26 +27,16 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class GroupService {
+  @Lazy final private StudentService studentService;
+  final private ModelMapper mapper;
+  final private GroupRepository groupRepository;
+  final private GroupMemberRepository groupMemberRepository;
 
-  @Autowired
-  GroupRepository groupRepository;
+  @Qualifier("FileHandlerBean") final private FileHandler fileHandler;
 
-  @Autowired
-  GroupMemberRepository groupMemberRepository;
-
-  @Qualifier("FileHandlerBean")
-  @Autowired
-  FileHandler fileHandler;
-
-  @Autowired
-  private StudentService studentService;
-
-  @Autowired
-  private FeedService feedService;
-
-
-  private static final int RESULTS_PER_PAGE = 20;
+  final private static int RESULTS_PER_PAGE = 20;
 
   public Group getGroup(Long id) {
     Optional<Group> group = groupRepository.findById(id);
@@ -60,11 +46,12 @@ public class GroupService {
     return group.get();
   }
 
-  public List<GroupMemberView> getGroupMembers(Long id) {
-    return groupMemberRepository.findByGroup_Id(id)
-      .stream()
-      .map(GroupMemberFactory::toView)
-      .collect(Collectors.toList());
+  public List<GroupMember> getGroupAdminMembers(Long id) {
+    return groupMemberRepository.findByGroup_IdAndAdminIsTrue(id);
+  }
+
+  public List<GroupMember> getGroupMembers(Long id) {
+    return groupMemberRepository.findByGroup_Id(id);
   }
 
   public GroupMember getGroupMember(Long id) {
@@ -75,37 +62,23 @@ public class GroupService {
     return member.get();
   }
 
-  public GroupView getGroupView(Long id) {
-    Group group = getGroup(id);
-    return GroupFactory.toView(group, feedService.isSubscribedToFeed(group));
+
+
+  public Page<Group> getAll(int page) {
+    return groupRepository.findAll(PageRequest.of(page, RESULTS_PER_PAGE));
   }
 
-  public GroupAdminView getGroupAdmin(Long id) {
-    return GroupFactory.toAdminView(getGroup(id));
-  }
-
-
-  public Page<GroupPreview> getAll(int page) {
-    return groupRepository
-      .findAll(PageRequest.of(page, RESULTS_PER_PAGE))
-      .map(GroupFactory::toPreview);
-  }
-
-  public List<GroupPreview> getUserGroups(TokenPayload token) {
-    return groupRepository
-      .findAllUserGroups(token.getId())
-      .stream()
-      .map(GroupFactory::toPreview)
-      .collect(Collectors.toList());
+  public List<Group> getUserGroups(TokenPayload token) {
+    return groupRepository.findAllUserGroups(token.getId());
   }
 
 
-  public GroupAdminView createGroup(GroupCreationDTO dto) {
-    Group group = GroupFactory.fromDTO(dto);
+  public Group createGroup(GroupCreationDTO dto) {
+    Group group = mapper.map(dto, Group.class);
 
     group.setMembers(createGroupAdminMembers(dto.getAdmins()));
 
-    return GroupFactory.toAdminView(groupRepository.save(group));
+    return groupRepository.save(group);
   }
 
   private List<GroupMember> createGroupAdminMembers(List<Long> ids) {
@@ -122,9 +95,9 @@ public class GroupService {
   }
 
 
-  public GroupAdminView updateGroup(Long id, GroupUpdateDTO dto) {
+  public Group updateGroup(Long id, GroupUpdateDTO dto) {
     Group group = getGroup(id);
-    GroupFactory.updateFromDTO(group, dto);
+    mapper.map(dto, group);
 
     // Keep only admins that are in dto.admins
     group.setMembers(
@@ -144,7 +117,7 @@ public class GroupService {
     // We create a group member admin for all leftovers ids
     group.getMembers().addAll(createGroupAdminMembers(dto.getAdmins()));
 
-    return GroupFactory.toAdminView(groupRepository.save(group));
+    return groupRepository.save(group);
   }
 
   public String updateCover(Long id, MultipartFile cover) {
@@ -215,7 +188,7 @@ public class GroupService {
     return true;
   }
 
-  public GroupMemberView addMember(Long id, GroupMemberDTO dto) {
+  public GroupMember addMember(Long id, GroupMemberDTO dto) {
     Group group = getGroup(id);
     if (!SecurityService.hasRightOn(group))
       throw new HttpForbiddenException("insufficient_rights");
@@ -225,7 +198,7 @@ public class GroupService {
     member.setStudent(studentService.getStudent(dto.getStudentId()));
     member.setGroup(group);
 
-    return GroupMemberFactory.toView(groupMemberRepository.save(member));
+    return groupMemberRepository.save(member);
   }
 
   public Boolean removeMember(Long id, Long member) {

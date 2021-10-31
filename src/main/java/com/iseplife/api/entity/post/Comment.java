@@ -4,17 +4,27 @@ import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.ThreadInterface;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.user.Student;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.*;
 
 @Entity
 @Table(name = "thread_comment")
+@Getter @Setter @NoArgsConstructor
 public class Comment implements ThreadInterface {
-
   @Id
   @GeneratedValue
   private Long id;
+
+  @Column(length = 500)
+  private String message;
+
+  private Date creation = new Date();
+
+  private Date lastEdition;
 
   @ManyToOne
   private Thread parentThread;
@@ -27,82 +37,4 @@ public class Comment implements ThreadInterface {
 
   @ManyToOne
   private Club asClub;
-
-  private Date creation = new Date();
-
-  private Date lastEdition;
-
-
-  @Column(length = 500)
-  private String message;
-
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public Student getStudent() {
-    return student;
-  }
-
-  public void setStudent(Student student) {
-    this.student = student;
-  }
-
-  public String getMessage() {
-    return message;
-  }
-
-  public void setMessage(String message) {
-    this.message = message;
-  }
-
-  public Thread getParentThread() {
-    return parentThread;
-  }
-
-  public void setParentThread(Thread parentThread) {
-    this.parentThread = parentThread;
-  }
-
-  @Override
-  public Thread getThread() {
-    return thread;
-  }
-
-  @Override
-  public void setThread(Thread thread) {
-    this.thread = thread;
-  }
-
-  public Date getCreation() {
-    return creation;
-  }
-
-  public void setCreation(Date creation) {
-    this.creation = creation;
-  }
-
-  public Date getLastEdition() {
-    return lastEdition;
-  }
-
-  public void setLastEdition(Date lastEdition) {
-    this.lastEdition = lastEdition;
-  }
-
-  public List<Like> getLikes() {
-    return thread.getLikes();
-  }
-
-  public Club getAsClub() {
-    return asClub;
-  }
-
-  public void setAsClub(Club asClub) {
-    this.asClub = asClub;
-  }
 }

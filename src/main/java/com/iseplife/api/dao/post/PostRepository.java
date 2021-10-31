@@ -22,8 +22,7 @@ public interface PostRepository extends CrudRepository<Post, Long> {
 
   @Query(
     "select p from Post p " +
-      "where p.feed.id = 1 or p.isPrivate = false " +
-      "and p.state = ?1 " +
+      "where p.feed.id = 1 and p.state = ?1 " +
       "order by p.publicationDate"
   )
   Page<Post> findMainPostsByState(PostState state, Pageable pageable);
@@ -59,7 +58,7 @@ public interface PostRepository extends CrudRepository<Post, Long> {
       "size(p.thread.comments) as nbComments, " +
       "size(p.thread.likes) as nbLikes " +
     "from Post p " +
-    "where p.feed = ?1 and p.isPinned = true " +
+    "where p.feed = ?1 and p.pinned = true " +
     "order by p.publicationDate desc"
   )
   List<PostProjection> findFeedPinnedPosts(Feed feed, Long loggedUser);

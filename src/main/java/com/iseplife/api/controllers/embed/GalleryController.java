@@ -1,14 +1,14 @@
 package com.iseplife.api.controllers.embed;
 
-import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.constants.Roles;
+import com.iseplife.api.dao.gallery.GalleryFactory;
 import com.iseplife.api.dto.gallery.GalleryDTO;
 import com.iseplife.api.dto.gallery.view.GalleryView;
 import com.iseplife.api.entity.post.embed.media.Image;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.services.GalleryService;
 import com.iseplife.api.services.PostService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
@@ -16,23 +16,21 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/gallery")
+@RequiredArgsConstructor
 public class GalleryController {
-
-  @Autowired
-  GalleryService galleryService;
-
-  @Autowired
-  PostService postService;
+  final private GalleryService galleryService;
+  final private PostService postService;
+  final private GalleryFactory factory;
 
   @PostMapping
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
   public GalleryView createGallery(@RequestBody GalleryDTO dto) {
-    return galleryService.createGallery(dto);
+    return factory.toView(galleryService.createGallery(dto));
   }
 
   @GetMapping("/{id}")
   public GalleryView getGallery(@PathVariable Long id) {
-    return galleryService.getGalleryView(id);
+    return factory.toView(galleryService.getGallery(id));
   }
 
   @DeleteMapping("/{id}")
