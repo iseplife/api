@@ -49,7 +49,7 @@ public class EventFactory {
         mapper
           .using(ctx -> ctx.getSource() != null ?
             Arrays.stream(((String) ctx.getSource()).split(";")).map(Float::valueOf).toArray(Float[]::new) :
-            new Float[]{}
+            null
           )
           .map(Event::getCoordinates, EventView::setCoordinates);
         mapper
