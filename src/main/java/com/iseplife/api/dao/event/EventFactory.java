@@ -20,7 +20,8 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class EventFactory {
-  @Lazy final private ClubFactory clubFactory;
+  @Lazy
+  final private ClubFactory clubFactory;
   final private ModelMapper mapper;
 
   public EventPreview toPreview(Event event) {
@@ -41,6 +42,7 @@ public class EventFactory {
     mapper
       .typeMap(Event.class, EventView.class)
       .addMappings(mapper -> {
+        mapper.map(src -> src.getFeed().getId(), EventView::setFeed);
         mapper
           .using(ctx -> ((Set<Feed>) ctx.getSource()).stream().map(Feed::getId).collect(Collectors.toSet()))
           .map(Event::getTargets, EventView::setTargets);
@@ -51,14 +53,16 @@ public class EventFactory {
           )
           .map(Event::getCoordinates, EventView::setCoordinates);
         mapper
+          .using(ctx -> SecurityService.hasRightOn((Event) ctx.getSource()))
+          .map(src -> src, EventView::setHasRight);
+        mapper
           .using(ctx -> clubFactory.toPreview((Club) ctx.getSource()))
           .map(Event::getClub, EventView::setClub);
       });
+    EventView view = mapper.map(event, EventView.class);
+    view.setSubscribed(isSubscribed);
 
-      EventView view = mapper.map(event, EventView.class);
-      view.setSubscribed(isSubscribed);
-      view.setHasRight(SecurityService.hasRightOn(event));
-      return view;
+    return view;
   }
 
 }
