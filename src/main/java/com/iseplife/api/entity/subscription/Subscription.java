@@ -19,7 +19,12 @@ import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.user.Student;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 @Entity
+@Getter @Setter @NoArgsConstructor
 public class Subscription {
 
   @Id
@@ -45,24 +50,6 @@ public class Subscription {
   )
   @JoinColumn(name = "subscribed_id")
   private Subscribable subscribed;
-
-
-  public Long getId(){
-    return id;
-  }
-
-  public Subscribable getSubscribed() {
-    return subscribed;
-  }
-  public void setSubscribed(Subscribable subscribed) {
-    this.subscribed = subscribed;
-  }
-
-  public Student getListener() {
-    return listener;
-  }
-
-  public void setListener(Student listener) {
-    this.listener = listener;
-  }
+  
+  private boolean extensiveSubscription;
 }
