@@ -9,7 +9,7 @@ import com.iseplife.api.entity.subscription.Subscription;
 @Repository
 public interface SubscriptionRepository extends CrudRepository<Subscription, Long> {
 
-  @Query("select case when (count(scen) > 0) then true else false end "
+  @Query("select case when (count(s) > 0) then true else false end "
       + "from Subscription s where s.listener.id = ?2 and s.subscribed.id = ?1")
   Boolean existsSubscriptionBySubscribedIdAndListenerId(Long id, Long listenerID);
 
