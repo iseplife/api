@@ -73,7 +73,7 @@ public class FeedService {
     if(!SecurityService.hasReadAccess(feed))
       throw new HttpForbiddenException("insufficient_rights");
 
-    Subscription sub = subscriptionRepository.findByFeedIdAndListenerId(feed.getId(), studentID);
+    Subscription sub = subscriptionRepository.findBySubscribedIdAndListenerId(feed.getId(), studentID);
     if (sub != null) {
       subscriptionRepository.delete(sub);
       return false;

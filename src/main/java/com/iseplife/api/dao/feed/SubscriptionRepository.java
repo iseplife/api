@@ -1,38 +1,21 @@
 package com.iseplife.api.dao.feed;
 
-import com.iseplife.api.entity.subscription.Subscribable;
-import com.iseplife.api.entity.subscription.Subscription;
-import com.iseplife.api.constants.SubscribableType;
-import com.iseplife.api.entity.event.Event;
-import com.iseplife.api.entity.feed.Feed;
-import com.iseplife.api.entity.user.Student;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import com.iseplife.api.entity.subscription.Subscription;
 
 @Repository
 public interface SubscriptionRepository extends CrudRepository<Subscription, Long> {
 
+  @Query("select case when (count(scen) > 0) then true else false end "
+      + "from Subscription s where s.listener.id = ?2 and s.subscribed.id = ?1")
   Boolean existsSubscriptionBySubscribedIdAndListenerId(Long id, Long listenerID);
 
-  Feed findBySubscribedAndListenerId(Subscribable subscribable, Long listenerID);
-  
-  @Query("select s from Subscription s where " +
-    "s.listener.id = ?1" +
-    "and s.subscribed_type = '"+SubscribableType.FEED+"'" +
-    "and s.subscribed_id = ?2")
-  Subscription findByFeedIdAndListenerId(Long id, Long listenerID);
-  
   @Query("select s.subscribed from Subscription s where " +
-    "s.listener.id = ?1" +
-    "and s.subscribed_type = '"+SubscribableType.FEED+"'")
-  List<Feed> findAllStudentSubscribedFeed(Long student);
+    "s.listener.id = ?2 and s.subscribed.id = ?1")
+  Subscription findBySubscribedIdAndListenerId(Long id, Long listenerID);
 
-  /*
-  @Query("select s from Subscription s where " +
-    "s.listener = ?1")
-  List<Subscription> findAllStudentSubscription(Student student);*/
 }
 
