@@ -131,7 +131,7 @@ public class WebPushService {
   public void validatePushService(String key) {
     WebPushSubscription sub = pushServiceRegistration.getIfPresent(key);
     pushServiceRegistration.invalidate(key);
-    sub.getOwner().getWebPushSubscriptions().add(sub);
+    //sub.getOwner().getWebPushSubscriptions().add(sub);
 
     webPushSubscriptionRepository.save(sub);
   }
