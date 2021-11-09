@@ -15,6 +15,8 @@ import com.iseplife.api.dto.media.view.MediaNameView;
 import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.services.FeedService;
 import com.iseplife.api.services.GroupService;
+import com.iseplife.api.services.SubscriptionService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -32,7 +34,7 @@ import java.util.stream.Collectors;
 public class GroupController {
   final private GroupService groupService;
   final private GroupFactory factory;
-  final private FeedService feedService;
+  final private SubscriptionService subscriptionService;
 
   @GetMapping
   @RolesAllowed({Roles.ADMIN})
@@ -57,7 +59,7 @@ public class GroupController {
   @RolesAllowed({Roles.STUDENT})
   public GroupView getGroup(@PathVariable Long id) {
     Group group = groupService.getGroup(id);
-    return factory.toView(group, feedService.isSubscribedToFeed(group));
+    return factory.toView(group, subscriptionService.isSubscribed(group));
   }
 
   @GetMapping("/{id}/admin")

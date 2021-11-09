@@ -53,7 +53,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ClubController {
   final private PostService postService;
-  final private FeedService feedService;
+  final private SubscriptionService subscriptionService;
   final private ThreadService threadService;
   final private ClubService clubService;
   final private PostFactory postFactory;
@@ -79,14 +79,14 @@ public class ClubController {
   @RolesAllowed({Roles.STUDENT})
   public ClubView getClub(@PathVariable Long id) {
     Club club = clubService.getClub(id);
-    return factory.toView(club, feedService.isSubscribedToFeed(club));
+    return factory.toView(club, subscriptionService.isSubscribed(club));
   }
 
   @PutMapping("/{id}")
   @RolesAllowed({Roles.STUDENT})
   public ClubView updateClub(@PathVariable Long id, @RequestBody ClubDTO dto) {
     Club club = clubService.updateClub(id, dto);
-    return factory.toView(club, feedService.isSubscribedToFeed(club));
+    return factory.toView(club, subscriptionService.isSubscribed(club));
   }
 
   @PutMapping("/{id}/admin")

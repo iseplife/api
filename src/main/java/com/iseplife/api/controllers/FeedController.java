@@ -91,16 +91,4 @@ public class FeedController {
   public PostProjection getClubPostDraft(@PathVariable Long id) {
     return factory.toView(feedService.getFeedDrafts(id, SecurityService.getLoggedId()), false, null);
   }
-
-  @GetMapping("/{id}/subscribe")
-  @RolesAllowed({Roles.STUDENT})
-  public Boolean isFeedSubscribed(@PathVariable Long id, @AuthenticationPrincipal TokenPayload auth){
-    return feedService.isSubscribedToFeed(id, auth.getId());
-  }
-
-  @PostMapping("/{id}/subscribe")
-  @RolesAllowed({Roles.STUDENT})
-  public Boolean toggleFeedSubscription(@PathVariable Long id, @AuthenticationPrincipal TokenPayload auth){
-    return feedService.toggleSubscription(id, auth.getId());
-  }
 }

@@ -111,6 +111,10 @@ public class SecurityService {
             || (feed.getGroup() != null && payload.getFeeds().contains(feed.getId()))
             || (feed.getEvent() != null && feed.getEvent().getTargets().stream().anyMatch(f -> payload.getFeeds().contains(f.getId())));
   }
+  static public boolean hasReadAccess(Group group) {
+    TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return userHasRole(Roles.ADMIN) && payload.getFeeds().contains(group.getFeed().getId());
+  }
 
   static public boolean hasRightOn(Group group) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
