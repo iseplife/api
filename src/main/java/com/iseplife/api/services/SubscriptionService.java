@@ -14,7 +14,7 @@ public class SubscriptionService {
   final private SubscriptionRepository subscriptionRepository;
 
   public Boolean isSubscribed(Long id){
-    return subscriptionRepository.existsSubscriptionBySubscribedIdAndListenerId(id, SecurityService.getLoggedId());
+    return isSubscribed(id, SecurityService.getLoggedId());
   }
   public Boolean isSubscribed(Long id, Long studentId){
     return subscriptionRepository.existsSubscriptionBySubscribedIdAndListenerId(id, studentId);
@@ -26,7 +26,7 @@ public class SubscriptionService {
     subscriptionRepository.save(sub);
   }
   public void unsubscribe(Long id) {
-    subscriptionRepository.deleteBySubscribedIdAndListenerId(id, SecurityService.getLoggedId());
+    unsubscribe(id, SecurityService.getLoggedId());
   }
   public void unsubscribe(Long id, Long studentId) {
     subscriptionRepository.deleteBySubscribedIdAndListenerId(id, studentId);
