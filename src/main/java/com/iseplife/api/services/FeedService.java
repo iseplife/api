@@ -26,6 +26,7 @@ import java.util.Optional;
 public class FeedService {
   @Lazy final private PostService postService;
   @Lazy final private StudentService studentService;
+  final private SubscriptionService subscriptionService;
   final private FeedRepository feedRepository;
   final private SubscriptionRepository subscriptionRepository;
 
@@ -61,7 +62,7 @@ public class FeedService {
   }
 
   public Boolean isSubscribedToFeed(Long id, Long studentID) {
-    return subscriptionRepository.existsSubscriptionBySubscribedIdAndListenerId(id, studentID);
+    return subscriptionService.isSubscribed(id, studentID);
   }
 
   public Boolean isSubscribedToFeed(Feedable feedable) {
@@ -73,17 +74,12 @@ public class FeedService {
     if(!SecurityService.hasReadAccess(feed))
       throw new HttpForbiddenException("insufficient_rights");
 
-    Subscription sub = subscriptionRepository.findBySubscribedIdAndListenerId(feed.getId(), studentID);
-    if (sub != null) {
-      subscriptionRepository.delete(sub);
+    if (subscriptionService.isSubscribed(id, studentID)) {
+      subscriptionService.unsubscribe(id, studentID);
       return false;
     } else {
       Student student = studentService.getStudent(studentID);
-      sub = new Subscription();
-      sub.setSubscribed(getFeed(id));
-      sub.setListener(student);
-
-      subscriptionRepository.save(sub);
+      subscriptionService.subscribe(getFeed(id), student);
       return true;
     }
   }

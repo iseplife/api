@@ -17,5 +17,9 @@ public interface SubscriptionRepository extends CrudRepository<Subscription, Lon
     "s.listener.id = ?2 and s.subscribed.id = ?1")
   Subscription findBySubscribedIdAndListenerId(Long id, Long listenerID);
 
+  @Query("delete from Subscription s where " +
+    "s.listener.id = ?2 and s.subscribed.id = ?1")
+  void deleteBySubscribedIdAndListenerId(Long id, Long listenerID);
+
 }
 
