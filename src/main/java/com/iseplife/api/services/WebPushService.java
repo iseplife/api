@@ -9,6 +9,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -23,6 +24,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.iseplife.api.dao.webpush.WebPushSubscriptionRepository;
 import com.iseplife.api.dto.webpush.RegisterPushServiceDTO;
+import com.iseplife.api.entity.subscription.Subscription;
 import com.iseplife.api.entity.subscription.WebPushSubscription;
 import com.iseplife.api.entity.user.Student;
 
@@ -126,6 +128,27 @@ public class WebPushService {
       System.out.println("Error, webpush sub deleted !");
       webPushSubscriptionRepository.delete(sub);
     }
+  }
+  
+  public void sendNotificationToAll(List<Subscription> subs, String payload) {
+    //TODO check if there is enough wait here (and not too much)
+    new Thread(new Runnable() {
+      public void run() {
+        try {
+          int total = 0;
+          for(Subscription sub : subs) {
+            for(WebPushSubscription wpSub : sub.getListener().getWebPushSubscriptions()) {
+              sendAsyncNotification(wpSub, payload);
+              Thread.sleep(16);
+            }
+            if(total++ % 5 == 0)
+                Thread.sleep(120);
+          }
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+      }
+    }).start();
   }
 
   public void validatePushService(String key) {
