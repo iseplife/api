@@ -99,17 +99,17 @@ public class PostService {
     post.setPublicationDate(dto.getPublicationDate() == null ? new Date() : dto.getPublicationDate());
     post.setState(dto.isDraft() ? PostState.DRAFT : PostState.READY);
     
-    Post postToReturn;
-    intercept: {
-      if(!dto.isDraft() && dto.getPublicationDate() == null) {
-        if (!dto.isDraft() && feed.getGroup() != null && dto.getPublicationDate() == null) {
-          postToReturn = postRepository.save(post);
-          notificationService.delayNotification(new Notification(NotificationType.NEW_GROUP_POST, (post.getLinkedClub() != null ? post.getLinkedClub().getLogoUrl() : securityService.getLoggedUser().getPicture()), "group/"+feed.getGroup().getId()+"/"+post.getId(), Map.of("post_id", post.getId(), "club_id", post.getLinkedClub() != null ? post.getLinkedClub().getName() : null, "author_id", post.getAuthor().getId(), "author_name", (post.getLinkedClub() != null ? post.getLinkedClub() : securityService.getLoggedUser()).getName(), "content_text", post.getDescription(), "date", post.getPublicationDate())), true, feed.getGroup(), () -> postRepository.existsById(postToReturn.getId()));
-          break intercept;
-        }
+    Post postToReturn = postRepository.save(post);
+    if(!dto.isDraft() && dto.getPublicationDate() == null) {
+      Map<String, Object> map = Map.of("post_id", post.getId(), "club_id", post.getLinkedClub() != null ? post.getLinkedClub().getName() : null, "author_id", post.getAuthor().getId(), "author_name", (post.getLinkedClub() != null ? post.getLinkedClub() : securityService.getLoggedUser()).getName(), "content_text", post.getDescription(), "date", post.getPublicationDate());
+
+      if (feed.getGroup() != null) {
+        map.put("group_name", feed.getGroup().getName());
+        notificationService.delayNotification(new Notification(NotificationType.NEW_GROUP_POST, (post.getLinkedClub() != null ? post.getLinkedClub().getLogoUrl() : securityService.getLoggedUser().getPicture()), "group/"+feed.getGroup().getId()+"/"+post.getId(), map), true, feed.getGroup(), () -> postRepository.existsById(postToReturn.getId()));
+      } else if(feed.getClub() != null) {
+        map.put("club_name", feed.getClub().getName());
+        notificationService.delayNotification(new Notification(NotificationType.NEW_CLUB_POST, (post.getLinkedClub() != null ? post.getLinkedClub().getLogoUrl() : securityService.getLoggedUser().getPicture()), "club/"+feed.getClub().getId()+"/"+post.getId(), map), true, feed.getClub(), () -> postRepository.existsById(postToReturn.getId()));
       }
-      
-      postToReturn = postRepository.save(post);
     }
 
     return postToReturn;
