@@ -1,12 +1,14 @@
 package com.iseplife.api.services;
 
-import com.iseplife.api.dao.feed.SubscriptionRepository;
+import org.springframework.stereotype.Service;
+
+import com.iseplife.api.dao.subscription.SubscriptionRepository;
+import com.iseplife.api.dao.subscription.projection.SubscriptionProjection;
 import com.iseplife.api.entity.subscription.Subscribable;
 import com.iseplife.api.entity.subscription.Subscription;
 import com.iseplife.api.entity.user.Student;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +30,18 @@ public class SubscriptionService {
   }
   public Subscription getSubscription(Long id, Long studentId) {
     return subscriptionRepository.findBySubscribedIdAndListenerId(id, studentId);
+  }
+  public SubscriptionProjection getSubscriptionProjection(Subscribable subable) {
+    return getSubscriptionProjection(subable, SecurityService.getLoggedId());
+  }
+  public SubscriptionProjection getSubscriptionProjection(Subscribable subable, Long studentId) {
+    return subscriptionRepository.findProjectionBySubscribedAndListenerId(subable, studentId);
+  }
+  public SubscriptionProjection getSubscriptionProjection(Long id, Long studentId) {
+    return subscriptionRepository.findProjectionBySubscribedIdAndListenerId(id, studentId);
+  }
+  public SubscriptionProjection getSubscriptionProjection(Long id) {
+    return getSubscriptionProjection(id, SecurityService.getLoggedId());
   }
   public void subscribe(Subscribable subable) {
     subscribe(subable, studentService.getStudent(SecurityService.getLoggedId()));

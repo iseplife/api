@@ -6,7 +6,7 @@ import java.util.TimerTask;
 
 import org.springframework.stereotype.Service;
 
-import com.iseplife.api.dao.feed.SubscriptionRepository;
+import com.iseplife.api.dao.subscription.SubscriptionRepository;
 import com.iseplife.api.entity.subscription.Notification;
 import com.iseplife.api.entity.subscription.Subscribable;
 import com.iseplife.api.entity.subscription.Subscription;

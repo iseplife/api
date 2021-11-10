@@ -72,21 +72,21 @@ public class ClubController {
   @PostMapping
   @RolesAllowed({Roles.ADMIN})
   public ClubView createClub(@RequestBody ClubAdminDTO dto) {
-    return factory.toView(clubService.createClub(dto), false);
+    return factory.toView(clubService.createClub(dto), null);
   }
 
   @GetMapping("/{id}")
   @RolesAllowed({Roles.STUDENT})
   public ClubView getClub(@PathVariable Long id) {
     Club club = clubService.getClub(id);
-    return factory.toView(club, subscriptionService.isSubscribed(club));
+    return factory.toView(club, subscriptionService.getSubscriptionProjection(club));
   }
 
   @PutMapping("/{id}")
   @RolesAllowed({Roles.STUDENT})
   public ClubView updateClub(@PathVariable Long id, @RequestBody ClubDTO dto) {
     Club club = clubService.updateClub(id, dto);
-    return factory.toView(club, subscriptionService.isSubscribed(club));
+    return factory.toView(club, subscriptionService.getSubscriptionProjection(club));
   }
 
   @PutMapping("/{id}/admin")

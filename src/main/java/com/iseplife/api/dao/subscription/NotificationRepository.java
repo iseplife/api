@@ -1,4 +1,4 @@
-package com.iseplife.api.dao.feed;
+package com.iseplife.api.dao.subscription;
 
 public interface NotificationRepository {
 }

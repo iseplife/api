@@ -59,7 +59,7 @@ public class GroupController {
   @RolesAllowed({Roles.STUDENT})
   public GroupView getGroup(@PathVariable Long id) {
     Group group = groupService.getGroup(id);
-    return factory.toView(group, subscriptionService.isSubscribed(group));
+    return factory.toView(group, subscriptionService.getSubscriptionProjection(group));
   }
 
   @GetMapping("/{id}/admin")

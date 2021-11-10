@@ -50,7 +50,7 @@ public class EventController {
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
   public EventView createEvent(@RequestBody EventDTO dto) {
     Event event = eventService.createEvent(dto);
-    return factory.toView(event, subscriptionService.isSubscribed(event));
+    return factory.toView(event, subscriptionService.getSubscriptionProjection(event));
   }
 
   @PutMapping("/{id}/image")
@@ -75,7 +75,7 @@ public class EventController {
   @RolesAllowed({Roles.STUDENT})
   public EventView getEvent(@PathVariable Long id) {
     Event event = eventService.getEvent(id);
-    return factory.toView(event, subscriptionService.isSubscribed(event));
+    return factory.toView(event, subscriptionService.getSubscriptionProjection(event));
   }
 
   @GetMapping("/{id}/previous")

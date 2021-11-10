@@ -1,5 +1,7 @@
 package com.iseplife.api.dto.group.view;
 
+import com.iseplife.api.dao.subscription.projection.SubscriptionProjection;
+
 import lombok.Data;
 
 @Data
@@ -11,5 +13,5 @@ public class GroupView {
   private String cover;
   private Long feed;
   private Boolean hasRight;
-  private boolean subscribed;
+  private SubscriptionProjection subscribed;
 }

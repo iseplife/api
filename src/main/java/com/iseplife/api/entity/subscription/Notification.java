@@ -23,5 +23,6 @@ public class Notification {
   
   public static class NotificationType {
     public static String NEW_EVENT = "new.event";
+    public static String NEW_GROUP_POST = "new.group.post";
   }
 }

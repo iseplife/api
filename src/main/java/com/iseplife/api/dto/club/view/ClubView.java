@@ -1,9 +1,11 @@
 package com.iseplife.api.dto.club.view;
 
-import com.iseplife.api.constants.ClubType;
-import lombok.Data;
-
 import java.util.Date;
+
+import com.iseplife.api.constants.ClubType;
+import com.iseplife.api.dao.subscription.projection.SubscriptionProjection;
+
+import lombok.Data;
 
 @Data
 public class ClubView {
@@ -17,7 +19,7 @@ public class ClubView {
   private boolean archived;
   private Boolean canEdit;
   private Date creation;
-  private boolean subscribed;
+  private SubscriptionProjection subscribed;
   private String website;
   private String facebook;
   private String instagram;
