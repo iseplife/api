@@ -105,10 +105,10 @@ public class PostService {
 
       if (feed.getGroup() != null) {
         map.put("group_name", feed.getGroup().getName());
-        notificationService.delayNotification(new Notification(NotificationType.NEW_GROUP_POST, (post.getLinkedClub() != null ? post.getLinkedClub().getLogoUrl() : securityService.getLoggedUser().getPicture()), "group/"+feed.getGroup().getId()+"/"+post.getId(), map), true, feed.getGroup(), () -> postRepository.existsById(postToReturn.getId()));
+        notificationService.delayNotification(new Notification(NotificationType.NEW_GROUP_POST, (post.getLinkedClub() != null ? post.getLinkedClub().getLogoUrl() : securityService.getLoggedUser().getPicture()), "post/group/"+feed.getGroup().getId()+"/"+post.getId(), map), true, feed.getGroup(), () -> postRepository.existsById(postToReturn.getId()));
       } else if(feed.getClub() != null) {
         map.put("club_name", feed.getClub().getName());
-        notificationService.delayNotification(new Notification(NotificationType.NEW_CLUB_POST, (post.getLinkedClub() != null ? post.getLinkedClub().getLogoUrl() : securityService.getLoggedUser().getPicture()), "club/"+feed.getClub().getId()+"/"+post.getId(), map), true, feed.getClub(), () -> postRepository.existsById(postToReturn.getId()));
+        notificationService.delayNotification(new Notification(NotificationType.NEW_CLUB_POST, (post.getLinkedClub() != null ? post.getLinkedClub().getLogoUrl() : securityService.getLoggedUser().getPicture()), "post/club/"+feed.getClub().getId()+"/"+post.getId(), map), true, feed.getClub(), () -> postRepository.existsById(postToReturn.getId()));
       }
     }
 
