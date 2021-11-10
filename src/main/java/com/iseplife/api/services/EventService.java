@@ -69,7 +69,7 @@ public class EventService {
       event = eventRepository.save(event);
       Event finalEvent = event;
       //We send the notification if the event is not private
-      notificationService.delayNotification(new Notification(NotificationType.NEW_EVENT, club.getLogoUrl(), "event/"+event.getId(), Map.of("id", event.getId(), "title", event.getTitle(), "type", event.getType().name(), "club", event.getClub().getName(), "start", event.getStartsAt())), club, () -> eventRepository.findById(finalEvent.getId()) != null);
+      notificationService.delayNotification(new Notification(NotificationType.NEW_EVENT, club.getLogoUrl(), "event/"+event.getId(), Map.of("id", event.getId(), "title", event.getTitle(), "type", event.getType().name(), "club", event.getClub().getName(), "start", event.getStartsAt())), false, club, () -> eventRepository.findById(finalEvent.getId()) != null);
     }
 
     return event;

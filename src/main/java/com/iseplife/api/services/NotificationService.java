@@ -1,5 +1,6 @@
 package com.iseplife.api.services;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -19,7 +20,7 @@ public class NotificationService {
   private final SubscriptionRepository subscriptionRepository;
   private final WebPushService webPushService;
   
-  public void delayNotification(Notification notif, Subscribable subable, DelayedNotificationCheck check) {
+  public void delayNotification(Notification notif, boolean extensive, Subscribable subable, DelayedNotificationCheck check) {
     Timer timer = new Timer();
     //We wait 10s so that we don't send a notification for an aborted event.
     timer.schedule(new TimerTask() {
@@ -28,6 +29,8 @@ public class NotificationService {
       public void run() {
         if(check.isNotificationStillUseful()) {
           List<Subscription> subs = subscriptionRepository.findBySubscribed(subable);
+          if(extensive)
+            subs = Arrays.asList(subs.stream().filter(sub -> sub.isExtensiveSubscription()).toArray(i->new Subscription[i]));
           webPushService.sendNotificationToAll(subs, notif.getPayload());
         }
       }

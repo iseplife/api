@@ -1,36 +1,46 @@
 package com.iseplife.api.services;
 
-import com.iseplife.api.conf.jwt.TokenPayload;
-import com.iseplife.api.constants.EmbedType;
-import com.iseplife.api.constants.ThreadType;
-import com.iseplife.api.dao.post.*;
-import com.iseplife.api.dao.post.projection.PostProjection;
-import com.iseplife.api.dto.post.PostCreationDTO;
-import com.iseplife.api.dto.post.PostUpdateDTO;
-import com.iseplife.api.dto.view.AuthorView;
-import com.iseplife.api.entity.feed.Feed;
-import com.iseplife.api.entity.Thread;
-import com.iseplife.api.entity.post.embed.Embedable;
-import com.iseplife.api.entity.post.embed.Gallery;
-import com.iseplife.api.entity.post.Post;
-import com.iseplife.api.entity.post.embed.media.Media;
-import com.iseplife.api.entity.post.embed.poll.Poll;
-import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.constants.PostState;
-import com.iseplife.api.constants.Roles;
-import com.iseplife.api.exceptions.http.HttpForbiddenException;
-import com.iseplife.api.exceptions.http.HttpBadRequestException;
-import com.iseplife.api.exceptions.http.HttpNotFoundException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Lazy;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.constants.EmbedType;
+import com.iseplife.api.constants.PostState;
+import com.iseplife.api.constants.Roles;
+import com.iseplife.api.constants.ThreadType;
+import com.iseplife.api.dao.post.AuthorFactory;
+import com.iseplife.api.dao.post.PostRepository;
+import com.iseplife.api.dao.post.projection.PostProjection;
+import com.iseplife.api.dto.post.PostCreationDTO;
+import com.iseplife.api.dto.post.PostUpdateDTO;
+import com.iseplife.api.dto.view.AuthorView;
+import com.iseplife.api.entity.Thread;
+import com.iseplife.api.entity.feed.Feed;
+import com.iseplife.api.entity.post.Post;
+import com.iseplife.api.entity.post.embed.Embedable;
+import com.iseplife.api.entity.post.embed.Gallery;
+import com.iseplife.api.entity.post.embed.media.Media;
+import com.iseplife.api.entity.post.embed.poll.Poll;
+import com.iseplife.api.entity.subscription.Notification;
+import com.iseplife.api.entity.subscription.Notification.NotificationType;
+import com.iseplife.api.entity.user.Student;
+import com.iseplife.api.exceptions.http.HttpBadRequestException;
+import com.iseplife.api.exceptions.http.HttpForbiddenException;
+import com.iseplife.api.exceptions.http.HttpNotFoundException;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +54,7 @@ public class PostService {
   @Lazy final private SecurityService securityService;
   final private ModelMapper mapper;
   final private PostRepository postRepository;
+  final private NotificationService notificationService;
 
   private final int POSTS_PER_PAGE = 5;
 
@@ -80,14 +91,28 @@ public class PostService {
 
     post.setLinkedClub(dto.getLinkedClub() != null ? clubService.getClub(dto.getLinkedClub()) : null);
 
+    
     dto.getAttachements().forEach((type, id) -> bindAttachementToPost(type, id, post));
 
     post.setThread(new Thread(ThreadType.POST));
     post.setCreationDate(new Date());
     post.setPublicationDate(dto.getPublicationDate() == null ? new Date() : dto.getPublicationDate());
     post.setState(dto.isDraft() ? PostState.DRAFT : PostState.READY);
+    
+    Post postToReturn;
+    intercept: {
+      if(!dto.isDraft() && dto.getPublicationDate() == null) {
+        if (!dto.isDraft() && feed.getGroup() != null && dto.getPublicationDate() == null) {
+          postToReturn = postRepository.save(post);
+          notificationService.delayNotification(new Notification(NotificationType.NEW_GROUP_POST, (post.getLinkedClub() != null ? post.getLinkedClub().getLogoUrl() : securityService.getLoggedUser().getPicture()), "group/"+feed.getGroup().getId()+"/"+post.getId(), Map.of("post_id", post.getId(), "club_id", post.getLinkedClub() != null ? post.getLinkedClub().getName() : null, "author_id", post.getAuthor().getId(), "author_name", (post.getLinkedClub() != null ? post.getLinkedClub() : securityService.getLoggedUser()).getName(), "content_text", post.getDescription(), "date", post.getPublicationDate())), true, feed.getGroup(), () -> postRepository.existsById(postToReturn.getId()));
+          break intercept;
+        }
+      }
+      
+      postToReturn = postRepository.save(post);
+    }
 
-    return postRepository.save(post);
+    return postToReturn;
   }
 
   public void createPost(Gallery gallery) {
