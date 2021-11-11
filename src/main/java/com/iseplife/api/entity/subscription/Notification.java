@@ -1,16 +1,42 @@
 package com.iseplife.api.entity.subscription;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 
 import org.jose4j.json.internal.json_simple.JSONObject;
 
-import lombok.RequiredArgsConstructor;
+import com.iseplife.api.entity.user.Student;
+import com.iseplife.api.utils.JpaConverterJson;
 
-@RequiredArgsConstructor
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
+@Entity
+@Getter @Setter @RequiredArgsConstructor
 public class Notification {
-  final private String type, icon, link;
+  @Id
+  @GeneratedValue
+  private Long id;
+  
+  private String type, icon, link;
+  
+  @Column(columnDefinition = "json")
+  @Convert(converter = JpaConverterJson.class)
   final private Map<String, Object> informations;
+  
+  
+  @ManyToMany
+  private List<Student> students;
+  
   public String getPayload() {
     HashMap<String, Object> map = new HashMap<>();
     map.put("type", type);
