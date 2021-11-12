@@ -17,6 +17,7 @@ import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.utils.JpaConverterJson;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -27,11 +28,13 @@ public class Notification {
   @GeneratedValue
   private Long id;
   
+  @NonNull
   private String type, icon, link;
-  
+
+  @NonNull
   @Column(columnDefinition = "json")
   @Convert(converter = JpaConverterJson.class)
-  final private Map<String, Object> informations;
+  private Map<String, Object> informations;
   
   
   @ManyToMany
