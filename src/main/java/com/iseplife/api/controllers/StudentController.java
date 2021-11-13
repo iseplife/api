@@ -105,7 +105,7 @@ public class StudentController {
     return factory.toAdminView(studentService.getStudent(id));
   }
 
-  @PutMapping("/admin")
+  @PutMapping("/{id}/edit")
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
   public StudentAdminView updateStudentAdmin(@RequestBody StudentUpdateAdminDTO dto) {
     return factory.toAdminView(studentService.updateStudentAdmin(dto));
