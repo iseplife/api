@@ -51,5 +51,5 @@ public class Subscription {
   @JoinColumn(name = "subscribed_id")
   private Subscribable subscribed;
   
-  private boolean extensiveSubscription;
+  private boolean extensive;
 }

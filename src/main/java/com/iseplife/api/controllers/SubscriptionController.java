@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -43,13 +44,13 @@ public class SubscriptionController {
   private final EventService eventService;
   private final GroupService groupService;
   
-  @PostMapping("/{type}/{id}")
+  @PutMapping("/{type}/{id}")
   @RolesAllowed({ Roles.STUDENT })
-  public void addSubscription(@PathVariable String type, @PathVariable Long id, @RequestBodyParam boolean extensive) throws GeneralSecurityException, IOException, JoseException, ExecutionException, InterruptedException, TimeoutException {
+  public void addSubscription(@PathVariable String type, @PathVariable Long id, @RequestBodyParam Boolean extensive) throws GeneralSecurityException, IOException, JoseException, ExecutionException, InterruptedException, TimeoutException {
     Subscription sub = subscriptionService.getSubscription(id);
     if(sub != null) {
-      if(sub.isExtensiveSubscription() != extensive) {
-        sub.setExtensiveSubscription(extensive);
+      if(sub.isExtensive() != extensive) {
+        sub.setExtensive(extensive);
         subscriptionService.updateSubscription(sub);
       }
       return;

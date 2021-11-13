@@ -64,13 +64,13 @@ public class Student implements UserDetails, Author {
   @ManyToMany(fetch = FetchType.EAGER)
   private Set<Role> roles;
 
-  @ManyToMany(fetch = FetchType.EAGER)
+  @OneToMany(mappedBy="owner", fetch = FetchType.EAGER)
   private Set<WebPushSubscription> webPushSubscriptions;
 
-  @OneToMany(mappedBy = "listener", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "listener", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<Subscription> subscriptions;
   
-  @ManyToMany
+  @ManyToMany(mappedBy = "students", fetch = FetchType.LAZY)
   private List<Notification> notifications;
 
   @Override

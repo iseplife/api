@@ -1,15 +1,17 @@
 package com.iseplife.api.entity.subscription;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.PrePersist;
 
 import org.jose4j.json.internal.json_simple.JSONObject;
 
@@ -17,12 +19,14 @@ import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.utils.JpaConverterJson;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter @Setter @RequiredArgsConstructor
+@NoArgsConstructor
 public class Notification {
   @Id
   @GeneratedValue
@@ -32,13 +36,19 @@ public class Notification {
   private String type, icon, link;
 
   @NonNull
-  @Column(columnDefinition = "json")
   @Convert(converter = JpaConverterJson.class)
   private Map<String, Object> informations;
   
   
-  @ManyToMany
+  @ManyToMany(fetch = FetchType.LAZY)
   private List<Student> students;
+  
+  private Date creation;
+  
+  @PrePersist
+  protected void onCreate() {
+    creation = new Date();
+  }
   
   public String getPayload() {
     HashMap<String, Object> map = new HashMap<>();
