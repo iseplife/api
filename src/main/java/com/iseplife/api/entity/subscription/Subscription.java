@@ -42,6 +42,7 @@ public class Subscription {
     idType = "long",
     metaType = "string",
     metaValues = {
+      @MetaValue(value = SubscribableType.STUDENT, targetEntity = Student.class),
       @MetaValue(value = SubscribableType.CLUB, targetEntity = Club.class),
       @MetaValue(value = SubscribableType.EVENT, targetEntity = Event.class),
       @MetaValue(value = SubscribableType.FEED, targetEntity = Feed.class),

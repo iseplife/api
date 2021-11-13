@@ -27,6 +27,6 @@ public class NotificationController {
   @GetMapping("/{page}")
   @RolesAllowed({ Roles.STUDENT })
   public Page<NotificationProjection> getNotifications(@PathVariable Integer page) {
-    return notificationService.getNotifications(studentService.getStudent(SecurityService.getLoggedId()), page == null ? 0 : page);
+    return notificationService.getNotifications(studentService.getStudent(SecurityService.getLoggedId()), page);
   }
 }

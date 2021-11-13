@@ -1,19 +1,30 @@
 package com.iseplife.api.entity.event;
 
-import com.iseplife.api.entity.feed.Feed;
-import com.iseplife.api.entity.club.Club;
-import com.iseplife.api.constants.EventType;
-import com.iseplife.api.entity.feed.Feedable;
-import com.iseplife.api.entity.subscription.Subscribable;
-import com.iseplife.api.entity.subscription.Subscription;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+
+import com.iseplife.api.constants.EventType;
+import com.iseplife.api.entity.club.Club;
+import com.iseplife.api.entity.feed.Feed;
+import com.iseplife.api.entity.feed.Feedable;
+import com.iseplife.api.entity.subscription.Subscribable;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter @Setter @NoArgsConstructor
@@ -56,7 +67,4 @@ public class Event implements Feedable, Subscribable {
 
   @OneToOne
   private Event previousEdition;
-  
-  @OneToMany(mappedBy = "listener", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Subscription> subscriptions;
 }

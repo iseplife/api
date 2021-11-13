@@ -19,6 +19,7 @@ import com.iseplife.api.constants.AuthorType;
 import com.iseplife.api.constants.Language;
 import com.iseplife.api.entity.Author;
 import com.iseplife.api.entity.subscription.Notification;
+import com.iseplife.api.entity.subscription.Subscribable;
 import com.iseplife.api.entity.subscription.Subscription;
 import com.iseplife.api.entity.subscription.WebPushSubscription;
 import com.sun.istack.NotNull;
@@ -29,7 +30,7 @@ import lombok.Setter;
 
 @Entity
 @Getter @Setter @NoArgsConstructor
-public class Student implements UserDetails, Author {
+public class Student implements UserDetails, Author, Subscribable {
   @Id
   @Column(unique = true)
   private Long id;

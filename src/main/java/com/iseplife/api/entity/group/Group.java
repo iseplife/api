@@ -36,9 +36,6 @@ public class Group implements Feedable, Subscribable {
 
   @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<GroupMember> members;
-
-  @OneToMany(mappedBy = "listener", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Subscription> subscriptions;
   
   public Boolean isArchived() {
     return !(archivedAt == null || archivedAt.getTime() > new Date().getTime());

@@ -12,7 +12,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,6 +28,7 @@ import com.iseplife.api.services.ClubService;
 import com.iseplife.api.services.EventService;
 import com.iseplife.api.services.GroupService;
 import com.iseplife.api.services.SecurityService;
+import com.iseplife.api.services.StudentService;
 import com.iseplife.api.services.SubscriptionService;
 
 import lombok.RequiredArgsConstructor;
@@ -41,6 +41,7 @@ public class SubscriptionController {
 
   private final SubscriptionService subscriptionService;
   private final ClubService clubService;
+  private final StudentService studentService;
   private final EventService eventService;
   private final GroupService groupService;
   
@@ -60,6 +61,9 @@ public class SubscriptionController {
     switch(type) {
       case SubscribableType.CLUB:
         subbing = clubService.getClub(id);
+        break;
+      case SubscribableType.STUDENT:
+        subbing = studentService.getStudent(id);
         break;
       case SubscribableType.EVENT:
         Event event = eventService.getEvent(id);
