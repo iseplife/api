@@ -30,12 +30,14 @@ public class StudentController {
   final private StudentImportService studentImportService;
   final private MediaService mediaService;
   final private StudentService studentService;
+  final private NotificationService notificationService;
   final private StudentFactory factory;
 
   @GetMapping("/me")
   @RolesAllowed({Roles.STUDENT})
   public StudentPreview getLoggedStudentPreview(@AuthenticationPrincipal TokenPayload token) {
-    return factory.toPreview(studentService.getStudent(token.getId()));
+    Student student = studentService.getStudent(token.getId());
+    return factory.toPreview(student, notificationService.countUnwatchedNotifications(student));
   }
 
   @GetMapping("/me/full")

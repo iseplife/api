@@ -33,8 +33,17 @@ public class StudentFactory {
     }
   }
 
+  public StudentPreview toPreview(Student student, long unwatchedNotifications) {
+    StudentPreview studentPreview = mapper.map(student, StudentPreview.class);
+    
+    studentPreview.setUnwatchedNotifications(unwatchedNotifications);
+    
+    return studentPreview;
+  }
   public StudentPreview toPreview(Student student) {
-    return mapper.map(student, StudentPreview.class);
+    StudentPreview studentPreview = mapper.map(student, StudentPreview.class);
+    
+    return studentPreview;
   }
 
 

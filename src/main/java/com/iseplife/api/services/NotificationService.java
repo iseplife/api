@@ -66,7 +66,9 @@ public class NotificationService {
   public Page<NotificationProjection> getNotifications(Student student, int page) {
     return notificationRepository.findAllByStudentsOrderById(student, PageRequest.of(page, NOTIFICATIONS_PER_PAGE));
   }
-  
+  public long countUnwatchedNotifications(Student student) {
+    return notificationRepository.countByStudentsAndWatched(student, false);
+  }
   
 
   public static interface DelayedNotificationCheck {

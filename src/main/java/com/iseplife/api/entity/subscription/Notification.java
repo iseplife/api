@@ -45,6 +45,8 @@ public class Notification {
   
   private Date creation;
   
+  private boolean watched;
+  
   @PrePersist
   protected void onCreate() {
     creation = new Date();

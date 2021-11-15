@@ -12,4 +12,6 @@ import com.iseplife.api.entity.user.Student;
 @Repository
 public interface NotificationRepository extends CrudRepository<Notification, Long> {
   Page<NotificationProjection> findAllByStudentsOrderById(Student student, Pageable pageable);
+  
+  long countByStudentsAndWatched(Student student, Boolean watched);
 }

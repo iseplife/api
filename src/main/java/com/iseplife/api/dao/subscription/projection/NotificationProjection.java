@@ -14,4 +14,5 @@ public interface NotificationProjection {
   Map<String, Object> getInformations();
   
   Date getCreation();
+  Boolean isWatched();
 }

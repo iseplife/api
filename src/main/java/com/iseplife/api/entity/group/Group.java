@@ -3,7 +3,6 @@ package com.iseplife.api.entity.group;
 import com.iseplife.api.constants.GroupType;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.feed.Feedable;
-import com.iseplife.api.entity.subscription.Subscription;
 import com.iseplife.api.entity.subscription.Subscribable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
