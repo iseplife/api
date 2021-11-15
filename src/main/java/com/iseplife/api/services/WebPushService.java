@@ -18,6 +18,7 @@ import java.util.concurrent.TimeoutException;
 import org.asynchttpclient.Response;
 import org.jose4j.lang.JoseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.google.common.cache.Cache;
@@ -44,14 +45,18 @@ public class WebPushService {
 
   private PublicKey publicKey;
   private PrivateKey privateKey;
+
+  @Value("${push.web.private-key}")
+  private String privateKeyStr;
+  @Value("${push.web.public-key}")
+  private String publicKeyStr;
   
   private PushAsyncService pushService;
 
   public WebPushService() {
     try {
-      publicKey = Utils
-          .loadPublicKey("BLWwNN2_bMjIeoh9JDxSVIx2qwrBchWDMHrb6nD1nDijSMoq6ZidqapvWMv5Git2SrObd8Do9glexD9wT-jECnY");
-      privateKey = Utils.loadPrivateKey("6WCXXQvA_RxtTBH2i9si-yHu-Kzd36uzHM5CRE68dp4");
+      publicKey = Utils.loadPublicKey(publicKeyStr);
+      privateKey = Utils.loadPrivateKey(privateKeyStr);
     } catch (NoSuchProviderException | NoSuchAlgorithmException | InvalidKeySpecException e) {
       e.printStackTrace();
     }

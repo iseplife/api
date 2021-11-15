@@ -40,6 +40,11 @@ jwt:
   refresh-token_duration: ${JWT_REFRESH_TOKEN_DURATION:604800}      # default: 7 days
   issuer:               iseplife
 
+push:
+  web:
+    public-key: ${WEB_PUBLICKEY:BLWwNN2_bMjIeoh9JDxSVIx2qwrBchWDMHrb6nD1nDijSMoq6ZidqapvWMv5Git2SrObd8Do9glexD9wT-jECnY}
+    private-key: ${WEB_PRIVATEKEY:6WCXXQvA_RxtTBH2i9si-yHu-Kzd36uzHM5CRE68dp4}
+
 auth:
   enable-root:   ${ENABLE_ROOT:false}
   password-root: ${ROOT_PASS:password}
