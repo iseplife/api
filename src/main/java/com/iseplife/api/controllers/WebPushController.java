@@ -19,6 +19,7 @@ import com.github.lambdaexpression.annotation.EnableRequestBodyParam;
 import com.github.lambdaexpression.annotation.RequestBodyParam;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dto.webpush.RegisterPushServiceDTO;
+import com.iseplife.api.exceptions.http.HttpInternalServerErrorException;
 import com.iseplife.api.services.WebPushService;
 
 import lombok.RequiredArgsConstructor;
@@ -37,7 +38,7 @@ public class WebPushController {
     try {
       webpushService.registerWebPushService(register);
     }catch(Exception e) {
-      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Something wrong happened when registering your push service");
+      throw new HttpInternalServerErrorException("web_push_init_failed");
     }
   }
   @PostMapping("/register/validate")
