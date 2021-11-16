@@ -23,11 +23,11 @@ public interface SubscriptionRepository extends CrudRepository<Subscription, Lon
     "s.listener.id = ?2 and s.subscribed.id = ?1")
   Subscription findBySubscribedIdAndListenerId(Long id, Long listenerID);
   
-  @Query("select s as subscription from Subscription s where " +
+  @Query("select s from Subscription s where " +
       "s.listener.id = ?2 and s.subscribed.id = ?1")
   SubscriptionProjection findProjectionBySubscribedIdAndListenerId(Long id, Long listenerID);
   
-  @Query("select s as subscription from Subscription s where " +
+  @Query("select s from Subscription s where " +
       "s.listener.id = ?2 and s.subscribed = ?1")
   SubscriptionProjection findProjectionBySubscribedAndListenerId(Subscribable subable, Long listenerID);
   
