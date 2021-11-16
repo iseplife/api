@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,5 +18,5 @@ public interface WebPushSubscriptionRepository extends CrudRepository<WebPushSub
   @Transactional
   @Modifying
   @Query("update WebPushSubscription s set s.lastUpdate = :lastUpdate where s.id = :id")
-  void updateDate(@Param(value = "id") Long id, @Param(value = "lastUpdate") Date lastUpdate);
+  void updateDate(Long id, Date lastUpdate);
 }
