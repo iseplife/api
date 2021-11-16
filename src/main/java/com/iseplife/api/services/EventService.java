@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.constants.NotificationType;
 import com.iseplife.api.dao.event.EventPreviewProjection;
 import com.iseplife.api.dao.event.EventRepository;
 import com.iseplife.api.dao.feed.FeedRepository;
@@ -27,7 +28,6 @@ import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.subscription.Notification;
-import com.iseplife.api.entity.subscription.Notification.NotificationType;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import com.iseplife.api.services.fileHandler.FileHandler;
@@ -69,7 +69,21 @@ public class EventService {
       event = eventRepository.save(event);
       Event finalEvent = event;
       //We send the notification if the event is not private
-      notificationService.delayNotification(new Notification(NotificationType.NEW_EVENT, club.getLogoUrl(), "event/"+event.getId(), Map.of("id", event.getId(), "title", event.getTitle(), "type", event.getType().name(), "club", event.getClub().getName(), "start", event.getStartsAt().getTime())), false, club, () -> eventRepository.findById(finalEvent.getId()) != null);
+      notificationService.delayNotification(
+          Notification.builder()
+            .type(NotificationType.NEW_EVENT)
+            .icon(club.getLogoUrl())
+            .link("event/"+event.getId())
+            .informations(
+                Map.of(
+                    "id", event.getId(),
+                    "title", event.getTitle(),
+                    "type", event.getType().name(),
+                    "club", event.getClub().getName(),
+                    "start", event.getStartsAt().getTime()
+                )
+            ).build(),
+          false, club, () -> eventRepository.findById(finalEvent.getId()) != null);
     }
 
     return event;

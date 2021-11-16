@@ -15,9 +15,13 @@ import javax.persistence.PrePersist;
 
 import org.jose4j.json.internal.json_simple.JSONObject;
 
+import com.iseplife.api.constants.NotificationType;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.utils.JpaConverterJson;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -25,15 +29,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Getter @Setter @RequiredArgsConstructor
-@NoArgsConstructor
+@Getter @Setter @RequiredArgsConstructor @AllArgsConstructor(access = AccessLevel.PRIVATE) @NoArgsConstructor @Builder
 public class Notification {
   @Id
   @GeneratedValue
   private Long id;
   
   @NonNull
-  private String type, icon, link;
+  private NotificationType type;
+  
+  @NonNull
+  private String icon, link;
 
   @NonNull
   @Convert(converter = JpaConverterJson.class)
@@ -59,12 +65,5 @@ public class Notification {
     map.put("link", link);
     map.put("informations", informations);
     return new JSONObject(map).toString();
-  }
-  
-  
-  public static class NotificationType {
-    public static String NEW_EVENT = "new.event";
-    public static String NEW_GROUP_POST = "new.group.post";
-    public static String NEW_CLUB_POST = "new.club.post";
   }
 }
