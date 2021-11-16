@@ -15,6 +15,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.annotation.PostConstruct;
+
 import org.asynchttpclient.Response;
 import org.jose4j.lang.JoseException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +55,8 @@ public class WebPushService {
   
   private PushAsyncService pushService;
 
-  public WebPushService() {
+  @PostConstruct
+  public void init() {
     try {
       publicKey = Utils.loadPublicKey(publicKeyStr);
       privateKey = Utils.loadPrivateKey(privateKeyStr);
