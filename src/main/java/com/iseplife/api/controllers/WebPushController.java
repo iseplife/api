@@ -8,7 +8,6 @@ import java.util.concurrent.TimeoutException;
 import javax.annotation.security.RolesAllowed;
 
 import org.jose4j.lang.JoseException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,13 +19,15 @@ import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dto.webpush.RegisterPushServiceDTO;
 import com.iseplife.api.services.WebPushService;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
+@RequiredArgsConstructor
 @EnableRequestBodyParam
 @RequestMapping("/webpush")
 public class WebPushController {
 
-  @Autowired
-  WebPushService webpushService;
+  private final WebPushService webpushService;
   
   @PostMapping("/register/init")
   @RolesAllowed({ Roles.STUDENT })
