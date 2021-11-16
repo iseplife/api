@@ -31,19 +31,19 @@ import com.iseplife.api.entity.subscription.Subscription;
 import com.iseplife.api.entity.subscription.WebPushSubscription;
 import com.iseplife.api.entity.user.Student;
 
+import lombok.RequiredArgsConstructor;
 import net.bytebuddy.utility.RandomString;
 import nl.martijndwars.webpush.Notification;
 import nl.martijndwars.webpush.PushAsyncService;
 import nl.martijndwars.webpush.Utils;
 
 @Service
+@RequiredArgsConstructor
 public class WebPushService {
 
-  @Autowired
-  private StudentService studentService;
+  private final StudentService studentService;
 
-  @Autowired
-  private WebPushSubscriptionRepository webPushSubscriptionRepository;
+  private final WebPushSubscriptionRepository webPushSubscriptionRepository;
 
   private PublicKey publicKey;
   private PrivateKey privateKey;
