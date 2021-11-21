@@ -1,16 +1,18 @@
 package com.iseplife.api.dao.post;
 
-import com.iseplife.api.dao.post.projection.PostProjection;
-import com.iseplife.api.dto.post.view.PostFormView;
-import com.iseplife.api.dto.post.view.PostView;
-import com.iseplife.api.entity.post.Comment;
-import com.iseplife.api.entity.post.Post;
-import com.iseplife.api.entity.post.embed.Embedable;
-import com.iseplife.api.services.*;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+
+import com.iseplife.api.dao.post.projection.PostProjection;
+import com.iseplife.api.dto.post.view.PostFormView;
+import com.iseplife.api.dto.post.view.PostView;
+import com.iseplife.api.dto.thread.view.CommentView;
+import com.iseplife.api.entity.post.Post;
+import com.iseplife.api.entity.post.embed.Embedable;
+import com.iseplife.api.services.SecurityService;
+
+import lombok.RequiredArgsConstructor;
 
 
 @Component
@@ -31,7 +33,7 @@ public class PostFactory {
     return mapper.map(post, PostFormView.class);
   }
 
-  public PostView toView(PostProjection post, Boolean isLiked) {
+  public PostView toView(PostProjection post, Boolean isLiked, CommentView trendingComment) {
     mapper
       .typeMap(PostProjection.class, PostView.class)
       .addMappings(mapper -> {
@@ -45,7 +47,7 @@ public class PostFactory {
       });
     PostView view = mapper.map(post, PostView.class);
     view.setLiked(isLiked);
-    //view.setTrendingComment(commentFactory.toView(trendingComment));
+    view.setTrendingComment(trendingComment);
 
     return view;
   }
