@@ -47,7 +47,7 @@ public class SubscriptionController {
   
   @PutMapping("/{type}/{id}")
   @RolesAllowed({ Roles.STUDENT })
-  public void addSubscription(@PathVariable String type, @PathVariable Long id, @RequestBodyParam Boolean extensive) throws GeneralSecurityException, IOException, JoseException, ExecutionException, InterruptedException, TimeoutException {
+  public void addSubscription(@PathVariable String type, @PathVariable Long id, @RequestBodyParam Boolean extensive) {
     Subscription sub = subscriptionService.getSubscription(id);
     if(sub != null) {
       if(sub.isExtensive() != extensive) {
@@ -57,29 +57,7 @@ public class SubscriptionController {
       return;
     }
     
-    Subscribable subbing;
-    switch(type) {
-      case SubscribableType.CLUB:
-        subbing = clubService.getClub(id);
-        break;
-      case SubscribableType.STUDENT:
-        subbing = studentService.getStudent(id);
-        break;
-      case SubscribableType.EVENT:
-        Event event = eventService.getEvent(id);
-        if(SecurityService.hasReadAccessOn(event))
-          throw new AccessDeniedException("No access to event");
-        subbing = event;
-        break;
-      case SubscribableType.GROUP:
-        Group group = groupService.getGroup(id);
-        if(SecurityService.hasReadAccess(group))
-          throw new AccessDeniedException("No access to group");
-        subbing = group;
-        break;
-      default:
-        throw new IllegalArgumentException("Cannot subscribe to a feed");
-    }
+    Subscribable subbing = subscriptionService.getSubscribable(type, id);
     
     subscriptionService.subscribe(subbing);
   }

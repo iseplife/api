@@ -1,9 +1,13 @@
 package com.iseplife.api.services;
 
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import com.iseplife.api.constants.SubscribableType;
 import com.iseplife.api.dao.subscription.SubscriptionRepository;
 import com.iseplife.api.dao.subscription.projection.SubscriptionProjection;
+import com.iseplife.api.entity.event.Event;
+import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.subscription.Subscribable;
 import com.iseplife.api.entity.subscription.Subscription;
 import com.iseplife.api.entity.user.Student;
@@ -15,6 +19,9 @@ import lombok.RequiredArgsConstructor;
 public class SubscriptionService {
   final private SubscriptionRepository subscriptionRepository;
   final private StudentService studentService;
+  private final ClubService clubService;
+  private final EventService eventService;
+  private final GroupService groupService;
 
   public Boolean isSubscribed(Subscribable sub){
     return isSubscribed(sub.getId(), SecurityService.getLoggedId());
@@ -61,5 +68,26 @@ public class SubscriptionService {
   
   public void updateSubscription(Subscription sub) {
     subscriptionRepository.save(sub);
+  }
+  
+  public Subscribable getSubscribable(String type, Long id) {
+    switch(type) {
+      case SubscribableType.CLUB:
+        return clubService.getClub(id);
+      case SubscribableType.STUDENT:
+        return studentService.getStudent(id);
+      case SubscribableType.EVENT:
+        Event event = eventService.getEvent(id);
+        if(SecurityService.hasReadAccessOn(event))
+          throw new AccessDeniedException("No access to event");
+        return event;
+      case SubscribableType.GROUP:
+        Group group = groupService.getGroup(id);
+        if(SecurityService.hasReadAccess(group))
+          throw new AccessDeniedException("No access to group");
+        return group;
+      default:
+        throw new IllegalArgumentException("Cannot subscribe to a feed");
+    }
   }
 }
