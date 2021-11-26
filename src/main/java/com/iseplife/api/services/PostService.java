@@ -42,7 +42,6 @@ public class PostService {
   @Lazy final private GalleryService galleryService;
   @Lazy final private FeedService feedService;
   @Lazy final private SecurityService securityService;
-  final private PostFactory postFactory;
   final private ModelMapper mapper;
   final private PostRepository postRepository;
 
