@@ -91,6 +91,23 @@ public class PostService {
     return postRepository.save(post);
   }
 
+  public void createPost(Gallery gallery) {
+    Post post = new Post();
+    post.setCreationDate(new Date());
+    post.setPublicationDate(new Date());
+    post.setState(PostState.READY);
+
+    post.setEmbed(gallery);
+    post.setFeed(gallery.getFeed());
+    post.setDescription(gallery.getDescription());
+
+    post.setAuthor(securityService.getLoggedUser());
+    post.setLinkedClub(gallery.getClub());
+    post.setThread(new Thread(ThreadType.POST));
+
+    postRepository.save(post);
+  }
+
   public Post updatePost(Long postID, PostUpdateDTO dto) {
     Post post = getPost(postID);
     if (!SecurityService.hasRightOn(post))
