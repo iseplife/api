@@ -16,6 +16,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
@@ -26,6 +28,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import com.iseplife.api.entity.user.Student;
 
 @Entity
+@Getter @Setter
 public class WebPushSubscription {
 
   @Id
@@ -38,64 +41,12 @@ public class WebPushSubscription {
   private String endpoint;
   @Column(unique = true)
   private String fingerprint;
-  
+
   @CreationTimestamp
   private Date lastUpdate;
 
   @ManyToOne(fetch = FetchType.LAZY)
   private Student owner;
-  
-  public Long getId() {
-    return id;
-  }
-  
-  public Date getLastUpdate() {
-    return lastUpdate;
-  }
-  
-  public void setLastUpdate(Date lastUpdate) {
-    this.lastUpdate = lastUpdate;
-  }
-  
-  public void setOwner(Student owner) {
-    this.owner = owner;
-  }
-
-  public Student getOwner() {
-    return owner;
-  }
-
-  public void setAuth(String auth) {
-    this.auth = auth;
-  }
-
-  public String getAuth() {
-    return auth;
-  }
-
-  public void setKey(String key) {
-    this.key = key;
-  }
-
-  public String getKey() {
-    return key;
-  }
-
-  public void setEndpoint(String endpoint) {
-    this.endpoint = endpoint;
-  }
-
-  public String getEndpoint() {
-    return endpoint;
-  }
-  
-  public void setFingerprint(String fingerprint) {
-    this.fingerprint = fingerprint;
-  }
-  
-  public String getFingerprint() {
-    return fingerprint;
-  }
 
   public byte[] getAuthAsBytes() {
     return Base64.getDecoder().decode(getAuth());
