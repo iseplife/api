@@ -42,7 +42,6 @@ public class PostService {
   @Lazy final private GalleryService galleryService;
   @Lazy final private FeedService feedService;
   @Lazy final private SecurityService securityService;
-  final private PostFactory postFactory;
   final private ModelMapper mapper;
   final private PostRepository postRepository;
 
@@ -89,6 +88,23 @@ public class PostService {
     post.setState(dto.isDraft() ? PostState.DRAFT : PostState.READY);
 
     return postRepository.save(post);
+  }
+
+  public void createPost(Gallery gallery) {
+    Post post = new Post();
+    post.setCreationDate(new Date());
+    post.setPublicationDate(new Date());
+    post.setState(PostState.READY);
+
+    post.setEmbed(gallery);
+    post.setFeed(gallery.getFeed());
+    post.setDescription(gallery.getDescription());
+
+    post.setAuthor(securityService.getLoggedUser());
+    post.setLinkedClub(gallery.getClub());
+    post.setThread(new Thread(ThreadType.POST));
+
+    postRepository.save(post);
   }
 
   public Post updatePost(Long postID, PostUpdateDTO dto) {

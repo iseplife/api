@@ -93,19 +93,8 @@ public class GalleryService {
     });
 
     imageRepository.saveAll(images);
-    if(!dto.isPseudo() && dto.getGeneratePost()){
-      Post post = new Post();
-      post.setFeed(gallery.getFeed());
-      post.setThread(new Thread(ThreadType.POST));
-      post.setDescription(gallery.getDescription());
-      post.setEmbed(gallery);
-      post.setAuthor(studentService.getStudent(SecurityService.getLoggedId()));
-      post.setLinkedClub(gallery.getClub());
-      post.setCreationDate(new Date());
-      post.setState(PostState.READY);
-
-      postRepository.save(post);
-    }
+    if(!dto.isPseudo() && dto.getGeneratePost())
+      postService.createPost(gallery);
 
     return gallery;
   }
