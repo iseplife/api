@@ -42,8 +42,8 @@ import com.iseplife.api.dto.gallery.view.GalleryPreview;
 import com.iseplife.api.dto.media.view.MediaNameView;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.services.ClubService;
-import com.iseplife.api.services.FeedService;
 import com.iseplife.api.services.PostService;
+import com.iseplife.api.services.SubscriptionService;
 import com.iseplife.api.services.ThreadService;
 
 import lombok.RequiredArgsConstructor;
@@ -53,7 +53,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ClubController {
   final private PostService postService;
-  final private FeedService feedService;
+  final private SubscriptionService subscriptionService;
   final private ThreadService threadService;
   final private ClubService clubService;
   final private PostFactory postFactory;
@@ -72,21 +72,21 @@ public class ClubController {
   @PostMapping
   @RolesAllowed({Roles.ADMIN})
   public ClubView createClub(@RequestBody ClubAdminDTO dto) {
-    return factory.toView(clubService.createClub(dto), false);
+    return factory.toView(clubService.createClub(dto), null);
   }
 
   @GetMapping("/{id}")
   @RolesAllowed({Roles.STUDENT})
   public ClubView getClub(@PathVariable Long id) {
     Club club = clubService.getClub(id);
-    return factory.toView(club, feedService.isSubscribedToFeed(club));
+    return factory.toView(club, subscriptionService.getSubscriptionProjection(club));
   }
 
   @PutMapping("/{id}")
   @RolesAllowed({Roles.STUDENT})
   public ClubView updateClub(@PathVariable Long id, @RequestBody ClubDTO dto) {
     Club club = clubService.updateClub(id, dto);
-    return factory.toView(club, feedService.isSubscribedToFeed(club));
+    return factory.toView(club, subscriptionService.getSubscriptionProjection(club));
   }
 
   @PutMapping("/{id}/admin")

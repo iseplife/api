@@ -1,19 +1,13 @@
 package com.iseplife.api.services;
 
-import com.iseplife.api.conf.StorageConfig;
-import com.iseplife.api.conf.jwt.TokenPayload;
-import com.iseplife.api.dao.event.EventPreviewProjection;
-import com.iseplife.api.dao.feed.FeedRepository;
-import com.iseplife.api.dto.event.EventDTO;
-import com.iseplife.api.entity.feed.Feed;
-import com.iseplife.api.entity.club.Club;
-import com.iseplife.api.entity.event.Event;
-import com.iseplife.api.dao.event.EventRepository;
-import com.iseplife.api.entity.post.embed.Gallery;
-import com.iseplife.api.exceptions.http.HttpForbiddenException;
-import com.iseplife.api.exceptions.http.HttpNotFoundException;
-import com.iseplife.api.services.fileHandler.FileHandler;
-import lombok.RequiredArgsConstructor;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
@@ -22,7 +16,23 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.*;
+import com.iseplife.api.conf.StorageConfig;
+import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.constants.NotificationType;
+import com.iseplife.api.dao.event.EventPreviewProjection;
+import com.iseplife.api.dao.event.EventRepository;
+import com.iseplife.api.dao.feed.FeedRepository;
+import com.iseplife.api.dto.event.EventDTO;
+import com.iseplife.api.entity.club.Club;
+import com.iseplife.api.entity.event.Event;
+import com.iseplife.api.entity.feed.Feed;
+import com.iseplife.api.entity.post.embed.Gallery;
+import com.iseplife.api.entity.subscription.Notification;
+import com.iseplife.api.exceptions.http.HttpForbiddenException;
+import com.iseplife.api.exceptions.http.HttpNotFoundException;
+import com.iseplife.api.services.fileHandler.FileHandler;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +43,7 @@ public class EventService {
   final private ModelMapper mapper;
   final private FeedRepository feedRepository;
   final private EventRepository eventRepository;
+  final private NotificationService notificationService;
 
   @Qualifier("FileHandlerBean") final private FileHandler fileHandler;
 
@@ -53,10 +64,29 @@ public class EventService {
       feedRepository.findAllById(dto.getTargets()).forEach(targets::add);
 
       event.setTargets(targets);
+      event = eventRepository.save(event);
+    } else {
+      event = eventRepository.save(event);
+      Event finalEvent = event;
+      //We send the notification if the event is not private
+      notificationService.delayNotification(
+          Notification.builder()
+            .type(NotificationType.NEW_EVENT)
+            .icon(club.getLogoUrl())
+            .link("event/"+event.getId())
+            .informations(
+                Map.of(
+                    "id", event.getId(),
+                    "title", event.getTitle(),
+                    "type", event.getType().name(),
+                    "club", event.getClub().getName(),
+                    "start", event.getStartsAt().getTime()
+                )
+            ).build(),
+          false, club, () -> eventRepository.findById(finalEvent.getId()) != null);
     }
 
-
-    return eventRepository.save(event);
+    return event;
   }
 
   public String updateImage(Long id, MultipartFile file) {

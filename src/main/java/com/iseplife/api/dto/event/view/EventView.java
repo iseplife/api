@@ -1,5 +1,6 @@
 package com.iseplife.api.dto.event.view;
 
+import com.iseplife.api.dao.subscription.projection.SubscriptionProjection;
 import com.iseplife.api.dto.club.view.ClubPreview;
 import com.iseplife.api.dto.view.FeedView;
 import lombok.Data;
@@ -22,7 +23,7 @@ public class EventView {
   private Float price = null;
   private Date published = new Date();
   private boolean closed = false;
-  private boolean subscribed;
+  private SubscriptionProjection subscribed;
   private Boolean hasRight;
   private ClubPreview club;
   private Set<FeedView> targets;

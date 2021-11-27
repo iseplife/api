@@ -1,0 +1,49 @@
+package com.iseplife.api.controllers;
+
+import javax.annotation.security.RolesAllowed;
+
+import org.springframework.web.bind.annotation.*;
+
+import com.iseplife.api.constants.Roles;
+import com.iseplife.api.entity.subscription.Subscribable;
+import com.iseplife.api.entity.subscription.Subscription;
+import com.iseplife.api.services.SubscriptionService;
+
+import lombok.RequiredArgsConstructor;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/subscription")
+public class SubscriptionController {
+
+  private final SubscriptionService subscriptionService;
+
+  @PutMapping("/{type}/{id}")
+  @RolesAllowed({ Roles.STUDENT })
+  public void addSubscription(@PathVariable String type, @PathVariable Long id, @RequestParam Boolean extensive) {
+    Subscription sub = subscriptionService.getSubscription(id);
+    if(sub != null) {
+      if(sub.isExtensive() != extensive) {
+        sub.setExtensive(extensive);
+        subscriptionService.updateSubscription(sub);
+      }
+      return;
+    }
+
+    Subscribable subbing = subscriptionService.getSubscribable(type, id);
+
+    subscriptionService.subscribe(subbing);
+  }
+
+  @DeleteMapping("/{id}")
+  @RolesAllowed({ Roles.STUDENT })
+  public void removeSubscription(@PathVariable Long id) {
+    subscriptionService.unsubscribe(id);
+  }
+
+  @GetMapping("/{id}")
+  @RolesAllowed({ Roles.STUDENT })
+  public Boolean isSubscribed(@PathVariable Long id) {
+    return subscriptionService.isSubscribed(id);
+  }
+}

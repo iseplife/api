@@ -1,25 +1,36 @@
 package com.iseplife.api.entity.user;
-
-import com.iseplife.api.constants.AuthorType;
-import com.iseplife.api.constants.Language;
-import com.iseplife.api.entity.Author;
-import com.iseplife.api.entity.subscription.Subscription;
-import com.sun.istack.NotNull;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import javax.persistence.*;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import com.iseplife.api.constants.AuthorType;
+import com.iseplife.api.constants.Language;
+import com.iseplife.api.entity.Author;
+import com.iseplife.api.entity.subscription.Notification;
+import com.iseplife.api.entity.subscription.Subscribable;
+import com.iseplife.api.entity.subscription.Subscription;
+import com.iseplife.api.entity.subscription.WebPushSubscription;
+import com.sun.istack.NotNull;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 @Entity
 @Getter @Setter @NoArgsConstructor
-public class Student implements UserDetails, Author {
+public class Student implements UserDetails, Author, Subscribable {
   @Id
   @Column(unique = true)
   private Long id;
@@ -54,8 +65,14 @@ public class Student implements UserDetails, Author {
   @ManyToMany(fetch = FetchType.EAGER)
   private Set<Role> roles;
 
-  @OneToMany(mappedBy = "listener", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy="owner", fetch = FetchType.EAGER)
+  private Set<WebPushSubscription> webPushSubscriptions;
+
+  @OneToMany(mappedBy = "listener", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<Subscription> subscriptions;
+  
+  @ManyToMany(mappedBy = "students", fetch = FetchType.LAZY)
+  private List<Notification> notifications;
 
   @Override
   public String getName() {

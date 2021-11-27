@@ -1,24 +1,35 @@
 package com.iseplife.api.entity.club;
 
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+
 import com.iseplife.api.constants.AuthorType;
 import com.iseplife.api.constants.ClubType;
 import com.iseplife.api.entity.Author;
-import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.event.Event;
+import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.feed.Feedable;
 import com.iseplife.api.entity.post.Post;
+import com.iseplife.api.entity.subscription.Subscribable;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
-import java.util.Date;
-import java.util.List;
-
 
 @Entity
 @Getter @Setter @NoArgsConstructor
-public class Club implements Feedable, Author {
+public class Club implements Feedable, Author, Subscribable {
   @Id
   @GeneratedValue
   private Long id;

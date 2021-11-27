@@ -2,6 +2,7 @@ package com.iseplife.api.dao.group;
 
 import com.iseplife.api.constants.GroupType;
 import com.iseplife.api.dao.student.StudentFactory;
+import com.iseplife.api.dao.subscription.projection.SubscriptionProjection;
 import com.iseplife.api.dto.group.GroupCreationDTO;
 import com.iseplife.api.dto.group.GroupUpdateDTO;
 import com.iseplife.api.dto.group.view.GroupAdminView;
@@ -27,7 +28,7 @@ public class GroupFactory {
   @Lazy final private StudentFactory studentFactory;
   final private ModelMapper mapper;
 
-  public GroupView toView(Group group, Boolean isSubscribed) {
+  public GroupView toView(Group group, SubscriptionProjection subProjection) {
     mapper
       .typeMap(Group.class, GroupView.class)
       .addMappings(mapper -> {
@@ -35,7 +36,7 @@ public class GroupFactory {
       });
 
     GroupView view = mapper.map(group, GroupView.class);
-    view.setSubscribed(isSubscribed);
+    view.setSubscribed(subProjection);
 
     return view;
   }

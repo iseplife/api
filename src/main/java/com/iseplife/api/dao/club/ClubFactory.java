@@ -1,15 +1,22 @@
 package com.iseplife.api.dao.club;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
+
 import com.iseplife.api.dao.student.StudentFactory;
-import com.iseplife.api.dto.club.view.*;
+import com.iseplife.api.dao.subscription.projection.SubscriptionProjection;
+import com.iseplife.api.dto.club.view.ClubAdminView;
+import com.iseplife.api.dto.club.view.ClubMemberPreview;
+import com.iseplife.api.dto.club.view.ClubMemberView;
+import com.iseplife.api.dto.club.view.ClubPreview;
+import com.iseplife.api.dto.club.view.ClubView;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.club.ClubMember;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.services.SecurityService;
+
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
 
 
 @Component
@@ -19,7 +26,7 @@ public class ClubFactory {
   final private ModelMapper mapper;
 
 
-  public ClubView toView(Club club, Boolean isSubscribed){
+  public ClubView toView(Club club, SubscriptionProjection subProjection){
     mapper
       .typeMap(Club.class, ClubView.class)
       .addMappings(mapper ->
@@ -27,7 +34,7 @@ public class ClubFactory {
       );
 
     ClubView view = mapper.map(club, ClubView.class);
-    view.setSubscribed(isSubscribed);
+    view.setSubscribed(subProjection);
     view.setCanEdit(SecurityService.hasRightOn(club));
 
     return view;

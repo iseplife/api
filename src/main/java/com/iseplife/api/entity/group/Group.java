@@ -3,6 +3,7 @@ package com.iseplife.api.entity.group;
 import com.iseplife.api.constants.GroupType;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.feed.Feedable;
+import com.iseplife.api.entity.subscription.Subscribable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,7 +15,7 @@ import java.util.List;
 @Entity
 @Table(name="groups")
 @Getter @Setter @NoArgsConstructor
-public class Group implements Feedable {
+public class Group implements Feedable, Subscribable {
   @Id
   @GeneratedValue
   private Long id;
@@ -34,7 +35,7 @@ public class Group implements Feedable {
 
   @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<GroupMember> members;
-
+  
   public Boolean isArchived() {
     return !(archivedAt == null || archivedAt.getTime() > new Date().getTime());
   }

@@ -1,21 +1,24 @@
 package com.iseplife.api.dao.event;
 
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
+
 import com.iseplife.api.dao.club.ClubFactory;
+import com.iseplife.api.dao.subscription.projection.SubscriptionProjection;
 import com.iseplife.api.dto.event.view.EventPreview;
 import com.iseplife.api.dto.event.view.EventView;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.services.SecurityService;
-import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Set;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
@@ -38,7 +41,7 @@ public class EventFactory {
     return mapper.map(event, EventPreview.class);
   }
 
-  public EventView toView(Event event, Boolean isSubscribed) {
+  public EventView toView(Event event, SubscriptionProjection subProjection) {
     mapper
       .typeMap(Event.class, EventView.class)
       .addMappings(mapper -> {
@@ -60,7 +63,7 @@ public class EventFactory {
           .map(Event::getClub, EventView::setClub);
       });
     EventView view = mapper.map(event, EventView.class);
-    view.setSubscribed(isSubscribed);
+    view.setSubscribed(subProjection);
 
     return view;
   }
