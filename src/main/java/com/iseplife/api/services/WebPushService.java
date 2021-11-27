@@ -19,7 +19,6 @@ import javax.annotation.PostConstruct;
 
 import org.asynchttpclient.Response;
 import org.jose4j.lang.JoseException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -67,8 +66,10 @@ public class WebPushService {
     pushService.setPrivateKey(privateKey);
   }
 
-  private Cache<String, WebPushSubscription> pushServiceRegistration = CacheBuilder.newBuilder()
-      .expireAfterWrite(10, TimeUnit.MINUTES).build();
+  private Cache<String, WebPushSubscription> pushServiceRegistration = CacheBuilder
+    .newBuilder()
+    .expireAfterWrite(10, TimeUnit.MINUTES)
+    .build();
 
   public void registerWebPushService(RegisterPushServiceDTO sub)
       throws GeneralSecurityException, IOException, JoseException, ExecutionException, InterruptedException, TimeoutException {
