@@ -42,8 +42,8 @@ import com.iseplife.api.dto.gallery.view.GalleryPreview;
 import com.iseplife.api.dto.media.view.MediaNameView;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.services.ClubService;
-import com.iseplife.api.services.FeedService;
 import com.iseplife.api.services.PostService;
+import com.iseplife.api.services.SubscriptionService;
 import com.iseplife.api.services.ThreadService;
 
 import lombok.RequiredArgsConstructor;
