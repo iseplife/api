@@ -1,5 +1,6 @@
 package com.iseplife.api.services;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +18,11 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class SubscriptionService {
+  @Lazy final private StudentService studentService;
+  @Lazy final private ClubService clubService;
+  @Lazy final private EventService eventService;
+  @Lazy final private GroupService groupService;
   final private SubscriptionRepository subscriptionRepository;
-  final private StudentService studentService;
-  private final ClubService clubService;
-  private final EventService eventService;
-  private final GroupService groupService;
 
   public Boolean isSubscribed(Subscribable sub){
     return isSubscribed(sub.getId(), SecurityService.getLoggedId());
@@ -65,11 +66,11 @@ public class SubscriptionService {
   public void unsubscribe(Long id, Long studentId) {
     subscriptionRepository.deleteBySubscribedIdAndListenerId(id, studentId);
   }
-  
+
   public void updateSubscription(Subscription sub) {
     subscriptionRepository.save(sub);
   }
-  
+
   public Subscribable getSubscribable(String type, Long id) {
     switch(type) {
       case SubscribableType.CLUB:

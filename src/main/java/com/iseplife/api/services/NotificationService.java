@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -25,11 +26,11 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
-  private static int NOTIFICATIONS_PER_PAGE = 10;
-  
+  @Lazy private final WebPushService webPushService;
   private final SubscriptionRepository subscriptionRepository;
   private final NotificationRepository notificationRepository;
-  private final WebPushService webPushService;
+
+  private static int NOTIFICATIONS_PER_PAGE = 10;
 
   public void delayNotification(Notification notif, boolean extensive, Subscribable subable, DelayedNotificationCheck check) {
     delayNotification(notif, extensive, subable, check, null);
@@ -38,25 +39,25 @@ public class NotificationService {
     Timer timer = new Timer();
     //We wait 10s so that we don't send a notification for an aborted event.
     timer.schedule(new TimerTask() {
-      
+
       @Override
       public void run() {
         if(check.isNotificationStillUseful()) {
           Set<Student> notified = new HashSet<>();
           List<Subscription> subs = subscriptionRepository.findBySubscribed(subable);
-          
+
           if(studentValidator != null)
             subs = Arrays.asList(subs.stream().filter(sub -> studentValidator.validate(sub.getListener())).toArray(i -> new Subscription[i]));
-          
+
           if(extensive)
             subs = Arrays.asList(subs.stream().filter(sub -> sub.isExtensive()).toArray(i-> new Subscription[i]));
-          
+
           subs.forEach(s -> notified.add(s.getListener()));
-          
+
           notif.setStudents(new ArrayList<Student>(notified));
-          
+
           notificationRepository.save(notif);
-          
+
           webPushService.sendNotificationToAll(subs, notif.getPayload());
         }
       }
@@ -72,7 +73,7 @@ public class NotificationService {
   public long countUnwatchedNotifications(Student student) {
     return notificationRepository.countByStudentsAndWatched(student, false);
   }
-  
+
 
   public static interface DelayedNotificationCheck {
     public boolean isNotificationStillUseful();

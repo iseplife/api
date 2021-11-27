@@ -21,6 +21,7 @@ import org.asynchttpclient.Response;
 import org.jose4j.lang.JoseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import com.google.common.cache.Cache;
@@ -40,9 +41,7 @@ import nl.martijndwars.webpush.Utils;
 @Service
 @RequiredArgsConstructor
 public class WebPushService {
-
-  private final StudentService studentService;
-
+  @Lazy private final StudentService studentService;
   private final WebPushSubscriptionRepository webPushSubscriptionRepository;
 
   private PublicKey publicKey;
@@ -52,7 +51,7 @@ public class WebPushService {
   private String privateKeyStr;
   @Value("${push.web.public-key}")
   private String publicKeyStr;
-  
+
   private PushAsyncService pushService;
 
   @PostConstruct
@@ -67,7 +66,7 @@ public class WebPushService {
     pushService.setPublicKey(publicKey);
     pushService.setPrivateKey(privateKey);
   }
-  
+
   private Cache<String, WebPushSubscription> pushServiceRegistration = CacheBuilder.newBuilder()
       .expireAfterWrite(10, TimeUnit.MINUTES).build();
 
@@ -92,11 +91,11 @@ public class WebPushService {
             break breaking;
         } else
           webPushSubscriptionRepository.updateDate(wpsub.getId(), new Date());
-        
+
         return;
       }
     }
-    
+
     Student student = studentService.getStudent(loggedId);
     if(wpsub == null)
       wpsub = new WebPushSubscription();
@@ -121,7 +120,7 @@ public class WebPushService {
   private CompletableFuture<Response> sendAsyncNotification(Notification notification) throws GeneralSecurityException, IOException, JoseException {
     return pushService.send(notification);
   }
-  
+
   public void sendAsyncNotification(WebPushSubscription sub, String payload) {
     try {
       pushService.send(new Notification(sub.getEndpoint(), sub.getKey(), sub.getAuth(), payload)).thenAccept(response -> {
@@ -137,7 +136,7 @@ public class WebPushService {
       webPushSubscriptionRepository.delete(sub);
     }
   }
-  
+
   public void sendNotificationToAll(List<Subscription> subs, String payload) {
     //TODO check if there is enough wait here (and not too much)
     new Thread(new Runnable() {
