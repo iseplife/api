@@ -49,9 +49,10 @@ public class Notification {
   @ManyToMany(fetch = FetchType.LAZY)
   private List<Student> students;
   
-  private Date creation;
+  @ManyToMany(fetch = FetchType.LAZY)
+  private List<Student> watched;
   
-  private boolean watched;
+  private Date creation;
   
   @PrePersist
   protected void onCreate() {

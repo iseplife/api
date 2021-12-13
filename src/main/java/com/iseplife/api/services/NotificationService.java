@@ -71,7 +71,7 @@ public class NotificationService {
     return notificationRepository.findAllByStudentsIdOrderById(student, PageRequest.of(page, NOTIFICATIONS_PER_PAGE));
   }
   public long countUnwatchedNotifications(Student student) {
-    return notificationRepository.countByStudentsAndWatched(student, false);
+    return 0;//notificationRepository.countByStudentsAndWatched(student, false);
   }
 
 
