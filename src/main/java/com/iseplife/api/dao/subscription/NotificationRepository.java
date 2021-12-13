@@ -23,5 +23,9 @@ public interface NotificationRepository extends CrudRepository<Notification, Lon
       + "left join notif.watched watched")
   Page<NotificationProjection> findAllByStudentsIdOrderById(Long student, Pageable pageable);
   
-  long countByStudentsAndWatched(Student student, Boolean watched);
+  @Query("select count(notif) "
+      + "from Notification notif "
+      + "join notif.students student on student.id = ?1 "
+      + "where student not member of notif.watched")
+  long countUnwatchedByStudents(Long student);
 }
