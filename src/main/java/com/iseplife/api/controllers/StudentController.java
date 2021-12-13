@@ -35,8 +35,8 @@ public class StudentController {
 
   @GetMapping("/me")
   @RolesAllowed({Roles.STUDENT})
-  public StudentPreview getLoggedStudentPreview(@AuthenticationPrincipal TokenPayload token) {
-    Student student = studentService.getStudent(token.getId());
+  public StudentPreview getLoggedStudentPreview() {
+    Student student = studentService.getStudent(SecurityService.getLoggedId());
     return factory.toPreview(student, notificationService.countUnwatchedNotifications(student));
   }
 
