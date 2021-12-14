@@ -8,6 +8,7 @@ import com.iseplife.api.dto.student.StudentDTO;
 import com.iseplife.api.dto.student.StudentSettingsDTO;
 import com.iseplife.api.dto.student.StudentUpdateAdminDTO;
 import com.iseplife.api.dto.student.view.*;
+import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.dto.view.MatchedView;
@@ -155,12 +156,13 @@ public class StudentController {
 
     StudentAdminView[] studentAdminViews = new StudentAdminView[numStudent];
 
-    for(int x = 0;x<numStudent;x++){
+    for(int x = 0;x <numStudent;x++){
       Student student = new Student();
       student.setId(ids[x]);
       student.setFirstName(firstNames[x]);
       student.setLastName(lastName[x]);
       student.setPromo(promos[x]);
+      student.setFeed(new Feed(student.getName()));
 
       studentAdminViews[x] = factory.toAdminView(studentImportService.importStudents(student, hasFiles[x] ? files[fileIndex] : null));
 

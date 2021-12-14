@@ -43,7 +43,8 @@ public class StudentService {
   final private RoleRepository roleRepository;
   final private ClubRepository clubRepository;
 
-  @Qualifier("FileHandlerBean") final private FileHandler fileHandler;
+  @Qualifier("FileHandlerBean")
+  final private FileHandler fileHandler;
 
   final private static int RESULTS_PER_PAGE = 20;
 
@@ -70,16 +71,17 @@ public class StudentService {
   }
 
   public void hydrateStudent(Student student, CASUserDTO user) {
+    student.setId(user.getNumero());
     student.setFirstName(user.getPrenom());
     student.setLastName(user.getNom());
     student.setMail(user.getMail());
 
     String[] titre = user.getTitre().split("-");
     student.setPromo(Integer.valueOf(titre[2]));
-
     if (student.getRoles().size() == 0)
       student.setRoles(Collections.singleton(roleRepository.findByRole(Roles.STUDENT)));
-
+    if (student.getFeed() == null)
+      student.setFeed(new Feed(student.getName()));
     studentRepository.save(student);
   }
 
@@ -96,6 +98,7 @@ public class StudentService {
 
     Student student = mapper.map(dto, Student.class);
     student.setRoles(roleRepository.findAllByRoleIn(dto.getRoles()));
+    student.setFeed(new Feed(student.getName()));
 
     return studentRepository.save(student);
   }
@@ -112,10 +115,10 @@ public class StudentService {
 
       if (MediaUtils.isOriginalPicture(student.getPicture()))
         student.setPicture(null);
-    } else if(image != null) {
+    } else if (image != null) {
       // We don't have to delete previous picture has the name won't change then the new pictures will override the old one
       String newPicture = uploadOriginalPicture(student.getPicture(), image);
-      if(picture == null)
+      if (picture == null)
         student.setPicture(newPicture);
       student.setHasDefaultPicture(true);
     }
@@ -190,7 +193,7 @@ public class StudentService {
     Map params = Map.of(
       "process", "compress",
       "sizes", StorageConfig.MEDIAS_CONF.get("user_avatar").sizes,
-        "dest_ext", "jpeg"
+      "dest_ext", "jpeg"
     );
 
     // If picture is undefined then the unique picture identifier has never been generated (or lost) and need to be created

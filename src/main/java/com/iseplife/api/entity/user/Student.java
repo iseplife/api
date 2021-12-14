@@ -4,14 +4,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
+import com.iseplife.api.entity.feed.Feed;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -44,7 +39,6 @@ public class Student implements UserDetails, Author, Subscribable {
   private String mail;
   private Date birthDate;
 
-
   private String facebook;
   private String twitter;
   private String instagram;
@@ -65,12 +59,15 @@ public class Student implements UserDetails, Author, Subscribable {
   @ManyToMany(fetch = FetchType.EAGER)
   private Set<Role> roles;
 
+  @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+  private Feed feed;
+
   @OneToMany(mappedBy="owner", fetch = FetchType.EAGER)
   private Set<WebPushSubscription> webPushSubscriptions;
 
   @OneToMany(mappedBy = "listener", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<Subscription> subscriptions;
-  
+
   @ManyToMany(mappedBy = "students", fetch = FetchType.LAZY)
   private List<Notification> notifications;
 
