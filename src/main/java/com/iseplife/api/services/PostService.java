@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.iseplife.api.entity.club.Club;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -77,28 +78,35 @@ public class PostService {
 
   public Post createPost(PostCreationDTO dto) {
     Post post = mapper.map(dto, Post.class);
-    Feed feed = feedService.getFeed(dto.getFeed());
-
-    if (!SecurityService.hasRightOn(feed))
-      throw new HttpForbiddenException("insufficient_rights");
-
-    post.setFeed(feed);
-    post.setAuthor(securityService.getLoggedUser());
+    Student author = securityService.getLoggedUser();
 
     // Author should be an admin or club publisher
     if (dto.getLinkedClub() != null && !SecurityService.hasAuthorAccessOn(dto.getLinkedClub()))
       throw new HttpForbiddenException("insufficient_rights");
-
     post.setLinkedClub(dto.getLinkedClub() != null ? clubService.getClub(dto.getLinkedClub()) : null);
 
-    
+    Feed feed;
+    if(dto.getFeed() != null){
+      feed = feedService.getFeed(dto.getFeed());
+      if (!SecurityService.hasRightOn(feed))
+        throw new HttpForbiddenException("insufficient_rights");
+    }else {
+      feed = post.getLinkedClub() == null ?
+        author.getFeed() :
+        post.getLinkedClub().getFeed()
+      ;
+    }
+
+    post.setFeed(feed);
+    post.setAuthor(author);
+
     dto.getAttachements().forEach((type, id) -> bindAttachementToPost(type, id, post));
 
     post.setThread(new Thread(ThreadType.POST));
     post.setCreationDate(new Date());
     post.setPublicationDate(dto.getPublicationDate() == null ? new Date() : dto.getPublicationDate());
     post.setState(dto.isDraft() ? PostState.DRAFT : PostState.READY);
-    
+
     Post postToReturn = postRepository.save(post);
     if(!dto.isDraft() && dto.getPublicationDate() == null) {
       Map<String, Object> map = Map.of(
