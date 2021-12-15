@@ -217,14 +217,19 @@ public class PostService {
     postRepository.deleteById(postID);
   }
 
-
   public void togglePinnedPost(Long postID) {
     Post post = getPost(postID);
     if (SecurityService.hasRightOn(post) && post.getLinkedClub() != null)
       throw new HttpForbiddenException("insufficient_rights");
 
-
     post.setPinned(!post.isPinned());
+    postRepository.save(post);
+  }
+
+  public void toggleForceHomepage(Long postID) {
+    Post post = getPost(postID);
+    post.setForcedHomepage(!post.isForcedHomepage());
+
     postRepository.save(post);
   }
 
@@ -276,6 +281,12 @@ public class PostService {
     return authorStatus;
   }
 
+  public Page<PostProjection> getMainFeedPost(Long loggedUser, int page){
+    return postRepository.findHomepagePosts(
+      loggedUser,
+      PageRequest.of(page, POSTS_PER_PAGE,  Sort.by(Sort.Direction.DESC, "publicationDate"))
+    );
+  }
 
   public Page<PostProjection> getFeedPosts(Long feed, int page) {
     return postRepository.findCurrentFeedPost(

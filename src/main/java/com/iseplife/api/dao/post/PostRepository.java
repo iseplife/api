@@ -21,11 +21,20 @@ public interface PostRepository extends CrudRepository<Post, Long> {
   List<Post> findAll();
 
   @Query(
-    "select p from Post p " +
-      "where p.feed.id = 1 and p.state = ?1 " +
-      "order by p.publicationDate"
+    "select " +
+      "p as post, " +
+      "p.thread.id as thread, " +
+      "size(p.thread.comments) as nbComments, " +
+      "size(p.thread.likes) as nbLikes " +
+    "from Post p " +
+      "join Student s on s.id = :loggedStudent " +
+      "join s.subscriptions subs " +
+    "where (p.feed.id = subs.subscribedFeed.id or p.forcedHomepage = true) " +
+      "and p.state = 'READY' " +
+      "and (p.publicationDate > current_time or p.author.id = :loggedStudent) " +
+    "order by p.publicationDate desc"
   )
-  Page<Post> findMainPostsByState(PostState state, Pageable pageable);
+  Page<PostProjection> findHomepagePosts(Long loggedStudent, Pageable pageable);
 
   @Query(
     "select " +

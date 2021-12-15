@@ -38,7 +38,10 @@ public class FeedService {
 
   @Cacheable("main-posts")
   public Page<PostProjection> getMainFeedPosts(int page) {
-    return postService.getFeedPosts(1L, page);
+    return postService.getMainFeedPost(
+      SecurityService.getLoggedId(),
+      page
+    );
   }
 
   public Page<PostProjection> getFeedPosts(Long id, int page) {

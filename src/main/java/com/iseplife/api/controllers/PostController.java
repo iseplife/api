@@ -47,6 +47,12 @@ public class PostController {
     postService.togglePinnedPost(id);
   }
 
+  @PutMapping("/{id}/homepage-forced")
+  @RolesAllowed({Roles.ADMIN})
+  public void toggleForcedHomepage(@PathVariable Long id) {
+    postService.toggleForceHomepage(id);
+  }
+
   @GetMapping("/authors")
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
   public Set<AuthorView> getAuthors(@RequestParam(name = "club") Boolean clubOnly, @AuthenticationPrincipal TokenPayload auth) {
