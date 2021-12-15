@@ -31,7 +31,7 @@ public interface PostRepository extends CrudRepository<Post, Long> {
       "join s.subscriptions subs " +
     "where (p.feed.id = subs.subscribedFeed.id or p.forcedHomepage = true) " +
       "and p.state = 'READY' " +
-      "and (p.publicationDate > current_time or p.author.id = :loggedStudent) " +
+      "and (p.publicationDate > current_date or p.author.id = :loggedStudent) " +
     "order by p.publicationDate desc"
   )
   Page<PostProjection> findHomepagePosts(Long loggedStudent, Pageable pageable);
@@ -79,7 +79,7 @@ public interface PostRepository extends CrudRepository<Post, Long> {
       "size(p.thread.likes) as nbLikes " +
     "from Post p " +
     "where p.feed.id in ?3 and p.author = ?1 and p.state = 'READY' and " +
-      "(p.publicationDate > current_time or p.author.id = ?2)" +
+      "(p.publicationDate > current_date or p.author.id = ?2)" +
     "order by p.publicationDate desc"
   )
   Page<PostProjection> findAuthorPosts(Long author_id, Long loggedUser, List<Long> authorizedFeeds, Pageable pageable);
