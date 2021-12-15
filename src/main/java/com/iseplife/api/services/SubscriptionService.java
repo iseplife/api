@@ -58,6 +58,7 @@ public class SubscriptionService {
     Subscription sub = new Subscription();
     sub.setListener(student);
     sub.setSubscribed(subable);
+    sub.setSubscribedFeed(subable.getFeed());
     subscriptionRepository.save(sub);
   }
   public void unsubscribe(Long id) {

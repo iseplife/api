@@ -34,6 +34,11 @@ public class Subscription {
   @ManyToOne
   private Student listener;
 
+  // Allow us to make post's related query easily without having to looking inside the any-relation
+  @ManyToOne
+  private Feed subscribedFeed;
+
+  @SuppressWarnings("JpaAttributeTypeInspection")
   @Any(
     fetch = FetchType.EAGER,
     metaColumn = @Column(name = "subscribed_type")
