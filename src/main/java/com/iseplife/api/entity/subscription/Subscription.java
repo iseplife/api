@@ -45,12 +45,11 @@ public class Subscription {
       @MetaValue(value = SubscribableType.STUDENT, targetEntity = Student.class),
       @MetaValue(value = SubscribableType.CLUB, targetEntity = Club.class),
       @MetaValue(value = SubscribableType.EVENT, targetEntity = Event.class),
-      @MetaValue(value = SubscribableType.FEED, targetEntity = Feed.class),
       @MetaValue(value = SubscribableType.GROUP, targetEntity = Group.class),
     }
   )
   @JoinColumn(name = "subscribed_id")
   private Subscribable subscribed;
-  
+
   private boolean extensive;
 }

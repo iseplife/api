@@ -16,7 +16,7 @@ import lombok.Setter;
 
 @Entity
 @Getter @Setter @NoArgsConstructor
-public class Feed implements Subscribable {
+public class Feed {
 
   public Feed(String name) {
     this.name = name;
