@@ -89,19 +89,8 @@ public class SecurityService {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
     return userHasRole(Roles.ADMIN)
             || (feed.getClub() != null && payload.getClubsPublisher().contains(feed.getClub().getId()))
-            || (feed.getEvent() != null && payload.getClubsPublisher().contains(feed.getEvent().getClub().getId()));
-  }
-
-  static public boolean hasRightOn(Poll poll) {
-    TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-    return userHasRole(Roles.ADMIN)
-      || payload.getFeeds().contains(poll.getFeed().getId());
-  }
-
-  static public boolean hasReadAccess(Poll poll) {
-    TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-    return userHasRole(Roles.ADMIN)
-    || payload.getFeeds().contains(poll.getFeed().getId());
+            || (feed.getEvent() != null && payload.getClubsPublisher().contains(feed.getEvent().getClub().getId()))
+            || (feed.getStudent() != null && payload.getId() == feed.getStudent().getId());
   }
 
   static public boolean hasReadAccess(Feed feed) {

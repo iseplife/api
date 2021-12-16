@@ -39,11 +39,13 @@ public class Post implements ThreadInterface {
   private Date publicationDate;
   private Date creationDate; //TODO: remove creation date ? Not useful anymore
   private boolean pinned = false;
+  private boolean forcedHomepage = false;
 
   @SuppressWarnings("JpaAttributeTypeInspection")
   @Any(
     fetch = FetchType.EAGER,
-    metaColumn = @Column(name = "embed_type"))
+    metaColumn = @Column(name = "embed_type")
+  )
   @AnyMetaDef(
     idType = "long",
     metaType = "string",

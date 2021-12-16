@@ -35,10 +35,12 @@ public class FeedService {
   public Iterable<FeedProjection> getUserFeeds(TokenPayload token) {
     return feedRepository.findAllByIdIn(token.getFeeds());
   }
-
-  @Cacheable("main-posts")
+  
   public Page<PostProjection> getMainFeedPosts(int page) {
-    return postService.getFeedPosts(1L, page);
+    return postService.getMainFeedPost(
+      SecurityService.getLoggedId(),
+      page
+    );
   }
 
   public Page<PostProjection> getFeedPosts(Long id, int page) {

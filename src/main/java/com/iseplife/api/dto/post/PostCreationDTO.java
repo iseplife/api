@@ -8,7 +8,7 @@ import java.util.Map;
 
 @Data
 public class PostCreationDTO {
-  private Long feed;
+  private Long feed = null;
   private String description;
   private Date publicationDate = new Date();
   private Long linkedClub = null;

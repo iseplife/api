@@ -34,6 +34,11 @@ public class Subscription {
   @ManyToOne
   private Student listener;
 
+  // Allow us to make post's related query easily without having to looking inside the any-relation
+  @ManyToOne
+  private Feed subscribedFeed;
+
+  @SuppressWarnings("JpaAttributeTypeInspection")
   @Any(
     fetch = FetchType.EAGER,
     metaColumn = @Column(name = "subscribed_type")
@@ -45,12 +50,11 @@ public class Subscription {
       @MetaValue(value = SubscribableType.STUDENT, targetEntity = Student.class),
       @MetaValue(value = SubscribableType.CLUB, targetEntity = Club.class),
       @MetaValue(value = SubscribableType.EVENT, targetEntity = Event.class),
-      @MetaValue(value = SubscribableType.FEED, targetEntity = Feed.class),
       @MetaValue(value = SubscribableType.GROUP, targetEntity = Group.class),
     }
   )
   @JoinColumn(name = "subscribed_id")
   private Subscribable subscribed;
-  
+
   private boolean extensive;
 }
