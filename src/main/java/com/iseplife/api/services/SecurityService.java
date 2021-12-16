@@ -94,15 +94,11 @@ public class SecurityService {
   }
 
   static public boolean hasRightOn(Poll poll) {
-    TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-    return userHasRole(Roles.ADMIN)
-      || payload.getFeeds().contains(poll.getFeed().getId());
+    return hasReadAccess(poll.getFeed());
   }
 
   static public boolean hasReadAccess(Poll poll) {
-    TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-    return userHasRole(Roles.ADMIN)
-    || payload.getFeeds().contains(poll.getFeed().getId());
+    return hasReadAccess(poll.getFeed());
   }
 
   static public boolean hasReadAccess(Feed feed) {
