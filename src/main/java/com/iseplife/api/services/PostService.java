@@ -106,15 +106,16 @@ public class PostService {
     post.setCreationDate(new Date());
     post.setState(dto.isDraft() ? PostState.DRAFT : PostState.READY);
 
+    boolean customDate = post.getPublicationDate() != null && !dto.getPublicationDate().before(new Date());
     // If publication's date is missing or past, then set it at today to avoid any confusion
-    post.setPublicationDate(dto.getPublicationDate() == null || dto.getPublicationDate().before(new Date())?
-      new Date() :
-      dto.getPublicationDate()
+    post.setPublicationDate(customDate ?
+      dto.getPublicationDate() :
+      new Date()
     );
 
 
     Post postToReturn = postRepository.save(post);
-    if(!dto.isDraft() && dto.getPublicationDate() == null) {
+    if(!dto.isDraft() && !customDate) {
       Map<String, Object> map = Map.of(
           "post_id", post.getId(),
           "club_id", post.getLinkedClub() != null ? post.getLinkedClub().getName() : null,
