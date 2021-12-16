@@ -93,14 +93,6 @@ public class SecurityService {
             || (feed.getStudent() != null && payload.getId() == feed.getStudent().getId());
   }
 
-  static public boolean hasRightOn(Poll poll) {
-    return hasReadAccess(poll.getFeed());
-  }
-
-  static public boolean hasReadAccess(Poll poll) {
-    return hasReadAccess(poll.getFeed());
-  }
-
   static public boolean hasReadAccess(Feed feed) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
     return userHasRole(Roles.ADMIN)

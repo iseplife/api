@@ -41,7 +41,7 @@ public class PollService {
 
   public Poll getPoll(Long id) {
     Optional<Poll> poll = pollRepository.findById(id);
-    if (poll.isEmpty() || !SecurityService.hasReadAccess(poll.get()))
+    if (poll.isEmpty() || !SecurityService.hasReadAccess(poll.get().getFeed()))
       throw new HttpNotFoundException("poll_not_found");
 
     return poll.get();
