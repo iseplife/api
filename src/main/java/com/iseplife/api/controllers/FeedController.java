@@ -62,7 +62,6 @@ public class FeedController {
   public Page<PostProjection> getFeedPosts(@PathVariable Long id, @RequestParam(defaultValue = "0") int page) {
     return feedService.getFeedPosts(id, page).map(p -> {
       CommentProjection trendingComment = threadService.getTrendingComment(p.getThread());
-      System.out.println(trendingComment);
       return factory.toView(
           p,
           threadService.isLiked(p.getThread()),

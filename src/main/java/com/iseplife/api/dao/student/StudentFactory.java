@@ -70,18 +70,21 @@ public class StudentFactory {
     StudentPreview studentPreview = mapper.map(student, StudentPreview.class);
     
     studentPreview.setUnwatchedNotifications(unwatchedNotifications);
+    studentPreview.setFeedId(student.getFeed().getId());
     
     return studentPreview;
   }
   public StudentPreview toPreview(Student student) {
-    StudentPreview studentPreview = mapper.map(student, StudentPreview.class);
+    StudentPreview studentPreview = mapper.map(student, StudentPreview.class); 
     
     return studentPreview;
   }
 
 
   public StudentView toView(Student student) {
-    return mapper.map(student, StudentView.class);
+    StudentView studentView = mapper.map(student, StudentView.class);
+    studentView.setFeedId(student.getFeed().getId());
+    return studentView;
   }
 
   public StudentPreviewAdmin toPreviewAdmin(Student student) {
