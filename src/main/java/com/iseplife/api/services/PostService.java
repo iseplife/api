@@ -89,6 +89,7 @@ public class PostService {
     Feed feed;
     if(dto.getFeed() != null){
       feed = feedService.getFeed(dto.getFeed());
+      // We disallow students to post on feeds they don't have write right on, and to post as a club in a student feed.
       if (!SecurityService.hasRightOn(feed) || (feed.getStudent() != null && dto.getLinkedClub() != null))
         throw new HttpForbiddenException("insufficient_rights");
     } else {
