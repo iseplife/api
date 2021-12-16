@@ -104,8 +104,14 @@ public class PostService {
 
     post.setThread(new Thread(ThreadType.POST));
     post.setCreationDate(new Date());
-    post.setPublicationDate(dto.getPublicationDate() == null ? new Date() : dto.getPublicationDate());
     post.setState(dto.isDraft() ? PostState.DRAFT : PostState.READY);
+
+    // If publication's date is missing or past, then set it at today to avoid any confusion
+    post.setPublicationDate(dto.getPublicationDate() == null || dto.getPublicationDate().before(new Date())?
+      new Date() :
+      dto.getPublicationDate()
+    );
+
 
     Post postToReturn = postRepository.save(post);
     if(!dto.isDraft() && dto.getPublicationDate() == null) {
