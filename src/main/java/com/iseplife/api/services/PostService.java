@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.iseplife.api.entity.club.Club;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -36,6 +35,7 @@ import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.post.embed.media.Media;
 import com.iseplife.api.entity.post.embed.poll.Poll;
 import com.iseplife.api.entity.subscription.Notification;
+import com.iseplife.api.entity.subscription.Subscribable;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
@@ -88,7 +88,7 @@ public class PostService {
     Feed feed;
     if(dto.getFeed() != null){
       feed = feedService.getFeed(dto.getFeed());
-      if (!SecurityService.hasRightOn(feed))
+      if (!SecurityService.hasRightOn(feed) || (feed.getStudent() != null && dto.getLinkedClub() != null))
         throw new HttpForbiddenException("insufficient_rights");
     } else {
       feed = post.getLinkedClub() == null ?
@@ -125,27 +125,34 @@ public class PostService {
           "date", post.getPublicationDate()
       );
 
+      Notification.NotificationBuilder builder = Notification.builder()
+          .icon(post.getLinkedClub() != null ? post.getLinkedClub().getLogoUrl() : securityService.getLoggedUser().getPicture())
+          .informations(map);
+      
+      Subscribable subscribable = null;
+      
       if (feed.getGroup() != null) {
         map.put("group_name", feed.getGroup().getName());
-        notificationService.delayNotification(
-            Notification.builder()
-              .type(NotificationType.NEW_GROUP_POST)
-              .icon(post.getLinkedClub() != null ? post.getLinkedClub().getLogoUrl() : securityService.getLoggedUser().getPicture())
-              .link("post/group/"+feed.getGroup().getId()+"/"+post.getId())
-              .informations(map)
-              .build(),
-            true, feed.getGroup(), () -> postRepository.existsById(postToReturn.getId()));
+        builder.type(NotificationType.NEW_GROUP_POST)
+               .link("post/group/"+feed.getGroup().getId()+"/"+post.getId());
+        subscribable = feed.getGroup();
       } else if(feed.getClub() != null) {
         map.put("club_name", feed.getClub().getName());
-        notificationService.delayNotification(
-            Notification.builder()
-              .type(NotificationType.NEW_CLUB_POST)
-              .icon(post.getLinkedClub() != null ? post.getLinkedClub().getLogoUrl() : securityService.getLoggedUser().getPicture())
-              .link("post/club/"+feed.getClub().getId()+"/"+post.getId())
-              .informations(map)
-              .build(),
-            true, feed.getClub(), () -> postRepository.existsById(postToReturn.getId()));
+        builder.type(NotificationType.NEW_CLUB_POST)
+               .link("post/club/"+feed.getClub().getId()+"/"+post.getId());
+        subscribable = feed.getClub();
+      } else if(feed.getStudent() != null) {
+        builder.type(NotificationType.NEW_STUDENT_POST)
+               .link("post/student/"+feed.getStudent().getId()+"/"+post.getId());
+        subscribable = feed.getStudent();
       }
+      
+      notificationService.delayNotification(
+          builder.build(),
+          true,
+          subscribable,
+          () -> postRepository.existsById(postToReturn.getId())
+      );
     }
 
     return postToReturn;
