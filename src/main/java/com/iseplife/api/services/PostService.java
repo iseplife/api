@@ -90,7 +90,7 @@ public class PostService {
       feed = feedService.getFeed(dto.getFeed());
       if (!SecurityService.hasRightOn(feed))
         throw new HttpForbiddenException("insufficient_rights");
-    }else {
+    } else {
       feed = post.getLinkedClub() == null ?
         author.getFeed() :
         post.getLinkedClub().getFeed()

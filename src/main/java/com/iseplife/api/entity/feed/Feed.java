@@ -8,7 +8,7 @@ import javax.persistence.OneToOne;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.group.Group;
-import com.iseplife.api.entity.subscription.Subscribable;
+import com.iseplife.api.entity.user.Student;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,4 +36,7 @@ public class Feed {
 
   @OneToOne(mappedBy = "feed", orphanRemoval = true)
   private Group group;
+  
+  @OneToOne(mappedBy = "feed", orphanRemoval = true)
+  private Student student;
 }
