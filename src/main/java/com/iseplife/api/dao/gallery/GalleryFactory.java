@@ -30,7 +30,7 @@ public class GalleryFactory {
       .typeMap(Gallery.class, GalleryView.class)
       .addMappings(mapper -> {
         mapper
-          .using(ctx -> ctx != null ?
+          .using(ctx -> ctx.getSource() != null ?
             clubFactory.toPreview((Club) ctx.getSource()) :
             null
           ).map(Gallery::getClub, GalleryView::setClub);
