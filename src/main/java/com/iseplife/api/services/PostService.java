@@ -226,12 +226,13 @@ public class PostService {
     postRepository.save(post);
   }
 
-  public void toggleForceHomepage(Long postID) {
+  public void updateForceHomepageStatus(Long postID, Boolean state) {
     Post post = getPost(postID);
-    post.setForcedHomepage(!post.isForcedHomepage());
+    post.setForcedHomepage(state);
 
     postRepository.save(post);
   }
+
 
 
   private void bindAttachementToPost(String type, Long id, Post post) {

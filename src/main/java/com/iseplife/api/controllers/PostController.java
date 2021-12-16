@@ -49,8 +49,8 @@ public class PostController {
 
   @PutMapping("/{id}/homepage-forced")
   @RolesAllowed({Roles.ADMIN})
-  public void toggleForcedHomepage(@PathVariable Long id) {
-    postService.toggleForceHomepage(id);
+  public void updateForcedHomepage(@PathVariable Long id, @RequestParam(name="enable", defaultValue = "0", required = false) Boolean enable) {
+    postService.updateForceHomepageStatus(id, enable);
   }
 
   @GetMapping("/authors")
