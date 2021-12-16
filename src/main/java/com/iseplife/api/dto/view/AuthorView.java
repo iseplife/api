@@ -7,6 +7,7 @@ import lombok.Data;
 @Data
 public class AuthorView implements AuthorProjection {
   private Long id;
+  private Long feedId;
   private AuthorType authorType;
   private String name;
   private String thumbnail;

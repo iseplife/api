@@ -2,10 +2,8 @@ package com.iseplife.api.dao.post;
 
 import com.iseplife.api.constants.AuthorType;
 import com.iseplife.api.dto.view.AuthorView;
-import com.iseplife.api.entity.Author;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.user.Student;
-import org.springframework.stereotype.Component;
 
 public class AuthorFactory {
 
@@ -15,6 +13,7 @@ public class AuthorFactory {
     author.setAuthorType(AuthorType.CLUB);
     author.setName(club.getName());
     author.setThumbnail(club.getLogoUrl());
+    author.setFeedId(club.getFeed().getId());
 
     return author;
   }
@@ -25,6 +24,7 @@ public class AuthorFactory {
     author.setAuthorType(AuthorType.STUDENT);
     author.setName(student.getFirstName() + " " + student.getLastName());
     author.setThumbnail(student.getPicture());
+    author.setFeedId(student.getFeed().getId());
 
     return author;
   }
