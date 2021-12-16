@@ -38,8 +38,10 @@ public class Notification {
   @NonNull
   private NotificationType type;
   
+  private String icon;
+  
   @NonNull
-  private String icon, link;
+  private String link;
 
   @NonNull
   @Convert(converter = JpaConverterJson.class)

@@ -1,6 +1,7 @@
 package com.iseplife.api.services;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -116,14 +117,16 @@ public class PostService {
 
     Post postToReturn = postRepository.save(post);
     if(!dto.isDraft() && !customDate) {
-      Map<String, Object> map = Map.of(
+      Map<String, Object> map = new HashMap<>(Map.of(
           "post_id", post.getId(),
-          "club_id", post.getLinkedClub() != null ? post.getLinkedClub().getName() : null,
           "author_id", post.getAuthor().getId(),
           "author_name", (post.getLinkedClub() != null ? post.getLinkedClub() : securityService.getLoggedUser()).getName(),
           "content_text", post.getDescription(),
           "date", post.getPublicationDate()
-      );
+      ));
+      
+      if(post.getLinkedClub() != null)
+        map.put("club_id", post.getLinkedClub().getName());
 
       Notification.NotificationBuilder builder = Notification.builder()
           .icon(post.getLinkedClub() != null ? post.getLinkedClub().getLogoUrl() : securityService.getLoggedUser().getPicture())
