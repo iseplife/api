@@ -55,11 +55,11 @@ public interface PostRepository extends CrudRepository<Post, Long> {
       "size(p.thread.comments) as nbComments, " +
       "size(p.thread.likes) as nbLikes " +
     "from Post p " +
-    "where p.feed = ?1 and p.pinned = true " +
-      "and (p.publicationDate > current_date or ?4 = true or p.author.id = ?3)" +
+    "where p.feed = :feed and p.pinned = true " +
+      "and (p.publicationDate > current_date or :isAdmin = true or p.author.id = :loggedUser) " +
     "order by p.publicationDate desc"
   )
-  List<PostProjection> findFeedPinnedPosts(Feed feed, Long loggedUser);
+  List<PostProjection> findFeedPinnedPosts(Feed feed, Long loggedUser, Boolean isAdmin);
 
 
   @Query(

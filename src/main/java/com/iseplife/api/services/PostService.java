@@ -300,7 +300,11 @@ public class PostService {
   }
 
   public List<PostProjection> getFeedPostsPinned(Feed feed) {
-    return postRepository.findFeedPinnedPosts(feed, SecurityService.getLoggedId());
+    return postRepository.findFeedPinnedPosts(
+      feed,
+      SecurityService.getLoggedId(),
+      SecurityService.hasRoles(Roles.ADMIN)
+    );
   }
 
   public PostProjection getFeedDrafts(Feed feed, Long author) {
