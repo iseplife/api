@@ -235,12 +235,12 @@ public class PostService {
     postRepository.deleteById(postID);
   }
 
-  public void togglePinnedPost(Long postID) {
+  public void updatePostPinnedStatus(Long postID, Boolean pinned) {
     Post post = getPost(postID);
     if (SecurityService.hasRightOn(post) && post.getLinkedClub() != null)
       throw new HttpForbiddenException("insufficient_rights");
 
-    post.setPinned(!post.isPinned());
+    post.setPinned(pinned);
     postRepository.save(post);
   }
 
