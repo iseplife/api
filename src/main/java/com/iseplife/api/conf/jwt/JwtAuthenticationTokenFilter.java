@@ -50,7 +50,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         JwtAuthenticationToken authentication = new JwtAuthenticationToken(jwt);
         authentication.setAuthenticated(true);
 
-        response.setHeader("Authorization", token);
+        response.setHeader("Authorization", "Bearer " + token);
         SecurityContextHolder.getContext().setAuthentication(authentication);
       }
     }
