@@ -70,7 +70,7 @@ public class StudentService {
     return students;
   }
 
-  public void hydrateStudent(Student student, CASUserDTO user) {
+  public Student hydrateStudent(Student student, CASUserDTO user) {
     student.setId(user.getNumero());
     student.setFirstName(user.getPrenom());
     student.setLastName(user.getNom());
@@ -78,11 +78,13 @@ public class StudentService {
 
     String[] titre = user.getTitre().split("-");
     student.setPromo(Integer.valueOf(titre[2]));
-    if (student.getRoles().size() == 0)
+
+    if (student.getRoles() == null || student.getRoles().size() == 0)
       student.setRoles(Collections.singleton(roleRepository.findByRole(Roles.STUDENT)));
     if (student.getFeed() == null)
       student.setFeed(new Feed(student.getName()));
-    studentRepository.save(student);
+
+    return studentRepository.save(student);
   }
 
   public void updateSettings(StudentSettingsDTO settingDTO) {

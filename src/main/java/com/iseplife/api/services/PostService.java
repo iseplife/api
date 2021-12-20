@@ -54,9 +54,9 @@ public class PostService {
   @Lazy final private GalleryService galleryService;
   @Lazy final private FeedService feedService;
   @Lazy final private SecurityService securityService;
+  @Lazy final private NotificationService notificationService;
   final private ModelMapper mapper;
   final private PostRepository postRepository;
-  final private NotificationService notificationService;
 
   private final int POSTS_PER_PAGE = 5;
 

@@ -74,7 +74,7 @@ class DatabaseSeeder {
     Student student = new Student();
     student.setId(1L);
     student.setFirstName("Zinedine");
-    student.setLastName("Zidane");
+    student.setLastName("ZIDANE");
     student.setPromo(1998);
     student.setBirthDate(new Date());
     
@@ -83,6 +83,7 @@ class DatabaseSeeder {
     Role roleStudent = roleRepository.findByRole(Roles.STUDENT);
     Role roleAdmin = roleRepository.findByRole(Roles.ADMIN);
     student.setRoles(Set.of(roleAdmin, roleStudent));
+    student.setFeed(new Feed(student.getName()));
 
     studentRepository.save(student);
 
@@ -94,8 +95,7 @@ class DatabaseSeeder {
       .map(Group::getType)
       .collect(Collectors.toList());
 
-    if(existingTypes.size() != 4)
-    {
+    if(existingTypes.size() != 4) {
       for (GroupType type: GroupType.values()){
         if(!existingTypes.contains(type) && type != GroupType.DEFAULT){
           Group g = new Group();
