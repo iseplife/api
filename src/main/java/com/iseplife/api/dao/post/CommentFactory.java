@@ -9,6 +9,9 @@ import com.iseplife.api.entity.post.Comment;
 import com.iseplife.api.services.SecurityService;
 import com.iseplife.api.services.ThreadService;
 import lombok.RequiredArgsConstructor;
+
+import javax.annotation.PostConstruct;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,17 +21,25 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CommentFactory {
   final private ModelMapper mapper;
-
-  public CommentView toView(CommentProjection comment, Boolean isLiked) {
-    mapper
-      .typeMap(CommentProjection.class, CommentView.class)
+  
+  @PostConstruct()
+  public void init() {
+    mapper.typeMap(CommentProjection.class, CommentView.class)
       .addMappings(mapper -> {
         mapper.skip(CommentView::setLiked);
         mapper
           .using(ctx -> SecurityService.hasRightOn((CommentProjection) ctx.getSource()))
           .map(src -> src, CommentView::setHasWriteAccess);
       });
+    
+    mapper.typeMap(Comment.class, CommentFormView.class)
+      .addMappings(mapper -> {
+        mapper.map(src -> src.getThread().getId(), CommentFormView::setThread);
+        mapper.skip(CommentFormView::setAuthor);
+      });
+  }
 
+  public CommentView toView(CommentProjection comment, Boolean isLiked) {
     CommentView view = mapper.map(comment, CommentView.class);
     view.setLiked(isLiked);
 
@@ -36,12 +47,6 @@ public class CommentFactory {
   }
 
   public CommentFormView toView(Comment comment) {
-    mapper
-      .typeMap(Comment.class, CommentFormView.class)
-      .addMappings(mapper -> {
-        mapper.map(src -> src.getThread().getId(), CommentFormView::setThread);
-        mapper.skip(CommentFormView::setAuthor);
-      });
     CommentFormView view = mapper.map(comment, CommentFormView.class);
     view.setAuthor(comment.getAsClub() != null ?
       AuthorFactory.toView(comment.getAsClub()) :

@@ -1,5 +1,7 @@
 package com.iseplife.api.dao.club;
 
+import javax.annotation.PostConstruct;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -25,14 +27,32 @@ public class ClubFactory {
   @Lazy final private StudentFactory studentFactory;
   final private ModelMapper mapper;
 
-
-  public ClubView toView(Club club, SubscriptionProjection subProjection){
-    mapper
-      .typeMap(Club.class, ClubView.class)
+  @PostConstruct()
+  public void init() {
+    mapper.typeMap(Club.class, ClubView.class)
       .addMappings(mapper ->
         mapper.map(src -> src.getFeed().getId(), ClubView::setFeed)
       );
+    
+    mapper.typeMap(ClubMember.class, ClubMemberView.class)
+      .addMappings(mapper -> {
+        mapper
+          .when(src -> src.getParent() != null)
+          .map(src -> src.getParent().getId(), ClubMemberView::setParent);
+        mapper
+          .using(ctx -> studentFactory.toPreview((Student) ctx.getSource()))
+          .map(ClubMember::getStudent, ClubMemberView::setStudent);
+      });
+    
+    mapper.typeMap(ClubMember.class, ClubMemberPreview.class)
+      .addMappings(mapper -> {
+        mapper
+          .using(ctx -> toPreview((Club) ctx.getSource()))
+          .map(ClubMember::getClub, ClubMemberPreview::setClub);
+      });
+  }
 
+  public ClubView toView(Club club, SubscriptionProjection subProjection){
     ClubView view = mapper.map(club, ClubView.class);
     view.setSubscribed(subProjection);
     view.setCanEdit(SecurityService.hasRightOn(club));
@@ -49,28 +69,10 @@ public class ClubFactory {
   }
 
   public ClubMemberView toView(ClubMember member) {
-    mapper
-      .typeMap(ClubMember.class, ClubMemberView.class)
-      .addMappings(mapper -> {
-        mapper
-          .when(src -> src.getParent() != null)
-          .map(src -> src.getParent().getId(), ClubMemberView::setParent);
-        mapper
-          .using(ctx -> studentFactory.toPreview((Student) ctx.getSource()))
-          .map(ClubMember::getStudent, ClubMemberView::setStudent);
-      });
-
     return mapper.map(member, ClubMemberView.class);
   }
 
   public ClubMemberPreview toPreview(ClubMember member) {
-    mapper
-      .typeMap(ClubMember.class, ClubMemberPreview.class)
-      .addMappings(mapper -> {
-        mapper
-          .using(ctx -> toPreview((Club) ctx.getSource()))
-          .map(ClubMember::getClub, ClubMemberPreview::setClub);
-      });
     return mapper.map(member, ClubMemberPreview.class);
   }
 

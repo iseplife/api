@@ -22,19 +22,30 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
 @Component
 @RequiredArgsConstructor
 public class GroupFactory {
   @Lazy final private StudentFactory studentFactory;
   final private ModelMapper mapper;
-
-  public GroupView toView(Group group, SubscriptionProjection subProjection) {
-    mapper
-      .typeMap(Group.class, GroupView.class)
+  
+  @PostConstruct
+  public void init() {
+    mapper.typeMap(Group.class, GroupView.class)
       .addMappings(mapper -> {
         mapper.map(src -> src.getFeed().getId(), GroupView::setFeed);
       });
+    
+    mapper.typeMap(GroupMember.class, GroupMemberView.class)
+      .addMappings(mapper ->  {
+        mapper
+          .using(ctx -> studentFactory.toPreview((Student) ctx.getSource()))
+          .map(GroupMember::getStudent, GroupMemberView::setStudent);
+      });
+  }
 
+  public GroupView toView(Group group, SubscriptionProjection subProjection) {
     GroupView view = mapper.map(group, GroupView.class);
     view.setSubscribed(subProjection);
 
@@ -54,14 +65,6 @@ public class GroupFactory {
   }
 
   public GroupMemberView toView(GroupMember member) {
-    mapper
-      .typeMap(GroupMember.class, GroupMemberView.class)
-      .addMappings(mapper ->  {
-        mapper
-          .using(ctx -> studentFactory.toPreview((Student) ctx.getSource()))
-          .map(GroupMember::getStudent, GroupMemberView::setStudent);
-      });
-
     return mapper.map(member, GroupMemberView.class);
   }
 }
