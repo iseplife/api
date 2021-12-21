@@ -18,16 +18,19 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
 @Component
 @RequiredArgsConstructor
 public class GalleryFactory {
   @Lazy final private ClubFactory clubFactory;
   @Lazy final private MediaFactory mediaFactory;
   final private ModelMapper mapper;
-
-  public GalleryView toView(Gallery gallery) {
-    mapper
-      .typeMap(Gallery.class, GalleryView.class)
+  
+  @SuppressWarnings("unchecked")
+  @PostConstruct
+  public void init() {
+    mapper.typeMap(Gallery.class, GalleryView.class)
       .addMappings(mapper -> {
         mapper
           .using(ctx -> ctx.getSource() != null ?
@@ -38,22 +41,29 @@ public class GalleryFactory {
           .using(ctx -> ((List<Image>) ctx.getSource()).stream().map(mediaFactory::toView).collect(Collectors.toList()))
           .map(Gallery::getImages, GalleryView::setImages);
       });
-
-    GalleryView view = mapper.map(gallery, GalleryView.class);
-    view.setHasRight(SecurityService.hasRightOn(gallery));
-
-    return view;
-  }
-
-  public PseudoGalleryView toPseudoView(Gallery gallery) {
-    mapper
-      .typeMap(Gallery.class, PseudoGalleryView.class)
+    
+    mapper.typeMap(Gallery.class, PseudoGalleryView.class)
       .addMappings(mapper -> {
         mapper
           .using(ctx -> ((List<Image>) ctx.getSource()).stream().map(mediaFactory::toView).collect(Collectors.toList()))
           .map(Gallery::getImages, PseudoGalleryView::setImages);
       });
+    mapper.typeMap(Gallery.class, GalleryPreview.class)
+      .addMappings(mapper -> {
+        mapper
+          .using(ctx -> ((List<Image>) ctx.getSource()).stream().map(mediaFactory::toView).collect(Collectors.toList()))
+          .map(Gallery::getPreview, GalleryPreview::setPreview);
+      });
+  }
 
+  public GalleryView toView(Gallery gallery) {
+    GalleryView view = mapper.map(gallery, GalleryView.class);
+    view.setHasRight(SecurityService.hasRightOn(gallery));
+    
+    return view;
+  }
+
+  public PseudoGalleryView toPseudoView(Gallery gallery) {
     PseudoGalleryView view = mapper.map(gallery, PseudoGalleryView.class);
     view.setEmbedType(EmbedType.IMAGE);
 
@@ -61,13 +71,6 @@ public class GalleryFactory {
   }
 
   public GalleryPreview toPreview(Gallery gallery) {
-    mapper
-      .typeMap(Gallery.class, GalleryPreview.class)
-      .addMappings(mapper -> {
-        mapper
-          .using(ctx -> ((List<Image>) ctx.getSource()).stream().map(mediaFactory::toView).collect(Collectors.toList()))
-          .map(Gallery::getPreview, GalleryPreview::setPreview);
-      });
     GalleryPreview preview = mapper.map(gallery, GalleryPreview.class);
     preview.setEmbedType(EmbedType.GALLERY);
 

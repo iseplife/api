@@ -12,10 +12,43 @@ import org.springframework.stereotype.Component;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
 @Component
 @RequiredArgsConstructor
 public class StudentFactory {
   final private ModelMapper mapper;
+  
+  @SuppressWarnings("unchecked")
+  @PostConstruct()
+  public void init() {
+    mapper.typeMap(Student.class, StudentView.class)
+      .addMappings(mapper -> {
+        mapper
+        .using(ctx -> toPictures(((Student)ctx.getSource()).getPicture(), ((Student)ctx.getSource()).getHasDefaultPicture()))
+        .map(
+          source -> source,
+          StudentView::setPictures
+        );
+        mapper
+          .using(ctx -> ((Set<Role>) ctx.getSource()).stream().map(Role::getRole).collect(Collectors.toList()))
+          .map(Student::getRoles, StudentView::setRoles);
+      });
+    
+    mapper.typeMap(Student.class, StudentPreviewAdmin.class)
+      .addMappings(mapper -> {
+        mapper
+          .using(ctx -> ((Set<Role>) ctx.getSource()).stream().map(Role::getRole).collect(Collectors.toList()))
+          .map(Student::getRoles, StudentPreviewAdmin::setRoles);
+      });
+    
+    mapper.typeMap(Student.class, StudentAdminView.class)
+      .addMappings(mapper -> {
+        mapper
+          .using(ctx -> ((Set<Role>) ctx.getSource()).stream().map(Role::getRole).collect(Collectors.toList()))
+          .map(Student::getRoles, StudentAdminView::setRoles);
+      });
+  }
 
   public static StudentPictures toPictures(String picture, Boolean hasDefaultPicture) {
     if (MediaUtils.isOriginalPicture(picture)) {
@@ -48,41 +81,14 @@ public class StudentFactory {
 
 
   public StudentView toView(Student student) {
-    mapper
-      .typeMap(Student.class, StudentView.class)
-      .addMappings(mapper -> {
-        mapper.map(
-          Student::getPicture,
-          (dest, v) -> dest.setPictures(toPictures((String) v, student.getHasDefaultPicture()))
-        );
-        mapper
-          .using(ctx -> ((Set<Role>) ctx.getSource()).stream().map(Role::getRole).collect(Collectors.toList()))
-          .map(Student::getRoles, StudentView::setRoles);
-      });
     return mapper.map(student, StudentView.class);
   }
 
   public StudentPreviewAdmin toPreviewAdmin(Student student) {
-    mapper
-      .typeMap(Student.class, StudentPreviewAdmin.class)
-      .addMappings(mapper -> {
-        mapper
-          .using(ctx -> ((Set<Role>) ctx.getSource()).stream().map(Role::getRole).collect(Collectors.toList()))
-          .map(Student::getRoles, StudentPreviewAdmin::setRoles);
-      });
-
     return mapper.map(student, StudentPreviewAdmin.class);
   }
 
   public StudentAdminView toAdminView(Student student) {
-    mapper
-      .typeMap(Student.class, StudentAdminView.class)
-      .addMappings(mapper -> {
-        mapper
-          .using(ctx -> ((Set<Role>) ctx.getSource()).stream().map(Role::getRole).collect(Collectors.toList()))
-          .map(Student::getRoles, StudentAdminView::setRoles);
-      });
-
     return mapper.map(student, StudentAdminView.class);
   }
 

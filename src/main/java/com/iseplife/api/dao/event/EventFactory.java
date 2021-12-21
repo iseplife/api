@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -26,10 +28,11 @@ public class EventFactory {
   @Lazy
   final private ClubFactory clubFactory;
   final private ModelMapper mapper;
-
-  public EventPreview toPreview(Event event) {
-    mapper
-      .typeMap(Event.class, EventPreview.class)
+  
+  @SuppressWarnings("unchecked")
+  @PostConstruct()
+  public void init() {
+    mapper.typeMap(Event.class, EventPreview.class)
       .addMappings(mapper -> {
         mapper
           .using(ctx -> ((Set<Feed>) ctx.getSource()).stream().map(Feed::getId).collect(Collectors.toSet()))
@@ -38,12 +41,8 @@ public class EventFactory {
           .using(ctx -> ((Date) ctx.getSource()).before(new Date()))
           .map(Event::getPublishedAt, EventPreview::setPublished);
       });
-    return mapper.map(event, EventPreview.class);
-  }
 
-  public EventView toView(Event event, SubscriptionProjection subProjection) {
-    mapper
-      .typeMap(Event.class, EventView.class)
+    mapper.typeMap(Event.class, EventView.class)
       .addMappings(mapper -> {
         mapper.map(src -> src.getFeed().getId(), EventView::setFeed);
         mapper
@@ -62,9 +61,16 @@ public class EventFactory {
           .using(ctx -> clubFactory.toPreview((Club) ctx.getSource()))
           .map(Event::getClub, EventView::setClub);
       });
+  }
+
+  public EventPreview toPreview(Event event) {
+    return mapper.map(event, EventPreview.class);
+  }
+
+  public EventView toView(Event event, SubscriptionProjection subProjection) {
     EventView view = mapper.map(event, EventView.class);
     view.setSubscribed(subProjection);
-
+    
     return view;
   }
 
