@@ -1,36 +1,17 @@
-package com.iseplife.api.entity.survey;
+package com.iseplife.api.dto.survey;
 
-import com.iseplife.api.entity.feed.Feed;
-
-import javax.persistence.*;
 import java.util.Date;
 import java.util.Set;
 
-@Entity
-public class Survey {
-
-  @Id
-  @GeneratedValue
+public class SurveyDTO {
   private Long id;
-
-  private Boolean enabled = false;
-
+  private Boolean enabled;
   private String title;
-
   private Date opensAt;
-
   private Date closesAt;
-
   private Boolean anonymous;
-
   private Boolean multiple;
-
-  @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL)
-  private Set<SurveyChoice> choices;
-
-  @ManyToMany
-  private Set<Feed> targets;
-
+  private Set<Long> feeds;
 
   public Long getId() {
     return id;
@@ -39,7 +20,6 @@ public class Survey {
   public void setId(Long id) {
     this.id = id;
   }
-
 
   public Boolean getEnabled() {
     return enabled;
@@ -89,19 +69,11 @@ public class Survey {
     this.multiple = multiple;
   }
 
-  public Set<SurveyChoice> getChoices() {
-    return choices;
+  public Set<Long> getFeeds() {
+    return feeds;
   }
 
-  public void setChoices(Set<SurveyChoice> choices) {
-    this.choices = choices;
-  }
-
-  public Set<Feed> getTargets() {
-    return targets;
-  }
-
-  public void setTargets(Set<Feed> targets) {
-    this.targets = targets;
+  public void setFeeds(Set<Long> feeds) {
+    this.feeds = feeds;
   }
 }

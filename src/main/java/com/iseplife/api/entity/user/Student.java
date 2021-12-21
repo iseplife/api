@@ -1,5 +1,4 @@
 package com.iseplife.api.entity.user;
-;
 import com.iseplife.api.constants.AuthorType;
 import com.iseplife.api.constants.Language;
 import com.iseplife.api.entity.Author;

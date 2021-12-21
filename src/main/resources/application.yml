@@ -44,6 +44,6 @@ jwt:
   issuer:               iseplife
 
 auth:
-  enable-root:   ${ENABLE_ROOT:false}    # Disable in production
+  enable-root:   ${ENABLE_ROOT:true}    # Disable in production
   password-root: ${ROOT_PASS:password}
   auto-generation: ${AUTO_GEN:true}
