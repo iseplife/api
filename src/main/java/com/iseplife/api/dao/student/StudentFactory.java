@@ -33,6 +33,8 @@ public class StudentFactory {
         mapper
           .using(ctx -> ((Set<Role>) ctx.getSource()).stream().map(Role::getRole).collect(Collectors.toList()))
           .map(Student::getRoles, StudentView::setRoles);
+        mapper
+          .map(stu -> ((Student)stu).getFeed().getId(), StudentView::setFeedId);
       });
     
     mapper.typeMap(Student.class, StudentPreviewAdmin.class)
@@ -48,6 +50,12 @@ public class StudentFactory {
           .using(ctx -> ((Set<Role>) ctx.getSource()).stream().map(Role::getRole).collect(Collectors.toList()))
           .map(Student::getRoles, StudentAdminView::setRoles);
       });
+    
+    mapper.typeMap(Student.class, StudentPreview.class)
+      .addMappings(mapper -> 
+        mapper
+          .map(stu -> ((Student)stu).getFeed().getId(), StudentPreview::setFeedId)
+      );
   }
 
   public static StudentPictures toPictures(String picture, Boolean hasDefaultPicture) {
@@ -70,21 +78,16 @@ public class StudentFactory {
     StudentPreview studentPreview = mapper.map(student, StudentPreview.class);
     
     studentPreview.setUnwatchedNotifications(unwatchedNotifications);
-    studentPreview.setFeedId(student.getFeed().getId());
     
     return studentPreview;
   }
   public StudentPreview toPreview(Student student) {
-    StudentPreview studentPreview = mapper.map(student, StudentPreview.class); 
-    
-    return studentPreview;
+    return mapper.map(student, StudentPreview.class); 
   }
 
 
   public StudentView toView(Student student) {
-    StudentView studentView = mapper.map(student, StudentView.class);
-    studentView.setFeedId(student.getFeed().getId());
-    return studentView;
+    return mapper.map(student, StudentView.class);
   }
 
   public StudentPreviewAdmin toPreviewAdmin(Student student) {
