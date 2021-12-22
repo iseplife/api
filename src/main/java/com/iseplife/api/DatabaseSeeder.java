@@ -77,6 +77,8 @@ class DatabaseSeeder {
     student.setLastName("Zidane");
     student.setPromo(1998);
     student.setBirthDate(new Date());
+    
+    student.setFeed(new Feed(student.getName()));
 
     Role roleStudent = roleRepository.findByRole(Roles.STUDENT);
     Role roleAdmin = roleRepository.findByRole(Roles.ADMIN);

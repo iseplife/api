@@ -8,6 +8,7 @@ import java.util.List;
 @Data
 public class StudentView {
   private Long id;
+  private Long feedId;
 
   private Integer promo;
   private StudentPictures pictures;
