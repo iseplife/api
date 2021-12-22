@@ -28,14 +28,4 @@ public class AuthorFactory {
 
     return author;
   }
-
-  public static AuthorView adminToView() {
-    AuthorView author = new AuthorView();
-    author.setId(1L);
-    author.setAuthorType(AuthorType.ADMIN);
-    author.setName("Admin");
-    author.setThumbnail(null);
-
-    return author;
-  }
 }
