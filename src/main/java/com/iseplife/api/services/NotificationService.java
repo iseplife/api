@@ -76,6 +76,9 @@ public class NotificationService {
   public long countUnwatchedNotifications(Long student) {
     return notificationRepository.countUnwatchedByStudents(student);
   }
+  public void setWatched(Long student, Long ids[]) {
+    notificationRepository.setWatched(student, ids);
+  }
 
 
   public static interface DelayedNotificationCheck {
