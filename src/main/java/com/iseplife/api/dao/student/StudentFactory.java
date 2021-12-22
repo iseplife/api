@@ -18,7 +18,7 @@ import javax.annotation.PostConstruct;
 @RequiredArgsConstructor
 public class StudentFactory {
   final private ModelMapper mapper;
-  
+
   @SuppressWarnings("unchecked")
   @PostConstruct()
   public void init() {
@@ -34,25 +34,25 @@ public class StudentFactory {
           .using(ctx -> ((Set<Role>) ctx.getSource()).stream().map(Role::getRole).collect(Collectors.toList()))
           .map(Student::getRoles, StudentView::setRoles);
         mapper
-          .map(stu -> ((Student)stu).getFeed().getId(), StudentView::setFeedId);
+          .map(src -> src.getFeed().getId(), StudentView::setFeedId);
       });
-    
+
     mapper.typeMap(Student.class, StudentPreviewAdmin.class)
       .addMappings(mapper -> {
         mapper
           .using(ctx -> ((Set<Role>) ctx.getSource()).stream().map(Role::getRole).collect(Collectors.toList()))
           .map(Student::getRoles, StudentPreviewAdmin::setRoles);
       });
-    
+
     mapper.typeMap(Student.class, StudentAdminView.class)
       .addMappings(mapper -> {
         mapper
           .using(ctx -> ((Set<Role>) ctx.getSource()).stream().map(Role::getRole).collect(Collectors.toList()))
           .map(Student::getRoles, StudentAdminView::setRoles);
       });
-    
+
     mapper.typeMap(Student.class, StudentPreview.class)
-      .addMappings(mapper -> 
+      .addMappings(mapper ->
         mapper
           .map(stu -> ((Student)stu).getFeed().getId(), StudentPreview::setFeedId)
       );
@@ -76,13 +76,13 @@ public class StudentFactory {
 
   public StudentPreview toPreview(Student student, long unwatchedNotifications) {
     StudentPreview studentPreview = mapper.map(student, StudentPreview.class);
-    
+
     studentPreview.setUnwatchedNotifications(unwatchedNotifications);
-    
+
     return studentPreview;
   }
   public StudentPreview toPreview(Student student) {
-    return mapper.map(student, StudentPreview.class); 
+    return mapper.map(student, StudentPreview.class);
   }
 
 
