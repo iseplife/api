@@ -125,16 +125,16 @@ public class PostService {
           "content_text", post.getDescription(),
           "date", post.getPublicationDate()
       ));
-      
+
       if(post.getLinkedClub() != null)
         map.put("club_id", post.getLinkedClub().getName());
 
       Notification.NotificationBuilder builder = Notification.builder()
           .icon(post.getLinkedClub() != null ? post.getLinkedClub().getLogoUrl() : securityService.getLoggedUser().getPicture())
           .informations(map);
-      
+
       Subscribable subscribable = null;
-      
+
       if (feed.getGroup() != null) {
         map.put("group_name", feed.getGroup().getName());
         builder.type(NotificationType.NEW_GROUP_POST)
@@ -150,7 +150,7 @@ public class PostService {
                .link("post/student/"+feed.getStudent().getId()+"/"+post.getId());
         subscribable = feed.getStudent();
       }
-      
+
       notificationService.delayNotification(
           builder.build(),
           true,
@@ -274,30 +274,12 @@ public class PostService {
     post.setEmbed(attachement);
   }
 
-  public Set<AuthorView> getAuthorizedPublish(TokenPayload auth, Boolean clubOnly) {
-    Student student = studentService.getStudent(auth.getId());
-    Set<AuthorView> authorStatus = new HashSet<>();
-
-    if (auth.getRoles().contains(Roles.ADMIN)) {
-      if (!clubOnly)
-        authorStatus.add(AuthorFactory.adminToView());
-
-      authorStatus.addAll(
-        clubService.getAll()
-          .stream()
-          .map(AuthorFactory::toView)
-          .collect(Collectors.toSet())
-      );
-    } else {
-      authorStatus.addAll(
-        studentService.getPublisherClubs(student)
-          .stream()
-          .map(AuthorFactory::toView)
-          .collect(Collectors.toSet())
-      );
-    }
-
-    return authorStatus;
+  public Set<AuthorView> getAuthorizedPublish(Long studentId) {
+    Student student = studentService.getStudent(studentId);
+    return studentService.getPublisherClubs(student)
+      .stream()
+      .map(AuthorFactory::toView)
+      .collect(Collectors.toSet());
   }
 
   public Page<PostProjection> getMainFeedPost(Long loggedUser, int page){
