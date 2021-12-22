@@ -1,6 +1,7 @@
 package com.iseplife.api.dao.student;
 
 import com.iseplife.api.conf.StorageConfig;
+import com.iseplife.api.dao.subscription.projection.NotificationCountProjection;
 import com.iseplife.api.dto.student.view.*;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
@@ -74,10 +75,11 @@ public class StudentFactory {
     }
   }
 
-  public StudentPreview toPreview(Student student, long unwatchedNotifications) {
+  public StudentPreview toPreview(Student student, NotificationCountProjection count) {
     StudentPreview studentPreview = mapper.map(student, StudentPreview.class);
 
-    studentPreview.setUnwatchedNotifications(unwatchedNotifications);
+    studentPreview.setUnwatchedNotifications(count.getUnwatched());
+    studentPreview.setTotalNotifications(count.getCount());
 
     return studentPreview;
   }

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.iseplife.api.dao.subscription.NotificationRepository;
 import com.iseplife.api.dao.subscription.SubscriptionRepository;
+import com.iseplife.api.dao.subscription.projection.NotificationCountProjection;
 import com.iseplife.api.dao.subscription.projection.NotificationProjection;
 import com.iseplife.api.entity.subscription.Notification;
 import com.iseplife.api.entity.subscription.Subscribable;
@@ -72,6 +73,9 @@ public class NotificationService {
   }
   public long countUnwatchedNotifications(Student student) {
     return notificationRepository.countUnwatchedByStudents(student.getId());
+  }
+  public NotificationCountProjection countUnwatchedAndAllByStudents(Student student) {
+    return notificationRepository.countUnwatchedAndAllByStudents(student.getId());
   }
   public long countUnwatchedNotifications(Long student) {
     return notificationRepository.countUnwatchedByStudents(student);

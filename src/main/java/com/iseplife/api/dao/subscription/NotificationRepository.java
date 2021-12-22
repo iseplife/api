@@ -1,7 +1,5 @@
 package com.iseplife.api.dao.subscription;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
@@ -10,6 +8,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.iseplife.api.dao.subscription.projection.NotificationCountProjection;
 import com.iseplife.api.dao.subscription.projection.NotificationProjection;
 import com.iseplife.api.entity.subscription.Notification;
 import com.iseplife.api.entity.user.Student;
@@ -48,4 +47,9 @@ public interface NotificationRepository extends CrudRepository<Notification, Lon
       + "join notif.students student on student.id = ?1 "
       + "where student not member of notif.watched")
   long countUnwatchedByStudents(Long student);
+  
+  @Query("select count(case when student not member of notif.watched then 1 else null end) as unwatched, count(notif) as count "
+      + "from Notification notif "
+      + "join notif.students student on student.id = ?1")
+  NotificationCountProjection countUnwatchedAndAllByStudents(Long student);
 }

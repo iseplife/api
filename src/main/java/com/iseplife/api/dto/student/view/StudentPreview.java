@@ -11,5 +11,6 @@ public class StudentPreview implements StudentPreviewProjection {
   protected Integer promo;
   protected String picture;
   protected Long unwatchedNotifications;
+  protected Long totalNotifications;
   protected Long feedId;
 }
