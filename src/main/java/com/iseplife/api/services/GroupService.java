@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -76,17 +75,18 @@ public class GroupService {
   public Group createGroup(GroupCreationDTO dto) {
     Group group = mapper.map(dto, Group.class);
 
-    group.setMembers(createGroupAdminMembers(dto.getAdmins()));
+    group.setMembers(createGroupAdminMembers(dto.getAdmins(), group));
 
     return groupRepository.save(group);
   }
 
-  private List<GroupMember> createGroupAdminMembers(List<Long> ids) {
+  private List<GroupMember> createGroupAdminMembers(List<Long> ids, Group group) {
     List<GroupMember> adminMembers = new ArrayList<>();
     studentService.getStudents(ids).forEach(a -> {
       GroupMember member = new GroupMember();
       member.setAdmin(true);
       member.setStudent(a);
+      member.setGroup(group);
 
       adminMembers.add(member);
     });
@@ -98,24 +98,18 @@ public class GroupService {
   public Group updateGroup(Long id, GroupUpdateDTO dto) {
     Group group = getGroup(id);
     mapper.map(dto, group);
-
+    
     // Keep only admins that are in dto.admins
-    group.setMembers(
-      group.getMembers().stream()
-        .filter(m -> {
-          if (dto.getAdmins().contains(m.getId())) {
-            // In case the member wasn't already an admin
-            m.setAdmin(true);
+    for(GroupMember m : group.getMembers())
+      if (dto.getAdmins().contains(m.getStudent().getId())) {
+        // In case the member wasn't already an admin
+        m.setAdmin(true);
 
-            dto.getAdmins().remove(m.getId());
-            return true;
-          } else return !m.isAdmin();
-        })
-        .collect(Collectors.toList())
-    );
-
+        dto.getAdmins().remove(m.getStudent().getId());
+      }
+    
     // We create a group member admin for all leftovers ids
-    group.getMembers().addAll(createGroupAdminMembers(dto.getAdmins()));
+    group.getMembers().addAll(createGroupAdminMembers(dto.getAdmins(), group));
 
     return groupRepository.save(group);
   }
