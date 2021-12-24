@@ -11,6 +11,7 @@ import java.util.TimerTask;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.iseplife.api.dao.subscription.NotificationRepository;
@@ -31,7 +32,7 @@ public class NotificationService {
   private final SubscriptionRepository subscriptionRepository;
   private final NotificationRepository notificationRepository;
 
-  private static int NOTIFICATIONS_PER_PAGE = 10;
+  private static int NOTIFICATIONS_PER_PAGE = 15;
 
   public void delayNotification(Notification.NotificationBuilder builder, boolean extensive, Subscribable subable, DelayedNotificationCheck check) {
     delayNotification(builder, extensive, subable, check, null);
@@ -67,10 +68,10 @@ public class NotificationService {
   }
 
   public Page<NotificationProjection> getNotifications(Student student, int page) {
-    return notificationRepository.findAllByStudentsOrderById(student, PageRequest.of(page, NOTIFICATIONS_PER_PAGE));
+    return notificationRepository.findAllByStudentsOrderById(student, PageRequest.of(page, NOTIFICATIONS_PER_PAGE, Sort.by(Sort.Direction.DESC, "id")));
   }
   public Page<NotificationProjection> getNotifications(Long student, int page) {
-    return notificationRepository.findAllByStudentsIdOrderById(student, PageRequest.of(page, NOTIFICATIONS_PER_PAGE));
+    return notificationRepository.findAllByStudentsIdOrderById(student, PageRequest.of(page, NOTIFICATIONS_PER_PAGE, Sort.by(Sort.Direction.DESC, "id")));
   }
   public long countUnwatchedNotifications(Student student) {
     return notificationRepository.countUnwatchedByStudents(student.getId());
