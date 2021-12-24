@@ -33,10 +33,10 @@ public class NotificationService {
 
   private static int NOTIFICATIONS_PER_PAGE = 10;
 
-  public void delayNotification(Notification notif, boolean extensive, Subscribable subable, DelayedNotificationCheck check) {
-    delayNotification(notif, extensive, subable, check, null);
+  public void delayNotification(Notification.NotificationBuilder builder, boolean extensive, Subscribable subable, DelayedNotificationCheck check) {
+    delayNotification(builder, extensive, subable, check, null);
   }
-  public void delayNotification(Notification notif, boolean extensive, Subscribable subable, DelayedNotificationCheck check, StudentValidationCallback studentValidator) {
+  public void delayNotification(Notification.NotificationBuilder builder, boolean extensive, Subscribable subable, DelayedNotificationCheck check, StudentValidationCallback studentValidator) {
     Timer timer = new Timer();
     //We wait 10s so that we don't send a notification for an aborted event.
     timer.schedule(new TimerTask() {
@@ -44,6 +44,7 @@ public class NotificationService {
       @Override
       public void run() {
         if(check.isNotificationStillUseful()) {
+          Notification notif = builder.build();
           Set<Student> notified = new HashSet<>();
           List<Subscription> subs = subscriptionRepository.findBySubscribed(subable);
 

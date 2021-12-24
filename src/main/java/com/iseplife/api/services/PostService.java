@@ -152,7 +152,7 @@ public class PostService {
       }
 
       notificationService.delayNotification(
-          builder.build(),
+          builder,
           true,
           subscribable,
           () -> postRepository.existsById(postToReturn.getId())
