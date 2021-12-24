@@ -32,7 +32,8 @@ public class NotificationController {
   }
   @PostMapping("/watch")
   @RolesAllowed({ Roles.STUDENT })
-  public void watchNotifications(@RequestParam(value = "ids[]") Long[] ids) {
+  public Long watchNotifications(@RequestParam(value = "ids[]") Long[] ids) {
     notificationService.setWatched(SecurityService.getLoggedId(), ids);
+    return notificationService.countUnwatchedNotifications(SecurityService.getLoggedId());
   }
 }
