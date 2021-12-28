@@ -75,14 +75,14 @@ public class StudentFactory {
     }
   }
 
-  public StudentPreview toPreview(Student student, NotificationCountProjection count) {
-    StudentPreview studentPreview = mapper.map(student, StudentPreview.class);
+  public LoggedStudentPreview toSelfPreview(Student student, NotificationCountProjection count){
+    LoggedStudentPreview selfPreview = (LoggedStudentPreview) toPreview(student);
+    selfPreview.setUnwatchedNotifications(count.getUnwatched());
+    selfPreview.setTotalNotifications(count.getCount());
 
-    studentPreview.setUnwatchedNotifications(count.getUnwatched());
-    studentPreview.setTotalNotifications(count.getCount());
-
-    return studentPreview;
+    return selfPreview;
   }
+
   public StudentPreview toPreview(Student student) {
     return mapper.map(student, StudentPreview.class);
   }

@@ -36,9 +36,10 @@ public class StudentController {
 
   @GetMapping("/me")
   @RolesAllowed({Roles.STUDENT})
-  public StudentPreview getLoggedStudentPreview() {
+
+  public LoggedStudentPreview getLoggedStudentPreview() {
     Student student = studentService.getStudent(SecurityService.getLoggedId());
-    return factory.toPreview(student, notificationService.countUnwatchedAndAllByStudents(student));
+    return factory.toSelfPreview(student, notificationService.countUnwatchedAndAllByStudents(student));
   }
 
   @GetMapping("/me/full")
