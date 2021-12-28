@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.iseplife.api.entity.subscription.Notification.NotificationBuilder;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,12 +33,12 @@ public class NotificationService {
   private final SubscriptionRepository subscriptionRepository;
   private final NotificationRepository notificationRepository;
 
-  private static int NOTIFICATIONS_PER_PAGE = 15;
+  private final static int NOTIFICATIONS_PER_PAGE = 15;
 
-  public void delayNotification(Notification.NotificationBuilder builder, boolean extensive, Subscribable subable, DelayedNotificationCheck check) {
+  public void delayNotification(NotificationBuilder builder, boolean extensive, Subscribable subable, DelayedNotificationCheck check) {
     delayNotification(builder, extensive, subable, check, null);
   }
-  public void delayNotification(Notification.NotificationBuilder builder, boolean extensive, Subscribable subable, DelayedNotificationCheck check, StudentValidationCallback studentValidator) {
+  public void delayNotification(NotificationBuilder builder, boolean extensive, Subscribable subable, DelayedNotificationCheck check, StudentValidationCallback studentValidator) {
     Timer timer = new Timer();
     //We wait 10s so that we don't send a notification for an aborted event.
     timer.schedule(new TimerTask() {
@@ -50,14 +51,21 @@ public class NotificationService {
           List<Subscription> subs = subscriptionRepository.findBySubscribed(subable);
 
           if(studentValidator != null)
-            subs = Arrays.asList(subs.stream().filter(sub -> studentValidator.validate(sub.getListener())).toArray(i -> new Subscription[i]));
+            subs = Arrays.asList(
+              subs.stream()
+                .filter(sub -> studentValidator.validate(sub.getListener()))
+                .toArray(Subscription[]::new)
+            );
 
           if(extensive)
-            subs = Arrays.asList(subs.stream().filter(sub -> sub.isExtensive()).toArray(i-> new Subscription[i]));
+            subs = Arrays.asList(
+              subs.stream()
+                .filter(Subscription::isExtensive)
+                .toArray(Subscription[]::new)
+            );
 
           subs.forEach(s -> notified.add(s.getListener()));
-
-          notif.setStudents(new ArrayList<Student>(notified));
+          notif.setStudents(new ArrayList<>(notified));
 
           notificationRepository.save(notif);
 
@@ -67,30 +75,32 @@ public class NotificationService {
     }, 1000 * 10);
   }
 
-  public Page<NotificationProjection> getNotifications(Student student, int page) {
-    return notificationRepository.findAllByStudentsOrderById(student, PageRequest.of(page, NOTIFICATIONS_PER_PAGE, Sort.by(Sort.Direction.DESC, "id")));
-  }
+
   public Page<NotificationProjection> getNotifications(Long student, int page) {
     return notificationRepository.findAllByStudentsIdOrderById(student, PageRequest.of(page, NOTIFICATIONS_PER_PAGE, Sort.by(Sort.Direction.DESC, "id")));
   }
+
   public long countUnwatchedNotifications(Student student) {
     return notificationRepository.countUnwatchedByStudents(student.getId());
   }
+
   public NotificationCountProjection countUnwatchedAndAllByStudents(Student student) {
     return notificationRepository.countUnwatchedAndAllByStudents(student.getId());
   }
+
   public long countUnwatchedNotifications(Long student) {
     return notificationRepository.countUnwatchedByStudents(student);
   }
+
   public void setWatched(Long student, Long ids[]) {
     notificationRepository.setWatched(student, ids);
   }
 
 
   public static interface DelayedNotificationCheck {
-    public boolean isNotificationStillUseful();
+    boolean isNotificationStillUseful();
   }
   public static interface StudentValidationCallback {
-    public boolean validate(Student student);
+    boolean validate(Student student);
   }
 }
