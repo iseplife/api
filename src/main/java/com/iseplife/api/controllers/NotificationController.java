@@ -2,13 +2,9 @@ package com.iseplife.api.controllers;
 
 import javax.annotation.security.RolesAllowed;
 
+import com.iseplife.api.dto.notification.NotificationsWatched;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.subscription.projection.NotificationProjection;
@@ -32,8 +28,9 @@ public class NotificationController {
   }
   @PostMapping("/watch")
   @RolesAllowed({ Roles.STUDENT })
-  public Long watchNotifications(@RequestParam(value = "ids[]") Long[] ids) {
-    notificationService.setWatched(SecurityService.getLoggedId(), ids);
+  public Long watchNotifications(@RequestBody NotificationsWatched watched) {
+    notificationService.setWatched(SecurityService.getLoggedId(), watched.getIds());
+
     return notificationService.countUnwatchedNotifications(SecurityService.getLoggedId());
   }
 }
