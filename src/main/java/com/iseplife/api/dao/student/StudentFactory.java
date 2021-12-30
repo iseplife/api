@@ -52,10 +52,11 @@ public class StudentFactory {
           .map(Student::getRoles, StudentAdminView::setRoles);
       });
 
+    // Also cover LoggedStudentPreview class
     mapper.typeMap(Student.class, StudentPreview.class)
       .addMappings(mapper ->
         mapper
-          .map(stu -> ((Student)stu).getFeed().getId(), StudentPreview::setFeedId)
+          .map(src -> src.getFeed().getId(), StudentPreview::setFeedId)
       );
   }
 
@@ -76,7 +77,7 @@ public class StudentFactory {
   }
 
   public LoggedStudentPreview toSelfPreview(Student student, NotificationCountProjection count){
-    LoggedStudentPreview selfPreview = (LoggedStudentPreview) toPreview(student);
+    LoggedStudentPreview selfPreview = mapper.map(student, LoggedStudentPreview.class);
     selfPreview.setUnwatchedNotifications(count.getUnwatched());
     selfPreview.setTotalNotifications(count.getCount());
 
