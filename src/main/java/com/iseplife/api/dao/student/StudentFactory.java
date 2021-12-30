@@ -1,6 +1,7 @@
 package com.iseplife.api.dao.student;
 
 import com.iseplife.api.conf.StorageConfig;
+import com.iseplife.api.dao.subscription.projection.NotificationCountProjection;
 import com.iseplife.api.dto.student.view.*;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
@@ -51,10 +52,11 @@ public class StudentFactory {
           .map(Student::getRoles, StudentAdminView::setRoles);
       });
 
+    // Also cover LoggedStudentPreview class
     mapper.typeMap(Student.class, StudentPreview.class)
       .addMappings(mapper ->
         mapper
-          .map(stu -> ((Student)stu).getFeed().getId(), StudentPreview::setFeedId)
+          .map(src -> src.getFeed().getId(), StudentPreview::setFeedId)
       );
   }
 
@@ -74,13 +76,14 @@ public class StudentFactory {
     }
   }
 
-  public StudentPreview toPreview(Student student, long unwatchedNotifications) {
-    StudentPreview studentPreview = mapper.map(student, StudentPreview.class);
+  public LoggedStudentPreview toSelfPreview(Student student, NotificationCountProjection count){
+    LoggedStudentPreview selfPreview = mapper.map(student, LoggedStudentPreview.class);
+    selfPreview.setUnwatchedNotifications(count.getUnwatched());
+    selfPreview.setTotalNotifications(count.getCount());
 
-    studentPreview.setUnwatchedNotifications(unwatchedNotifications);
-
-    return studentPreview;
+    return selfPreview;
   }
+
   public StudentPreview toPreview(Student student) {
     return mapper.map(student, StudentPreview.class);
   }

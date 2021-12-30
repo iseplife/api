@@ -82,7 +82,7 @@ public class EventService {
                     "club", event.getClub().getName(),
                     "start", event.getStartsAt().getTime()
                 )
-            ).build(),
+            ),
           false, club, () -> eventRepository.findById(finalEvent.getId()) != null);
     }
 
