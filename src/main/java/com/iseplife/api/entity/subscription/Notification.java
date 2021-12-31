@@ -29,38 +29,41 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Getter @Setter @RequiredArgsConstructor @AllArgsConstructor(access = AccessLevel.PRIVATE) @NoArgsConstructor @Builder
+@NoArgsConstructor
+@RequiredArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter @Setter @Builder
 public class Notification {
   @Id
   @GeneratedValue
   private Long id;
-  
+
   @NonNull
   private NotificationType type;
-  
+
   private String icon;
-  
+
   @NonNull
   private String link;
 
   @NonNull
   @Convert(converter = JpaConverterJson.class)
   private Map<String, Object> informations;
-  
-  
+
+
   @ManyToMany(fetch = FetchType.LAZY)
   private List<Student> students;
-  
+
   @ManyToMany(fetch = FetchType.LAZY)
   private List<Student> watched;
-  
+
   private Date creation;
-  
+
   @PrePersist
   protected void onCreate() {
     creation = new Date();
   }
-  
+
   public String getPayload() {
     HashMap<String, Object> map = new HashMap<>();
     map.put("type", type);

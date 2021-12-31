@@ -77,7 +77,13 @@ public class NotificationService {
 
 
   public Page<NotificationProjection> getNotifications(Long student, int page) {
-    return notificationRepository.findAllByStudentsIdOrderById(student, PageRequest.of(page, NOTIFICATIONS_PER_PAGE, Sort.by(Sort.Direction.DESC, "id")));
+    return notificationRepository.findAllByStudentsIdOrderById(
+      student,
+      PageRequest.of(
+        page,
+        NOTIFICATIONS_PER_PAGE,
+        Sort.by(Sort.Direction.DESC, "creation"))
+    );
   }
 
   public long countUnwatchedNotifications(Student student) {
