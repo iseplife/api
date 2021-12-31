@@ -1,12 +1,6 @@
 package com.iseplife.api.services;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -56,9 +50,10 @@ public class EventService {
 
     Event event = mapper.map(dto, Event.class);
 
-
     event.setClub(club);
     event.setFeed(new Feed(dto.getTitle()));
+    event.setCoordinates(dto.getCoordinates()[0] + ";" + dto.getCoordinates()[1]);
+
     if (dto.getTargets().size() > 0) {
       Set<Feed> targets = new HashSet<>();
       feedRepository.findAllById(dto.getTargets()).forEach(targets::add);
