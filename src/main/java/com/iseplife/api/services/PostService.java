@@ -54,9 +54,9 @@ public class PostService {
   @Lazy final private GalleryService galleryService;
   @Lazy final private FeedService feedService;
   @Lazy final private SecurityService securityService;
+  @Lazy final private NotificationService notificationService;
   final private ModelMapper mapper;
   final private PostRepository postRepository;
-  final private NotificationService notificationService;
 
   private final int POSTS_PER_PAGE = 5;
 
@@ -235,12 +235,12 @@ public class PostService {
     postRepository.deleteById(postID);
   }
 
-  public void togglePinnedPost(Long postID) {
+  public void updatePostPinnedStatus(Long postID, Boolean pinned) {
     Post post = getPost(postID);
     if (SecurityService.hasRightOn(post) && post.getLinkedClub() != null)
       throw new HttpForbiddenException("insufficient_rights");
 
-    post.setPinned(!post.isPinned());
+    post.setPinned(pinned);
     postRepository.save(post);
   }
 
@@ -300,7 +300,11 @@ public class PostService {
   }
 
   public List<PostProjection> getFeedPostsPinned(Feed feed) {
-    return postRepository.findFeedPinnedPosts(feed, SecurityService.getLoggedId());
+    return postRepository.findFeedPinnedPosts(
+      feed,
+      SecurityService.getLoggedId(),
+      SecurityService.hasRoles(Roles.ADMIN)
+    );
   }
 
   public PostProjection getFeedDrafts(Feed feed, Long author) {

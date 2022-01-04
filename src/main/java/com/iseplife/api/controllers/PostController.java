@@ -44,8 +44,8 @@ public class PostController {
 
   @PutMapping("/{id}/pin")
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
-  public void togglePinPost(@PathVariable Long id) {
-    postService.togglePinnedPost(id);
+  public void pinPost(@PathVariable Long id,  @RequestParam(name="pinned", defaultValue = "0", required = false) Boolean pinned) {
+    postService.updatePostPinnedStatus(id, pinned);
   }
 
   @PutMapping("/{id}/homepage-forced")

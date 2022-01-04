@@ -49,22 +49,21 @@ public class AuthController {
     Student student;
     try {
       student = studentService.getStudent(user.getNumero());
-    } catch (IllegalArgumentException e) {
+    } catch (HttpNotFoundException e) {
       if (autoGeneration) {
         LOG.info("User {} {} not found but pass authentication, creating account", user.getPrenom(), user.getPrenom());
         student = new Student();
-        studentService.hydrateStudent(student, user);
       } else {
-        throw new HttpNotFoundException("user_not_found");
+        throw new HttpUnauthorizedException("authentification_failed");
       }
     }
 
     if (student.isArchived())
-      throw new HttpNotFoundException("user_not_found");
+      throw new HttpUnauthorizedException("authentification_failed");
 
     if (student.getLastConnection() == null) {
+      student = studentService.hydrateStudent(student, user);
       LOG.info("First connection for user {}, hydrating account", student.getId());
-      studentService.hydrateStudent(student, user);
     }
 
     return jwtTokenUtil.generateToken(student);

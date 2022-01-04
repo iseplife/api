@@ -21,7 +21,7 @@ public interface PostRepository extends CrudRepository<Post, Long> {
   List<Post> findAll();
 
   @Query(
-    "select " +
+    "select distinct " +
       "p as post, " +
       "p.thread.id as thread, " +
       "size(p.thread.comments) as nbComments, " +
@@ -30,7 +30,7 @@ public interface PostRepository extends CrudRepository<Post, Long> {
       "join Student s on s.id = :loggedStudent " +
       "join s.subscriptions subs " +
     "where (p.feed.id = subs.subscribedFeed.id or p.forcedHomepage = true) " +
-      "and p.state = 'READY' " +
+      "and p.state = 'READY' and p.pinned = false " +
       "and (p.publicationDate > current_date or p.author.id = :loggedStudent) " +
     "order by p.publicationDate desc"
   )
@@ -43,10 +43,24 @@ public interface PostRepository extends CrudRepository<Post, Long> {
       "size(p.thread.comments) as nbComments, " +
       "size(p.thread.likes) as nbLikes " +
     "from Post p " +
-    "where p.feed.id = ?1 and p.state = ?2 and " +
-      "(p.publicationDate > current_date or ?4 = true or p.author.id = ?3)"
+    "where p.feed.id = ?1 and p.state = ?2 and p.pinned = false " +
+      "and (p.publicationDate > current_date or ?4 = true or p.author.id = ?3)"
   )
   Page<PostProjection> findCurrentFeedPost(Long feed, PostState state, Long loggedUser, Boolean isAdmin, Pageable pageable);
+
+  @Query(
+    "select " +
+      "p as post, " +
+      "p.thread.id as thread, " +
+      "size(p.thread.comments) as nbComments, " +
+      "size(p.thread.likes) as nbLikes " +
+    "from Post p " +
+    "where p.feed = :feed and p.pinned = true " +
+      "and (p.publicationDate > current_date or :isAdmin = true or p.author.id = :loggedUser) " +
+    "order by p.publicationDate desc"
+  )
+  List<PostProjection> findFeedPinnedPosts(Feed feed, Long loggedUser, Boolean isAdmin);
+
 
   @Query(
     "select " +
@@ -60,17 +74,6 @@ public interface PostRepository extends CrudRepository<Post, Long> {
   )
   Optional<PostProjection> findFeedDraft(Feed feed, Long author);
 
-  @Query(
-    "select " +
-      "p as post, " +
-      "p.thread.id as thread, " +
-      "size(p.thread.comments) as nbComments, " +
-      "size(p.thread.likes) as nbLikes " +
-    "from Post p " +
-    "where p.feed = ?1 and p.pinned = true " +
-    "order by p.publicationDate desc"
-  )
-  List<PostProjection> findFeedPinnedPosts(Feed feed, Long loggedUser);
 
   @Query(
     "select p as post, " +
