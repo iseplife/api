@@ -7,7 +7,9 @@ import com.iseplife.api.dao.post.projection.CommentProjection;
 import com.iseplife.api.dto.thread.CommentDTO;
 import com.iseplife.api.dto.thread.CommentEditDTO;
 import com.iseplife.api.dto.thread.view.CommentFormView;
+import com.iseplife.api.dto.thread.view.ThreadProjection;
 import com.iseplife.api.entity.post.Like;
+import com.iseplife.api.services.SecurityService;
 import com.iseplife.api.services.ThreadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,13 +19,17 @@ import javax.annotation.security.RolesAllowed;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 @RestController
 @RequestMapping("/thread")
 @RequiredArgsConstructor
 public class ThreadController {
   final private ThreadService threadService;
   final private CommentFactory commentFactory;
+
+  @GetMapping("/{id}")
+  public ThreadProjection getThread(@PathVariable Long id) {
+    return threadService.getView(id, SecurityService.getLoggedId());
+  }
 
   @GetMapping("/{id}/likes")
   @RolesAllowed({Roles.STUDENT})
