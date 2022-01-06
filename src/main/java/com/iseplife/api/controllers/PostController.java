@@ -1,6 +1,5 @@
 package com.iseplife.api.controllers;
 
-import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dao.post.PostFactory;
 import com.iseplife.api.dto.post.PostCreationDTO;
 import com.iseplife.api.dto.post.PostUpdateDTO;
@@ -10,7 +9,6 @@ import com.iseplife.api.constants.Roles;
 import com.iseplife.api.services.PostService;
 import com.iseplife.api.services.SecurityService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;

@@ -5,8 +5,10 @@ import com.iseplife.api.constants.Roles;
 import com.iseplife.api.constants.ThreadType;
 import com.iseplife.api.dao.post.*;
 import com.iseplife.api.dao.post.projection.CommentProjection;
+import com.iseplife.api.dao.thread.ThreadRepository;
 import com.iseplife.api.dto.thread.CommentDTO;
 import com.iseplife.api.dto.thread.CommentEditDTO;
+import com.iseplife.api.dto.thread.view.ThreadProjection;
 import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.ThreadInterface;
 import com.iseplife.api.entity.club.Club;
@@ -33,7 +35,7 @@ public class ThreadService {
   final private CommentRepository commentRepository;
   final private LikeRepository likeRepository;
 
-  private Thread getThread(Long id) {
+  public Thread getThread(Long id) {
     Optional<Thread> thread = threadRepository.findById(id);
     if (thread.isEmpty() || !SecurityService.hasReadAccess(thread.get().getFeed()))
       throw new HttpNotFoundException("thread_not_found");
@@ -48,6 +50,12 @@ public class ThreadService {
       return (Thread) entityThread;
 
     throw new RuntimeException("Could not find a thread as this object doesn't seem to have one!");
+  }
+
+  public ThreadProjection getView(Long id, Long student){
+    Thread thread = getThread(id);
+
+    return threadRepository.findThreadById(thread.getId(), student);
   }
 
   public List<Like> getLikes(Long threadID) {
