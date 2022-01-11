@@ -35,6 +35,7 @@ maven-build:
 
 docker-build:
   stage: package
+  image: maven:3.6.3-jdk-11
   before_script:
     - API_VERSION=$(mvn help:evaluate -Dexpression="project.version" -q -DforceStdout)
     - docker login -u $DOCKER_LOGIN -p $DOCKER_TOKEN
