@@ -36,11 +36,12 @@ maven-build:
 docker-build:
   stage: package
   before_script:
+    - apk add maven
     - API_VERSION=$(mvn help:evaluate -Dexpression="project.version" -q -DforceStdout)
     - docker login -u $DOCKER_LOGIN -p $DOCKER_TOKEN
   script:
     - docker build -t $CI_REGISTRY_IMAGE:$API_VERSION -t $CI_REGISTRY_IMAGE:latest .
-    - docker push $CI_REGISTRY_IMAGE:API_VERSION
+    - docker push $CI_REGISTRY_IMAGE:$API_VERSION
     - docker push $CI_REGISTRY_IMAGE:latest
   dependencies:
     - maven-build
