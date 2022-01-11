@@ -36,7 +36,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
       .authorizeRequests()
 
-      // allow files
       .antMatchers("/auth/**").permitAll()
       .antMatchers("/health/**").permitAll()
       .antMatchers("/webpush/register/validate").permitAll()
