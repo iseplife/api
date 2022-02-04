@@ -48,6 +48,7 @@ public class GroupFactory {
   public GroupView toView(Group group, SubscriptionProjection subProjection) {
     GroupView view = mapper.map(group, GroupView.class);
     view.setSubscribed(subProjection);
+    view.setHasRight(SecurityService.hasRightOn(group));
 
     return view;
   }
