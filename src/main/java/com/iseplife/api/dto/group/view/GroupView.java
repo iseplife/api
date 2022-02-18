@@ -11,7 +11,7 @@ public class GroupView {
   private boolean restricted;
   private boolean archived;
   private String cover;
-  private Long feed;
+  private Long feedId;
   private Boolean hasRight;
   private SubscriptionProjection subscribed;
 }
