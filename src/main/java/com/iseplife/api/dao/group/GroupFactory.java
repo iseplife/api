@@ -32,11 +32,6 @@ public class GroupFactory {
   
   @PostConstruct
   public void init() {
-    mapper.typeMap(Group.class, GroupView.class)
-      .addMappings(mapper -> {
-        mapper.map(src -> src.getFeed().getId(), GroupView::setFeed);
-      });
-    
     mapper.typeMap(GroupMember.class, GroupMemberView.class)
       .addMappings(mapper ->  {
         mapper

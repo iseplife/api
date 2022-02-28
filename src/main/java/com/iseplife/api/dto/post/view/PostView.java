@@ -11,6 +11,7 @@ import java.util.Date;
 @Data
 public class PostView implements PostProjection {
   private Long id;
+  private Long feedId;
   private Long thread;
   private Date publicationDate;
   private String description;

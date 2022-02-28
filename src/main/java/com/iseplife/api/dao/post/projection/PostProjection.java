@@ -9,6 +9,8 @@ import java.util.Date;
 public interface PostProjection {
     @Value("#{target.post.id}")
     Long getId();
+    @Value("#{target.post.feed.id}")
+    Long getFeedId();
     @Value("#{target.post.publicationDate}")
     Date getPublicationDate();
     @Value("#{target.post.description}")
