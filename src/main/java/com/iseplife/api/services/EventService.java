@@ -1,24 +1,37 @@
 package com.iseplife.api.services;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+import javax.annotation.PostConstruct;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.NotificationType;
+import com.iseplife.api.dao.event.EventPositionRepository;
 import com.iseplife.api.dao.event.EventPreviewProjection;
 import com.iseplife.api.dao.event.EventRepository;
+import com.iseplife.api.dao.event.PositionRequestResponse;
 import com.iseplife.api.dao.feed.FeedRepository;
 import com.iseplife.api.dto.event.EventDTO;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
+import com.iseplife.api.entity.event.EventPosition;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.subscription.Notification;
@@ -38,6 +51,14 @@ public class EventService {
   final private FeedRepository feedRepository;
   final private EventRepository eventRepository;
   final private NotificationService notificationService;
+  private final RestTemplateBuilder restTemplateBuilder;
+  private RestTemplate restTemplate;
+  private final EventPositionRepository eventPositionRepository;
+  
+  @PostConstruct
+  private void init() {
+    restTemplate = restTemplateBuilder.build();
+  }
 
   @Qualifier("FileHandlerBean") final private FileHandler fileHandler;
 
@@ -52,8 +73,9 @@ public class EventService {
 
     event.setClub(club);
     event.setFeed(new Feed(dto.getTitle()));
-    event.setCoordinates(dto.getCoordinates()[0] + ";" + dto.getCoordinates()[1]);
-
+     
+    updateCoordinates(event, dto);
+    
     if (dto.getTargets().size() > 0) {
       Set<Feed> targets = new HashSet<>();
       feedRepository.findAllById(dto.getTargets()).forEach(targets::add);
@@ -82,6 +104,18 @@ public class EventService {
     }
 
     return event;
+  }
+
+  private void updateCoordinates(Event event, EventDTO dto) {
+    PositionRequestResponse coordinatesData = restTemplate.getForObject("https://api-adresse.data.gouv.fr/reverse/?lon=" + Double.valueOf(dto.getCoordinates()[1]) + "&lat=" + Double.valueOf(dto.getCoordinates()[0]), PositionRequestResponse.class);
+    
+    EventPosition position = coordinatesData.features.get(0).properties;
+    position.setLocation(dto.getLocation());
+    position.setCoordinates(dto.getCoordinates()[0] + ";" + dto.getCoordinates()[1]);
+    
+    eventPositionRepository.save(position);
+    
+    event.setPosition(position);
   }
 
   public String updateImage(Long id, MultipartFile file) {
@@ -171,8 +205,9 @@ public class EventService {
 
     event.setTitle(dto.getTitle());
     event.setDescription(dto.getDescription());
-    event.setLocation(dto.getLocation());
-    event.setCoordinates(dto.getCoordinates()[0] + ";" + dto.getCoordinates()[1]);
+    
+    updateCoordinates(event, dto);
+    
     event.setStartsAt(dto.getStartsAt());
     if (dto.getPreviousEditionId() != null) {
       Event prev = getEvent(dto.getPreviousEditionId());

@@ -41,8 +41,10 @@ public class Event implements Feedable, Subscribable {
 
   private Date startsAt;
   private Date endsAt;
-  private String location;
-  private String coordinates;
+
+  @ManyToOne
+  private EventPosition position;
+  
   private String ticketUrl = null;
   private Float price = null;
 

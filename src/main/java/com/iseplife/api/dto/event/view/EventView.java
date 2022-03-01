@@ -3,6 +3,8 @@ package com.iseplife.api.dto.event.view;
 import com.iseplife.api.dao.subscription.projection.SubscriptionProjection;
 import com.iseplife.api.dto.club.view.ClubPreview;
 import com.iseplife.api.dto.view.FeedView;
+import com.iseplife.api.entity.event.EventPosition;
+
 import lombok.Data;
 
 import java.util.Date;
@@ -17,8 +19,7 @@ public class EventView {
   private String cover;
   private Date startsAt;
   private Date endsAt;
-  private String location;
-  private Float[] coordinates;
+  private EventPosition position;
   private String ticketURL = null;
   private Float price = null;
   private Date published = new Date();

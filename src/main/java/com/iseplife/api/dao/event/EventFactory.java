@@ -52,8 +52,7 @@ public class EventFactory {
           .using(ctx -> ctx.getSource() != null ?
             Arrays.stream(((String) ctx.getSource()).split(";")).map(Float::valueOf).toArray(Float[]::new) :
             null
-          )
-          .map(Event::getCoordinates, EventView::setCoordinates);
+          );
         mapper
           .using(ctx -> SecurityService.hasRightOn((Event) ctx.getSource()))
           .map(src -> src, EventView::setHasRight);
