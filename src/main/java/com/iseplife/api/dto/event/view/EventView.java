@@ -19,6 +19,7 @@ public class EventView {
   private String cover;
   private Date startsAt;
   private Date endsAt;
+  private String location;
   private EventPosition position;
   private String ticketURL = null;
   private Float price = null;

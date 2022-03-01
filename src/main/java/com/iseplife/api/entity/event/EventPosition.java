@@ -14,7 +14,6 @@ public class EventPosition {
   private String id;
 
   private String coordinates;
-  private String location;
   
   private String label;
   private String housenumber;

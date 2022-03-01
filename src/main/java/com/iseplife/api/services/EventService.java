@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
@@ -107,17 +108,18 @@ public class EventService {
   }
 
   private void updateCoordinates(Event event, EventDTO dto) {
+    event.setLocation(dto.getLocation());
+    
     if(dto.getCoordinates() != null) {
       PositionRequestResponse coordinatesData = restTemplate.getForObject("https://api-adresse.data.gouv.fr/reverse/?lon=" + Double.valueOf(dto.getCoordinates()[1]) + "&lat=" + Double.valueOf(dto.getCoordinates()[0]), PositionRequestResponse.class);
       
       EventPosition position = coordinatesData.features.get(0).properties;
-      position.setLocation(dto.getLocation());
       position.setCoordinates(dto.getCoordinates()[0] + ";" + dto.getCoordinates()[1]);
       
       eventPositionRepository.save(position);
       
       event.setPosition(position);
-    }else
+    } else
       event.setPosition(null);
   }
 

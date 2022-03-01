@@ -42,6 +42,7 @@ public class Event implements Feedable, Subscribable {
   private Date startsAt;
   private Date endsAt;
 
+  private String location;
   @ManyToOne
   private EventPosition position;
   
