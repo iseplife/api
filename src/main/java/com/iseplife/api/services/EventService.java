@@ -107,15 +107,18 @@ public class EventService {
   }
 
   private void updateCoordinates(Event event, EventDTO dto) {
-    PositionRequestResponse coordinatesData = restTemplate.getForObject("https://api-adresse.data.gouv.fr/reverse/?lon=" + Double.valueOf(dto.getCoordinates()[1]) + "&lat=" + Double.valueOf(dto.getCoordinates()[0]), PositionRequestResponse.class);
-    
-    EventPosition position = coordinatesData.features.get(0).properties;
-    position.setLocation(dto.getLocation());
-    position.setCoordinates(dto.getCoordinates()[0] + ";" + dto.getCoordinates()[1]);
-    
-    eventPositionRepository.save(position);
-    
-    event.setPosition(position);
+    if(dto.getCoordinates() != null) {
+      PositionRequestResponse coordinatesData = restTemplate.getForObject("https://api-adresse.data.gouv.fr/reverse/?lon=" + Double.valueOf(dto.getCoordinates()[1]) + "&lat=" + Double.valueOf(dto.getCoordinates()[0]), PositionRequestResponse.class);
+      
+      EventPosition position = coordinatesData.features.get(0).properties;
+      position.setLocation(dto.getLocation());
+      position.setCoordinates(dto.getCoordinates()[0] + ";" + dto.getCoordinates()[1]);
+      
+      eventPositionRepository.save(position);
+      
+      event.setPosition(position);
+    }else
+      event.setPosition(null);
   }
 
   public String updateImage(Long id, MultipartFile file) {
