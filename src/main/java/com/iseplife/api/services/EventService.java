@@ -7,19 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
-
-import javax.annotation.PostConstruct;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
@@ -52,15 +48,9 @@ public class EventService {
   final private FeedRepository feedRepository;
   final private EventRepository eventRepository;
   final private NotificationService notificationService;
-  private final RestTemplateBuilder restTemplateBuilder;
-  private RestTemplate restTemplate;
-  private final EventPositionRepository eventPositionRepository;
+  final private EventPositionRepository eventPositionRepository;
+  final private WebClient http = WebClient.builder().build();
   
-  @PostConstruct
-  private void init() {
-    restTemplate = restTemplateBuilder.build();
-  }
-
   @Qualifier("FileHandlerBean") final private FileHandler fileHandler;
 
   final private static int EVENTS_PER_PAGE = 10;
@@ -111,7 +101,9 @@ public class EventService {
     event.setLocation(dto.getLocation());
     
     if(dto.getCoordinates() != null) {
-      PositionRequestResponse coordinatesData = restTemplate.getForObject("https://api-adresse.data.gouv.fr/reverse/?lon=" + Double.valueOf(dto.getCoordinates()[1]) + "&lat=" + Double.valueOf(dto.getCoordinates()[0]), PositionRequestResponse.class);
+      PositionRequestResponse coordinatesData = http.get().uri("https://api-adresse.data.gouv.fr/reverse/?lon=" + Double.valueOf(dto.getCoordinates()[1]) + "&lat=" + Double.valueOf(dto.getCoordinates()[0]))
+          .retrieve()
+          .bodyToMono(PositionRequestResponse.class).block();
       
       EventPosition position = coordinatesData.features.get(0).properties;
       position.setCoordinates(dto.getCoordinates()[0] + ";" + dto.getCoordinates()[1]);
