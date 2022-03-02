@@ -1,6 +1,12 @@
 package com.iseplife.api.services;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -9,16 +15,20 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.NotificationType;
+import com.iseplife.api.dao.event.EventPositionRepository;
 import com.iseplife.api.dao.event.EventPreviewProjection;
 import com.iseplife.api.dao.event.EventRepository;
+import com.iseplife.api.dao.event.PositionRequestAPIResponse;
 import com.iseplife.api.dao.feed.FeedRepository;
 import com.iseplife.api.dto.event.EventDTO;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
+import com.iseplife.api.entity.event.EventPosition;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.subscription.Notification;
@@ -31,6 +41,8 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class EventService {
+  private static String REVERSE_URL = "https://api-adresse.data.gouv.fr/reverse/?lon=%s&lat=%s";
+  
   @Lazy final private ClubService clubService;
   @Lazy final private GalleryService galleryService;
   @Lazy final private FeedService feedService;
@@ -38,7 +50,9 @@ public class EventService {
   final private FeedRepository feedRepository;
   final private EventRepository eventRepository;
   final private NotificationService notificationService;
-
+  final private EventPositionRepository eventPositionRepository;
+  final private WebClient http = WebClient.builder().build();
+  
   @Qualifier("FileHandlerBean") final private FileHandler fileHandler;
 
   final private static int EVENTS_PER_PAGE = 10;
@@ -52,8 +66,9 @@ public class EventService {
 
     event.setClub(club);
     event.setFeed(new Feed(dto.getTitle()));
-    event.setCoordinates(dto.getCoordinates()[0] + ";" + dto.getCoordinates()[1]);
-
+     
+    updateCoordinates(event, dto);
+    
     if (dto.getTargets().size() > 0) {
       Set<Feed> targets = new HashSet<>();
       feedRepository.findAllById(dto.getTargets()).forEach(targets::add);
@@ -82,6 +97,31 @@ public class EventService {
     }
 
     return event;
+  }
+
+  private void updateCoordinates(Event event, EventDTO dto) {
+    event.setLocation(dto.getLocation());
+    
+    if(dto.getCoordinates() != null) {
+      PositionRequestAPIResponse coordinatesData = http.get()
+          .uri(
+            String.format(
+              REVERSE_URL,
+              Double.valueOf(dto.getCoordinates()[1]),
+              Double.valueOf(dto.getCoordinates()[0])
+            )
+          )
+          .retrieve()
+          .bodyToMono(PositionRequestAPIResponse.class).block();
+      
+      EventPosition position = coordinatesData.features.get(0).properties;
+      position.setCoordinates(dto.getCoordinates()[0] + ";" + dto.getCoordinates()[1]);
+      
+      eventPositionRepository.save(position);
+      
+      event.setPosition(position);
+    } else
+      event.setPosition(null);
   }
 
   public String updateImage(Long id, MultipartFile file) {
@@ -171,8 +211,9 @@ public class EventService {
 
     event.setTitle(dto.getTitle());
     event.setDescription(dto.getDescription());
-    event.setLocation(dto.getLocation());
-    event.setCoordinates(dto.getCoordinates()[0] + ";" + dto.getCoordinates()[1]);
+    
+    updateCoordinates(event, dto);
+    
     event.setStartsAt(dto.getStartsAt());
     if (dto.getPreviousEditionId() != null) {
       Event prev = getEvent(dto.getPreviousEditionId());
