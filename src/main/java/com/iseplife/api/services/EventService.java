@@ -23,7 +23,7 @@ import com.iseplife.api.constants.NotificationType;
 import com.iseplife.api.dao.event.EventPositionRepository;
 import com.iseplife.api.dao.event.EventPreviewProjection;
 import com.iseplife.api.dao.event.EventRepository;
-import com.iseplife.api.dao.event.PositionRequestResponse;
+import com.iseplife.api.dao.event.PositionRequestAPIResponse;
 import com.iseplife.api.dao.feed.FeedRepository;
 import com.iseplife.api.dto.event.EventDTO;
 import com.iseplife.api.entity.club.Club;
@@ -103,7 +103,7 @@ public class EventService {
     event.setLocation(dto.getLocation());
     
     if(dto.getCoordinates() != null) {
-      PositionRequestResponse coordinatesData = http.get()
+      PositionRequestAPIResponse coordinatesData = http.get()
           .uri(
             String.format(
               REVERSE_URL,
@@ -112,7 +112,7 @@ public class EventService {
             )
           )
           .retrieve()
-          .bodyToMono(PositionRequestResponse.class).block();
+          .bodyToMono(PositionRequestAPIResponse.class).block();
       
       EventPosition position = coordinatesData.features.get(0).properties;
       position.setCoordinates(dto.getCoordinates()[0] + ";" + dto.getCoordinates()[1]);
