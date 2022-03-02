@@ -41,6 +41,8 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class EventService {
+  private static String REVERSE_URL = "https://api-adresse.data.gouv.fr/reverse/?lon=%s&lat=%s";
+  
   @Lazy final private ClubService clubService;
   @Lazy final private GalleryService galleryService;
   @Lazy final private FeedService feedService;
@@ -101,7 +103,14 @@ public class EventService {
     event.setLocation(dto.getLocation());
     
     if(dto.getCoordinates() != null) {
-      PositionRequestResponse coordinatesData = http.get().uri("https://api-adresse.data.gouv.fr/reverse/?lon=" + Double.valueOf(dto.getCoordinates()[1]) + "&lat=" + Double.valueOf(dto.getCoordinates()[0]))
+      PositionRequestResponse coordinatesData = http.get()
+          .uri(
+            String.format(
+              REVERSE_URL,
+              Double.valueOf(dto.getCoordinates()[1]),
+              Double.valueOf(dto.getCoordinates()[0])
+            )
+          )
           .retrieve()
           .bodyToMono(PositionRequestResponse.class).block();
       
