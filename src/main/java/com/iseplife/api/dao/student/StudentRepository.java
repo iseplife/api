@@ -34,7 +34,7 @@ public interface StudentRepository extends CrudRepository<Student, Long> {
   @Caching(evict = {
     @CacheEvict(value = GET_STUDENT_CACHE, key = "#s.id"),
     @CacheEvict(value = GET_STUDENT_BY_PROMO_CACHE, key = "#s.promo"),
-    @CacheEvict(value = PostRepository.GET_AUTHORIZED_PUBLISH_CACHE, key = "'id_'.concat(#s.id).concat('_*')")
+    @CacheEvict(value = PostRepository.GET_AUTHORIZED_PUBLISH_CACHE, key = "#s.id")
   })
   <S extends Student> S save(S s);
 

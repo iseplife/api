@@ -38,6 +38,7 @@ public class GroupService {
   final private ModelMapper mapper;
   final private GroupRepository groupRepository;
   final private GroupMemberRepository groupMemberRepository;
+  final private CacheManager cacheManager;
 
   final private SubscriptionService subService;
   final private WSGroupService wsGroupService;
@@ -77,12 +78,8 @@ public class GroupService {
     return groupRepository.findAll(PageRequest.of(page, RESULTS_PER_PAGE));
   }
 
-  public List<GroupPreview> getUserGroups(Long id) {
-    return groupRepository
-      .findAllUserGroups(id)
-      .stream()
-      .map(GroupFactory::toPreview)
-      .collect(Collectors.toList());
+  public List<Group> getUserGroups(Long id) {
+    return groupRepository.findAllUserGroups(id);
   }
 
 
@@ -119,7 +116,7 @@ public class GroupService {
   public Group updateGroup(Long id, GroupUpdateDTO dto) {
     Group group = getGroup(id);
     mapper.map(dto, group);
-    
+
     // Keep only admins that are in dto.admins
     for(GroupMember m : group.getMembers())
       if (dto.getAdmins().contains(m.getStudent().getId())) {
@@ -128,14 +125,12 @@ public class GroupService {
 
         dto.getAdmins().remove(m.getStudent().getId());
       }
-    
+
     // We create a group member admin for all leftovers ids
     group.getMembers().addAll(createGroupAdminMembers(dto.getAdmins(), group));
+    this.evictUserGroupsCache(group);
 
     return groupRepository.save(group);
-    group.getMembers().addAll(createGroupAdminMembers(dto.getAdmins()));
-  this.evictUserGroupsCache(group);
-    return GroupFactory.toAdminView(groupRepository.save(group));
   }
 
   public String updateCover(Long id, MultipartFile cover) {
@@ -214,7 +209,7 @@ public class GroupService {
   }
 
   @CacheEvict(value = GroupRepository.FIND_ALL_USER_GROUPS_CACHE, key = "#id")
-  public GroupMemberView addMember(Long id, GroupMemberDTO dto) {
+  public GroupMember addMember(Long id, GroupMemberDTO dto) {
     Group group = getGroup(id);
     if (!SecurityService.hasRightOn(group))
       throw new HttpForbiddenException("insufficient_rights");

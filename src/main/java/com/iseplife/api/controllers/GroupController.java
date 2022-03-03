@@ -1,6 +1,5 @@
 package com.iseplife.api.controllers;
 
-import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dao.media.MediaFactory;
 import com.iseplife.api.dao.group.GroupFactory;
 import com.iseplife.api.dto.group.GroupCreationDTO;
@@ -13,16 +12,12 @@ import com.iseplife.api.dto.group.view.GroupView;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dto.media.view.MediaNameView;
 import com.iseplife.api.entity.group.Group;
-import com.iseplife.api.services.FeedService;
 import com.iseplife.api.services.GroupService;
 import com.iseplife.api.services.SecurityService;
-import com.iseplife.api.utils.JsonUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.iseplife.api.services.SubscriptionService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -48,7 +43,10 @@ public class GroupController {
   @GetMapping("/me")
   @RolesAllowed({Roles.STUDENT})
   public List<GroupPreview> getUserGroups() {
-    return groupService.getUserGroups(SecurityService.getLoggedId());
+    return groupService.getUserGroups(SecurityService.getLoggedId())
+      .stream()
+      .map(factory::toPreview)
+      .collect(Collectors.toList());
   }
 
   @PostMapping

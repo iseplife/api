@@ -21,8 +21,6 @@ import com.iseplife.api.websocket.services.WSPostService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
-import com.iseplife.api.exceptions.IllegalArgumentException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
