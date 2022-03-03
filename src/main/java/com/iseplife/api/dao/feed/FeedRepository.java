@@ -34,8 +34,8 @@ public interface FeedRepository extends CrudRepository<Feed, Long> {
 
   @Override
   @Caching(evict = {
-    @CacheEvict(value = FeedRepository.GET_FEED_CACHE, key = "#feed.id"),
-    @CacheEvict(value = FeedRepository.GET_ALL_FEED_CACHE, allEntries = true)
+    @CacheEvict(value = GET_FEED_CACHE, key = "#feed.id"),
+    @CacheEvict(value = GET_ALL_FEED_CACHE, allEntries = true)
   })
   void delete(Feed feed);
   Iterable<FeedProjection> findAllByIdIn(Iterable<Long> id);

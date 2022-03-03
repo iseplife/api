@@ -1,7 +1,11 @@
 package com.iseplife.api.dao.group;
 
+import com.iseplife.api.dao.post.PostRepository;
+import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.group.Group;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -16,6 +20,19 @@ import java.util.Optional;
 public interface GroupRepository extends CrudRepository<Group, Long> {
 
   String FIND_ALL_USER_GROUPS_CACHE = "findAllUserGroupsCache";
+  String FIND_GROUP_CACHE = "getFeedCache";
+
+  @Override
+  @Cacheable(cacheNames = FIND_GROUP_CACHE)
+  Optional<Group> findById(Long id);
+
+  @Override
+  @CacheEvict(value = FIND_GROUP_CACHE, key = "#group.id")
+  <T extends Group> T save(T group);
+
+  @Override
+  @CacheEvict(value = FIND_GROUP_CACHE, key = "#group.id")
+  void delete(Group group);
 
   Page<Group> findAll(Pageable page);
 

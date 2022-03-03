@@ -44,7 +44,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class EventService {
   private static String REVERSE_URL = "https://api-adresse.data.gouv.fr/reverse/?lon=%s&lat=%s";
-  
+
   @Lazy final private ClubService clubService;
   @Lazy final private GalleryService galleryService;
   @Lazy final private FeedService feedService;
@@ -54,6 +54,7 @@ public class EventService {
   final private NotificationService notificationService;
   final private EventPositionRepository eventPositionRepository;
   final private WebClient http = WebClient.builder().build();
+
   final private WsEventService wsEventService;
   
   @Qualifier("FileHandlerBean") final private FileHandler fileHandler;
@@ -69,9 +70,9 @@ public class EventService {
 
     event.setClub(club);
     event.setFeed(new Feed(dto.getTitle()));
-     
+
     updateCoordinates(event, dto);
-    
+
     if (dto.getTargets().size() > 0) {
       Set<Feed> targets = new HashSet<>();
       feedRepository.findAllById(dto.getTargets()).forEach(targets::add);
@@ -106,7 +107,7 @@ public class EventService {
 
   private void updateCoordinates(Event event, EventDTO dto) {
     event.setLocation(dto.getLocation());
-    
+
     if(dto.getCoordinates() != null) {
       PositionRequestAPIResponse coordinatesData = http.get()
           .uri(
@@ -118,12 +119,12 @@ public class EventService {
           )
           .retrieve()
           .bodyToMono(PositionRequestAPIResponse.class).block();
-      
+
       EventPosition position = coordinatesData.features.get(0).properties;
       position.setCoordinates(dto.getCoordinates()[0] + ";" + dto.getCoordinates()[1]);
-      
+
       eventPositionRepository.save(position);
-      
+
       event.setPosition(position);
     } else
       event.setPosition(null);
@@ -177,7 +178,6 @@ public class EventService {
     ).toList();
   }
 
-
   public Event getEvent(Long id) {
     Optional<Event> event = eventRepository.findById(id);
     if (event.isEmpty() || !SecurityService.hasReadAccessOn(event.get()))
@@ -216,9 +216,9 @@ public class EventService {
 
     event.setTitle(dto.getTitle());
     event.setDescription(dto.getDescription());
-    
+
     updateCoordinates(event, dto);
-    
+
     event.setStartsAt(dto.getStartsAt());
     if (dto.getPreviousEditionId() != null) {
       Event prev = getEvent(dto.getPreviousEditionId());

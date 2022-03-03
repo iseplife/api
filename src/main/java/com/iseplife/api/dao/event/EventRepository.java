@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -22,6 +23,11 @@ public interface EventRepository extends CrudRepository<Event, Long> {
 
   String FIND_INCOMING_EVENTS_CACHE = "findIncomingEventsCache";
   String FIND_ALL_IN_MONTH_CACHE = "findAllInMonthCache";
+  String FIND_EVENT_CACHE = "getFeedCache";
+
+  @Override
+  @Cacheable(cacheNames = FIND_EVENT_CACHE)
+  Optional<Event> findById(Long id);
 
   // Request unoptimised as we always check if each target if it's inside user's feeds list while
   @Cacheable(cacheNames = FIND_ALL_IN_MONTH_CACHE, key = "{#date.month, #date.year, #admin, #feeds}")
@@ -38,7 +44,7 @@ public interface EventRepository extends CrudRepository<Event, Long> {
   )
   List<EventPreviewProjection> findAllInMonth(Date date, Boolean admin, List<Long> feeds);
 
-  @Cacheable(cacheNames = FIND_INCOMING_EVENTS_CACHE, key = "{#admin, #feeds, #p}")
+  @Cacheable(cacheNames = FIND_INCOMING_EVENTS_CACHE, key = "{#admin, #feeds}")
   @Query(
     "select e from Event e left join e.targets t " +
       "where e.startsAt >= CURRENT_TIMESTAMP " +
@@ -72,6 +78,7 @@ public interface EventRepository extends CrudRepository<Event, Long> {
 
   @Override
   @Caching(evict = {
+    @CacheEvict(value = FIND_EVENT_CACHE, key = "#event.id"),
     @CacheEvict(value = FIND_INCOMING_EVENTS_CACHE, allEntries = true),
     @CacheEvict(value = FIND_ALL_IN_MONTH_CACHE, allEntries = true),
     @CacheEvict(value =  PostRepository.GET_AUTHORIZED_PUBLISH_CACHE, allEntries = true)
@@ -80,6 +87,7 @@ public interface EventRepository extends CrudRepository<Event, Long> {
 
   @Override
   @Caching(evict = {
+    @CacheEvict(value = FIND_EVENT_CACHE, key = "#id"),
     @CacheEvict(value = FIND_INCOMING_EVENTS_CACHE, allEntries = true),
     @CacheEvict(value = FIND_ALL_IN_MONTH_CACHE, allEntries = true),
     @CacheEvict(value =  PostRepository.GET_AUTHORIZED_PUBLISH_CACHE, allEntries = true)
