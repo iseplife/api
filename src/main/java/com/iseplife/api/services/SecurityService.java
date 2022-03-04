@@ -102,6 +102,9 @@ public class SecurityService {
   }
   static public boolean hasReadAccess(Group group) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    System.out.println(payload.getFeeds());
+    System.out.println(group.getFeed().getId());
+    System.out.println(payload.getFeeds().contains(group.getFeed().getId()));
     return payload.getFeeds().contains(group.getFeed().getId());
   }
 
