@@ -102,7 +102,7 @@ public class SecurityService {
   }
   static public boolean hasReadAccess(Group group) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-    return userHasRole(Roles.ADMIN) && payload.getFeeds().contains(group.getFeed().getId());
+    return payload.getFeeds().contains(group.getFeed().getId());
   }
 
   static public boolean hasRightOn(Group group) {
