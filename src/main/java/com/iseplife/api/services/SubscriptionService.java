@@ -80,12 +80,12 @@ public class SubscriptionService {
         return studentService.getStudent(id);
       case SubscribableType.EVENT:
         Event event = eventService.getEvent(id);
-        if(SecurityService.hasReadAccessOn(event))
+        if(!SecurityService.hasReadAccessOn(event))
           throw new AccessDeniedException("No access to event");
         return event;
       case SubscribableType.GROUP:
         Group group = groupService.getGroup(id);
-        if(SecurityService.hasReadAccess(group))
+        if(!SecurityService.hasReadAccess(group))
           throw new AccessDeniedException("No access to group");
         return group;
       default:
