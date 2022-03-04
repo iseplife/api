@@ -47,7 +47,10 @@ public class PostFactory {
   }
 
   public PostFormView toFormView(Post post) {
-    return mapper.map(post, PostFormView.class);
+    PostFormView view = mapper.map(post, PostFormView.class);
+    if(post.getLinkedClub() != null)
+    	view.setAuthor(AuthorFactory.toView(post.getLinkedClub()));
+    return view;
   }
 
   public PostView toView(PostProjection post, Boolean isLiked, CommentView trendingComment) {
