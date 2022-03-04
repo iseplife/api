@@ -4,6 +4,7 @@ import javax.annotation.security.RolesAllowed;
 import org.springframework.web.bind.annotation.*;
 
 import com.iseplife.api.constants.Roles;
+import com.iseplife.api.dao.webpush.WebPushValidateServiceDTO;
 import com.iseplife.api.dto.webpush.RegisterPushServiceDTO;
 import com.iseplife.api.exceptions.http.HttpInternalServerErrorException;
 import com.iseplife.api.services.WebPushService;
@@ -27,7 +28,7 @@ public class WebPushController {
     }
   }
   @PostMapping("/register/validate")
-  public void validatePushService(@RequestParam String key) {
-    webpushService.validatePushService(key);
+  public void validatePushService(@RequestBody WebPushValidateServiceDTO body) {
+    webpushService.validatePushService(body.getKey());
   }
 }
