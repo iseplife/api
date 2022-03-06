@@ -51,14 +51,15 @@ public class SubscriptionService {
   public SubscriptionProjection getSubscriptionProjection(Long id) {
     return getSubscriptionProjection(id, SecurityService.getLoggedId());
   }
-  public void subscribe(Subscribable subable) {
-    subscribe(subable, studentService.getStudent(SecurityService.getLoggedId()));
+  public void subscribe(Subscribable subable, boolean extensive) {
+    subscribe(subable, studentService.getStudent(SecurityService.getLoggedId()), extensive);
   }
-  public void subscribe(Subscribable subable, Student student) {
+  public void subscribe(Subscribable subable, Student student, boolean extensive) {
     Subscription sub = new Subscription();
     sub.setListener(student);
     sub.setSubscribed(subable);
     sub.setSubscribedFeed(subable.getFeed());
+    sub.setExtensive(extensive);
     subscriptionRepository.save(sub);
   }
   public void unsubscribe(Long id) {
