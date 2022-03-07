@@ -1,8 +1,6 @@
 package com.iseplife.api.websocket.packets;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -10,9 +8,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.stereotype.Service;
 
-import com.iseplife.api.websocket.packets.client.WSPCFeedSubscriptionUpdate;
-import com.iseplife.api.websocket.packets.client.WSPCPostsSubscriptionUpdate;
 import com.iseplife.api.websocket.packets.server.WSPSConnected;
+import com.iseplife.api.websocket.packets.server.WSPSEventCreated;
+import com.iseplife.api.websocket.packets.server.WSPSFeedPostCreated;
+import com.iseplife.api.websocket.packets.server.WSPSNotificationRecieved;
 
 import io.netty.buffer.ByteBuf;
 
@@ -35,12 +34,13 @@ public class WSProtocol {
   }
 
   public WSProtocol init() {
-    //Server packets
+    //Server 
     registerPacketServer(WSPSConnected.class);
+    registerPacketServer(WSPSFeedPostCreated.class);
+    registerPacketServer(WSPSNotificationRecieved.class);
+    registerPacketServer(WSPSEventCreated.class);
     
     //Client packets
-    registerPacketClient(WSPCPostsSubscriptionUpdate.class);
-    registerPacketClient(WSPCFeedSubscriptionUpdate.class);
     return this;
   }
   

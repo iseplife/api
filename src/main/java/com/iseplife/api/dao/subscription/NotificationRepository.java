@@ -35,6 +35,8 @@ public interface NotificationRepository extends CrudRepository<Notification, Lon
   )
   Page<NotificationProjection> findAllByStudentsIdOrderById(Long student, Pageable pageable);
 
+  NotificationProjection findProjectionById(Long id);
+
 
   @Transactional
   @Modifying

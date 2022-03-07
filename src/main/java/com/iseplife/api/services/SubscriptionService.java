@@ -1,5 +1,7 @@
 package com.iseplife.api.services;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,7 @@ import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.subscription.Subscribable;
 import com.iseplife.api.entity.subscription.Subscription;
 import com.iseplife.api.entity.user.Student;
+import com.iseplife.api.websocket.services.WSPostService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,6 +25,7 @@ public class SubscriptionService {
   @Lazy final private ClubService clubService;
   @Lazy final private EventService eventService;
   @Lazy final private GroupService groupService;
+  @Lazy final private WSPostService postService;
   final private SubscriptionRepository subscriptionRepository;
 
   public Boolean isSubscribed(Subscribable sub){
@@ -54,6 +58,9 @@ public class SubscriptionService {
   public void subscribe(Subscribable subable, boolean extensive) {
     subscribe(subable, studentService.getStudent(SecurityService.getLoggedId()), extensive);
   }
+  public List<Long> getSubscribedFeeds(Long studentId) {
+    return subscriptionRepository.findFeedsByListenerId(studentId);
+  }
   public void subscribe(Subscribable subable, Student student, boolean extensive) {
     Subscription sub = new Subscription();
     sub.setListener(student);
@@ -61,11 +68,14 @@ public class SubscriptionService {
     sub.setSubscribedFeed(subable.getFeed());
     sub.setExtensive(extensive);
     subscriptionRepository.save(sub);
+    
+    postService.addStudentToFeed(student.getId(), subable.getFeed().getId());
   }
   public void unsubscribe(Long id) {
     unsubscribe(id, SecurityService.getLoggedId());
   }
   public void unsubscribe(Long id, Long studentId) {
+    postService.removeStudentFromFeed(studentId, subscriptionRepository.findFeedBySubscribedIdAndListenerId(id, studentId));
     subscriptionRepository.deleteBySubscribedIdAndListenerId(id, studentId);
   }
 

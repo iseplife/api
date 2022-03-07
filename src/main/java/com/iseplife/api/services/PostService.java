@@ -22,6 +22,7 @@ import com.iseplife.api.constants.PostState;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.constants.ThreadType;
 import com.iseplife.api.dao.post.AuthorFactory;
+import com.iseplife.api.dao.post.PostFactory;
 import com.iseplife.api.dao.post.PostRepository;
 import com.iseplife.api.dao.post.projection.PostProjection;
 import com.iseplife.api.dto.post.PostCreationDTO;
@@ -40,6 +41,7 @@ import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
+import com.iseplife.api.websocket.services.WSPostService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -54,11 +56,12 @@ public class PostService {
   @Lazy final private FeedService feedService;
   @Lazy final private SecurityService securityService;
   @Lazy final private NotificationService notificationService;
+  @Lazy final private WSPostService postsService;
+  @Lazy final private PostFactory postFactory;
   final private ModelMapper mapper;
   final private PostRepository postRepository;
 
   private final int POSTS_PER_PAGE = 5;
-
 
   private Post getPost(Long postID) {
     Optional<Post> post = postRepository.findById(postID);
@@ -117,6 +120,8 @@ public class PostService {
 
     Post postToReturn = postRepository.save(post);
     if(!dto.isDraft() && !customDate) {
+      postsService.broadcastPost(postFactory.toFormView(postToReturn));
+      
       Map<String, Object> map = new HashMap<>(Map.of(
           "post_id", post.getId(),
           "author_id", post.getAuthor().getId(),
