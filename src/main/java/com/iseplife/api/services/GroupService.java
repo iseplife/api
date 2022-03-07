@@ -10,6 +10,7 @@ import com.iseplife.api.dto.group.GroupMemberDTO;
 import com.iseplife.api.dto.group.GroupUpdateDTO;
 import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.group.GroupMember;
+import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
@@ -32,6 +33,8 @@ public class GroupService {
   final private ModelMapper mapper;
   final private GroupRepository groupRepository;
   final private GroupMemberRepository groupMemberRepository;
+
+  final private SubscriptionService subService;
 
   @Qualifier("FileHandlerBean") final private FileHandler fileHandler;
 
@@ -77,7 +80,12 @@ public class GroupService {
 
     group.setMembers(createGroupAdminMembers(dto.getAdmins(), group));
 
-    return groupRepository.save(group);
+    group = groupRepository.save(group);
+
+    for(GroupMember member : group.getMembers())
+      subService.subscribe(group, member.getStudent());
+    
+    return group;
   }
 
   private List<GroupMember> createGroupAdminMembers(List<Long> ids, Group group) {
@@ -153,6 +161,9 @@ public class GroupService {
     if (group.getType() != GroupType.DEFAULT) {
       throw new HttpBadRequestException("deletion_impossible");
     }
+    
+    for(GroupMember member : group.getMembers())
+      subService.unsubscribe(group.getId(), member.getStudent().getId());
 
     groupRepository.delete(group);
   }
@@ -192,7 +203,11 @@ public class GroupService {
     member.setStudent(studentService.getStudent(dto.getStudentId()));
     member.setGroup(group);
 
-    return groupMemberRepository.save(member);
+    member = groupMemberRepository.save(member);
+    
+    subService.subscribe(group, member.getStudent());
+    
+    return member;
   }
 
   public Boolean removeMember(Long id, Long member) {
@@ -202,6 +217,8 @@ public class GroupService {
 
     if (groupMember.isAdmin() && groupMemberRepository.findGroupAdminCount(groupMember.getGroup()) < 1)
       throw new HttpBadRequestException("minimum_admins_size_required");
+    
+    subService.unsubscribe(groupMember.getGroup().getId(), groupMember.getStudent().getId());
 
     groupMemberRepository.delete(groupMember);
     return true;
