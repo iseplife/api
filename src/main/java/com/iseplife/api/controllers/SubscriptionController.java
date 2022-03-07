@@ -33,7 +33,7 @@ public class SubscriptionController {
 
     Subscribable subbing = subscriptionService.getSubscribable(type, id);
 
-    subscriptionService.subscribe(subbing);
+    subscriptionService.subscribe(subbing, body.isExtensive());
   }
 
   @DeleteMapping("/{id}")
