@@ -83,7 +83,7 @@ public class GroupService {
     group = groupRepository.save(group);
 
     for(GroupMember member : group.getMembers())
-      subService.subscribe(group, member.getStudent());
+      subService.subscribe(group, member.getStudent(), false);
     
     return group;
   }
@@ -197,6 +197,9 @@ public class GroupService {
     Group group = getGroup(id);
     if (!SecurityService.hasRightOn(group))
       throw new HttpForbiddenException("insufficient_rights");
+    
+    if(groupMemberRepository.isMemberOfGroup(id, dto.getStudentId()))
+      throw new HttpBadRequestException("student_already_in_group");
 
     GroupMember member = new GroupMember();
     member.setAdmin(false);
@@ -205,7 +208,7 @@ public class GroupService {
 
     member = groupMemberRepository.save(member);
     
-    subService.subscribe(group, member.getStudent());
+    subService.subscribe(group, member.getStudent(), false);
     
     return member;
   }
