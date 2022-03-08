@@ -4,15 +4,22 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
-import com.iseplife.api.entity.feed.Feed;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.iseplife.api.constants.AuthorType;
 import com.iseplife.api.constants.Language;
 import com.iseplife.api.entity.Author;
+import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.subscription.Notification;
 import com.iseplife.api.entity.subscription.Subscribable;
 import com.iseplife.api.entity.subscription.Subscription;
@@ -122,5 +129,18 @@ public class Student implements UserDetails, Author, Subscribable {
   @Override
   public boolean isEnabled() {
     return true;
+  }
+  
+  @Override
+  public int hashCode() {
+    return getId().intValue();
+  }
+  
+  @Override
+  public boolean equals(Object obj) {
+    if(obj instanceof Student)
+      return ((Student) obj).getId() == getId();
+    
+    return super.equals(obj);
   }
 }
