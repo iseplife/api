@@ -31,7 +31,7 @@ public interface PostRepository extends CrudRepository<Post, Long> {
       "join s.subscriptions subs " +
     "where (p.feed.id = subs.subscribedFeed.id or p.forcedHomepage = true) " +
       "and p.state = 'READY' and p.pinned = false " +
-      "and (p.publicationDate > current_date or p.author.id = :loggedStudent) " +
+      "and (p.publicationDate <= now() or p.author.id = :loggedStudent) " +
     "order by p.publicationDate desc"
   )
   Page<PostProjection> findHomepagePosts(Long loggedStudent, Pageable pageable);
@@ -44,7 +44,7 @@ public interface PostRepository extends CrudRepository<Post, Long> {
       "size(p.thread.likes) as nbLikes " +
     "from Post p " +
     "where p.feed.id = ?1 and p.state = ?2 and p.pinned = false " +
-      "and (p.publicationDate > current_date or ?4 = true or p.author.id = ?3)"
+      "and (p.publicationDate <= now() or ?4 = true or p.author.id = ?3)"
   )
   Page<PostProjection> findCurrentFeedPost(Long feed, PostState state, Long loggedUser, Boolean isAdmin, Pageable pageable);
 
@@ -56,7 +56,7 @@ public interface PostRepository extends CrudRepository<Post, Long> {
       "size(p.thread.likes) as nbLikes " +
     "from Post p " +
     "where p.feed = :feed and p.pinned = true " +
-      "and (p.publicationDate > current_date or :isAdmin = true or p.author.id = :loggedUser) " +
+      "and (p.publicationDate <= now() or :isAdmin = true or p.author.id = :loggedUser) " +
     "order by p.publicationDate desc"
   )
   List<PostProjection> findFeedPinnedPosts(Feed feed, Long loggedUser, Boolean isAdmin);
@@ -82,7 +82,7 @@ public interface PostRepository extends CrudRepository<Post, Long> {
       "size(p.thread.likes) as nbLikes " +
     "from Post p " +
     "where p.feed.id in ?3 and p.author = ?1 and p.state = 'READY' and " +
-      "(p.publicationDate > current_date or p.author.id = ?2)" +
+      "(p.publicationDate <= now() or p.author.id = ?2)" +
     "order by p.publicationDate desc"
   )
   Page<PostProjection> findAuthorPosts(Long author_id, Long loggedUser, List<Long> authorizedFeeds, Pageable pageable);
