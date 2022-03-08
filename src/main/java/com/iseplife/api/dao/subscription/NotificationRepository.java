@@ -35,6 +35,13 @@ public interface NotificationRepository extends CrudRepository<Notification, Lon
   )
   Page<NotificationProjection> findAllByStudentsIdOrderById(Long student, Pageable pageable);
 
+  @Query(
+    "select " +
+      "n as notif, " +
+      "false as watched " +
+    "from Notification n " +
+    "where n.id = :id"
+  )
   NotificationProjection findProjectionById(Long id);
 
 
