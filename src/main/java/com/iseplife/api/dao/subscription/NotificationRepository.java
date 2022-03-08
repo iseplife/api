@@ -21,7 +21,7 @@ public interface NotificationRepository extends CrudRepository<Notification, Lon
       "case when w.id = :student then true else false end as watched " +
     "from Notification n " +
     "join n.students student on student = :student " +
-    "left join n.watched w"
+    "left join n.watched w on w.id = :student"
   )
   Page<NotificationProjection> findAllByStudentsOrderById(Student student, Pageable pageable);
 
@@ -31,7 +31,7 @@ public interface NotificationRepository extends CrudRepository<Notification, Lon
       "case when w.id = :student then true else false end as watched " +
     "from Notification n " +
     "join n.students student on student.id = :student " +
-    "left join n.watched as w"
+    "left join n.watched as w on w.id = :student"
   )
   Page<NotificationProjection> findAllByStudentsIdOrderById(Long student, Pageable pageable);
 
