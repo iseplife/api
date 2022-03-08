@@ -284,7 +284,7 @@ public class PostService {
   public Page<PostProjection> getMainFeedPost(Long loggedUser, int page){
     return postRepository.findHomepagePosts(
       loggedUser,
-      PageRequest.of(page, POSTS_PER_PAGE,  Sort.by(Sort.Direction.DESC, "publicationDate"))
+      PageRequest.of(page, POSTS_PER_PAGE)
     );
   }
 

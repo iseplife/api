@@ -5,20 +5,21 @@ import org.springframework.beans.factory.annotation.Value;
 import java.util.Date;
 
 public interface CommentProjection {
-  @Value("#{target.comment.id}")
+  @Value("#{target.id}")
   Long getId();
-  @Value("#{target.comment.creation}")
   Date getCreation();
-  @Value("#{target.comment.message}")
   String getMessage();
-  @Value("#{target.comment.lastEdition}")
   Date getLastEdition();
 
-  @Value("#{target.comment.asClub == null ? target.comment.student: target.comment.asClub}")
+  @Value("#{target.asClub == null ? target.student: target.asClub}")
   AuthorProjection getAuthor();
 
-  boolean isLiked();
+  
+  Boolean getLiked();
+  @Value("#{target.thread.id}")
   Long getThread();
+  @Value("#{target.thread.likes.size}")
   Integer getLikes();
+  @Value("#{target.thread.comments.size}")
   Integer getComments();
 }

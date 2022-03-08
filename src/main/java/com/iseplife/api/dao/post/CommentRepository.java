@@ -13,10 +13,7 @@ import java.util.List;
 public interface CommentRepository extends CrudRepository<Comment, Long> {
 
   @Query(
-    "select c as comment, " +
-      "c.thread.id as thread, " +
-      "size(c.thread.comments) as comments, " +
-      "size(c.thread.likes) as likes " +
+    "select c " +
     "from Comment c " +
       "where c.parentThread.id = ?1 " +
       "order by size(c.thread.likes) desc"
@@ -24,11 +21,7 @@ public interface CommentRepository extends CrudRepository<Comment, Long> {
   List<CommentProjection> findTrendingComments(Long thread, Long loggedUser, Pageable page);
 
   @Query(
-    "select " +
-      "c as comment, " +
-      "c.thread.id as thread, " +
-      "size(c.thread.comments) as comments, " +
-      "size(c.thread.likes) as likes " +
+    "select c " +
     "from Comment c " +
       "where c.parentThread.id = ?1 " +
       "order by c.creation desc"

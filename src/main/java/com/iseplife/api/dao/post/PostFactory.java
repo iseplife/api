@@ -2,10 +2,14 @@ package com.iseplife.api.dao.post;
 
 import javax.annotation.PostConstruct;
 
+import org.modelmapper.Condition;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.spi.DestinationSetter;
+import org.modelmapper.spi.MappingContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import com.iseplife.api.dao.post.projection.CommentProjection;
 import com.iseplife.api.dao.post.projection.PostProjection;
 import com.iseplife.api.dto.post.view.PostFormView;
 import com.iseplife.api.dto.post.view.PostView;
@@ -25,15 +29,28 @@ public class PostFactory {
   
   @PostConstruct
   public void init() {
+    mapper.typeMap(CommentProjection.class, CommentView.class)
+      .addMappings(mapper -> {
+        mapper.skip(CommentProjection::getLiked, CommentView::setLiked);
+      });
     mapper.typeMap(PostProjection.class, PostView.class)
       .addMappings(mapper -> {
-        mapper.skip(PostView::setLiked);
         mapper
           .using(ctx -> SecurityService.hasRightOn((PostProjection) ctx.getSource()))
           .map(src -> src, PostView::setHasWriteAccess);
         mapper
           .using(ctx -> embedFactory.toView((Embedable) ctx.getSource()))
           .map(PostProjection::getEmbed, PostView::setEmbed);
+        
+        mapper
+          .skip(PostProjection::getTrendingComment, PostView::setTrendingComment);
+        
+        mapper
+          .when(src -> src.getSource() != null)
+          .map(PostProjection::getTrendingComment, PostView::setTrendingComment);
+        
+        mapper
+          .map(PostProjection::getTrendingCommentLiked, (src, value) -> src.getTrendingComment().setLiked((Boolean)value));
       });
     
     mapper.typeMap(Post.class, PostFormView.class)
@@ -53,11 +70,7 @@ public class PostFactory {
     return view;
   }
 
-  public PostView toView(PostProjection post, Boolean isLiked, CommentView trendingComment) {
-    PostView view = mapper.map(post, PostView.class);
-    view.setLiked(isLiked);
-    view.setTrendingComment(trendingComment);
-
-    return view;
+  public PostView toView(PostProjection post) {
+    return mapper.map(post, PostView.class);
   }
 }

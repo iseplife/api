@@ -1,15 +1,15 @@
 package com.iseplife.api.dto.post.view;
 
-import com.iseplife.api.dao.post.projection.PostProjection;
-import com.iseplife.api.dto.view.EmbedView;
-import com.iseplife.api.dto.view.AuthorView;
-import com.iseplife.api.dto.thread.view.CommentView;
-import lombok.Data;
-
 import java.util.Date;
 
+import com.iseplife.api.dto.thread.view.CommentView;
+import com.iseplife.api.dto.view.AuthorView;
+import com.iseplife.api.dto.view.EmbedView;
+
+import lombok.Data;
+
 @Data
-public class PostView implements PostProjection {
+public class PostView {
   private Long id;
   private Long feedId;
   private Long thread;

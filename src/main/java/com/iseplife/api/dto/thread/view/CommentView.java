@@ -14,7 +14,7 @@ public class CommentView implements CommentProjection {
   private String message;
   private Integer likes;
   private Integer comments;
-  private boolean liked;
+  private Boolean liked;
   private Date lastEdition;
   private Boolean hasWriteAccess;
 }

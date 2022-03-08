@@ -26,4 +26,7 @@ public interface PostProjection {
     Integer getNbLikes();
     Integer getNbComments();
     boolean isLiked();
+    
+    CommentProjection getTrendingComment();
+    Boolean getTrendingCommentLiked();
 }
