@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import com.iseplife.api.websocket.packets.server.WSPSConnected;
 import com.iseplife.api.websocket.packets.server.WSPSEventCreated;
 import com.iseplife.api.websocket.packets.server.WSPSFeedPostCreated;
+import com.iseplife.api.websocket.packets.server.WSPSGroupJoined;
+import com.iseplife.api.websocket.packets.server.WSPSGroupLeft;
 import com.iseplife.api.websocket.packets.server.WSPSNotificationRecieved;
 
 import io.netty.buffer.ByteBuf;
@@ -39,6 +41,8 @@ public class WSProtocol {
     registerPacketServer(WSPSFeedPostCreated.class);
     registerPacketServer(WSPSNotificationRecieved.class);
     registerPacketServer(WSPSEventCreated.class);
+    registerPacketServer(WSPSGroupJoined.class);
+    registerPacketServer(WSPSGroupLeft.class);
     
     //Client packets
     return this;
