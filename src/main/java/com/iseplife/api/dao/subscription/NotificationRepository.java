@@ -61,10 +61,11 @@ public interface NotificationRepository extends CrudRepository<Notification, Lon
 
   @Query(
     "select " +
-      "count(case when s not member of notif.watched then 1 else null end) as unwatched, " +
-      "count(notif) as count " +
+      "count(distinct case when w is null then notif else null end) as unwatched, " +
+      "count(distinct notif) as count " +
     "from Notification notif " +
-    "join notif.students s on s.id = :student"
+    "inner join notif.students s on s.id = :student " +
+    "left join notif.watched w on w.id = :student"
   )
   NotificationCountProjection countUnwatchedAndAllByStudents(Long student);
 }
