@@ -1,5 +1,8 @@
 package com.iseplife.api.dao.post;
 
+import java.math.BigInteger;
+import java.util.Date;
+
 import javax.annotation.PostConstruct;
 
 import org.modelmapper.Condition;
@@ -29,10 +32,6 @@ public class PostFactory {
   
   @PostConstruct
   public void init() {
-    mapper.typeMap(CommentProjection.class, CommentView.class)
-      .addMappings(mapper -> {
-        mapper.skip(CommentProjection::getLiked, CommentView::setLiked);
-      });
     mapper.typeMap(PostProjection.class, PostView.class)
       .addMappings(mapper -> {
         mapper
@@ -42,17 +41,29 @@ public class PostFactory {
           .using(ctx -> embedFactory.toView((Embedable) ctx.getSource()))
           .map(PostProjection::getEmbed, PostView::setEmbed);
         
+     /*   mapper
+          .map(PostProjection::getTrendingCommentId, (src, value) -> src.getTrendingComment().setId((Long)value));
         mapper
+          .map(PostProjection::getTrendingCommentMessage, (src, value) -> src.getTrendingComment().setMessage((String)value));
+        mapper
+          .map(PostProjection::getTrendingCommentThreadId, (src, value) -> src.getTrendingComment().setThread((Long)value));
+        mapper
+          .map(PostProjection::getTrendingCommentLiked, (src, value) -> src.getTrendingComment().setLiked((Boolean)value));
+        mapper
+          .map(PostProjection::getTrendingCommentLikes, (src, value) -> src.getTrendingComment().setLikes((Integer)value));
+        mapper
+          .map(PostProjection::getTrendingCommentCreation, (src, value) -> src.getTrendingComment().setCreation((Date)value));
+        mapper
+          .map(PostProjection::getTrendingCommentComments, (src, value) -> src.getTrendingComment().setComments((Integer)value));
+        */
+        /*mapper
           .skip(PostProjection::getTrendingComment, PostView::setTrendingComment);
         
         mapper
           .when(src -> src.getSource() != null)
           .map(PostProjection::getTrendingComment, PostView::setTrendingComment);
-        
-        mapper
-          .map(PostProjection::getTrendingCommentLiked, (src, value) -> src.getTrendingComment().setLiked((Boolean)value));
+        */
       });
-    
     mapper.typeMap(Post.class, PostFormView.class)
       .addMappings(mapper -> {
         mapper
