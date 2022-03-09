@@ -88,7 +88,7 @@ public class GroupService {
 
     for(GroupMember member : group.getMembers()) {
       subService.subscribe(group, member.getStudent(), false);
-      wsGroupService.sendJoin(groupFactory.toPreview(group), member.getStudent().getId());
+      wsGroupService.sendJoin(groupFactory.toPreview(group), member.getStudent());
     }
     
     return group;
@@ -217,7 +217,7 @@ public class GroupService {
     member = groupMemberRepository.save(member);
     
     subService.subscribe(group, member.getStudent(), false);
-    wsGroupService.sendJoin(groupFactory.toPreview(group), member.getStudent().getId());
+    wsGroupService.sendJoin(groupFactory.toPreview(group), member.getStudent());
     
     return member;
   }
