@@ -15,6 +15,10 @@ public class WsEventService {
   private final WSClientService clientService;
   
   public void broadcastNotification(EventPreview event) {
-    clientService.broadcastPacket(new WSPSEventCreated(event));
+    WSPSEventCreated packet = new WSPSEventCreated(event);
+    if(event.getTargets().size() == 0)
+      clientService.broadcastPacket(packet);
+    else
+      clientService.broadcastPacketIfAccessToOneFeed(packet, event.getTargets());
   }
 }

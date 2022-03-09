@@ -70,4 +70,23 @@ public class WSClientService {
           e.printStackTrace();
         }
   }
+  public void broadcastPacketIfAccessToOneFeed(WSPacketOut packet, Set<Long> feeds) {
+    for(Set<WebSocketSession> sessions : clients.values())
+      for(WebSocketSession session : sessions){
+        TokenPayload token = (TokenPayload)session.getAttributes().get("token");
+        if(!token.getRoles().contains("ROLE_ADMIN"))
+          noAccess: {
+            for(Long feedId : token.getFeeds())
+              if(feeds.contains(feedId))
+                break noAccess;
+            
+            continue;
+          }
+        try {
+          packet.sendPacket(session);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+  }
 }
