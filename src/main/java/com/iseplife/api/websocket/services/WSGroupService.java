@@ -31,10 +31,12 @@ public class WSGroupService {
       e.printStackTrace();
     }
   }
-  public void sendLeave(Long id, Long studentId) {
-    WSPSGroupLeft packet = new WSPSGroupLeft(id);
+  public void sendLeave(Long id, Student student) {
+    TokenSet token = jwtTokenUtil.generateToken(student);
+    WSPSGroupLeft packet = new WSPSGroupLeft(id, token);
     try {
-      clientService.sendPacket(studentId, packet);
+      clientService.updateToken(student.getId(), jwtTokenUtil.getPayload(jwtTokenUtil.decodeToken(token.getToken())));
+      clientService.sendPacket(student.getId(), packet);
     } catch (IOException e) {
       e.printStackTrace();
     }

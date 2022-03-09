@@ -170,7 +170,7 @@ public class GroupService {
     
     for(GroupMember member : group.getMembers()) {
       subService.unsubscribe(group.getId(), member.getStudent().getId());
-      wsGroupService.sendLeave(group.getId(), member.getStudent().getId());
+      wsGroupService.sendLeave(group.getId(), member.getStudent());
     }
 
     groupRepository.delete(group);
@@ -231,7 +231,7 @@ public class GroupService {
       throw new HttpBadRequestException("minimum_admins_size_required");
     
     subService.unsubscribe(groupMember.getGroup().getId(), groupMember.getStudent().getId());
-    wsGroupService.sendLeave(groupMember.getGroup().getId(), groupMember.getStudent().getId());
+    wsGroupService.sendLeave(groupMember.getGroup().getId(), groupMember.getStudent());
     
     groupMemberRepository.delete(groupMember);
     return true;
