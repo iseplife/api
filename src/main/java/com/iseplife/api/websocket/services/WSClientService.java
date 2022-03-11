@@ -22,6 +22,10 @@ public class WSClientService {
   private final SubscriptionService subService;
   
   private Map<Long, Set<WebSocketSession>> clients = new ConcurrentHashMap<>();
+  
+  public Set<Long> getConnectedStudentIds() {
+    return clients.keySet();
+  }
 
   public void addSession(TokenPayload token, WebSocketSession session) {
     session.getAttributes().put("token", token);

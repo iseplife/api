@@ -18,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WSPostService {
   
+  private static final Set<Long> EMPTY_SET = new HashSet<>();
+  
   @Lazy
   private final WSClientService clientService;
 
@@ -40,14 +42,12 @@ public class WSPostService {
   }
   
   public void broadcastPost(PostFormView post) {
-    WSPSFeedPostCreated packet = new WSPSFeedPostCreated(post);
-    if(clientsByFeedId.containsKey(post.getFeedId()))
-      for(Long studentId : clientsByFeedId.get(post.getFeedId()))
-        if(studentId != post.getAuthor().getId())
-          try {
-            clientService.sendPacket(studentId, packet);
-          } catch (IOException e) {
-            e.printStackTrace();
-          }
+    Set<Long> followers = clientsByFeedId.getOrDefault(post.getFeedId(), EMPTY_SET);
+    for(Long studentId : clientService.getConnectedStudentIds())
+      try {
+        clientService.sendPacket(studentId, new WSPSFeedPostCreated(followers.contains(studentId), post));
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
   }
 }

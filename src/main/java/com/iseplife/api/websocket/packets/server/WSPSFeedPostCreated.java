@@ -13,10 +13,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WSPSFeedPostCreated extends WSPacketOut {
   
+  private final boolean follow;
   private final PostFormView post;
 
   @Override
   public void write(ByteBuf buf) throws IOException {
+    buf.writeBoolean(follow);
     NetHelper.writeString(buf, new ObjectMapper().writeValueAsString(post));
   }
 
