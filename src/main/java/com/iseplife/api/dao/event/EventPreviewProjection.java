@@ -6,6 +6,8 @@ import java.util.Set;
 
 public interface EventPreviewProjection {
   Long getId();
+  @Value("#{target.feed.id}")
+  Long getFeedId();
   String getTitle();
   String getType();
   Date getStartsAt();
