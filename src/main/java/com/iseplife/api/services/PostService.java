@@ -292,6 +292,13 @@ public class PostService {
       PageRequest.of(page, POSTS_PER_PAGE,  Sort.by(Sort.Direction.DESC, "publicationDate"))
     );
   }
+  public Page<PostProjection> getPreviousMainFeedPost(Long loggedUser, Date lastDate){
+    return postRepository.findPreviousHomepagePosts(
+      loggedUser,
+      lastDate,
+      PageRequest.of(0, POSTS_PER_PAGE,  Sort.by(Sort.Direction.DESC, "publicationDate"))
+    );
+  }
 
   public Page<PostProjection> getFeedPosts(Long feed, int page) {
     return postRepository.findCurrentFeedPost(
@@ -300,6 +307,16 @@ public class PostService {
       SecurityService.getLoggedId(),
       SecurityService.hasRoles(Roles.ADMIN),
       PageRequest.of(page, POSTS_PER_PAGE,  Sort.by(Sort.Direction.DESC, "publicationDate"))
+    );
+  }
+  public Page<PostProjection> getPreviousFeedPosts(Long feed, Date lastDate) {
+    return postRepository.findPreviousCurrentFeedPost(
+      feed,
+      lastDate,
+      PostState.READY,
+      SecurityService.getLoggedId(),
+      SecurityService.hasRoles(Roles.ADMIN),
+      PageRequest.of(0, POSTS_PER_PAGE,  Sort.by(Sort.Direction.DESC, "publicationDate"))
     );
   }
 

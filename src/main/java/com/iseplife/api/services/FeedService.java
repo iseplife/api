@@ -1,9 +1,9 @@
 package com.iseplife.api.services;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -35,16 +35,25 @@ public class FeedService {
   public Iterable<FeedProjection> getUserFeeds(TokenPayload token) {
     return feedRepository.findAllByIdIn(token.getFeeds());
   }
-  
+
   public Page<PostProjection> getMainFeedPosts(int page) {
     return postService.getMainFeedPost(
       SecurityService.getLoggedId(),
       page
     );
   }
+  public Page<PostProjection> getPreviousMainFeedPosts(Long lastDate) {
+    return postService.getPreviousMainFeedPost(
+      SecurityService.getLoggedId(),
+      new Date(lastDate)
+    );
+  }
 
   public Page<PostProjection> getFeedPosts(Long id, int page) {
     return postService.getFeedPosts(id, page);
+  }
+  public Page<PostProjection> getPreviousFeedPosts(Long id, Long lastDate) {
+    return postService.getPreviousFeedPosts(id, new Date(lastDate));
   }
 
   public List<PostProjection> getFeedPostsPinned(Long id) {
