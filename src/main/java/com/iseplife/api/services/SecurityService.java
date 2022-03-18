@@ -1,22 +1,25 @@
 package com.iseplife.api.services;
 
-import com.iseplife.api.conf.jwt.TokenPayload;
-import com.iseplife.api.constants.Roles;
-import com.iseplife.api.dao.post.projection.CommentProjection;
-import com.iseplife.api.dao.post.projection.PostProjection;
-import com.iseplife.api.entity.group.Group;
-import com.iseplife.api.entity.club.Club;
-import com.iseplife.api.entity.event.Event;
-import com.iseplife.api.entity.feed.Feed;
-import com.iseplife.api.entity.post.Comment;
-import com.iseplife.api.entity.post.Post;
-import com.iseplife.api.entity.post.embed.Gallery;
-import com.iseplife.api.entity.post.embed.poll.Poll;
-import com.iseplife.api.entity.user.Student;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.constants.AuthorType;
+import com.iseplife.api.constants.Roles;
+import com.iseplife.api.dao.post.projection.CommentProjection;
+import com.iseplife.api.dao.post.projection.PostProjection;
+import com.iseplife.api.dto.post.view.PostFormView;
+import com.iseplife.api.entity.club.Club;
+import com.iseplife.api.entity.event.Event;
+import com.iseplife.api.entity.feed.Feed;
+import com.iseplife.api.entity.group.Group;
+import com.iseplife.api.entity.post.Comment;
+import com.iseplife.api.entity.post.Post;
+import com.iseplife.api.entity.post.embed.Gallery;
+import com.iseplife.api.entity.user.Student;
+
+import lombok.RequiredArgsConstructor;
 
 
 @Service
@@ -61,6 +64,12 @@ public class SecurityService {
     return userHasRole(Roles.ADMIN)
       || post.getAuthor().getId().equals(payload.getId())
       || post.getLinkedClub() != null && payload.getClubsPublisher().contains(post.getLinkedClub().getId());
+  }
+
+  static public boolean hasRightOn(PostFormView post, TokenPayload payload) {
+    return userHasRole(Roles.ADMIN)
+      || (post.getAuthor().getAuthorType() == AuthorType.STUDENT && payload.getId() == post.getAuthor().getId())
+      || (post.getAuthor().getAuthorType() == AuthorType.CLUB && payload.getClubsPublisher().contains(post.getAuthor().getId()));
   }
 
   static public boolean hasRightOn(PostProjection post) {

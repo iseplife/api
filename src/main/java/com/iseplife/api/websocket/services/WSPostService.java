@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import com.iseplife.api.dto.post.view.PostFormView;
+import com.iseplife.api.services.SecurityService;
 import com.iseplife.api.websocket.packets.server.WSPSFeedPostCreated;
 
 import lombok.RequiredArgsConstructor;
@@ -45,7 +46,7 @@ public class WSPostService {
     Set<Long> followers = clientsByFeedId.getOrDefault(post.getFeedId(), EMPTY_SET);
     for(Long studentId : clientService.getConnectedStudentIds())
       try {
-        clientService.sendPacket(studentId, new WSPSFeedPostCreated(followers.contains(studentId), post));
+        clientService.sendPacket(studentId, new WSPSFeedPostCreated(followers.contains(studentId), SecurityService.hasRightOn(post, clientService.getToken(studentId)), post));
       } catch (IOException e) {
         e.printStackTrace();
       }

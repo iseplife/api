@@ -20,11 +20,16 @@ public class WSClientService {
 
   private final WSPostService postsService;
   private final SubscriptionService subService;
-  
+
   private Map<Long, Set<WebSocketSession>> clients = new ConcurrentHashMap<>();
+  private Map<Long, TokenPayload> tokens = new ConcurrentHashMap<>();
   
   public Set<Long> getConnectedStudentIds() {
     return clients.keySet();
+  }
+  
+  public TokenPayload getToken(Long id) {
+    return tokens.get(id);
   }
 
   public void addSession(TokenPayload token, WebSocketSession session) {
@@ -34,6 +39,7 @@ public class WSClientService {
       clients.put(token.getId(), ConcurrentHashMap.newKeySet());
     
     clients.get(token.getId()).add(session);
+    tokens.put(token.getId(), token);
     
     if(!alreadyConnected)
       for(Long feedId : subService.getSubscribedFeeds(token.getId()))
@@ -48,6 +54,7 @@ public class WSClientService {
     
     if(sessions.size() == 0) {
       clients.remove(id);
+      tokens.remove(id);
 
       postsService.removeStudentFromFeeds(((TokenPayload)session.getAttributes().get("token")).getId());
     }
