@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import com.iseplife.api.dto.post.view.PostFormView;
 import com.iseplife.api.services.SecurityService;
 import com.iseplife.api.websocket.packets.server.WSPSFeedPostCreated;
+import com.iseplife.api.websocket.packets.server.WSPSFeedPostEdited;
+import com.iseplife.api.websocket.packets.server.WSPSFeedPostRemoved;
 
 import lombok.RequiredArgsConstructor;
 
@@ -47,6 +49,24 @@ public class WSPostService {
     for(Long studentId : clientService.getConnectedStudentIds())
       try {
         clientService.sendPacket(studentId, new WSPSFeedPostCreated(followers.contains(studentId), SecurityService.hasRightOn(post, clientService.getToken(studentId)), post));
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+  }
+  public void broadcastRemove(Long postId) {
+    WSPSFeedPostRemoved packet = new WSPSFeedPostRemoved(postId);
+    for(Long studentId : clientService.getConnectedStudentIds())
+      try {
+        clientService.sendPacket(studentId, packet);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+  }
+  public void broadcastEdit(PostFormView editesPost) {
+    WSPSFeedPostEdited packet = new WSPSFeedPostEdited(editesPost);
+    for(Long studentId : clientService.getConnectedStudentIds())
+      try {
+        clientService.sendPacket(studentId, packet);
       } catch (IOException e) {
         e.printStackTrace();
       }

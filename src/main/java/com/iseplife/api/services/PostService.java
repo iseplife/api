@@ -206,8 +206,12 @@ public class PostService {
       removeEmbed(post.getEmbed());
       post.setEmbed(null);
     }
+    
+    Post postToReturn = postRepository.save(post);
+    
+    postsService.broadcastEdit(postFactory.toFormView(postToReturn));
 
-    return postRepository.save(post);
+    return postToReturn;
   }
 
   private void removeEmbed(Embedable embed) {
@@ -237,6 +241,8 @@ public class PostService {
       removeEmbed(embed);
 
     postRepository.deleteById(postID);
+
+    postsService.broadcastRemove(postID);
   }
 
   public void updatePostPinnedStatus(Long postID, Boolean pinned) {
