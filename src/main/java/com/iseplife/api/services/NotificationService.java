@@ -71,7 +71,7 @@ public class NotificationService {
 
           notif = notificationRepository.save(notif);
 
-          wsNotifService.broadcastNotification(getNotificationProjection(notif.getId()), notified);
+          wsNotifService.broadcastNotification(getNotificationProjection(notif.getId(), false), notified);
           webPushService.sendNotificationToAll(subs, notif.getPayload());
         }
       }
@@ -88,8 +88,8 @@ public class NotificationService {
         Sort.by(Sort.Direction.DESC, "creation"))
     );
   }
-  public NotificationProjection getNotificationProjection(Long id) {
-    return notificationRepository.findProjectionById(id);
+  public NotificationProjection getNotificationProjection(Long id, boolean watched) {
+    return notificationRepository.findProjectionById(id, watched);
   }
 
   public long countUnwatchedNotifications(Student student) {
