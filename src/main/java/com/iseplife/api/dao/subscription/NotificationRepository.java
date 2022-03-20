@@ -38,11 +38,11 @@ public interface NotificationRepository extends CrudRepository<Notification, Lon
   @Query(
     "select " +
       "n as notif, " +
-      ":watched as watched " +
+      "false as watched " +
     "from Notification n " +
     "where n.id = :id"
   )
-  NotificationProjection findProjectionById(Long id, boolean watched);
+  NotificationProjection findUnwatchedProjectionById(Long id);
 
 
   @Transactional
