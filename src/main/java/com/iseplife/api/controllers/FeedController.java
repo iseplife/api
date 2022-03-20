@@ -58,7 +58,7 @@ public class FeedController {
   }
   @GetMapping("/main/prevposts")
   @RolesAllowed({Roles.STUDENT})
-  public Page<PostProjection> getMainFeedPosts(@RequestParam(defaultValue = "0") Long lastDate){
+  public Page<PostProjection> getPreviousMainFeedPosts(@RequestParam(defaultValue = "0") Long lastDate){
     return feedService.getPreviousMainFeedPosts(lastDate).map(p -> {
       CommentProjection trendingComment = threadService.getTrendingComment(p.getThread());
 
