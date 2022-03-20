@@ -13,6 +13,7 @@ import com.iseplife.api.dto.post.view.PostFormView;
 import com.iseplife.api.services.SecurityService;
 import com.iseplife.api.websocket.packets.server.WSPSFeedPostCreated;
 import com.iseplife.api.websocket.packets.server.WSPSFeedPostEdited;
+import com.iseplife.api.websocket.packets.server.WSPSFeedPostLikesUpdate;
 import com.iseplife.api.websocket.packets.server.WSPSFeedPostRemoved;
 
 import lombok.RequiredArgsConstructor;
@@ -64,6 +65,15 @@ public class WSPostService {
   }
   public void broadcastEdit(PostFormView editesPost) {
     WSPSFeedPostEdited packet = new WSPSFeedPostEdited(editesPost);
+    for(Long studentId : clientService.getConnectedStudentIds())
+      try {
+        clientService.sendPacket(studentId, packet);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+  }
+  public void broadcastLikeChange(Long threadID, int likes) {
+    WSPSFeedPostLikesUpdate packet = new WSPSFeedPostLikesUpdate(threadID, likes);
     for(Long studentId : clientService.getConnectedStudentIds())
       try {
         clientService.sendPacket(studentId, packet);
