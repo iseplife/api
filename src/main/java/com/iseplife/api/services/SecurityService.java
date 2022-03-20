@@ -109,7 +109,7 @@ public class SecurityService {
             || (feed.getStudent() != null)
             || (feed.getClub() != null)
             || (feed.getGroup() != null && payload.getFeeds().contains(feed.getId()))
-            || (feed.getEvent() != null && feed.getEvent().getTargets().stream().anyMatch(f -> payload.getFeeds().contains(f.getId())));
+            || (feed.getEvent() != null && (feed.getEvent().getTargets().size() == 0 || feed.getEvent().getTargets().stream().anyMatch(f -> payload.getFeeds().contains(f.getId()))));
   }
   static public boolean hasReadAccess(Group group) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
