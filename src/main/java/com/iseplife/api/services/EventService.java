@@ -55,7 +55,6 @@ public class EventService {
   final private EventPositionRepository eventPositionRepository;
   final private WebClient http = WebClient.builder().build();
   final private WsEventService wsEventService;
-  final private EventFactory eventFactory;
   
   @Qualifier("FileHandlerBean") final private FileHandler fileHandler;
 
@@ -100,7 +99,7 @@ public class EventService {
           false, club, () -> eventRepository.findById(finalEvent.getId()) != null);
     }
     
-    wsEventService.broadcastNotification(eventFactory.toPreview(event));
+    wsEventService.broadcastEvent(event);
     
     return event;
   }
