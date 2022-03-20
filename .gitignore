@@ -27,3 +27,5 @@ storage
 lib
 
 bin
+
+.temp-*.txt
