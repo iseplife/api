@@ -57,7 +57,6 @@ public class PostService {
   @Lazy final private SecurityService securityService;
   @Lazy final private NotificationService notificationService;
   @Lazy final private WSPostService postsService;
-  @Lazy final private PostFactory postFactory;
   final private ModelMapper mapper;
   final private PostRepository postRepository;
 
@@ -120,7 +119,7 @@ public class PostService {
 
     Post postToReturn = postRepository.save(post);
     if(!dto.isDraft() && !customDate) {
-      postsService.broadcastPost(postFactory.toFormView(postToReturn));
+      postsService.broadcastPost(postToReturn);
       
       Map<String, Object> map = new HashMap<>(Map.of(
           "post_id", post.getId(),
@@ -209,7 +208,7 @@ public class PostService {
     
     Post postToReturn = postRepository.save(post);
     
-    postsService.broadcastEdit(postFactory.toFormView(postToReturn));
+    postsService.broadcastEdit(postToReturn);
 
     return postToReturn;
   }

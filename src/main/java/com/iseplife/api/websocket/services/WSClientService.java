@@ -64,6 +64,7 @@ public class WSClientService {
     Set<WebSocketSession> sessions = clients.get(id);
     for(WebSocketSession session : sessions)
       session.getAttributes().put("token", token);
+    tokens.put(id, token);
   }
   
   public void sendPacket(Long studentId, WSPacketOut packet) throws IOException {

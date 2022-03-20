@@ -9,7 +9,6 @@ import com.iseplife.api.constants.AuthorType;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.post.projection.CommentProjection;
 import com.iseplife.api.dao.post.projection.PostProjection;
-import com.iseplife.api.dto.post.view.PostFormView;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.feed.Feed;
@@ -61,15 +60,13 @@ public class SecurityService {
 
   static public boolean hasRightOn(Post post) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return hasRightOn(post, payload);
+  }
+
+  static public boolean hasRightOn(Post post, TokenPayload payload) {
     return userHasRole(Roles.ADMIN)
       || post.getAuthor().getId().equals(payload.getId())
       || post.getLinkedClub() != null && payload.getClubsPublisher().contains(post.getLinkedClub().getId());
-  }
-
-  static public boolean hasRightOn(PostFormView post, TokenPayload payload) {
-    return userHasRole(Roles.ADMIN)
-      || (post.getAuthor().getAuthorType() == AuthorType.STUDENT && payload.getId() == post.getAuthor().getId())
-      || (post.getAuthor().getAuthorType() == AuthorType.CLUB && payload.getClubsPublisher().contains(post.getAuthor().getId()));
   }
 
   static public boolean hasRightOn(PostProjection post) {
@@ -97,6 +94,7 @@ public class SecurityService {
   static public boolean hasRightOn(Feed feed) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
     return userHasRole(Roles.ADMIN)
+            || (feed.getGroup() != null && payload.getFeeds().contains(feed.getId()))
             || (feed.getClub() != null && payload.getClubsPublisher().contains(feed.getClub().getId()))
             || (feed.getEvent() != null && payload.getClubsPublisher().contains(feed.getEvent().getClub().getId()))
             || (feed.getStudent() != null && payload.getId().equals(feed.getStudent().getId()));
@@ -104,7 +102,11 @@ public class SecurityService {
 
   static public boolean hasReadAccess(Feed feed) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return hasReadAccess(feed, payload);
+  }
+  static public boolean hasReadAccess(Feed feed, TokenPayload payload) {
     return userHasRole(Roles.ADMIN)
+            || (feed.getStudent() != null)
             || (feed.getClub() != null)
             || (feed.getGroup() != null && payload.getFeeds().contains(feed.getId()))
             || (feed.getEvent() != null && feed.getEvent().getTargets().stream().anyMatch(f -> payload.getFeeds().contains(f.getId())));
