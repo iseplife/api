@@ -10,6 +10,7 @@ import java.util.Date;
 public class PostFormView {
   private Long id;
   private Long thread;
+  private Long feedId;
   private Date publicationDate;
   private String description;
   private EmbedView embed;

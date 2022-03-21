@@ -20,6 +20,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.NotificationType;
+import com.iseplife.api.dao.event.EventFactory;
 import com.iseplife.api.dao.event.EventPositionRepository;
 import com.iseplife.api.dao.event.EventPreviewProjection;
 import com.iseplife.api.dao.event.EventRepository;
@@ -35,6 +36,7 @@ import com.iseplife.api.entity.subscription.Notification;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import com.iseplife.api.services.fileHandler.FileHandler;
+import com.iseplife.api.websocket.services.WsEventService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -52,6 +54,7 @@ public class EventService {
   final private NotificationService notificationService;
   final private EventPositionRepository eventPositionRepository;
   final private WebClient http = WebClient.builder().build();
+  final private WsEventService wsEventService;
   
   @Qualifier("FileHandlerBean") final private FileHandler fileHandler;
 
@@ -95,7 +98,9 @@ public class EventService {
             ),
           false, club, () -> eventRepository.findById(finalEvent.getId()) != null);
     }
-
+    
+    wsEventService.broadcastEvent(event);
+    
     return event;
   }
 

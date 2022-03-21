@@ -3,6 +3,7 @@ package com.iseplife.api.services;
 import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.GroupType;
+import com.iseplife.api.dao.group.GroupFactory;
 import com.iseplife.api.dao.group.GroupMemberRepository;
 import com.iseplife.api.dao.group.GroupRepository;
 import com.iseplife.api.dto.group.GroupCreationDTO;
@@ -10,11 +11,12 @@ import com.iseplife.api.dto.group.GroupMemberDTO;
 import com.iseplife.api.dto.group.GroupUpdateDTO;
 import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.group.GroupMember;
-import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import com.iseplife.api.services.fileHandler.FileHandler;
+import com.iseplife.api.websocket.services.WSGroupService;
+
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -35,6 +37,8 @@ public class GroupService {
   final private GroupMemberRepository groupMemberRepository;
 
   final private SubscriptionService subService;
+  final private WSGroupService wsGroupService;
+  final private GroupFactory groupFactory;
 
   @Qualifier("FileHandlerBean") final private FileHandler fileHandler;
 
@@ -82,8 +86,10 @@ public class GroupService {
 
     group = groupRepository.save(group);
 
-    for(GroupMember member : group.getMembers())
+    for(GroupMember member : group.getMembers()) {
       subService.subscribe(group, member.getStudent(), false);
+      wsGroupService.sendJoin(groupFactory.toPreview(group), member.getStudent());
+    }
     
     return group;
   }
@@ -162,8 +168,10 @@ public class GroupService {
       throw new HttpBadRequestException("deletion_impossible");
     }
     
-    for(GroupMember member : group.getMembers())
+    for(GroupMember member : group.getMembers()) {
       subService.unsubscribe(group.getId(), member.getStudent().getId());
+      wsGroupService.sendLeave(group.getId(), member.getStudent());
+    }
 
     groupRepository.delete(group);
   }
@@ -209,6 +217,7 @@ public class GroupService {
     member = groupMemberRepository.save(member);
     
     subService.subscribe(group, member.getStudent(), false);
+    wsGroupService.sendJoin(groupFactory.toPreview(group), member.getStudent());
     
     return member;
   }
@@ -222,7 +231,8 @@ public class GroupService {
       throw new HttpBadRequestException("minimum_admins_size_required");
     
     subService.unsubscribe(groupMember.getGroup().getId(), groupMember.getStudent().getId());
-
+    wsGroupService.sendLeave(groupMember.getGroup().getId(), groupMember.getStudent());
+    
     groupMemberRepository.delete(groupMember);
     return true;
   }

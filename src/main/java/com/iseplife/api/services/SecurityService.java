@@ -1,22 +1,24 @@
 package com.iseplife.api.services;
 
-import com.iseplife.api.conf.jwt.TokenPayload;
-import com.iseplife.api.constants.Roles;
-import com.iseplife.api.dao.post.projection.CommentProjection;
-import com.iseplife.api.dao.post.projection.PostProjection;
-import com.iseplife.api.entity.group.Group;
-import com.iseplife.api.entity.club.Club;
-import com.iseplife.api.entity.event.Event;
-import com.iseplife.api.entity.feed.Feed;
-import com.iseplife.api.entity.post.Comment;
-import com.iseplife.api.entity.post.Post;
-import com.iseplife.api.entity.post.embed.Gallery;
-import com.iseplife.api.entity.post.embed.poll.Poll;
-import com.iseplife.api.entity.user.Student;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.constants.AuthorType;
+import com.iseplife.api.constants.Roles;
+import com.iseplife.api.dao.post.projection.CommentProjection;
+import com.iseplife.api.dao.post.projection.PostProjection;
+import com.iseplife.api.entity.club.Club;
+import com.iseplife.api.entity.event.Event;
+import com.iseplife.api.entity.feed.Feed;
+import com.iseplife.api.entity.group.Group;
+import com.iseplife.api.entity.post.Comment;
+import com.iseplife.api.entity.post.Post;
+import com.iseplife.api.entity.post.embed.Gallery;
+import com.iseplife.api.entity.user.Student;
+
+import lombok.RequiredArgsConstructor;
 
 
 @Service
@@ -58,6 +60,10 @@ public class SecurityService {
 
   static public boolean hasRightOn(Post post) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return hasRightOn(post, payload);
+  }
+
+  static public boolean hasRightOn(Post post, TokenPayload payload) {
     return userHasRole(Roles.ADMIN)
       || post.getAuthor().getId().equals(payload.getId())
       || post.getLinkedClub() != null && payload.getClubsPublisher().contains(post.getLinkedClub().getId());
@@ -88,6 +94,7 @@ public class SecurityService {
   static public boolean hasRightOn(Feed feed) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
     return userHasRole(Roles.ADMIN)
+            || (feed.getGroup() != null && payload.getFeeds().contains(feed.getId()))
             || (feed.getClub() != null && payload.getClubsPublisher().contains(feed.getClub().getId()))
             || (feed.getEvent() != null && payload.getClubsPublisher().contains(feed.getEvent().getClub().getId()))
             || (feed.getStudent() != null && payload.getId().equals(feed.getStudent().getId()));
@@ -95,10 +102,14 @@ public class SecurityService {
 
   static public boolean hasReadAccess(Feed feed) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return hasReadAccess(feed, payload);
+  }
+  static public boolean hasReadAccess(Feed feed, TokenPayload payload) {
     return userHasRole(Roles.ADMIN)
+            || (feed.getStudent() != null)
             || (feed.getClub() != null)
             || (feed.getGroup() != null && payload.getFeeds().contains(feed.getId()))
-            || (feed.getEvent() != null && feed.getEvent().getTargets().stream().anyMatch(f -> payload.getFeeds().contains(f.getId())));
+            || (feed.getEvent() != null && (feed.getEvent().getTargets().size() == 0 || feed.getEvent().getTargets().stream().anyMatch(f -> payload.getFeeds().contains(f.getId()))));
   }
   static public boolean hasReadAccess(Group group) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());

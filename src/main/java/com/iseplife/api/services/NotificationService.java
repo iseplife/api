@@ -23,6 +23,7 @@ import com.iseplife.api.entity.subscription.Notification;
 import com.iseplife.api.entity.subscription.Subscribable;
 import com.iseplife.api.entity.subscription.Subscription;
 import com.iseplife.api.entity.user.Student;
+import com.iseplife.api.websocket.services.WSNotificationService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class NotificationService {
   @Lazy private final WebPushService webPushService;
+  @Lazy private final WSNotificationService wsNotifService;
   private final SubscriptionRepository subscriptionRepository;
   private final NotificationRepository notificationRepository;
 
@@ -67,8 +69,9 @@ public class NotificationService {
           subs.forEach(s -> notified.add(s.getListener()));
           notif.setStudents(new ArrayList<>(notified));
 
-          notificationRepository.save(notif);
+          notif = notificationRepository.save(notif);
 
+          wsNotifService.broadcastNotification(getUnwatchedNotificationProjection(notif.getId()), notified);
           webPushService.sendNotificationToAll(subs, notif.getPayload());
         }
       }
@@ -84,6 +87,9 @@ public class NotificationService {
         NOTIFICATIONS_PER_PAGE,
         Sort.by(Sort.Direction.DESC, "creation"))
     );
+  }
+  public NotificationProjection getUnwatchedNotificationProjection(Long id) {
+    return notificationRepository.findUnwatchedProjectionById(id);
   }
 
   public long countUnwatchedNotifications(Student student) {

@@ -38,7 +38,6 @@ public class Subscription {
   @ManyToOne
   private Feed subscribedFeed;
 
-  @SuppressWarnings("JpaAttributeTypeInspection")
   @Any(
     fetch = FetchType.EAGER,
     metaColumn = @Column(name = "subscribed_type")

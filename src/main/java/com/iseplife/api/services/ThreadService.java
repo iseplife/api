@@ -17,6 +17,8 @@ import com.iseplife.api.entity.post.Like;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.CommentMaxDepthException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
+import com.iseplife.api.websocket.services.WSPostService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
@@ -34,6 +36,7 @@ public class ThreadService {
   final private ThreadRepository threadRepository;
   final private CommentRepository commentRepository;
   final private LikeRepository likeRepository;
+  final private WSPostService postService;
 
   public Thread getThread(Long id) {
     Optional<Thread> thread = threadRepository.findById(id);
@@ -79,17 +82,21 @@ public class ThreadService {
     Like like = likeRepository.findOneByThreadIdAndStudentId(threadID, studentID);
 
     //TODO: check permissions
-    if (like != null) {
-      likeRepository.delete(like);
-
-      return false;
-    } else {
-      like = new Like();
-      like.setStudent(studentService.getStudent(studentID));
-      like.setThread(getThread(threadID));
-      likeRepository.save(like);
-
-      return true;
+    try {
+      if (like != null) {
+        likeRepository.delete(like);
+  
+        return false;
+      } else {
+        like = new Like();
+        like.setStudent(studentService.getStudent(studentID));
+        like.setThread(getThread(threadID));
+        likeRepository.save(like);
+  
+        return true;
+      }
+    } finally {
+      postService.broadcastLikeChange(threadID, likeRepository.countByThreadId(threadID));
     }
   }
 

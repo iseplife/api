@@ -56,11 +56,36 @@ public class FeedController {
       );
     });
   }
+  @GetMapping("/main/prevposts")
+  @RolesAllowed({Roles.STUDENT})
+  public Page<PostProjection> getPreviousMainFeedPosts(@RequestParam(defaultValue = "0") Long lastDate){
+    return feedService.getPreviousMainFeedPosts(lastDate).map(p -> {
+      CommentProjection trendingComment = threadService.getTrendingComment(p.getThread());
+
+      return factory.toView(
+          p,
+          threadService.isLiked(p.getThread()),
+          trendingComment == null ? null : commentFactory.toView(trendingComment, threadService.isLiked(trendingComment.getThread()))
+      );
+    });
+  }
 
   @GetMapping("/{id}/post")
   @RolesAllowed({Roles.STUDENT})
   public Page<PostProjection> getFeedPosts(@PathVariable Long id, @RequestParam(defaultValue = "0") int page) {
     return feedService.getFeedPosts(id, page).map(p -> {
+      CommentProjection trendingComment = threadService.getTrendingComment(p.getThread());
+      return factory.toView(
+          p,
+          threadService.isLiked(p.getThread()),
+          trendingComment == null ? null : commentFactory.toView(trendingComment, threadService.isLiked(trendingComment.getThread()))
+      );
+    });
+  }
+  @GetMapping("/{id}/prevposts")
+  @RolesAllowed({Roles.STUDENT})
+  public Page<PostProjection> getPreviousFeedPosts(@PathVariable Long id, @RequestParam(defaultValue = "0") Long lastDate) {
+    return feedService.getPreviousFeedPosts(id, lastDate).map(p -> {
       CommentProjection trendingComment = threadService.getTrendingComment(p.getThread());
       return factory.toView(
           p,
