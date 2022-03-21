@@ -16,7 +16,7 @@ public class EventDTO {
   private Date endsAt;
   private Long club;
   private Long previousEditionId;
-  private String ticketUrl;
+  private String ticketURL;
   private Float price;
   private Date published;
   private boolean closed;
