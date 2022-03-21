@@ -25,7 +25,6 @@ public class PacketHandler {
         {
             handlers.computeIfAbsent(annotation.clazz(), a -> new CopyOnWriteArrayList<Handled>());
             handlers.get(annotation.clazz()).add(new Handled(m, listener));
-            System.out.println("Handle for "+parameters[0]+" in "+listener);
         }
       }
     }
