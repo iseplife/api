@@ -42,21 +42,27 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class MediaService {
-  @Lazy final private StudentService studentService;
-  @Lazy final private ClubService clubService;
+  @Lazy
+  final private StudentService studentService;
+  @Lazy
+  final private ClubService clubService;
   final private MediaRepository mediaRepository;
   final private MatchedRepository matchedRepository;
   final private ImageRepository imageRepository;
   final private StudentRepository studentRepository;
   final private ClubRepository clubRepository;
 
-  @Qualifier("FileHandlerBean") final private FileHandler fileHandler;
+  @Qualifier("FileHandlerBean")
+  final private FileHandler fileHandler;
 
   @Value("${media_limit.club}")
   private Integer DAILY_CLUB_MEDIA;
 
   @Value("${media_limit.user}")
   private Integer DAILY_USER_MEDIA;
+
+  @Value("${media_limit.size}")
+  private Long MEDIA_MAX_SIZE;
 
   final private static int PHOTOS_PER_PAGE = 30;
 
@@ -113,17 +119,24 @@ public class MediaService {
     if (gallery && club <= 0)
       throw new HttpForbiddenException("insufficient_rights");
 
+    if(file.getSize() > MEDIA_MAX_SIZE)
+      throw new HttpBadRequestException("file_to_big");
+
     if (isAllowedToCreateMedia(author)) {
       String name, mime = file.getContentType().split("/")[0];
       Media media;
       switch (mime) {
         case "video":
           media = new Video();
-          name = fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("video").path, false, Collections.EMPTY_MAP);
+          name = fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("video").path, false,
+            Map.of(
+              "process", "compress"
+            )
+          );
           break;
         case "image":
           media = new Image();
-          ((Image)media).setThread(new Thread(ThreadType.MEDIA));
+          ((Image) media).setThread(new Thread(ThreadType.MEDIA));
           if (gallery) {
             name = fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("gallery").path, false,
               Map.of(
