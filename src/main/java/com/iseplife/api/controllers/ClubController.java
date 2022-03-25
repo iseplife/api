@@ -35,7 +35,6 @@ import com.iseplife.api.dto.club.ClubDTO;
 import com.iseplife.api.dto.club.ClubMemberCreationDTO;
 import com.iseplife.api.dto.club.ClubMemberDTO;
 import com.iseplife.api.dto.club.view.ClubAdminView;
-import com.iseplife.api.dto.club.view.ClubMemberPreview;
 import com.iseplife.api.dto.club.view.ClubPreview;
 import com.iseplife.api.dto.club.view.ClubView;
 import com.iseplife.api.dto.gallery.view.GalleryPreview;
@@ -135,14 +134,6 @@ public class ClubController {
   @RolesAllowed({Roles.STUDENT})
   public ClubMemberProjection addMember(@PathVariable Long id, @RequestBody ClubMemberCreationDTO dto) {
     return factory.toView(clubService.addMember(id, dto));
-  }
-
-  @GetMapping("/student/{id}")
-  @RolesAllowed({Roles.STUDENT})
-  public List<ClubMemberPreview> getStudentClubs(@PathVariable Long id) {
-    return clubService.getStudentClubs(id).stream()
-      .map(factory::toPreview)
-      .collect(Collectors.toList());
   }
 
   @PutMapping("/member/{member}")

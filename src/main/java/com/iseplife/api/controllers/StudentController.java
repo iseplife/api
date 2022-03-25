@@ -1,27 +1,53 @@
 package com.iseplife.api.controllers;
 
+import java.util.List;
+import java.util.Set;
+
+import javax.annotation.security.RolesAllowed;
+
+import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
+import com.iseplife.api.dao.club.projection.ClubMemberStudentProjection;
 import com.iseplife.api.dao.post.projection.PostProjection;
 import com.iseplife.api.dao.student.StudentFactory;
 import com.iseplife.api.dto.student.StudentDTO;
 import com.iseplife.api.dto.student.StudentSettingsDTO;
 import com.iseplife.api.dto.student.StudentUpdateAdminDTO;
-import com.iseplife.api.dto.student.view.*;
+import com.iseplife.api.dto.student.view.LoggedStudentPreview;
+import com.iseplife.api.dto.student.view.StudentAdminView;
+import com.iseplife.api.dto.student.view.StudentOverview;
+import com.iseplife.api.dto.student.view.StudentPictures;
+import com.iseplife.api.dto.student.view.StudentPreviewAdmin;
+import com.iseplife.api.dto.student.view.StudentView;
+import com.iseplife.api.dto.view.MatchedView;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.dto.view.MatchedView;
-import com.iseplife.api.services.*;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import com.iseplife.api.services.ClubService;
+import com.iseplife.api.services.MediaService;
+import com.iseplife.api.services.NotificationService;
+import com.iseplife.api.services.PostService;
+import com.iseplife.api.services.SecurityService;
+import com.iseplife.api.services.StudentImportService;
+import com.iseplife.api.services.StudentService;
+import com.iseplife.api.services.SubscriptionService;
 
-import javax.annotation.security.RolesAllowed;
-import java.util.List;
-import java.util.Set;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/student")
@@ -31,9 +57,11 @@ public class StudentController {
   final private StudentImportService studentImportService;
   final private MediaService mediaService;
   final private StudentService studentService;
+  final private ClubService clubService;
   final private NotificationService notificationService;
   final private StudentFactory factory;
-
+  final private SubscriptionService subscriptionService;
+  
   @GetMapping("/me")
   @RolesAllowed({Roles.STUDENT})
 
@@ -51,7 +79,8 @@ public class StudentController {
   @GetMapping("/{id}")
   @RolesAllowed({Roles.STUDENT})
   public StudentOverview getStudent(@PathVariable Long id) {
-    return factory.toOverview(studentService.getStudent(id));
+    Student student = studentService.getStudent(id);
+    return factory.toOverview(student, subscriptionService.getSubscriptionProjection(student));
   }
 
   @PostMapping("/me/picture")
@@ -76,6 +105,12 @@ public class StudentController {
   @RolesAllowed({Roles.STUDENT})
   public Page<MatchedView> getPhotosStudent(@PathVariable Long id, @RequestParam(defaultValue = "0") int page) {
     return mediaService.getPhotosTaggedByStudent(id, page);
+  }
+  
+  @GetMapping("/{id}/clubs")
+  @RolesAllowed({Roles.STUDENT})
+  public List<ClubMemberStudentProjection> getStudentClubs(@PathVariable Long id) {
+    return clubService.getStudentClubs(id);
   }
 
   @PutMapping("/{id}/archive")

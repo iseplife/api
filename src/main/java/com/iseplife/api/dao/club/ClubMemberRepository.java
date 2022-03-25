@@ -1,14 +1,16 @@
 package com.iseplife.api.dao.club;
 
-import com.iseplife.api.dao.club.projection.ClubMemberProjection;
-import com.iseplife.api.entity.club.Club;
-import com.iseplife.api.entity.club.ClubMember;
-import com.iseplife.api.constants.ClubRole;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import com.iseplife.api.constants.ClubRole;
+import com.iseplife.api.dao.club.projection.ClubMemberProjection;
+import com.iseplife.api.dao.club.projection.ClubMemberStudentProjection;
+import com.iseplife.api.entity.club.Club;
+import com.iseplife.api.entity.club.ClubMember;
 
 @Repository
 public interface ClubMemberRepository extends CrudRepository<ClubMember, Long> {
@@ -26,7 +28,7 @@ public interface ClubMemberRepository extends CrudRepository<ClubMember, Long> {
 
   ClubMember findOneByStudentIdAndClubId(Long student_id, Long club_id);
 
-  List<ClubMember> findByStudentId(Long student_id);
+  List<ClubMemberStudentProjection> findByStudentId(Long student_id);
 
   @Query(
     "select count(cm.id) from ClubMember cm " +
