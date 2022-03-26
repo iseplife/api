@@ -36,6 +36,7 @@ public interface PostRepository extends CrudRepository<Post, Long> {
     "order by p.publicationDate desc"
   )
   Page<PostProjection> findHomepagePosts(Long loggedStudent, Pageable pageable);
+
   @Query(
       "select distinct " +
         "p as post, " +

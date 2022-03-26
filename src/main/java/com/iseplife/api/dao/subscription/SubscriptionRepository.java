@@ -22,17 +22,23 @@ public interface SubscriptionRepository extends CrudRepository<Subscription, Lon
   @Query("select s from Subscription s where " +
     "s.listener.id = ?2 and s.subscribed.id = ?1")
   Subscription findBySubscribedIdAndListenerId(Long id, Long listenerID);
-  
+
   @Query("select s.subscribedFeed.id from Subscription s where " +
     "s.listener.id = ?1")
   List<Long> findFeedsByListenerId(Long listenerID);
-  
+
   @Query("select s.subscribedFeed.id from Subscription s where " +
     "s.listener.id = ?2 and s.listener.id = ?1")
   Long findFeedBySubscribedIdAndListenerId(Long id, Long listenerID);
-  
 
-  boolean existsBySubscribedAndListener_Id(Subscribable sub, Long listenerID);
+  @Query(
+    "select " +
+      "case when count(sub)> 0 then true else false end " +
+    "from Subscription sub where " +
+      "sub.listener.id = :sub and " +
+      "sub.subscribed = :listener"
+  )
+  boolean existsBySubscribedAndListener_Id(Subscribable sub, Long listener);
 
   @Query("select s from Subscription s where " +
       "s.listener.id = ?2 and s.subscribed.id = ?1")
