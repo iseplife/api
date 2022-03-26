@@ -31,7 +31,7 @@ public interface PostRepository extends CrudRepository<Post, Long> {
       "join Student s on s.id = :loggedStudent " +
       "join s.subscriptions subs " +
     "where (p.feed.id = subs.subscribedFeed.id or p.forcedHomepage = true) " +
-      "and p.state = 'READY' and p.pinned = false " +
+      "and p.state = 'READY'" +
       "and (p.publicationDate <= now() or p.author.id = :loggedStudent) " +
     "order by p.publicationDate desc"
   )

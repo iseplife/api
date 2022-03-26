@@ -14,6 +14,7 @@ import com.iseplife.api.dto.student.view.*;
 import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.feed.Feed;
+import com.iseplife.api.entity.subscription.Subscription;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.dao.student.RoleRepository;
@@ -25,6 +26,7 @@ import com.iseplife.api.utils.MediaUtils;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class StudentService {
   final private ModelMapper mapper;
+  @Lazy private SubscriptionService subscriptionService;
   final private StudentRepository studentRepository;
   final private GroupRepository groupRepository;
   final private RoleRepository roleRepository;
@@ -70,6 +73,7 @@ public class StudentService {
     return students;
   }
 
+
   public Student hydrateStudent(Student student, CASUserDTO user) {
     student.setId(user.getNumero());
     student.setFirstName(user.getPrenom());
@@ -78,11 +82,6 @@ public class StudentService {
 
     String[] titre = user.getTitre().split("-");
     student.setPromo(Integer.valueOf(titre[2]));
-
-    if (student.getRoles() == null || student.getRoles().size() == 0)
-      student.setRoles(Collections.singleton(roleRepository.findByRole(Roles.STUDENT)));
-    if (student.getFeed() == null)
-      student.setFeed(new Feed(student.getName()));
 
     return studentRepository.save(student);
   }
@@ -102,7 +101,10 @@ public class StudentService {
     student.setRoles(roleRepository.findAllByRoleIn(dto.getRoles()));
     student.setFeed(new Feed(student.getName()));
 
-    return studentRepository.save(student);
+    student = studentRepository.save(student);
+    subscriptionService.subscribe(student, student, false);
+
+    return student;
   }
 
 

@@ -31,18 +31,21 @@ public interface SubscriptionRepository extends CrudRepository<Subscription, Lon
     "s.listener.id = ?2 and s.listener.id = ?1")
   Long findFeedBySubscribedIdAndListenerId(Long id, Long listenerID);
   
+
+  boolean existsBySubscribedAndListener_Id(Subscribable sub, Long listenerID);
+
   @Query("select s from Subscription s where " +
       "s.listener.id = ?2 and s.subscribed.id = ?1")
   SubscriptionProjection findProjectionBySubscribedIdAndListenerId(Long id, Long listenerID);
-  
+
   @Query("select s from Subscription s where " +
       "s.listener.id = ?2 and s.subscribed = ?1")
   SubscriptionProjection findProjectionBySubscribedAndListenerId(Subscribable subable, Long listenerID);
-  
+
   @Query("select s from Subscription s where " +
       "s.subscribed.id = ?1")
   List<Subscription> findBySubscribedId(Long id);
-  
+
   @Query("select s from Subscription s where " +
       "s.subscribed = ?1")
   List<Subscription> findBySubscribed(Subscribable subable);
