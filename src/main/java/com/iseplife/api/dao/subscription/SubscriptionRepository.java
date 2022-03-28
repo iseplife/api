@@ -35,8 +35,8 @@ public interface SubscriptionRepository extends CrudRepository<Subscription, Lon
     "select " +
       "case when count(sub)> 0 then true else false end " +
     "from Subscription sub where " +
-      "sub.listener.id = :sub and " +
-      "sub.subscribed = :listener"
+      "sub.listener.id = :listener and " +
+      "sub.subscribed = :sub"
   )
   boolean existsBySubscribedAndListener_Id(Subscribable sub, Long listener);
 
