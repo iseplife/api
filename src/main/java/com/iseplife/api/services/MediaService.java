@@ -55,14 +55,15 @@ public class MediaService {
   @Qualifier("FileHandlerBean")
   final private FileHandler fileHandler;
 
-  @Value("${media_limit.club}")
+  @Value("${media_limit.club.amount}")
   private Integer DAILY_CLUB_MEDIA;
+  @Value("${media_limit.club.max_size}")
+  private Long CLUB_MEDIA_MAX_SIZE;
 
-  @Value("${media_limit.user}")
+  @Value("${media_limit.user.amount}")
   private Integer DAILY_USER_MEDIA;
-
-  @Value("${media_limit.size}")
-  private Long MEDIA_MAX_SIZE;
+  @Value("${media_limit.user.max_size}")
+  private Long USER_MEDIA_MAX_SIZE;
 
   final private static int PHOTOS_PER_PAGE = 30;
 
@@ -82,10 +83,14 @@ public class MediaService {
     return img.get();
   }
 
-  private Boolean isAllowedToCreateMedia(Author author) {
+  private Boolean isAllowedToCreateMedia(Author author, Long fileSize) {
     boolean isStudent = author instanceof Student;
     if (!isStudent && !SecurityService.hasRightOn((Club) author))
       throw new HttpForbiddenException("insufficient_rights");
+
+    if(fileSize > (isStudent ? USER_MEDIA_MAX_SIZE: CLUB_MEDIA_MAX_SIZE) )
+      throw new HttpBadRequestException("file_to_big");
+
 
     if (author.getMediaCooldown() == null || Duration.between(author.getMediaCooldown().toInstant(), Instant.now()).toHours() > 24) {
       author.setMediaCooldown(new Date());
@@ -119,10 +124,7 @@ public class MediaService {
     if (gallery && club <= 0)
       throw new HttpForbiddenException("insufficient_rights");
 
-    if(file.getSize() > MEDIA_MAX_SIZE)
-      throw new HttpBadRequestException("file_to_big");
-
-    if (isAllowedToCreateMedia(author)) {
+    if (isAllowedToCreateMedia(author, file.getSize())) {
       String name, mime = file.getContentType().split("/")[0];
       Media media;
       switch (mime) {
