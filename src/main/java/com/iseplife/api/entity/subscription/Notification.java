@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -46,6 +47,7 @@ public class Notification {
   @NonNull
   private String link;
 
+  @Column(columnDefinition = "TEXT")
   @NonNull
   @Convert(converter = JpaConverterJson.class)
   private Map<String, Object> informations;
