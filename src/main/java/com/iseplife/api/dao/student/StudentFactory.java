@@ -2,6 +2,7 @@ package com.iseplife.api.dao.student;
 
 import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.dao.subscription.projection.NotificationCountProjection;
+import com.iseplife.api.dao.subscription.projection.SubscriptionProjection;
 import com.iseplife.api.dto.student.view.*;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
@@ -101,8 +102,10 @@ public class StudentFactory {
     return mapper.map(student, StudentAdminView.class);
   }
 
-  public StudentOverview toOverview(Student student) {
-    return mapper.map(student, StudentOverview.class);
+  public StudentOverview toOverview(Student student, SubscriptionProjection subscription) {
+    StudentOverview overview = mapper.map(student, StudentOverview.class);
+    overview.setSubscribed(subscription);
+    return overview;
   }
 
 }

@@ -1,31 +1,13 @@
 package com.iseplife.api.services;
 
-import com.iseplife.api.conf.StorageConfig;
-import com.iseplife.api.conf.jwt.TokenPayload;
-import com.iseplife.api.constants.ThreadType;
-import com.iseplife.api.dao.club.ClubRepository;
-import com.iseplife.api.dao.student.StudentRepository;
-import com.iseplife.api.dto.view.MatchedView;
-import com.iseplife.api.entity.Author;
-import com.iseplife.api.entity.Thread;
-import com.iseplife.api.entity.club.Club;
-import com.iseplife.api.entity.post.embed.media.Image;
-import com.iseplife.api.entity.post.embed.media.Matched;
-import com.iseplife.api.entity.post.embed.media.Document;
-import com.iseplife.api.entity.post.embed.Gallery;
-import com.iseplife.api.entity.post.embed.media.Media;
-import com.iseplife.api.entity.post.embed.media.Video;
-import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.constants.Roles;
-import com.iseplife.api.dao.media.image.ImageRepository;
-import com.iseplife.api.dao.media.image.MatchedRepository;
-import com.iseplife.api.dao.media.MediaRepository;
-import com.iseplife.api.exceptions.*;
-import com.iseplife.api.exceptions.http.HttpBadRequestException;
-import com.iseplife.api.exceptions.http.HttpForbiddenException;
-import com.iseplife.api.exceptions.http.HttpNotFoundException;
-import com.iseplife.api.services.fileHandler.FileHandler;
-import lombok.RequiredArgsConstructor;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -34,9 +16,33 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.util.*;
+import com.iseplife.api.conf.StorageConfig;
+import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.constants.Roles;
+import com.iseplife.api.constants.ThreadType;
+import com.iseplife.api.dao.club.ClubRepository;
+import com.iseplife.api.dao.media.MediaRepository;
+import com.iseplife.api.dao.media.image.ImageRepository;
+import com.iseplife.api.dao.media.image.MatchedRepository;
+import com.iseplife.api.dao.student.StudentRepository;
+import com.iseplife.api.dto.view.MatchedView;
+import com.iseplife.api.entity.Author;
+import com.iseplife.api.entity.Thread;
+import com.iseplife.api.entity.club.Club;
+import com.iseplife.api.entity.post.embed.Gallery;
+import com.iseplife.api.entity.post.embed.media.Document;
+import com.iseplife.api.entity.post.embed.media.Image;
+import com.iseplife.api.entity.post.embed.media.Matched;
+import com.iseplife.api.entity.post.embed.media.Media;
+import com.iseplife.api.entity.post.embed.media.Video;
+import com.iseplife.api.entity.user.Student;
+import com.iseplife.api.exceptions.MediaMaxUploadException;
+import com.iseplife.api.exceptions.http.HttpBadRequestException;
+import com.iseplife.api.exceptions.http.HttpForbiddenException;
+import com.iseplife.api.exceptions.http.HttpNotFoundException;
+import com.iseplife.api.services.fileHandler.FileHandler;
+
+import lombok.RequiredArgsConstructor;
 
 
 @Service

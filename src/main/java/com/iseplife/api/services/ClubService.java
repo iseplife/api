@@ -1,37 +1,46 @@
 package com.iseplife.api.services;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.constants.ClubRole;
+import com.iseplife.api.constants.Roles;
+import com.iseplife.api.dao.club.ClubMemberRepository;
+import com.iseplife.api.dao.club.ClubRepository;
 import com.iseplife.api.dao.club.projection.ClubMemberProjection;
+import com.iseplife.api.dao.club.projection.ClubMemberStudentProjection;
 import com.iseplife.api.dao.student.projection.StudentPreviewProjection;
 import com.iseplife.api.dto.club.ClubAdminDTO;
 import com.iseplife.api.dto.club.ClubDTO;
 import com.iseplife.api.dto.club.ClubMemberCreationDTO;
 import com.iseplife.api.dto.club.ClubMemberDTO;
-import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.club.ClubMember;
+import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.constants.ClubRole;
-import com.iseplife.api.constants.Roles;
-import com.iseplife.api.dao.club.ClubMemberRepository;
-import com.iseplife.api.dao.club.ClubRepository;
-import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpBadRequestException;
+import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import com.iseplife.api.services.fileHandler.FileHandler;
-import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.data.domain.Page;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.cache.annotation.Cacheable;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -264,7 +273,7 @@ public class ClubService {
     clubRepository.save(club);
   }
 
-  public List<ClubMember> getStudentClubs(Long id) {
+  public List<ClubMemberStudentProjection> getStudentClubs(Long id) {
     return clubMemberRepository.findByStudentId(id);
   }
 

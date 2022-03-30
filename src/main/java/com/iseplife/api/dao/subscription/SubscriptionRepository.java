@@ -28,7 +28,7 @@ public interface SubscriptionRepository extends CrudRepository<Subscription, Lon
   List<Long> findFeedsByListenerId(Long listenerID);
   
   @Query("select s.subscribedFeed.id from Subscription s where " +
-    "s.listener.id = ?2 and s.listener.id = ?1")
+    "s.listener.id = ?2 and s.subscribed.id = ?1")
   Long findFeedBySubscribedIdAndListenerId(Long id, Long listenerID);
   
   @Query("select s from Subscription s where " +
