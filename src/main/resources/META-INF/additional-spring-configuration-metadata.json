@@ -80,6 +80,11 @@
       "name": "auth.auto-generation",
       "type": "java.lang.Boolean",
       "description": "Automatically create account if LDAP's account exist but not on database."
+    },
+    {
+      "name": "media_limit.size",
+      "type": "java.lang.Long",
+      "description": "Media max size allowed on upload in bytes."
     }
   ]
 }

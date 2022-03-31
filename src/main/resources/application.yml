@@ -24,6 +24,7 @@ logging:
     com.iseplife.api: INFO
 
 media_limit:
+  size:       ${MEDIA_MAX_SIZE:1073741824}  # default 1GB
   club:       ${CLUB_MEDIA_LIMIT:2000}
   user:       ${USER_MEDIA_LIMIT:15}
 

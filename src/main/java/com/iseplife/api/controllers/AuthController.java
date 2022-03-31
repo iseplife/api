@@ -3,7 +3,9 @@ package com.iseplife.api.controllers;
 import com.iseplife.api.conf.jwt.JwtAuthRequest;
 import com.iseplife.api.conf.jwt.JwtTokenUtil;
 import com.iseplife.api.conf.jwt.TokenSet;
+import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dto.ISEPCAS.CASUserDTO;
+import com.iseplife.api.dto.student.StudentDTO;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -52,7 +55,18 @@ public class AuthController {
     } catch (HttpNotFoundException e) {
       if (autoGeneration) {
         LOG.info("User {} {} not found but pass authentication, creating account", user.getPrenom(), user.getPrenom());
-        student = new Student();
+        student = studentService.createStudent(
+          StudentDTO.builder()
+            .id(user.getNumero())
+            .firstName(user.getPrenom())
+            .lastName(user.getNom())
+            .mail(user.getMail())
+            .promo(Integer.valueOf(user.getTitre().split("-")[2]))
+            .roles(Collections.singletonList(Roles.STUDENT))
+            .build()
+        );
+
+        return jwtTokenUtil.generateToken(student);
       } else {
         throw new HttpUnauthorizedException("authentification_failed");
       }

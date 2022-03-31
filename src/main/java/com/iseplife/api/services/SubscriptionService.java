@@ -2,6 +2,7 @@ package com.iseplife.api.services;
 
 import java.util.List;
 
+import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -62,11 +63,15 @@ public class SubscriptionService {
     return subscriptionRepository.findFeedsByListenerId(studentId);
   }
   public void subscribe(Subscribable subable, Student student, boolean extensive) {
+    if(subscriptionRepository.existsBySubscribedAndListener_Id(subable, student.getId()))
+      throw new HttpBadRequestException("already_subscribed");
+
     Subscription sub = new Subscription();
     sub.setListener(student);
     sub.setSubscribed(subable);
     sub.setSubscribedFeed(subable.getFeed());
     sub.setExtensive(extensive);
+
     subscriptionRepository.save(sub);
     
     postService.addStudentToFeed(student.getId(), subable.getFeed().getId());

@@ -102,8 +102,9 @@ public class EventController {
 
   @PutMapping("/{id}")
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
-  public Event updateEvent(@PathVariable Long id, @RequestBody EventDTO dto) {
-    return eventService.updateEvent(id, dto);
+  public EventView updateEvent(@PathVariable Long id, @RequestBody EventDTO dto) {
+    Event event = eventService.updateEvent(id, dto);
+    return factory.toView(event, subscriptionService.getSubscriptionProjection(event));
   }
 
   @DeleteMapping("/{id}")

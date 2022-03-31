@@ -55,5 +55,6 @@ public class Subscription {
   @JoinColumn(name = "subscribed_id")
   private Subscribable subscribed;
 
+  // Whether the user also want to get notification from the subscribable
   private boolean extensive;
 }

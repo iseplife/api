@@ -63,6 +63,7 @@ public class MediaFactory {
     view.setNSFW(media.isNSFW());
     view.setName(media.getName());
     view.setEmbedType(media.getEmbedType());
+    view.setStatus(media.getStatus());
     return view;
   }
 }

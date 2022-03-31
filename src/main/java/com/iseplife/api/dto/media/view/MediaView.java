@@ -1,5 +1,6 @@
 package com.iseplife.api.dto.media.view;
 
+import com.iseplife.api.constants.MediaStatus;
 import com.iseplife.api.dto.view.EmbedView;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,4 +14,5 @@ public class MediaView extends EmbedView {
   protected Date creation;
   protected String name;
   protected boolean NSFW;
+  protected MediaStatus status;
 }
