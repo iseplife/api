@@ -19,7 +19,6 @@ import com.iseplife.api.services.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
@@ -37,7 +36,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class JwtTokenUtil {
-  final private HttpServletResponse response;
   final private StudentRepository studentRepository;
   final private StudentService studentService;
   final private ClubService clubService;
@@ -73,21 +71,13 @@ public class JwtTokenUtil {
     throw new JWTVerificationException("invalid token");
   }
 
-  public TokenSet generateToken(Student student) {
+  public TokenSet generateTokenSet(Student student) {
     TokenPayload tokenPayload = generatePayload(student);
     String token = generateToken(tokenPayload);
     String refreshToken = generateRefreshToken(tokenPayload);
 
     student.setLastConnection(new Date());
     studentRepository.save(student);
-
-    Cookie cRefreshToken = new Cookie("refresh-token", refreshToken);
-    cRefreshToken.setMaxAge(refreshTokenDuration);
-    cRefreshToken.setPath("/");
-    cRefreshToken.setHttpOnly(true);
-    cRefreshToken.setSecure(true);
-
-    response.addCookie(cRefreshToken);
 
     return new TokenSet(token, refreshToken);
   }
@@ -125,7 +115,7 @@ public class JwtTokenUtil {
           .withIssuer(issuer)
           .build(); //Reusable verifier instance
         verifier.verify(token);
-        return generateToken(student);
+        return generateTokenSet(student);
       }
     } catch (JWTVerificationException | HttpBadRequestException e) {
       LOG.error("could not refresh token", e);

@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class WSPSGroupLeft extends WSPacketOut {
-  
+
   private final Long id;
   private final TokenSet jwt;
 

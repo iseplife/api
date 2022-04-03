@@ -22,7 +22,7 @@ public class WSGroupService {
   private final JwtTokenUtil jwtTokenUtil;
 
   public void sendJoin(GroupPreview group, Student student) {
-    TokenSet token = jwtTokenUtil.generateToken(student);
+    TokenSet token = jwtTokenUtil.generateTokenSet(student);
     WSPSGroupJoined packet = new WSPSGroupJoined(group, token);
     clientService.updateToken(student.getId(), jwtTokenUtil.getPayload(jwtTokenUtil.decodeToken(token.getToken())));
     try {
@@ -32,7 +32,7 @@ public class WSGroupService {
     }
   }
   public void sendLeave(Long id, Student student) {
-    TokenSet token = jwtTokenUtil.generateToken(student);
+    TokenSet token = jwtTokenUtil.generateTokenSet(student);
     WSPSGroupLeft packet = new WSPSGroupLeft(id, token);
     try {
       clientService.updateToken(student.getId(), jwtTokenUtil.getPayload(jwtTokenUtil.decodeToken(token.getToken())));
