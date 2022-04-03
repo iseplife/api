@@ -87,14 +87,14 @@ public class GroupService {
     Group group = mapper.map(dto, Group.class);
 
     group.setMembers(createGroupAdminMembers(dto.getAdmins(), group));
-
     group = groupRepository.save(group);
+    this.evictUserGroupsCache(group);
 
     for(GroupMember member : group.getMembers()) {
       subService.subscribe(group, member.getStudent(), false);
       wsGroupService.sendJoin(groupFactory.toPreview(group), member.getStudent());
     }
-    
+
     return group;
   }
 
@@ -174,7 +174,7 @@ public class GroupService {
       throw new HttpBadRequestException("deletion_impossible");
     }
     this.evictUserGroupsCache(group);
-    
+
     for(GroupMember member : group.getMembers()) {
       subService.unsubscribe(group.getId(), member.getStudent().getId());
       wsGroupService.sendLeave(group.getId(), member.getStudent());
@@ -213,7 +213,7 @@ public class GroupService {
     Group group = getGroup(id);
     if (!SecurityService.hasRightOn(group))
       throw new HttpForbiddenException("insufficient_rights");
-    
+
     if(groupMemberRepository.isMemberOfGroup(id, dto.getStudentId()))
       throw new HttpBadRequestException("student_already_in_group");
 
@@ -223,10 +223,10 @@ public class GroupService {
     member.setGroup(group);
 
     member = groupMemberRepository.save(member);
-    
+
     subService.subscribe(group, member.getStudent(), false);
     wsGroupService.sendJoin(groupFactory.toPreview(group), member.getStudent());
-    
+
     return member;
   }
 
@@ -238,10 +238,10 @@ public class GroupService {
 
     if (groupMember.isAdmin() && groupMemberRepository.findGroupAdminCount(groupMember.getGroup()) < 1)
       throw new HttpBadRequestException("minimum_admins_size_required");
-    
+
     subService.unsubscribe(groupMember.getGroup().getId(), groupMember.getStudent().getId());
     wsGroupService.sendLeave(groupMember.getGroup().getId(), groupMember.getStudent());
-    
+
     groupMemberRepository.delete(groupMember);
     return true;
   }
