@@ -1,5 +1,6 @@
 package com.iseplife.api.services;
 
+import com.iseplife.api.constants.FeedType;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -93,11 +94,21 @@ public class SecurityService {
 
   static public boolean hasRightOn(Feed feed) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-    return userHasRole(Roles.ADMIN)
-            || (feed.getGroup() != null && payload.getFeeds().contains(feed.getId()))
-            || (feed.getClub() != null && payload.getClubsPublisher().contains(feed.getClub().getId()))
-            || (feed.getEvent() != null && payload.getClubsPublisher().contains(feed.getEvent().getClub().getId()))
-            || (feed.getStudent() != null && payload.getId().equals(feed.getStudent().getId()));
+    if (userHasRole(Roles.ADMIN))
+      return true;
+
+    switch (feed.getType()){
+      case EVENT:
+        return payload.getClubsPublisher().contains(feed.getEvent().getClub().getId());
+      case STUDENT:
+        return payload.getId().equals(feed.getStudent().getId());
+      case CLUB:
+        return payload.getClubsPublisher().contains(feed.getClub().getId());
+      case GROUP:
+        return payload.getFeeds().contains(feed.getId());
+      default:
+        return false;
+    }
   }
 
   static public boolean hasReadAccess(Feed feed) {
