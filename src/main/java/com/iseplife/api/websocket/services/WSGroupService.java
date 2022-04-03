@@ -22,9 +22,8 @@ public class WSGroupService {
   private final JwtTokenUtil jwtTokenUtil;
 
   public void sendJoin(GroupPreview group, Student student) {
-    TokenSet token = jwtTokenUtil.generateTokenSet(student);
-    WSPSGroupJoined packet = new WSPSGroupJoined(group, token);
-    clientService.updateToken(student.getId(), jwtTokenUtil.getPayload(jwtTokenUtil.decodeToken(token.getToken())));
+    WSPSGroupJoined packet = new WSPSGroupJoined(group);
+    clientService.updateToken(student.getId(), jwtTokenUtil.generatePayload(student));
     try {
       clientService.sendPacket(student.getId(), packet);
     } catch (IOException e) {
@@ -32,10 +31,9 @@ public class WSGroupService {
     }
   }
   public void sendLeave(Long id, Student student) {
-    TokenSet token = jwtTokenUtil.generateTokenSet(student);
-    WSPSGroupLeft packet = new WSPSGroupLeft(id, token);
+    WSPSGroupLeft packet = new WSPSGroupLeft(id);
     try {
-      clientService.updateToken(student.getId(), jwtTokenUtil.getPayload(jwtTokenUtil.decodeToken(token.getToken())));
+      clientService.updateToken(student.getId(), jwtTokenUtil.generatePayload(student));
       clientService.sendPacket(student.getId(), packet);
     } catch (IOException e) {
       e.printStackTrace();

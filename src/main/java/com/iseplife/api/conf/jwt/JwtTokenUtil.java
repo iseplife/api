@@ -123,7 +123,7 @@ public class JwtTokenUtil {
     throw new JWTVerificationException("token invalid");
   }
 
-  private TokenPayload generatePayload(Student student) {
+  public TokenPayload generatePayload(Student student) {
     List<String> roles = student.getAuthorities()
       .stream()
       .sorted(Comparator.comparing(GrantedAuthority::getAuthority))
