@@ -22,7 +22,6 @@ import com.iseplife.api.constants.PostState;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.constants.ThreadType;
 import com.iseplife.api.dao.post.AuthorFactory;
-import com.iseplife.api.dao.post.PostFactory;
 import com.iseplife.api.dao.post.PostRepository;
 import com.iseplife.api.dao.post.projection.PostProjection;
 import com.iseplife.api.dto.post.PostCreationDTO;
@@ -120,7 +119,7 @@ public class PostService {
     Post postToReturn = postRepository.save(post);
     if(!dto.isDraft() && !customDate) {
       postsService.broadcastPost(postToReturn);
-      
+
       Map<String, Object> map = new HashMap<>(Map.of(
           "post_id", post.getId(),
           "author_id", post.getAuthor().getId(),
@@ -205,9 +204,9 @@ public class PostService {
       removeEmbed(post.getEmbed());
       post.setEmbed(null);
     }
-    
+
     Post postToReturn = postRepository.save(post);
-    
+
     postsService.broadcastEdit(postToReturn);
 
     return postToReturn;

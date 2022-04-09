@@ -1,11 +1,13 @@
 package com.iseplife.api.services;
 
+import com.iseplife.api.conf.jwt.JwtTokenUtil;
+import com.iseplife.api.conf.jwt.TokenSet;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
-import com.iseplife.api.constants.AuthorType;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.post.projection.CommentProjection;
 import com.iseplife.api.dao.post.projection.PostProjection;
@@ -20,11 +22,19 @@ import com.iseplife.api.entity.user.Student;
 
 import lombok.RequiredArgsConstructor;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
 
 @Service
 @RequiredArgsConstructor
 public class SecurityService {
   @Lazy final private StudentService studentService;
+  final private JwtTokenUtil jwtTokenUtil;
+  final private HttpServletResponse response;
+
+  @Value("${jwt.refresh-token-duration}")
+  private int refreshTokenDuration;
 
   /**
    * Check if user has one of the roles listed
@@ -93,11 +103,21 @@ public class SecurityService {
 
   static public boolean hasRightOn(Feed feed) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-    return userHasRole(Roles.ADMIN)
-            || (feed.getGroup() != null && payload.getFeeds().contains(feed.getId()))
-            || (feed.getClub() != null && payload.getClubsPublisher().contains(feed.getClub().getId()))
-            || (feed.getEvent() != null && payload.getClubsPublisher().contains(feed.getEvent().getClub().getId()))
-            || (feed.getStudent() != null && payload.getId().equals(feed.getStudent().getId()));
+    if (userHasRole(Roles.ADMIN))
+      return true;
+
+    switch (feed.getType()){
+      case EVENT:
+        return payload.getClubsPublisher().contains(feed.getEvent().getClub().getId());
+      case STUDENT:
+        return payload.getId().equals(feed.getStudent().getId());
+      case CLUB:
+        return payload.getClubsPublisher().contains(feed.getClub().getId());
+      case GROUP:
+        return payload.getFeeds().contains(feed.getId());
+      default:
+        return false;
+    }
   }
 
   static public boolean hasReadAccess(Feed feed) {
@@ -161,4 +181,28 @@ public class SecurityService {
   public static boolean userHasRole(String role) {
     return ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getRoles().contains(role);
   }
+
+  public TokenSet logUser(Student student) {
+    TokenSet set = jwtTokenUtil.generateTokenSet(student);
+    return setRefreshTokenCookie(set);
+  }
+
+  public TokenSet refreshUserToken(String refreshToken) {
+    TokenSet set = jwtTokenUtil.refreshWithToken(refreshToken);
+
+    return setRefreshTokenCookie(set);
+  }
+
+  private TokenSet setRefreshTokenCookie(TokenSet set) {
+    Cookie cRefreshToken = new Cookie("refresh-token", set.getRefreshToken());
+    cRefreshToken.setMaxAge(refreshTokenDuration);
+    cRefreshToken.setPath("/");
+    cRefreshToken.setHttpOnly(true);
+    cRefreshToken.setSecure(true);
+
+    response.addCookie(cRefreshToken);
+
+    return set;
+  }
+
 }

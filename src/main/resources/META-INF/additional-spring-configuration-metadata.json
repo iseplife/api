@@ -11,14 +11,24 @@
       "description": "Application's version."
     },
     {
-      "name": "media_limit.club",
+      "name": "media_limit.club.amount",
       "type": "java.lang.Integer",
       "description": "Maximum everyday media amount a club can upload everyday."
     },
     {
-      "name": "media_limit.user",
+      "name": "media_limit.club.max_size",
+      "type": "java.lang.Long",
+      "description": "Media max size in bytes a club is allowed to upload."
+    },
+    {
+      "name": "media_limit.user.amount",
       "type": "java.lang.Integer",
       "description": "Maximum everyday media amount an user can upload."
+    },
+    {
+      "name": "media_limit.user.max_size",
+      "type": "java.lang.Long",
+      "description": "Media max size in bytes an user is allowed to upload."
     },
     {
       "name": "storage.name",
@@ -80,11 +90,6 @@
       "name": "auth.auto-generation",
       "type": "java.lang.Boolean",
       "description": "Automatically create account if LDAP's account exist but not on database."
-    },
-    {
-      "name": "media_limit.size",
-      "type": "java.lang.Long",
-      "description": "Media max size allowed on upload in bytes."
     }
   ]
 }

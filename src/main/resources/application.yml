@@ -24,9 +24,12 @@ logging:
     com.iseplife.api: INFO
 
 media_limit:
-  size:       ${MEDIA_MAX_SIZE:1073741824}  # default 1GB
-  club:       ${CLUB_MEDIA_LIMIT:2000}
-  user:       ${USER_MEDIA_LIMIT:15}
+  club:
+    amount: ${CLUB_MEDIA_MAX_SIZE:2000}
+    max_size: ${CLUB_MEDIA_LIMIT:800000000 } # 800MB
+  user:
+    amount: ${USER_MEDIA_LIMIT:15}
+    max_size:  ${USER_MEDIA_MAX_SIZE:100000000} # 100Mb
 
 storage:
   name:       ${STORAGE_NAME:aws}
@@ -38,7 +41,7 @@ jwt:
   secret:               ${JWT_SECRET:1jmhvPXhI40vqAnm}
   refresh-secret:        ${JWT_REFRESH_SECRET:fIH3ZmRmqH2LT6vH}
   token-duration:        ${JWT_TOKEN_DURATION:600}                 # default: 10 min
-  refresh-token_duration: ${JWT_REFRESH_TOKEN_DURATION:604800}      # default: 7 days
+  refresh-token-duration: ${JWT_REFRESH_TOKEN_DURATION:604800}      # default: 7 days
   issuer:               iseplife
 
 push:

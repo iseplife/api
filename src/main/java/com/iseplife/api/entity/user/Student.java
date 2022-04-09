@@ -13,6 +13,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import com.iseplife.api.entity.feed.Feedable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -32,7 +33,7 @@ import lombok.Setter;
 
 @Entity
 @Getter @Setter @NoArgsConstructor
-public class Student implements UserDetails, Author, Subscribable {
+public class Student implements UserDetails, Feedable, Author, Subscribable {
   @Id
   @Column(unique = true)
   private Long id;
@@ -130,17 +131,17 @@ public class Student implements UserDetails, Author, Subscribable {
   public boolean isEnabled() {
     return true;
   }
-  
+
   @Override
   public int hashCode() {
     return getId().intValue();
   }
-  
+
   @Override
   public boolean equals(Object obj) {
     if(obj instanceof Student)
       return ((Student) obj).getId() == getId();
-    
+
     return super.equals(obj);
   }
 }

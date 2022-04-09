@@ -1,7 +1,6 @@
 package com.iseplife.api.controllers;
 
 import com.iseplife.api.conf.jwt.JwtAuthRequest;
-import com.iseplife.api.conf.jwt.JwtTokenUtil;
 import com.iseplife.api.conf.jwt.TokenSet;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dto.ISEPCAS.CASUserDTO;
@@ -11,6 +10,7 @@ import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import com.iseplife.api.exceptions.http.HttpUnauthorizedException;
 import com.iseplife.api.services.CASService;
+import com.iseplife.api.services.SecurityService;
 import com.iseplife.api.services.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -28,7 +28,7 @@ import java.util.List;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
-  final private JwtTokenUtil jwtTokenUtil;
+  final private SecurityService securityService;
   final private CASService casService;
   final private StudentService studentService;
   final private Logger LOG = LoggerFactory.getLogger(AuthController.class);
@@ -46,7 +46,7 @@ public class AuthController {
       passwordEnable &&
         authRequest.getUsername().equals("admin") &&
         authRequest.getPassword().equals(defaultPassword)
-    ) return jwtTokenUtil.generateToken(studentService.getStudent(1L));
+    ) return securityService.logUser(studentService.getStudent(1L));
 
     CASUserDTO user = casService.identifyToCAS(authRequest.getUsername(), authRequest.getPassword());
     Student student;
@@ -66,7 +66,7 @@ public class AuthController {
             .build()
         );
 
-        return jwtTokenUtil.generateToken(student);
+        return securityService.logUser(student);
       } else {
         throw new HttpUnauthorizedException("authentification_failed");
       }
@@ -80,7 +80,7 @@ public class AuthController {
       LOG.info("First connection for user {}, hydrating account", student.getId());
     }
 
-    return jwtTokenUtil.generateToken(student);
+    return securityService.logUser(student);
   }
 
   @PutMapping("/logout")
@@ -99,7 +99,7 @@ public class AuthController {
     if (refreshToken.equals(""))
       throw new HttpUnauthorizedException("refresh_token_expired");
 
-    return jwtTokenUtil.refreshWithToken(refreshToken);
+    return securityService.refreshUserToken(refreshToken);
   }
 
   @GetMapping("/roles")
