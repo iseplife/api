@@ -30,12 +30,30 @@ public interface PostRepository extends CrudRepository<Post, Long> {
     "from Post p " +
       "join Student s on s.id = :loggedStudent " +
       "join s.subscriptions subs " +
-    "where (p.feed.id = subs.subscribedFeed.id or p.forcedHomepage = true) " +
-      "and p.state = 'READY'" +
+    "where (p.feed.id = subs.subscribedFeed.id or p.homepageForced = true) " +
+      "and p.state = 'READY' " +
+      "and p.homepagePinned = false " +
       "and (p.publicationDate <= now() or p.author.id = :loggedStudent) " +
     "order by p.publicationDate desc"
   )
   Page<PostProjection> findHomepagePosts(Long loggedStudent, Pageable pageable);
+
+  @Query(
+    "select distinct " +
+      "p as post, " +
+      "p.thread.id as thread, " +
+      "size(p.thread.comments) as nbComments, " +
+      "size(p.thread.likes) as nbLikes " +
+      "from Post p " +
+        "join Student s on s.id = :loggedStudent " +
+        "join s.subscriptions subs " +
+      "where (p.feed.id = subs.subscribedFeed.id or p.homepageForced = true) " +
+        "and p.state = 'READY' " +
+        "and p.homepagePinned = true " +
+        "and (p.publicationDate <= now() or p.author.id = :loggedStudent) " +
+      "order by p.publicationDate desc"
+  )
+  List<PostProjection> findHomepagePostsPinned(Long loggedStudent);
 
   @Query(
       "select distinct " +
@@ -46,7 +64,7 @@ public interface PostRepository extends CrudRepository<Post, Long> {
       "from Post p " +
         "join Student s on s.id = :loggedStudent " +
         "join s.subscriptions subs " +
-      "where p.publicationDate < :lastDate and (p.feed.id = subs.subscribedFeed.id or p.forcedHomepage = true) " +
+      "where p.publicationDate < :lastDate and (p.feed.id = subs.subscribedFeed.id or p.homepageForced = true) " +
         "and p.state = 'READY' and p.pinned = false " +
         "and (p.publicationDate <= now() or p.author.id = :loggedStudent) " +
       "order by p.publicationDate desc"

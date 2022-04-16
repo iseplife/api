@@ -39,7 +39,8 @@ public class Post implements ThreadInterface {
   private Date publicationDate;
   private Date creationDate; //TODO: remove creation date ? Not useful anymore
   private boolean pinned = false;
-  private boolean forcedHomepage = false;
+  private boolean homepageForced = false;
+  private boolean homepagePinned = false;
 
   @SuppressWarnings("JpaAttributeTypeInspection")
   @Any(

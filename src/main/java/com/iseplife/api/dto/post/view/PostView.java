@@ -21,6 +21,8 @@ public class PostView implements PostProjection {
   private Integer nbLikes;
   private boolean liked;
   private boolean pinned;
+  private boolean homepagePinned;
+  private boolean homepageForced;
   private Integer nbComments;
   private CommentView trendingComment;
   private Boolean hasWriteAccess;

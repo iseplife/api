@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FeedService {
   @Lazy final private PostService postService;
-  @Lazy final private StudentService studentService;
   final private FeedRepository feedRepository;
 
   public Feed getFeed(Long id) {
@@ -36,14 +35,19 @@ public class FeedService {
     return feedRepository.findAllByIdIn(token.getFeeds());
   }
 
-  public Page<PostProjection> getMainFeedPosts(int page) {
-    return postService.getMainFeedPost(
+  public Page<PostProjection> getHomepageFeedPosts(int page) {
+    return postService.getHomepageFeedPost(
       SecurityService.getLoggedId(),
       page
     );
   }
-  public Page<PostProjection> getPreviousMainFeedPosts(Long lastDate) {
-    return postService.getPreviousMainFeedPost(
+
+  public List<PostProjection> getHomepageFeedPostsPinned() {
+    return postService.getHomepageFeedPostsPinned(SecurityService.getLoggedId());
+  }
+
+  public Page<PostProjection> getPreviousHomepageFeedPosts(Long lastDate) {
+    return postService.getPreviousHomepageFeedPost(
       SecurityService.getLoggedId(),
       new Date(lastDate)
     );
@@ -52,6 +56,7 @@ public class FeedService {
   public Page<PostProjection> getFeedPosts(Long id, int page) {
     return postService.getFeedPosts(id, page);
   }
+
   public Page<PostProjection> getPreviousFeedPosts(Long id, Long lastDate) {
     return postService.getPreviousFeedPosts(id, new Date(lastDate));
   }
