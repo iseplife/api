@@ -47,9 +47,9 @@ public class WSClientService {
   }
 
   public void removeSession(WebSocketSession session) {
-    TokenPayload payload= ((TokenPayload)session.getAttributes().get("token"));
+    TokenPayload payload = ((TokenPayload)session.getAttributes().get("token"));
     if (payload != null ) {
-      Long id = ((TokenPayload) session.getAttributes().get("token")).getId();
+      Long id = payload.getId();
       Set<WebSocketSession> sessions = clients.get(id);
 
       sessions.remove(session);
@@ -58,7 +58,7 @@ public class WSClientService {
         clients.remove(id);
         tokens.remove(id);
 
-        postsService.removeStudentFromFeeds(((TokenPayload) session.getAttributes().get("token")).getId());
+        postsService.removeStudentFromFeeds(payload.getId());
       }
     }
   }
