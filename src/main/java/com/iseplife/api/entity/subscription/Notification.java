@@ -18,6 +18,7 @@ import org.jose4j.json.internal.json_simple.JSONObject;
 
 import com.iseplife.api.constants.NotificationType;
 import com.iseplife.api.entity.user.Student;
+import com.iseplife.api.services.NotificationTranslationService;
 import com.iseplife.api.utils.JpaConverterJson;
 
 import lombok.AccessLevel;
@@ -66,12 +67,12 @@ public class Notification {
     creation = new Date();
   }
 
-  public String getPayload() {
+  public String getPayload(Student student, NotificationTranslationService translationService) {
     HashMap<String, Object> map = new HashMap<>();
-    map.put("type", type);
+    map.put("type", "notification");
+    map.put("text", translationService.getTranslation(type, informations, student.getLanguage()));
     map.put("icon", icon);
     map.put("link", link);
-    map.put("informations", informations);
     return new JSONObject(map).toString();
   }
 }

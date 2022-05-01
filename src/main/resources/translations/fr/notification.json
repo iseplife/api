@@ -1,0 +1,5 @@
+{
+  "NEW_STUDENT_POST": "{{author_name}} a posté une nouvelle publication.",
+  "NEW_CLUB_POST": "{{author_name}} a posté une nouvelle publication.",
+  "NEW_GROUP_POST": "{{author_name}} a posté une nouvelle publication dans le groupe {{group_name}}."
+}
