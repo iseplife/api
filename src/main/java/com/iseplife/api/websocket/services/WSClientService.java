@@ -23,11 +23,11 @@ public class WSClientService {
 
   private Map<Long, Set<WebSocketSession>> clients = new ConcurrentHashMap<>();
   private Map<Long, TokenPayload> tokens = new ConcurrentHashMap<>();
-  
+
   public Set<Long> getConnectedStudentIds() {
     return clients.keySet();
   }
-  
+
   public TokenPayload getToken(Long id) {
     return tokens.get(id);
   }
@@ -37,36 +37,39 @@ public class WSClientService {
     boolean alreadyConnected = clients.containsKey(token.getId());
     if(!alreadyConnected)
       clients.put(token.getId(), ConcurrentHashMap.newKeySet());
-    
+
     clients.get(token.getId()).add(session);
     tokens.put(token.getId(), token);
-    
+
     if(!alreadyConnected)
       for(Long feedId : subService.getSubscribedFeeds(token.getId()))
         postsService.addStudentToFeed(token.getId(), feedId);
   }
 
   public void removeSession(WebSocketSession session) {
-    Long id = ((TokenPayload)session.getAttributes().get("token")).getId();
-    Set<WebSocketSession> sessions = clients.get(id);
-    
-    sessions.remove(session);
-    
-    if(sessions.size() == 0) {
-      clients.remove(id);
-      tokens.remove(id);
+    TokenPayload payload = ((TokenPayload)session.getAttributes().get("token"));
+    if (payload != null ) {
+      Long id = payload.getId();
+      Set<WebSocketSession> sessions = clients.get(id);
 
-      postsService.removeStudentFromFeeds(((TokenPayload)session.getAttributes().get("token")).getId());
+      sessions.remove(session);
+
+      if (sessions.size() == 0) {
+        clients.remove(id);
+        tokens.remove(id);
+
+        postsService.removeStudentFromFeeds(payload.getId());
+      }
     }
   }
-  
+
   public void updateToken(Long id, TokenPayload token) {
     Set<WebSocketSession> sessions = clients.get(id);
     for(WebSocketSession session : sessions)
       session.getAttributes().put("token", token);
     tokens.put(id, token);
   }
-  
+
   public void sendPacket(Long studentId, WSPacketOut packet) throws IOException {
     Set<WebSocketSession> sessions = clients.get(studentId);
     if(sessions != null)
@@ -91,7 +94,7 @@ public class WSClientService {
             for(Long feedId : token.getFeeds())
               if(feeds.contains(feedId))
                 break noAccess;
-            
+
             continue;
           }
         try {

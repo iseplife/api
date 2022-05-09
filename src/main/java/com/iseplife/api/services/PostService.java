@@ -40,6 +40,7 @@ import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
+import org.springframework.cache.annotation.Cacheable;
 import com.iseplife.api.websocket.services.WSPostService;
 
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class PostService {
+  @Lazy final private WSPostService postsService;
   @Lazy final private StudentService studentService;
   @Lazy final private ClubService clubService;
   @Lazy final private MediaService mediaService;
@@ -55,7 +57,6 @@ public class PostService {
   @Lazy final private FeedService feedService;
   @Lazy final private SecurityService securityService;
   @Lazy final private NotificationService notificationService;
-  @Lazy final private WSPostService postsService;
   final private ModelMapper mapper;
   final private PostRepository postRepository;
 
@@ -87,7 +88,7 @@ public class PostService {
     post.setLinkedClub(dto.getLinkedClub() != null ? clubService.getClub(dto.getLinkedClub()) : null);
 
     Feed feed;
-    if(dto.getFeed() != null){
+    if (dto.getFeed() != null) {
       feed = feedService.getFeed(dto.getFeed());
       // We disallow students to post on feeds they don't have write right on, and to post as a club in a student feed.
       if (!SecurityService.hasRightOn(feed) || (feed.getStudent() != null && dto.getLinkedClub() != null))
@@ -117,47 +118,47 @@ public class PostService {
 
 
     Post postToReturn = postRepository.save(post);
-    if(!dto.isDraft() && !customDate) {
+    if (!dto.isDraft() && !customDate) {
       postsService.broadcastPost(postToReturn);
 
       Map<String, Object> map = new HashMap<>(Map.of(
-          "post_id", post.getId(),
-          "author_id", post.getAuthor().getId(),
-          "author_name", (post.getLinkedClub() != null ? post.getLinkedClub() : securityService.getLoggedUser()).getName(),
-          "content_text", post.getDescription(),
-          "date", post.getPublicationDate()
+        "post_id", post.getId(),
+        "author_id", post.getAuthor().getId(),
+        "author_name", (post.getLinkedClub() != null ? post.getLinkedClub() : securityService.getLoggedUser()).getName(),
+        "content_text", post.getDescription(),
+        "date", post.getPublicationDate()
       ));
 
-      if(post.getLinkedClub() != null)
+      if (post.getLinkedClub() != null)
         map.put("club_id", post.getLinkedClub().getName());
 
       Notification.NotificationBuilder builder = Notification.builder()
-          .icon(post.getLinkedClub() != null ? post.getLinkedClub().getLogoUrl() : securityService.getLoggedUser().getPicture())
-          .informations(map);
+        .icon(post.getLinkedClub() != null ? post.getLinkedClub().getLogoUrl() : securityService.getLoggedUser().getPicture())
+        .informations(map);
 
       Subscribable subscribable = null;
 
       if (feed.getGroup() != null) {
         map.put("group_name", feed.getGroup().getName());
         builder.type(NotificationType.NEW_GROUP_POST)
-               .link("post/group/"+feed.getGroup().getId()+"/"+post.getId());
+          .link("post/group/" + feed.getGroup().getId() + "/" + post.getId());
         subscribable = feed.getGroup();
-      } else if(feed.getClub() != null) {
+      } else if (feed.getClub() != null) {
         map.put("club_name", feed.getClub().getName());
         builder.type(NotificationType.NEW_CLUB_POST)
-               .link("post/club/"+feed.getClub().getId()+"/"+post.getId());
+          .link("post/club/" + feed.getClub().getId() + "/" + post.getId());
         subscribable = feed.getClub();
-      } else if(feed.getStudent() != null) {
+      } else if (feed.getStudent() != null) {
         builder.type(NotificationType.NEW_STUDENT_POST)
-               .link("post/student/"+feed.getStudent().getId()+"/"+post.getId());
+          .link("post/student/" + feed.getStudent().getId() + "/" + post.getId());
         subscribable = feed.getStudent();
       }
 
       notificationService.delayNotification(
-          builder,
-          true,
-          subscribable,
-          () -> postRepository.existsById(postToReturn.getId())
+        builder,
+        true,
+        subscribable,
+        () -> postRepository.existsById(postToReturn.getId())
       );
     }
 
@@ -243,22 +244,26 @@ public class PostService {
     postsService.broadcastRemove(postID);
   }
 
-  public void updatePostPinnedStatus(Long postID, Boolean pinned) {
+  public void updatePostPinnedStatus(Long postID, Boolean pinned, Boolean homepage) {
     Post post = getPost(postID);
-    if (SecurityService.hasRightOn(post) && post.getLinkedClub() != null)
+    if (!SecurityService.hasRightOn(post) || (homepage && !SecurityService.userHasRole(Roles.ADMIN)))
       throw new HttpForbiddenException("insufficient_rights");
 
-    post.setPinned(pinned);
+    if (homepage) {
+      post.setHomepagePinned(pinned);
+    } else {
+      post.setPinned(pinned);
+    }
+
     postRepository.save(post);
   }
 
-  public void updateForceHomepageStatus(Long postID, Boolean state) {
+  public void updateHomepageForced(Long postID, Boolean state) {
     Post post = getPost(postID);
-    post.setForcedHomepage(state);
+    post.setHomepageForced(state);
 
     postRepository.save(post);
   }
-
 
 
   private void bindAttachementToPost(String type, Long id, Post post) {
@@ -290,18 +295,23 @@ public class PostService {
       .collect(Collectors.toSet());
   }
 
-  public Page<PostProjection> getMainFeedPost(Long loggedUser, int page){
+  public Page<PostProjection> getHomepageFeedPost(Long loggedUser, int page) {
     return postRepository.findHomepagePosts(
       loggedUser,
-      PageRequest.of(page, POSTS_PER_PAGE,  Sort.by(Sort.Direction.DESC, "publicationDate"))
+      PageRequest.of(page, POSTS_PER_PAGE, Sort.by(Sort.Direction.DESC, "publicationDate"))
     );
   }
-  public Page<PostProjection> getPreviousMainFeedPost(Long loggedUser, Date lastDate){
+
+  public Page<PostProjection> getPreviousHomepageFeedPost(Long loggedUser, Date lastDate) {
     return postRepository.findPreviousHomepagePosts(
       loggedUser,
       lastDate,
-      PageRequest.of(0, POSTS_PER_PAGE,  Sort.by(Sort.Direction.DESC, "publicationDate"))
+      PageRequest.of(0, POSTS_PER_PAGE, Sort.by(Sort.Direction.DESC, "publicationDate"))
     );
+  }
+
+  public List<PostProjection> getHomepageFeedPostsPinned(Long loggedUser) {
+    return postRepository.findHomepagePostsPinned(loggedUser);
   }
 
   public Page<PostProjection> getFeedPosts(Long feed, int page) {
@@ -310,9 +320,10 @@ public class PostService {
       PostState.READY,
       SecurityService.getLoggedId(),
       SecurityService.hasRoles(Roles.ADMIN),
-      PageRequest.of(page, POSTS_PER_PAGE,  Sort.by(Sort.Direction.DESC, "publicationDate"))
+      PageRequest.of(page, POSTS_PER_PAGE, Sort.by(Sort.Direction.DESC, "publicationDate"))
     );
   }
+
   public Page<PostProjection> getPreviousFeedPosts(Long feed, Date lastDate) {
     return postRepository.findPreviousCurrentFeedPost(
       feed,
@@ -320,7 +331,7 @@ public class PostService {
       PostState.READY,
       SecurityService.getLoggedId(),
       SecurityService.hasRoles(Roles.ADMIN),
-      PageRequest.of(0, POSTS_PER_PAGE,  Sort.by(Sort.Direction.DESC, "publicationDate"))
+      PageRequest.of(0, POSTS_PER_PAGE, Sort.by(Sort.Direction.DESC, "publicationDate"))
     );
   }
 
@@ -339,6 +350,6 @@ public class PostService {
   }
 
   public Page<PostProjection> getAuthorPosts(Long id, int page, TokenPayload token) {
-    return  postRepository.findAuthorPosts(id, SecurityService.getLoggedId(), token.getFeeds(), PageRequest.of(page, POSTS_PER_PAGE));
+    return postRepository.findAuthorPosts(id, SecurityService.getLoggedId(), token.getFeeds(), PageRequest.of(page, POSTS_PER_PAGE));
   }
 }

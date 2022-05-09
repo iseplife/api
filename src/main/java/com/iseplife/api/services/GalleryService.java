@@ -1,15 +1,10 @@
 package com.iseplife.api.services;
 
-import com.iseplife.api.constants.PostState;
-import com.iseplife.api.constants.ThreadType;
 import com.iseplife.api.dao.gallery.GalleryRepository;
 import com.iseplife.api.dao.media.image.ImageRepository;
-import com.iseplife.api.dao.post.PostRepository;
 import com.iseplife.api.dto.gallery.GalleryDTO;
-import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
-import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.post.embed.media.Image;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
@@ -27,13 +22,11 @@ import java.util.*;
 @RequiredArgsConstructor
 public class GalleryService {
   @Lazy final private PostService postService;
-  @Lazy final private StudentService studentService;
   @Lazy final private MediaService mediaService;
   @Lazy final private FeedService feedService;
   @Lazy final private ClubService clubService;
   final private GalleryRepository galleryRepository;
   final private ImageRepository imageRepository;
-  final private PostRepository postRepository;
 
   final private static int GALLERY_PER_PAGE = 5;
   final private static int PSEUDO_GALLERY_MAX_SIZE = 5;

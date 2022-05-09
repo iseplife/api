@@ -17,6 +17,11 @@ public interface PostProjection {
     String getDescription();
     @Value("#{target.post.pinned}")
     boolean isPinned();
+    @Value("#{target.post.homepagePinned}")
+    boolean isHomepagePinned();
+    @Value("#{target.post.homepageForced}")
+    boolean isHomepageForced();
+
     @Value("#{target.post.embed}")
     Embedable getEmbed();
 

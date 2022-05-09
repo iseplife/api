@@ -9,7 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,8 +44,8 @@ public class FeedController {
 
   @GetMapping("/main/post")
   @RolesAllowed({Roles.STUDENT})
-  public Page<PostProjection> getMainFeedPosts(@RequestParam(defaultValue = "0") int page){
-    return feedService.getMainFeedPosts(page).map(p -> {
+  public Page<PostProjection> getHomepageFeedPosts(@RequestParam(defaultValue = "0") int page){
+    return feedService.getHomepageFeedPosts(page).map(p -> {
       CommentProjection trendingComment = threadService.getTrendingComment(p.getThread());
 
       return factory.toView(
@@ -56,10 +55,11 @@ public class FeedController {
       );
     });
   }
+
   @GetMapping("/main/prevposts")
   @RolesAllowed({Roles.STUDENT})
-  public Page<PostProjection> getPreviousMainFeedPosts(@RequestParam(defaultValue = "0") Long lastDate){
-    return feedService.getPreviousMainFeedPosts(lastDate).map(p -> {
+  public Page<PostProjection> getPreviousHomepageFeedPosts(@RequestParam(defaultValue = "0") Long lastDate){
+    return feedService.getPreviousHomepageFeedPosts(lastDate).map(p -> {
       CommentProjection trendingComment = threadService.getTrendingComment(p.getThread());
 
       return factory.toView(
@@ -68,6 +68,20 @@ public class FeedController {
           trendingComment == null ? null : commentFactory.toView(trendingComment, threadService.isLiked(trendingComment.getThread()))
       );
     });
+  }
+
+  @GetMapping("/main/post/pinned")
+  @RolesAllowed({Roles.STUDENT})
+  public List<PostProjection> getHomepageFeedPostsPinned(){
+    return feedService.getHomepageFeedPostsPinned().stream().map(p -> {
+      CommentProjection trendingComment = threadService.getTrendingComment(p.getThread());
+
+      return factory.toView(
+        p,
+        threadService.isLiked(p.getThread()),
+        trendingComment == null ? null : commentFactory.toView(trendingComment, threadService.isLiked(trendingComment.getThread()))
+      );
+    }).collect(Collectors.toList());
   }
 
   @GetMapping("/{id}/post")
@@ -82,6 +96,7 @@ public class FeedController {
       );
     });
   }
+
   @GetMapping("/{id}/prevposts")
   @RolesAllowed({Roles.STUDENT})
   public Page<PostProjection> getPreviousFeedPosts(@PathVariable Long id, @RequestParam(defaultValue = "0") Long lastDate) {

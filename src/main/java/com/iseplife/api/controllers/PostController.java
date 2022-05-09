@@ -42,14 +42,21 @@ public class PostController {
 
   @PutMapping("/{id}/pin")
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
-  public void pinPost(@PathVariable Long id,  @RequestParam(name="pinned", defaultValue = "0", required = false) Boolean pinned) {
-    postService.updatePostPinnedStatus(id, pinned);
+  public void pinPost(
+    @PathVariable Long id,
+    @RequestParam(name="pinned", defaultValue = "0", required = false) Boolean pinned,
+    @RequestParam(name="homepage", defaultValue = "0", required = false) Boolean homepage
+  ) {
+    postService.updatePostPinnedStatus(id, pinned, homepage);
   }
 
-  @PutMapping("/{id}/homepage-forced")
+  @PutMapping("/{id}/homepage")
   @RolesAllowed({Roles.ADMIN})
-  public void updateForcedHomepage(@PathVariable Long id, @RequestParam(name="enable", defaultValue = "0", required = false) Boolean enable) {
-    postService.updateForceHomepageStatus(id, enable);
+  public void updateHomepageForcedPost(
+    @PathVariable Long id,
+    @RequestParam(name="forced", defaultValue = "0", required = false) Boolean enable
+  ) {
+    postService.updateHomepageForced(id, enable);
   }
 
   @GetMapping("/authors")
