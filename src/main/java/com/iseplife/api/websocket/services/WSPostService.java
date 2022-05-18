@@ -23,9 +23,9 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class WSPostService {
-  
+
   private static final Set<Long> EMPTY_SET = new HashSet<>();
-  
+
   @Lazy private final WSClientService clientService;
   private final PostFactory postFactory;
 
@@ -45,14 +45,19 @@ public class WSPostService {
 	  for(Set<Long> feed : clientsByFeedId.values())
 		  feed.remove(clientId);
   }
-  
+
   public void broadcastPost(Post post) {
     Set<Long> followers = clientsByFeedId.getOrDefault(post.getFeed().getId(), EMPTY_SET);
     for(Long studentId : clientService.getConnectedStudentIds()) {
       TokenPayload token = clientService.getToken(studentId);
       if(SecurityService.hasReadAccess(post.getFeed(), token))
         try {
-          clientService.sendPacket(studentId, new WSPSFeedPostCreated(followers.contains(studentId), SecurityService.hasRightOn(post, token), postFactory.toFormView(post)));
+          clientService.sendPacket(
+            studentId,
+            new WSPSFeedPostCreated(followers.contains(studentId),
+              SecurityService.hasRightOn(post, token),
+              postFactory.toView(post, false, null))
+          );
         } catch (IOException e) {
           e.printStackTrace();
         }

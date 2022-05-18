@@ -2,6 +2,8 @@ package com.iseplife.api.dao.post;
 
 import javax.annotation.PostConstruct;
 
+import com.iseplife.api.dto.post.view.PostContextView;
+import com.iseplife.api.entity.feed.Feed;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -13,6 +15,7 @@ import com.iseplife.api.dto.thread.view.CommentView;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.post.embed.Embedable;
 import com.iseplife.api.services.SecurityService;
+import com.iseplife.api.entity.Thread;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class PostFactory {
   @Lazy final private EmbedFactory embedFactory;
   final private ModelMapper mapper;
-  
+
   @PostConstruct
   public void init() {
     mapper.typeMap(PostProjection.class, PostView.class)
@@ -35,7 +38,24 @@ public class PostFactory {
           .using(ctx -> embedFactory.toView((Embedable) ctx.getSource()))
           .map(PostProjection::getEmbed, PostView::setEmbed);
       });
-    
+
+    mapper.typeMap(Post.class, PostView.class)
+      .addMappings(mapper -> {
+        mapper.skip(PostView::setLiked);
+        mapper
+          .using(ctx -> ((Thread)ctx.getSource()).getId())
+          .map(Post::getThread, PostView::setThread);
+        mapper
+          .using(ctx -> SecurityService.hasRightOn((Post)ctx.getSource()))
+          .map(src -> src, PostView::setHasWriteAccess);
+        mapper
+          .using(ctx -> new PostContextView((Feed) ctx.getSource()))
+          .map(Post::getFeed, PostView::setContext);
+        mapper
+          .using(ctx -> embedFactory.toView((Embedable) ctx.getSource()))
+          .map(Post::getEmbed, PostView::setEmbed);
+      });
+
     mapper.typeMap(Post.class, PostFormView.class)
       .addMappings(mapper -> {
         mapper
@@ -54,6 +74,14 @@ public class PostFactory {
   }
 
   public PostView toView(PostProjection post, Boolean isLiked, CommentView trendingComment) {
+    PostView view = mapper.map(post, PostView.class);
+    view.setLiked(isLiked);
+    view.setTrendingComment(trendingComment);
+
+    return view;
+  }
+
+  public PostView toView(Post post, Boolean isLiked, CommentView trendingComment) {
     PostView view = mapper.map(post, PostView.class);
     view.setLiked(isLiked);
     view.setTrendingComment(trendingComment);
