@@ -15,6 +15,7 @@ import com.iseplife.api.dto.thread.view.CommentView;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.post.embed.Embedable;
 import com.iseplife.api.services.SecurityService;
+import com.iseplife.api.entity.Thread;
 
 import lombok.RequiredArgsConstructor;
 
@@ -42,7 +43,10 @@ public class PostFactory {
       .addMappings(mapper -> {
         mapper.skip(PostView::setLiked);
         mapper
-          .using(ctx -> SecurityService.hasRightOn((PostProjection) ctx.getSource()))
+          .using(ctx -> ((Thread)ctx.getSource()).getId())
+          .map(Post::getThread, PostView::setThread);
+        mapper
+          .using(ctx -> SecurityService.hasRightOn((Post)ctx.getSource()))
           .map(src -> src, PostView::setHasWriteAccess);
         mapper
           .using(ctx -> new PostContextView((Feed) ctx.getSource()))
