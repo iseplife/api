@@ -22,24 +22,22 @@ import io.netty.buffer.ByteBuf;
 
 @Service
 public class WSProtocol {
-  
+
   private static WSProtocol instance = new WSProtocol().init();
-  
+
   private List<Class<? extends WSPacketIn>> packetIn = new CopyOnWriteArrayList<>();
   private Map<Class<? extends WSPacketOut>, Integer> packetOut = new ConcurrentHashMap<>();
 
-  private int registerPacketServer(Class<? extends WSPacketOut> packetClass) {
-      this.packetOut.put(packetClass, this.packetOut.size());
-      return this.packetOut.size() - 1;
+  private void registerPacketServer(Class<? extends WSPacketOut> packetClass) {
+      this.packetOut.put(packetClass, this.packetOut.hashCode());
   }
 
-  private int registerPacketClient(Class<? extends WSPacketIn> packetClass) {
+  private void registerPacketClient(Class<? extends WSPacketIn> packetClass) {
     this.packetIn.add(packetClass);
-    return this.packetIn.size() - 1;
   }
 
   public WSProtocol init() {
-    //Server 
+    //Server
     registerPacketServer(WSPSConnected.class);
     registerPacketServer(WSPSFeedPostCreated.class);
     registerPacketServer(WSPSNotificationRecieved.class);
@@ -49,27 +47,27 @@ public class WSProtocol {
     registerPacketServer(WSPSFeedPostRemoved.class);
     registerPacketServer(WSPSFeedPostEdited.class);
     registerPacketServer(WSPSFeedPostLikesUpdate.class);
-    
+
     //Client packets
     return this;
   }
-  
+
   @SuppressWarnings("deprecation")
   public WSPacketIn readPacket(ByteBuf buf) throws InstantiationException, IllegalAccessException, IOException{
     int id = buf.readUnsignedByte();
     Class<? extends WSPacketIn> packetClass = packetIn.get(id);
-    
+
     WSPacketIn object = packetClass.newInstance();
     object.read(buf);
-    
+
     return object;
   }
-  
+
   public void writePacket(ByteBuf buf, WSPacketOut packet) throws IOException {
     buf.writeByte(packetOut.get(packet.getClass()));
     packet.write(buf);
   }
-  
+
   public static WSProtocol getInstance() {
     return instance;
   }
