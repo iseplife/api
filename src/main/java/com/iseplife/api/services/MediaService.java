@@ -163,7 +163,13 @@ public class MediaService {
           break;
         default:
           media = new Document();
-          name = fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("document").path, false, Collections.EMPTY_MAP);
+          ((Document) media).setTitle(file.getName());
+          name = fileHandler.upload(
+            file,
+            StorageConfig.MEDIAS_CONF.get("document").path + "/" + file.getName(),
+            true,
+            Collections.EMPTY_MAP
+          );
           break;
       }
 
