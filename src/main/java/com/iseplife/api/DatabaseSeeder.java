@@ -6,16 +6,17 @@ import com.iseplife.api.dao.feed.FeedRepository;
 import com.iseplife.api.dao.group.GroupRepository;
 import com.iseplife.api.dao.student.RoleRepository;
 import com.iseplife.api.dao.student.StudentRepository;
+import com.iseplife.api.dao.subscription.SubscriptionRepository;
 import com.iseplife.api.entity.group.GroupMember;
 import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.feed.Feed;
+import com.iseplife.api.entity.subscription.Subscription;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.Roles;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 class DatabaseSeeder {
   final private StudentRepository studentRepository;
+  final private SubscriptionRepository subscriptionRepository;
   final private RoleRepository roleRepository;
   final private FeedRepository feedRepository;
   final private GroupRepository groupRepository;
@@ -72,7 +74,7 @@ class DatabaseSeeder {
     student.setLastName("ZIDANE");
     student.setPromo(1998);
     student.setBirthDate(new Date());
-    
+
     student.setFeed(new Feed(student.getName(), FeedType.STUDENT));
 
     Role roleStudent = roleRepository.findByRole(Roles.STUDENT);
@@ -80,6 +82,13 @@ class DatabaseSeeder {
     student.setRoles(Set.of(roleAdmin, roleStudent));
 
     studentRepository.save(student);
+    Subscription sub = new Subscription();
+    sub.setListener(student);
+    sub.setSubscribed(student);
+    sub.setSubscribedFeed(student.getFeed());
+    sub.setExtensive(false);
+
+    subscriptionRepository.save(sub);
 
     /* Create default group and add super admin as member */
     List<Group> groups = new ArrayList<>();
