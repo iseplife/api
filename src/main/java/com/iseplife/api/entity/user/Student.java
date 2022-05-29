@@ -61,6 +61,8 @@ public class Student implements UserDetails, Feedable, Author, Subscribable {
 
   @NotNull
   private Boolean hasDefaultPicture = false;
+  
+  private Boolean didFirstFollow = false;
 
   private String picture;
 

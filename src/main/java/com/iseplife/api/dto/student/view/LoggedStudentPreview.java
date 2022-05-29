@@ -8,4 +8,5 @@ import lombok.EqualsAndHashCode;
 public class LoggedStudentPreview extends StudentPreview {
   protected Long unwatchedNotifications;
   protected Long totalNotifications;
+  protected Boolean didFirstFollow;
 }
