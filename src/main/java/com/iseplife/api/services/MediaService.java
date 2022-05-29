@@ -166,8 +166,8 @@ public class MediaService {
           ((Document) media).setTitle(file.getName());
           name = fileHandler.upload(
             file,
-            StorageConfig.MEDIAS_CONF.get("document").path + "/" + file.getName(),
-            true,
+            StorageConfig.MEDIAS_CONF.get("document").path,
+            false,
             Collections.EMPTY_MAP
           );
           break;
