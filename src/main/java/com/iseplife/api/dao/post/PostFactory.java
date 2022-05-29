@@ -85,6 +85,8 @@ public class PostFactory {
     PostView view = mapper.map(post, PostView.class);
     view.setLiked(isLiked);
     view.setTrendingComment(trendingComment);
+    if(post.getLinkedClub() != null)
+      view.setAuthor(AuthorFactory.toView(post.getLinkedClub()));
 
     return view;
   }
