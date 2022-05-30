@@ -5,4 +5,5 @@ import com.iseplife.api.constants.FeedType;
 public interface PostContextProjection {
     Long getId();
     FeedType getType();
+    String getName();
 }
