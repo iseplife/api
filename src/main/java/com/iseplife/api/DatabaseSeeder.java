@@ -13,6 +13,7 @@ import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.subscription.Subscription;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
+import com.iseplife.api.services.SubscriptionService;
 import com.iseplife.api.constants.Roles;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -27,10 +28,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 class DatabaseSeeder {
   final private StudentRepository studentRepository;
-  final private SubscriptionRepository subscriptionRepository;
   final private RoleRepository roleRepository;
   final private FeedRepository feedRepository;
   final private GroupRepository groupRepository;
+  final private SubscriptionService subscriptionService;
   final private Logger LOG = LoggerFactory.getLogger(DatabaseSeeder.class);
 
   void seedDatabase() {
@@ -82,13 +83,8 @@ class DatabaseSeeder {
     student.setRoles(Set.of(roleAdmin, roleStudent));
 
     studentRepository.save(student);
-    Subscription sub = new Subscription();
-    sub.setListener(student);
-    sub.setSubscribed(student);
-    sub.setSubscribedFeed(student.getFeed());
-    sub.setExtensive(false);
 
-    subscriptionRepository.save(sub);
+    subscriptionService.subscribe(student, false);
 
     /* Create default group and add super admin as member */
     List<Group> groups = new ArrayList<>();
