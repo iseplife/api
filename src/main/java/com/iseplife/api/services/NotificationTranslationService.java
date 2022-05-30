@@ -8,9 +8,9 @@ import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
-import com.iseplife.api.IseplifeApplication;
 import com.iseplife.api.constants.Language;
 import com.iseplife.api.constants.NotificationType;
 
@@ -23,7 +23,7 @@ public class NotificationTranslationService {
   private Map<String, JSONObject> translations = new HashMap<String, JSONObject>();
   
   private JSONObject readFile(String name) throws IOException {
-    InputStream stream = IseplifeApplication.class.getClassLoader().getResourceAsStream(name);
+    InputStream stream = new ClassPathResource(name).getInputStream();
     try {
       return (JSONObject) JSONValue.parse(stream);
     } finally {
