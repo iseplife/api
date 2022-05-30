@@ -7,4 +7,5 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class DocumentView extends MediaView{
   private String title;
+  private Long sizeBytes;
 }
