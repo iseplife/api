@@ -10,7 +10,7 @@ public interface PostContextProjection {
         + "target.type == T(com.iseplife.api.constants.FeedType).EVENT ? target.event.id : "
         + "target.type == T(com.iseplife.api.constants.FeedType).STUDENT ? target.student.id : "
         + "target.type == T(com.iseplife.api.constants.FeedType).CLUB ? target.club.id : "
-        + "-1}")
+        + "null}")
     Long getId();
     FeedType getType();
     String getName();
