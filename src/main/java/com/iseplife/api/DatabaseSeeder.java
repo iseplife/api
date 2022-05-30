@@ -1,5 +1,6 @@
 package com.iseplife.api;
 
+import com.iseplife.api.constants.FeedType;
 import com.iseplife.api.constants.GroupType;
 import com.iseplife.api.dao.feed.FeedRepository;
 import com.iseplife.api.dao.group.GroupRepository;
@@ -49,12 +50,6 @@ class DatabaseSeeder {
   }
 
   private void runSeedDatabase() {
-    /* Create main/homepage feed */
-    Feed mainFeed = new Feed("Homepage");
-    mainFeed.setId(1L);
-
-    feedRepository.save(mainFeed);
-
     /* Create all roles inside Roles class */
     List<Role> roles = new ArrayList<>();
     List<Role> savedRoles = roleRepository.findAll();
@@ -78,12 +73,11 @@ class DatabaseSeeder {
     student.setPromo(1998);
     student.setBirthDate(new Date());
     
-    student.setFeed(new Feed(student.getName()));
+    student.setFeed(new Feed(student.getName(), FeedType.STUDENT));
 
     Role roleStudent = roleRepository.findByRole(Roles.STUDENT);
     Role roleAdmin = roleRepository.findByRole(Roles.ADMIN);
     student.setRoles(Set.of(roleAdmin, roleStudent));
-    student.setFeed(new Feed(student.getName()));
 
     studentRepository.save(student);
 
@@ -100,7 +94,7 @@ class DatabaseSeeder {
         if(!existingTypes.contains(type) && type != GroupType.DEFAULT){
           Group g = new Group();
           g.setName(type.getName());
-          g.setFeed(new Feed(type.getName()));
+          g.setFeed(new Feed(type.getName(), FeedType.GROUP));
           g.setRestricted(true);
           g.setType(type);
 

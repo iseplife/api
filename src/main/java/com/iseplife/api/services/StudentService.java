@@ -3,7 +3,7 @@ package com.iseplife.api.services;
 import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.ClubRole;
-import com.iseplife.api.constants.Roles;
+import com.iseplife.api.constants.FeedType;
 import com.iseplife.api.dao.club.ClubRepository;
 import com.iseplife.api.dao.group.GroupRepository;
 import com.iseplife.api.dto.ISEPCAS.CASUserDTO;
@@ -14,7 +14,6 @@ import com.iseplife.api.dto.student.view.*;
 import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.feed.Feed;
-import com.iseplife.api.entity.subscription.Subscription;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.dao.student.RoleRepository;
@@ -99,7 +98,7 @@ public class StudentService {
 
     Student student = mapper.map(dto, Student.class);
     student.setRoles(roleRepository.findAllByRoleIn(dto.getRoles()));
-    student.setFeed(new Feed(student.getName()));
+    student.setFeed(new Feed(student.getName(), FeedType.STUDENT));
 
     student = studentRepository.save(student);
     subscriptionService.subscribe(student, student, false);

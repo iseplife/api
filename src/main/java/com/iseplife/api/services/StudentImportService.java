@@ -1,5 +1,6 @@
 package com.iseplife.api.services;
 
+import com.iseplife.api.constants.FeedType;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.student.StudentRepository;
 import com.iseplife.api.entity.feed.Feed;
@@ -30,7 +31,7 @@ public class StudentImportService {
     student.setId(newStudent.getId());
     student.setFirstName(newStudent.getFirstName());
     student.setLastName(newStudent.getLastName());
-    student.setFeed(new Feed(student.getName()));
+    student.setFeed(new Feed(student.getName(), FeedType.STUDENT));
     student.setPromo(newStudent.getPromo());
     student.setRoles(roles);
     if (file != null) {

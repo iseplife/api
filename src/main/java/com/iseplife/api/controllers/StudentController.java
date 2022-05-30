@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.constants.FeedType;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.club.projection.ClubMemberStudentProjection;
 import com.iseplife.api.dao.post.projection.PostProjection;
@@ -198,7 +199,7 @@ public class StudentController {
       student.setFirstName(firstNames[x]);
       student.setLastName(lastName[x]);
       student.setPromo(promos[x]);
-      student.setFeed(new Feed(student.getName()));
+      student.setFeed(new Feed(student.getName(), FeedType.STUDENT));
 
       studentAdminViews[x] = factory.toAdminView(studentImportService.importStudents(student, hasFiles[x] ? files[fileIndex] : null));
 

@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.ClubRole;
+import com.iseplife.api.constants.FeedType;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.club.ClubMemberRepository;
 import com.iseplife.api.dao.club.ClubRepository;
@@ -88,7 +89,7 @@ public class ClubService {
       members.add(member);
     });
     club.setMembers(members);
-    club.setFeed(new Feed(dto.getName()));
+    club.setFeed(new Feed(dto.getName(), FeedType.CLUB));
 
     return clubRepository.save(club);
   }
