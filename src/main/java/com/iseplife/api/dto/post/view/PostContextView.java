@@ -9,9 +9,11 @@ import lombok.Data;
 public class PostContextView implements PostContextProjection {
   private Long id;
   private FeedType type;
+  private String name;
 
   public PostContextView(Feed feed){
-    id = feed.getId();
+    id = feed.getFeedContext().getId();
     type = feed.getType();
+    name = feed.getName();
   }
 }

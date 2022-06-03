@@ -2,6 +2,7 @@ package com.iseplife.api.services;
 
 import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.constants.FeedType;
 import com.iseplife.api.constants.GroupType;
 import com.iseplife.api.dao.group.GroupFactory;
 import com.iseplife.api.dao.group.GroupMemberRepository;
@@ -9,6 +10,7 @@ import com.iseplife.api.dao.group.GroupRepository;
 import com.iseplife.api.dto.group.GroupCreationDTO;
 import com.iseplife.api.dto.group.GroupMemberDTO;
 import com.iseplife.api.dto.group.GroupUpdateDTO;
+import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.group.GroupMember;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
@@ -81,6 +83,8 @@ public class GroupService {
 
   public Group createGroup(GroupCreationDTO dto) {
     Group group = mapper.map(dto, Group.class);
+    
+    group.setFeed(new Feed(group.getName(), FeedType.GROUP));
 
     group.setMembers(createGroupAdminMembers(dto.getAdmins(), group));
 

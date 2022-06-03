@@ -16,8 +16,9 @@ import lombok.Setter;
 @Getter @Setter @NoArgsConstructor
 public class Feed {
 
-  public Feed(String name) {
+  public Feed(String name, FeedType type) {
     this.name = name;
+    this.type = type;
   }
 
   @Id
@@ -42,19 +43,6 @@ public class Feed {
 
   @OneToOne(mappedBy = "feed", orphanRemoval = true)
   private Student student;
-
-  @PrePersist
-  private void prePersistListener() {
-    if (event != null) {
-      type = FeedType.EVENT;
-    } else if (group != null) {
-      type = FeedType.GROUP;
-    } else if (club != null) {
-      type = FeedType.CLUB;
-    } else if (student != null) {
-      type = FeedType.STUDENT;
-    }
-  }
 
   public Feedable getFeedContext() {
     switch (type) {

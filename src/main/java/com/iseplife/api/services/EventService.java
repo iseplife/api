@@ -19,6 +19,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.constants.FeedType;
 import com.iseplife.api.constants.NotificationType;
 import com.iseplife.api.dao.event.EventFactory;
 import com.iseplife.api.dao.event.EventPositionRepository;
@@ -68,7 +69,7 @@ public class EventService {
     Event event = mapper.map(dto, Event.class);
 
     event.setClub(club);
-    event.setFeed(new Feed(dto.getTitle()));
+    event.setFeed(new Feed(dto.getTitle(), FeedType.EVENT));
      
     updateCoordinates(event, dto);
     
