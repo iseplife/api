@@ -47,6 +47,7 @@ public class MediaFactory {
         Document document = (Document) media;
         view = new DocumentView();
         ((DocumentView) view).setTitle(document.getTitle());
+        ((DocumentView) view).setSizeBytes(document.getSizeBytes());
         break;
       case EmbedType.IMAGE:
         Image image = (Image) media;

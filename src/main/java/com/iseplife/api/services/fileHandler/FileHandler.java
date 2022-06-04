@@ -1,6 +1,7 @@
 package com.iseplife.api.services.fileHandler;
 
 import com.iseplife.api.exceptions.FileException;
+import com.iseplife.api.utils.RandomString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,13 +45,7 @@ public abstract class FileHandler {
   }
 
   protected String generateRandomName(File file, int length) {
-    String random = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    StringBuilder out = new StringBuilder();
-    for (int i = 0; i < length; i++) {
-      int pos = (int) (Math.random() * random.length());
-      out.append(random.charAt(pos));
-    }
-    return out + "." + getFileExtension(file.getName());
+    return RandomString.generate(length) + "." + getFileExtension(file.getName());
   }
 
   public String getFileExtension(String filename) {

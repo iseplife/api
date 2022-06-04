@@ -41,6 +41,7 @@ import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import com.iseplife.api.services.fileHandler.FileHandler;
+import com.iseplife.api.utils.RandomString;
 
 import lombok.RequiredArgsConstructor;
 
@@ -162,8 +163,19 @@ public class MediaService {
           }
           break;
         default:
-          media = new Document();
-          name = fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("document").path, false, Collections.EMPTY_MAP);
+          if(file.getOriginalFilename().length() > 128)
+            throw new HttpBadRequestException("file_name_too_long");
+          
+          Document doc;
+          media = doc = new Document();
+          name = fileHandler.upload(
+            file,
+            StorageConfig.MEDIAS_CONF.get("document").path+"/"+RandomString.generate(30)+"/"+file.getOriginalFilename(),
+            true,
+            Collections.EMPTY_MAP
+          );
+          doc.setTitle(file.getOriginalFilename());
+          doc.setSizeBytes(file.getSize());
           break;
       }
 
