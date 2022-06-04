@@ -2,15 +2,12 @@ package com.iseplife.api;
 
 import com.iseplife.api.constants.FeedType;
 import com.iseplife.api.constants.GroupType;
-import com.iseplife.api.dao.feed.FeedRepository;
 import com.iseplife.api.dao.group.GroupRepository;
 import com.iseplife.api.dao.student.RoleRepository;
 import com.iseplife.api.dao.student.StudentRepository;
-import com.iseplife.api.dao.subscription.SubscriptionRepository;
 import com.iseplife.api.entity.group.GroupMember;
 import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.feed.Feed;
-import com.iseplife.api.entity.subscription.Subscription;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.services.SubscriptionService;
@@ -29,7 +26,6 @@ import java.util.stream.Collectors;
 class DatabaseSeeder {
   final private StudentRepository studentRepository;
   final private RoleRepository roleRepository;
-  final private FeedRepository feedRepository;
   final private GroupRepository groupRepository;
   final private SubscriptionService subscriptionService;
   final private Logger LOG = LoggerFactory.getLogger(DatabaseSeeder.class);
