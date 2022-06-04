@@ -1,28 +1,15 @@
 package com.iseplife.api.services;
 
-import com.iseplife.api.conf.StorageConfig;
-import com.iseplife.api.conf.jwt.TokenPayload;
-import com.iseplife.api.constants.ClubRole;
 import com.iseplife.api.constants.FeedType;
-import com.iseplife.api.dao.club.ClubRepository;
-import com.iseplife.api.dao.group.GroupRepository;
-import com.iseplife.api.dto.ISEPCAS.CASUserDTO;
-import com.iseplife.api.dto.student.StudentDTO;
-import com.iseplife.api.dto.student.StudentSettingsDTO;
-import com.iseplife.api.dto.student.StudentUpdateAdminDTO;
-import com.iseplife.api.dto.student.view.*;
-import com.iseplife.api.entity.group.Group;
-import com.iseplife.api.entity.club.Club;
-import com.iseplife.api.entity.feed.Feed;
-import com.iseplife.api.entity.user.Role;
-import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.dao.student.RoleRepository;
-import com.iseplife.api.dao.student.StudentRepository;
-import com.iseplife.api.exceptions.http.HttpBadRequestException;
-import com.iseplife.api.exceptions.http.HttpNotFoundException;
-import com.iseplife.api.services.fileHandler.FileHandler;
-import com.iseplife.api.utils.MediaUtils;
-import lombok.RequiredArgsConstructor;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
@@ -31,15 +18,38 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import com.iseplife.api.conf.StorageConfig;
+import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.constants.ClubRole;
+import com.iseplife.api.constants.Language;
+import com.iseplife.api.dao.club.ClubRepository;
+import com.iseplife.api.dao.group.GroupRepository;
+import com.iseplife.api.dao.student.RoleRepository;
+import com.iseplife.api.dao.student.StudentRepository;
+import com.iseplife.api.dto.ISEPCAS.CASUserDTO;
+import com.iseplife.api.dto.student.StudentDTO;
+import com.iseplife.api.dto.student.StudentSettingsDTO;
+import com.iseplife.api.dto.student.StudentUpdateAdminDTO;
+import com.iseplife.api.dto.student.view.StudentPictures;
+import com.iseplife.api.entity.club.Club;
+import com.iseplife.api.entity.feed.Feed;
+import com.iseplife.api.entity.group.Group;
+import com.iseplife.api.entity.user.Role;
+import com.iseplife.api.entity.user.Student;
+import com.iseplife.api.exceptions.http.HttpBadRequestException;
+import com.iseplife.api.exceptions.http.HttpNotFoundException;
+import com.iseplife.api.services.fileHandler.FileHandler;
+import com.iseplife.api.utils.MediaUtils;
+
+import lombok.RequiredArgsConstructor;
 
 
 @Service
 @RequiredArgsConstructor
 public class StudentService {
   final private ModelMapper mapper;
-  @Lazy private SubscriptionService subscriptionService;
+  @Lazy
+  private SubscriptionService subscriptionService;
   final private StudentRepository studentRepository;
   final private GroupRepository groupRepository;
   final private RoleRepository roleRepository;
@@ -49,6 +59,13 @@ public class StudentService {
   final private FileHandler fileHandler;
 
   final private static int RESULTS_PER_PAGE = 20;
+
+  @PostConstruct
+  private void init() {
+    mapper.typeMap(StudentSettingsDTO.class, Student.class).addMappings(mapper ->
+      mapper.using(ctx -> Language.valueOf(((String) ctx.getSource()).toUpperCase())).map(StudentSettingsDTO::getLanguage, Student::setLanguage)
+    );
+  }
 
   public Page<Student> getAllStudent(int page) {
     return studentRepository.findAllByOrderByLastName(PageRequest.of(page, RESULTS_PER_PAGE));

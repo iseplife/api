@@ -42,6 +42,7 @@ import nl.martijndwars.webpush.Utils;
 public class WebPushService {
   @Lazy private final StudentService studentService;
   private final WebPushSubscriptionRepository webPushSubscriptionRepository;
+  private final NotificationTranslationService translationService;
 
   private PublicKey publicKey;
   private PrivateKey privateKey;
@@ -138,19 +139,16 @@ public class WebPushService {
     }
   }
 
-  public void sendNotificationToAll(List<Subscription> subs, String payload) {
-    //TODO check if there is enough wait here (and not too much)
+  public void sendNotificationToAll(List<Subscription> subs, com.iseplife.api.entity.subscription.Notification notification) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          int total = 0;
           for(Subscription sub : subs) {
+            String payload = notification.getPayload(sub.getListener(), translationService);
             for(WebPushSubscription wpSub : sub.getListener().getWebPushSubscriptions()) {
               sendAsyncNotification(wpSub, payload);
-              Thread.sleep(16);
+              Thread.sleep(5);
             }
-            if(total++ % 5 == 0)
-                Thread.sleep(120);
           }
         } catch (InterruptedException e) {
           e.printStackTrace();

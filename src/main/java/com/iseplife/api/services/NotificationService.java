@@ -72,7 +72,7 @@ public class NotificationService {
           notif = notificationRepository.save(notif);
 
           wsNotifService.broadcastNotification(getUnwatchedNotificationProjection(notif.getId()), notified);
-          webPushService.sendNotificationToAll(subs, notif.getPayload());
+          webPushService.sendNotificationToAll(subs, notif);
         }
       }
     }, 1000 * 10);

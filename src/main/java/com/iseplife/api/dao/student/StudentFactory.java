@@ -1,8 +1,10 @@
 package com.iseplife.api.dao.student;
 
 import com.iseplife.api.conf.StorageConfig;
+import com.iseplife.api.constants.Language;
 import com.iseplife.api.dao.subscription.projection.NotificationCountProjection;
 import com.iseplife.api.dao.subscription.projection.SubscriptionProjection;
+import com.iseplife.api.dto.student.StudentSettingsDTO;
 import com.iseplife.api.dto.student.view.*;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
@@ -59,6 +61,10 @@ public class StudentFactory {
         mapper
           .map(src -> src.getFeed().getId(), StudentPreview::setFeedId)
       );
+
+    mapper.typeMap(StudentSettingsDTO.class, Student.class).addMappings(mapper ->
+      mapper.using(ctx -> Language.valueOf(((String) ctx.getSource()).toUpperCase())).map(StudentSettingsDTO::getLanguage, Student::setLanguage)
+    );
   }
 
   public static StudentPictures toPictures(String picture, Boolean hasDefaultPicture) {
