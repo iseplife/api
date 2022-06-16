@@ -54,6 +54,8 @@ public class MediaFactory {
         view = new ImageView();
         if(image.getThread() != null)
           ((ImageView) view).setThread(image.getThread().getId());
+        ((ImageView) view).setColor(image.getColor());
+        ((ImageView) view).setRatio(image.getRatio());
         break;
       default:
         throw new HttpBadRequestException("invalid_attachment");

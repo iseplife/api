@@ -6,5 +6,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class ImageView extends MediaView {
+  private Double ratio;
+  private String color;
   private Long thread;
 }
