@@ -65,7 +65,6 @@ public class StudentController {
   
   @GetMapping("/me")
   @RolesAllowed({Roles.STUDENT})
-
   public LoggedStudentPreview getLoggedStudentPreview() {
     Student student = studentService.getStudent(SecurityService.getLoggedId());
     return factory.toSelfPreview(student, notificationService.countUnwatchedAndAllByStudents(student));
@@ -82,6 +81,13 @@ public class StudentController {
   public StudentOverview getStudent(@PathVariable Long id) {
     Student student = studentService.getStudent(id);
     return factory.toOverview(student, subscriptionService.getSubscriptionProjection(student));
+  }
+  
+  @PutMapping("/me/did-first-follow")
+  @RolesAllowed({Roles.STUDENT})
+  public LoggedStudentPreview didFirstFollow() {
+    Student student = studentService.didFirstFollow(studentService.getStudent(SecurityService.getLoggedId()));
+    return factory.toSelfPreview(student, notificationService.countUnwatchedAndAllByStudents(student));
   }
 
   @PostMapping("/me/picture")

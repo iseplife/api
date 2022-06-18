@@ -294,4 +294,9 @@ public class StudentService {
     feeds.addAll(groups);
     return feeds;
   }
+
+  public Student didFirstFollow(Student student) {
+    student.setDidFirstFollow(true);
+    return studentRepository.save(student);
+  }
 }
