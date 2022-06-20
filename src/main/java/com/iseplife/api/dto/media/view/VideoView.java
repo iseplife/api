@@ -8,4 +8,5 @@ import lombok.EqualsAndHashCode;
 public class VideoView extends MediaView {
   private String title;
   private Integer views;
+  private Double ratio;
 }

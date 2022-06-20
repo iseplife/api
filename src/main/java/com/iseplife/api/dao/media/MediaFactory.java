@@ -42,6 +42,7 @@ public class MediaFactory {
         view = new VideoView();
         ((VideoView) view).setTitle(video.getTitle());
         ((VideoView) view).setViews(video.getViews());
+        ((VideoView) view).setRatio(video.getRatio());
         break;
       case EmbedType.DOCUMENT:
         Document document = (Document) media;
