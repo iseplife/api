@@ -38,6 +38,11 @@ public class Gallery implements Embedable {
   @ManyToOne
   private Club club;
 
+  @PostLoad
+  public void onCreate(){
+    images.sort((a, b) -> (int)(a.getId() - b.getId()));
+  }
+
   public List<Image> getPreview() {
     return images.subList(0, Math.min(images.size(), 5));
   }
