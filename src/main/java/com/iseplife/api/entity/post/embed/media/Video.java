@@ -15,7 +15,7 @@ import lombok.Setter;
 @Getter @Setter @NoArgsConstructor
 public class Video extends Media {
   private String title;
-  private Double ratio;
+  private Float ratio;
 
   private Integer views = 0;
 

@@ -27,7 +27,7 @@ public class MediaController {
     @RequestParam(defaultValue = "0") Long club,
     @RequestParam(defaultValue = "0") Boolean gallery,
     @RequestParam(defaultValue = "0") Boolean nsfw,
-    @RequestParam(defaultValue = "0") Double ratio,
+    @RequestParam(defaultValue = "0") Float ratio,
     @RequestParam(defaultValue = "fff") String color,
     @RequestParam("file") MultipartFile file
   ){

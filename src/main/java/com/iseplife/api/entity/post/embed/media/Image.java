@@ -16,7 +16,7 @@ import java.util.List;
 @Getter @Setter @NoArgsConstructor
 public class Image extends Media {
   private String color;
-  private Double ratio;
+  private Float ratio;
   
   @ManyToOne
   private Gallery gallery;
