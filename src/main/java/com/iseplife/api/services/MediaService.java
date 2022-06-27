@@ -123,7 +123,7 @@ public class MediaService {
     return false;
   }
 
-  public Media createMedia(MultipartFile file, Long club, Boolean gallery, Boolean nsfw) {
+  public Media createMedia(MultipartFile file, Long club, Boolean gallery, Boolean nsfw, String averageColor, Float ratio) {
     Author author = club > 0 ?
       clubService.getClub(club) :
       studentService.getStudent(SecurityService.getLoggedId());
@@ -137,6 +137,7 @@ public class MediaService {
       switch (mime) {
         case "video":
           media = new Video();
+          ((Video) media).setRatio(ratio);
           name = fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("video").path, false,
             Map.of(
               "process", "compress"
@@ -145,6 +146,10 @@ public class MediaService {
           break;
         case "image":
           media = new Image();
+          if(averageColor.length() > 6)
+            throw new HttpBadRequestException("color_bad_format");
+          ((Image) media).setColor(averageColor);
+          ((Image) media).setRatio(ratio);
           ((Image) media).setThread(new Thread(ThreadType.MEDIA));
           if (gallery) {
             name = fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("gallery").path, false,

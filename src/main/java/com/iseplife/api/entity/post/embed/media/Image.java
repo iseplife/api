@@ -15,6 +15,9 @@ import java.util.List;
 @DiscriminatorValue(MediaType.IMAGE)
 @Getter @Setter @NoArgsConstructor
 public class Image extends Media {
+  private String color;
+  private Float ratio;
+  
   @ManyToOne
   private Gallery gallery;
 

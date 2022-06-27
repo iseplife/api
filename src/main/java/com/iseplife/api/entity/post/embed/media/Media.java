@@ -32,7 +32,6 @@ public abstract class Media implements Embedable {
   private Date creation;
   private String name;
 
-
   @ManyToOne
   private Feed feed;
 }

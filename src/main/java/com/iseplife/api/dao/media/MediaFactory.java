@@ -42,6 +42,7 @@ public class MediaFactory {
         view = new VideoView();
         ((VideoView) view).setTitle(video.getTitle());
         ((VideoView) view).setViews(video.getViews());
+        ((VideoView) view).setRatio(video.getRatio());
         break;
       case EmbedType.DOCUMENT:
         Document document = (Document) media;
@@ -54,6 +55,8 @@ public class MediaFactory {
         view = new ImageView();
         if(image.getThread() != null)
           ((ImageView) view).setThread(image.getThread().getId());
+        ((ImageView) view).setColor(image.getColor());
+        ((ImageView) view).setRatio(image.getRatio());
         break;
       default:
         throw new HttpBadRequestException("invalid_attachment");
