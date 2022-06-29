@@ -78,7 +78,7 @@ public class PostService {
     return post.get();
   }
 
-  public Post createPost(PostCreationDTO dto) {
+  public PostProjection createPost(PostCreationDTO dto) {
     Post post = mapper.map(dto, Post.class);
     Student author = securityService.getLoggedUser();
 
@@ -162,7 +162,7 @@ public class PostService {
       );
     }
 
-    return postToReturn;
+    return postRepository.getById(post.getId());
   }
 
   public void createPost(Gallery gallery) {

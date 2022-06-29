@@ -4,6 +4,7 @@ import com.iseplife.api.dao.post.PostFactory;
 import com.iseplife.api.dto.post.PostCreationDTO;
 import com.iseplife.api.dto.post.PostUpdateDTO;
 import com.iseplife.api.dto.post.view.PostFormView;
+import com.iseplife.api.dto.post.view.PostView;
 import com.iseplife.api.dto.view.*;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.services.PostService;
@@ -24,8 +25,8 @@ public class PostController {
 
   @PostMapping
   @RolesAllowed({Roles.STUDENT})
-  public PostFormView createPost(@RequestBody PostCreationDTO dto) {
-    return factory.toFormView(postService.createPost(dto));
+  public PostView createPost(@RequestBody PostCreationDTO dto) {
+    return factory.toView(postService.createPost(dto), false, null);
   }
 
   @PutMapping("/{id}")
