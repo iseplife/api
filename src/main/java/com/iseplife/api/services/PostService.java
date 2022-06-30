@@ -116,11 +116,12 @@ public class PostService {
       new Date()
     );
 
-
     Post postToReturn = postRepository.save(post);
-    if (!dto.isDraft() && !customDate) {
+    
+    if (!dto.isDraft())
       postsService.broadcastPost(postToReturn);
-
+    
+    if (!dto.isDraft() && !customDate) {
       Map<String, Object> map = new HashMap<>(Map.of(
         "post_id", post.getId(),
         "author_id", post.getAuthor().getId(),

@@ -1,6 +1,7 @@
 package com.iseplife.api.websocket.services;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -47,10 +48,11 @@ public class WSPostService {
   }
 
   public void broadcastPost(Post post) {
+    boolean customDate = post.getPublicationDate().after(new Date());
     Set<Long> followers = clientsByFeedId.getOrDefault(post.getFeed().getId(), EMPTY_SET);
     for(Long studentId : clientService.getConnectedStudentIds()) {
       TokenPayload token = clientService.getToken(studentId);
-      if(SecurityService.hasReadAccess(post.getFeed(), token))
+      if(customDate ? SecurityService.hasRightOn(post, token) : SecurityService.hasReadAccess(post.getFeed(), token))
         try {
           clientService.sendPacket(
             studentId,
