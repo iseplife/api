@@ -75,13 +75,17 @@ public class WSPostService {
       }
   }
   public void broadcastEdit(Post editedPost) {
+    boolean customDate = editedPost.getPublicationDate().after(new Date());
     WSPSFeedPostEdited packet = new WSPSFeedPostEdited(postFactory.toFormView(editedPost));
-    for(Long studentId : clientService.getConnectedStudentIds())
-      try {
-        clientService.sendPacket(studentId, packet);
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+    for(Long studentId : clientService.getConnectedStudentIds()) {
+      TokenPayload token = clientService.getToken(studentId);
+      if(customDate ? SecurityService.hasRightOn(editedPost, token) : SecurityService.hasReadAccess(editedPost.getFeed(), token))
+        try {
+          clientService.sendPacket(studentId, packet);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+    }
   }
   public void broadcastLikeChange(Long threadID, int likes) {
     WSPSFeedPostLikesUpdate packet = new WSPSFeedPostLikesUpdate(threadID, likes);

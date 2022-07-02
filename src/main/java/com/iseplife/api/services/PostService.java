@@ -192,10 +192,10 @@ public class PostService {
     if (dto.getLinkedClub() != null && !SecurityService.hasAuthorAccessOn(dto.getLinkedClub()))
       throw new HttpForbiddenException("insufficient_rights");
 
-    post.setLinkedClub(dto.getLinkedClub() != null ? clubService.getClub(dto.getLinkedClub()) : null);
-
     post.setDescription(dto.getDescription());
-    post.setPublicationDate(dto.getPublicationDate());
+    
+    if(post.getPublicationDate().after(new Date()) && dto.getPublicationDate().after(new Date()))
+      post.setPublicationDate(dto.getPublicationDate());
 
     if (!dto.getAttachements().isEmpty()) {
       removeEmbed(post.getEmbed());
