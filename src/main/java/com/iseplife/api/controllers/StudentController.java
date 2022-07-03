@@ -138,6 +138,12 @@ public class StudentController {
   public StudentAdminView createStudent(@RequestBody StudentDTO dto) {
     return factory.toAdminView(studentService.createStudent(dto));
   }
+  
+  @DeleteMapping("/{id}")
+  @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
+  public void deleteStudent(@PathVariable Long id) {
+    studentService.deleteStudent(id);
+  }
 
   @GetMapping("/admin")
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})

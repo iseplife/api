@@ -122,6 +122,10 @@ public class StudentService {
 
     return student;
   }
+  
+  public void deleteStudent(Long id) {
+    studentRepository.deleteById(id);
+  }
 
 
   public StudentPictures updateOriginalPicture(Long studentId, MultipartFile image) {
