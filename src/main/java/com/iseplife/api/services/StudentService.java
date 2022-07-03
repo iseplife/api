@@ -49,7 +49,7 @@ import lombok.RequiredArgsConstructor;
 public class StudentService {
   final private ModelMapper mapper;
   @Lazy
-  private SubscriptionService subscriptionService;
+  final private SubscriptionService subscriptionService;
   final private StudentRepository studentRepository;
   final private GroupRepository groupRepository;
   final private RoleRepository roleRepository;

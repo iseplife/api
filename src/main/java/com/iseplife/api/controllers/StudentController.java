@@ -135,7 +135,7 @@ public class StudentController {
 
   @PostMapping
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
-  public StudentAdminView createStudent(@RequestParam StudentDTO dto) {
+  public StudentAdminView createStudent(@RequestBody StudentDTO dto) {
     return factory.toAdminView(studentService.createStudent(dto));
   }
 
