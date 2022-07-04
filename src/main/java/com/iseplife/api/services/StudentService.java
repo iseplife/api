@@ -49,7 +49,7 @@ import lombok.RequiredArgsConstructor;
 public class StudentService {
   final private ModelMapper mapper;
   @Lazy
-  private SubscriptionService subscriptionService;
+  final private SubscriptionService subscriptionService;
   final private StudentRepository studentRepository;
   final private GroupRepository groupRepository;
   final private RoleRepository roleRepository;
@@ -121,6 +121,10 @@ public class StudentService {
     subscriptionService.subscribe(student, student, false);
 
     return student;
+  }
+  
+  public void deleteStudent(Long id) {
+    studentRepository.deleteById(id);
   }
 
 

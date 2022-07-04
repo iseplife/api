@@ -39,6 +39,7 @@ import com.iseplife.api.dto.view.MatchedView;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
+import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.services.ClubService;
 import com.iseplife.api.services.MediaService;
 import com.iseplife.api.services.NotificationService;
@@ -135,8 +136,16 @@ public class StudentController {
 
   @PostMapping
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
-  public StudentAdminView createStudent(@RequestParam StudentDTO dto) {
+  public StudentAdminView createStudent(@RequestBody StudentDTO dto) {
     return factory.toAdminView(studentService.createStudent(dto));
+  }
+  
+  @DeleteMapping("/{id}")
+  @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
+  public void deleteStudent(@PathVariable Long id) {
+    if(id == 1)
+      throw new HttpBadRequestException("Can't delete admin user");
+    studentService.deleteStudent(id);
   }
 
   @GetMapping("/admin")
