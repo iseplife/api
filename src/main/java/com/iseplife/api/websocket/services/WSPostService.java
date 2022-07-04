@@ -48,11 +48,11 @@ public class WSPostService {
   }
 
   public void broadcastPost(Post post) {
-    boolean customDate = post.getPublicationDate().after(new Date());
+    boolean plannedPost = post.getPublicationDate().after(new Date());
     Set<Long> followers = clientsByFeedId.getOrDefault(post.getFeed().getId(), EMPTY_SET);
     for(Long studentId : clientService.getConnectedStudentIds()) {
       TokenPayload token = clientService.getToken(studentId);
-      if(customDate ? SecurityService.hasRightOn(post, token) : SecurityService.hasReadAccess(post.getFeed(), token))
+      if(plannedPost ? SecurityService.hasRightOn(post, token) : SecurityService.hasReadAccess(post.getFeed(), token))
         try {
           clientService.sendPacket(
             studentId,
