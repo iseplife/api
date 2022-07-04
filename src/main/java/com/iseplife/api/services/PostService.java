@@ -122,7 +122,7 @@ public class PostService {
       postsService.broadcastPost(postToReturn);
     
     if (!dto.isDraft() && !customDate) {
-      Map<String, Object> map = new HashMap<>(Map.of(
+      Map<String, Object> notifInformations = new HashMap<>(Map.of(
         "post_id", post.getId(),
         "author_id", post.getAuthor().getId(),
         "author_name", (post.getLinkedClub() != null ? post.getLinkedClub() : securityService.getLoggedUser()).getName(),
@@ -131,21 +131,21 @@ public class PostService {
       ));
 
       if (post.getLinkedClub() != null)
-        map.put("club_id", post.getLinkedClub().getName());
+        notifInformations.put("club_id", post.getLinkedClub().getName());
 
       Notification.NotificationBuilder builder = Notification.builder()
         .icon(post.getLinkedClub() != null ? post.getLinkedClub().getLogoUrl() : securityService.getLoggedUser().getPicture())
-        .informations(map);
+        .informations(notifInformations);
 
       Subscribable subscribable = null;
 
       if (feed.getGroup() != null) {
-        map.put("group_name", feed.getGroup().getName());
+        notifInformations.put("group_name", feed.getGroup().getName());
         builder.type(NotificationType.NEW_GROUP_POST)
           .link("post/group/" + feed.getGroup().getId() + "/" + post.getId());
         subscribable = feed.getGroup();
       } else if (feed.getClub() != null) {
-        map.put("club_name", feed.getClub().getName());
+        notifInformations.put("club_name", feed.getClub().getName());
         builder.type(NotificationType.NEW_CLUB_POST)
           .link("post/club/" + feed.getClub().getId() + "/" + post.getId());
         subscribable = feed.getClub();
