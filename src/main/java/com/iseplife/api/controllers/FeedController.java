@@ -97,6 +97,18 @@ public class FeedController {
     });
   }
 
+  @GetMapping("/{feedId}/{postId}")
+  @RolesAllowed({Roles.STUDENT})
+  public PostProjection getFeedPosts(@PathVariable Long feedId, @PathVariable Long postId) {
+     PostProjection post = feedService.getFeedPost(feedId, postId);
+     CommentProjection trendingComment = threadService.getTrendingComment(post.getThread());
+     return factory.toView(
+         post,
+         threadService.isLiked(post.getThread()),
+         trendingComment == null ? null : commentFactory.toView(trendingComment, threadService.isLiked(trendingComment.getThread()))
+     );
+  }
+
   @GetMapping("/{id}/prevposts")
   @RolesAllowed({Roles.STUDENT})
   public Page<PostProjection> getPreviousFeedPosts(@PathVariable Long id, @RequestParam(defaultValue = "0") Long lastDate) {
