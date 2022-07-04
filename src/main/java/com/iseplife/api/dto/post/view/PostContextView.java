@@ -10,10 +10,12 @@ public class PostContextView implements PostContextProjection {
   private Long id;
   private FeedType type;
   private String name;
+  private Long feedId;
 
   public PostContextView(Feed feed){
     id = feed.getFeedContext().getId();
     type = feed.getType();
     name = feed.getName();
+    feedId = feed.getId();
   }
 }

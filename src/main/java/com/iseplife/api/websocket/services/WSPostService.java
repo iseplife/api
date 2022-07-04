@@ -1,6 +1,7 @@
 package com.iseplife.api.websocket.services;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -47,10 +48,11 @@ public class WSPostService {
   }
 
   public void broadcastPost(Post post) {
+    boolean plannedPost = post.getPublicationDate().after(new Date());
     Set<Long> followers = clientsByFeedId.getOrDefault(post.getFeed().getId(), EMPTY_SET);
     for(Long studentId : clientService.getConnectedStudentIds()) {
       TokenPayload token = clientService.getToken(studentId);
-      if(SecurityService.hasReadAccess(post.getFeed(), token))
+      if(plannedPost ? SecurityService.hasRightOn(post, token) : SecurityService.hasReadAccess(post.getFeed(), token))
         try {
           clientService.sendPacket(
             studentId,
@@ -73,13 +75,17 @@ public class WSPostService {
       }
   }
   public void broadcastEdit(Post editedPost) {
+    boolean customDate = editedPost.getPublicationDate().after(new Date());
     WSPSFeedPostEdited packet = new WSPSFeedPostEdited(postFactory.toFormView(editedPost));
-    for(Long studentId : clientService.getConnectedStudentIds())
-      try {
-        clientService.sendPacket(studentId, packet);
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+    for(Long studentId : clientService.getConnectedStudentIds()) {
+      TokenPayload token = clientService.getToken(studentId);
+      if(customDate ? SecurityService.hasRightOn(editedPost, token) : SecurityService.hasReadAccess(editedPost.getFeed(), token))
+        try {
+          clientService.sendPacket(studentId, packet);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+    }
   }
   public void broadcastLikeChange(Long threadID, int likes) {
     WSPSFeedPostLikesUpdate packet = new WSPSFeedPostLikesUpdate(threadID, likes);

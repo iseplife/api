@@ -78,7 +78,7 @@ public class PostService {
     return post.get();
   }
 
-  public Post createPost(PostCreationDTO dto) {
+  public PostProjection createPost(PostCreationDTO dto) {
     Post post = mapper.map(dto, Post.class);
     Student author = securityService.getLoggedUser();
 
@@ -116,12 +116,13 @@ public class PostService {
       new Date()
     );
 
-
     Post postToReturn = postRepository.save(post);
-    if (!dto.isDraft() && !customDate) {
+    
+    if (!dto.isDraft())
       postsService.broadcastPost(postToReturn);
-
-      Map<String, Object> map = new HashMap<>(Map.of(
+    
+    if (!dto.isDraft() && !customDate) {
+      Map<String, Object> notifInformations = new HashMap<>(Map.of(
         "post_id", post.getId(),
         "author_id", post.getAuthor().getId(),
         "author_name", (post.getLinkedClub() != null ? post.getLinkedClub() : securityService.getLoggedUser()).getName(),
@@ -130,21 +131,21 @@ public class PostService {
       ));
 
       if (post.getLinkedClub() != null)
-        map.put("club_id", post.getLinkedClub().getName());
+        notifInformations.put("club_id", post.getLinkedClub().getName());
 
       Notification.NotificationBuilder builder = Notification.builder()
         .icon(post.getLinkedClub() != null ? post.getLinkedClub().getLogoUrl() : securityService.getLoggedUser().getPicture())
-        .informations(map);
+        .informations(notifInformations);
 
       Subscribable subscribable = null;
 
       if (feed.getGroup() != null) {
-        map.put("group_name", feed.getGroup().getName());
+        notifInformations.put("group_name", feed.getGroup().getName());
         builder.type(NotificationType.NEW_GROUP_POST)
           .link("post/group/" + feed.getGroup().getId() + "/" + post.getId());
         subscribable = feed.getGroup();
       } else if (feed.getClub() != null) {
-        map.put("club_name", feed.getClub().getName());
+        notifInformations.put("club_name", feed.getClub().getName());
         builder.type(NotificationType.NEW_CLUB_POST)
           .link("post/club/" + feed.getClub().getId() + "/" + post.getId());
         subscribable = feed.getClub();
@@ -162,7 +163,7 @@ public class PostService {
       );
     }
 
-    return postToReturn;
+    return postRepository.getById(post.getId());
   }
 
   public void createPost(Gallery gallery) {
@@ -191,10 +192,10 @@ public class PostService {
     if (dto.getLinkedClub() != null && !SecurityService.hasAuthorAccessOn(dto.getLinkedClub()))
       throw new HttpForbiddenException("insufficient_rights");
 
-    post.setLinkedClub(dto.getLinkedClub() != null ? clubService.getClub(dto.getLinkedClub()) : null);
-
     post.setDescription(dto.getDescription());
-    post.setPublicationDate(dto.getPublicationDate());
+    
+    if(post.getPublicationDate().after(new Date()) && dto.getPublicationDate().after(new Date()))
+      post.setPublicationDate(dto.getPublicationDate());
 
     if (!dto.getAttachements().isEmpty()) {
       removeEmbed(post.getEmbed());

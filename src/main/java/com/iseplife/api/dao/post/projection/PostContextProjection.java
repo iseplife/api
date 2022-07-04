@@ -12,6 +12,8 @@ public interface PostContextProjection {
         + "target.type == T(com.iseplife.api.constants.FeedType).CLUB ? target.club.id : "
         + "null}")
     Long getId();
+    @Value("#{target.id}")
+    Long getFeedId();
     FeedType getType();
     String getName();
 }

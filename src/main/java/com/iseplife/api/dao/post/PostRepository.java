@@ -137,4 +137,9 @@ public interface PostRepository extends CrudRepository<Post, Long> {
     "select p from Post p where p.embed = ?1 "
   )
   Optional<Post> findByEmbed(Embedable embed);
+  
+  @Query(
+      "select post as post from Post post where post.id = ?1"
+  )
+  PostProjection getById(Long id);
 }
