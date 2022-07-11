@@ -154,7 +154,7 @@ public class MediaService {
           if (gallery) {
             name = fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("gallery").path, false,
               Map.of(
-                "process", "resize",
+                "process", "compress",
                 "sizes", StorageConfig.MEDIAS_CONF.get("gallery").sizes
               )
             );
