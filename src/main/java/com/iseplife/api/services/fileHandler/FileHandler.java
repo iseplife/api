@@ -45,7 +45,7 @@ public abstract class FileHandler {
   }
 
   protected String generateRandomName(File file, int length) {
-    return RandomString.generate(length) + "." + getFileExtension(file.getName());
+    return RandomString.generate(length) + ".webp";
   }
 
   public String getFileExtension(String filename) {
