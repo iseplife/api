@@ -325,6 +325,10 @@ public class PostService {
     );
   }
 
+  public PostProjection getFeedPost(Long feed, Long post) {
+    return postRepository.findByFeedIdAndId(feed, post);
+  }
+
   public Page<PostProjection> getPreviousFeedPosts(Long feed, Date lastDate) {
     return postRepository.findPreviousCurrentFeedPost(
       feed,

@@ -20,6 +20,8 @@ import com.iseplife.api.dao.post.CommentFactory;
 import com.iseplife.api.dao.post.PostFactory;
 import com.iseplife.api.dao.post.projection.CommentProjection;
 import com.iseplife.api.dao.post.projection.PostProjection;
+import com.iseplife.api.dto.post.view.PostView;
+import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import com.iseplife.api.services.FeedService;
 import com.iseplife.api.services.SecurityService;
 import com.iseplife.api.services.ThreadService;
@@ -95,6 +97,20 @@ public class FeedController {
           trendingComment == null ? null : commentFactory.toView(trendingComment, threadService.isLiked(trendingComment.getThread()))
       );
     });
+  }
+
+  @GetMapping("/{feedId}/{postId}")
+  @RolesAllowed({Roles.STUDENT})
+  public PostView getFeedPosts(@PathVariable Long feedId, @PathVariable Long postId) {
+    PostProjection post = feedService.getFeedPost(feedId, postId);
+    if(post == null || !SecurityService.hasReadAccess(post, feedService.getFeed(post.getContext().getFeedId())))    
+      throw new HttpNotFoundException("post_not_found");
+    CommentProjection trendingComment = threadService.getTrendingComment(post.getThread());
+    return factory.toView(
+        post,
+        threadService.isLiked(post.getThread()),
+        trendingComment == null ? null : commentFactory.toView(trendingComment, threadService.isLiked(trendingComment.getThread()))
+    );
   }
 
   @GetMapping("/{id}/prevposts")

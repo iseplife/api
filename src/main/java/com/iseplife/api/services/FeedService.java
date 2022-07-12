@@ -57,6 +57,10 @@ public class FeedService {
     return postService.getFeedPosts(id, page);
   }
 
+  public PostProjection getFeedPost(Long feedId, Long postId) {
+    return postService.getFeedPost(feedId, postId);
+  }
+
   public Page<PostProjection> getPreviousFeedPosts(Long id, Long lastDate) {
     return postService.getPreviousFeedPosts(id, new Date(lastDate));
   }

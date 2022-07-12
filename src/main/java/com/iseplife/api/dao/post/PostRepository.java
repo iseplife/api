@@ -139,7 +139,24 @@ public interface PostRepository extends CrudRepository<Post, Long> {
   Optional<Post> findByEmbed(Embedable embed);
   
   @Query(
-      "select post as post from Post post where post.id = ?1"
+      "select " +
+        "p as post, " +
+        "p.thread.id as thread, " +
+        "size(p.thread.comments) as nbComments, " +
+        "size(p.thread.likes) as nbLikes " +
+      "from Post p " +
+      "where p.id = ?1"
   )
   PostProjection getById(Long id);
+
+  @Query(
+      "select " +
+        "p as post, " +
+        "p.thread.id as thread, " +
+        "size(p.thread.comments) as nbComments, " +
+        "size(p.thread.likes) as nbLikes " +
+      "from Post p " +
+      "where p.feed.id = ?1 and p.id = ?2"
+  )
+  PostProjection findByFeedIdAndId(Long feedId, Long id);
 }

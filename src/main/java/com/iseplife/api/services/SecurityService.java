@@ -1,13 +1,18 @@
 package com.iseplife.api.services;
 
-import com.iseplife.api.conf.jwt.JwtTokenUtil;
-import com.iseplife.api.conf.jwt.TokenSet;
+import java.util.Date;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.iseplife.api.conf.jwt.JwtTokenUtil;
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.conf.jwt.TokenSet;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.post.projection.CommentProjection;
 import com.iseplife.api.dao.post.projection.PostProjection;
@@ -21,9 +26,6 @@ import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.user.Student;
 
 import lombok.RequiredArgsConstructor;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
 
 
 @Service
@@ -123,6 +125,10 @@ public class SecurityService {
   static public boolean hasReadAccess(Feed feed) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
     return hasReadAccess(feed, payload);
+  }
+  static public boolean hasReadAccess(PostProjection post, Feed feed) {
+    TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return hasReadAccess(feed, payload) && (!post.getPublicationDate().after(new Date()) || hasRightOn(post));
   }
   static public boolean hasReadAccess(Feed feed, TokenPayload payload) {
     return userHasRole(Roles.ADMIN)
