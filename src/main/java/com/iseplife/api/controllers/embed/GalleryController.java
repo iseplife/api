@@ -5,6 +5,7 @@ import com.iseplife.api.dao.gallery.GalleryFactory;
 import com.iseplife.api.dto.gallery.GalleryDTO;
 import com.iseplife.api.dto.gallery.view.GalleryView;
 import com.iseplife.api.entity.post.embed.media.Image;
+import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.services.GalleryService;
 import com.iseplife.api.services.PostService;
@@ -36,9 +37,13 @@ public class GalleryController {
   @DeleteMapping("/{id}")
   public void deleteGallery(@PathVariable Long id) {
     Gallery gallery = galleryService.getGallery(id);
-    postService.deletePost(
-      postService.getPostFromEmbed(gallery).getId()
-    );
+    try {
+      postService.deletePost(
+        postService.getPostFromEmbed(gallery).getId()
+      );
+    }catch(HttpNotFoundException e) {
+      //No gallery post
+    }
 
     galleryService.deleteGallery(gallery);
   }
