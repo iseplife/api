@@ -15,7 +15,7 @@ import java.util.Map;
 @Configuration
 public class StorageConfig implements WebMvcConfigurer {
 
-  public static final String GALLERY_SIZES = "autox140/70;autox400/75;1920xauto/82;3840xauto/87";
+  public static final String GALLERY_SIZES = "autox140/70;autox400/75;1920xauto/82;5120xauto/88";
   public static final String POST_SIZES = "autox500/75;1920xauto";
   public static final String AVATAR_SIZES = "300x300;200x200;90x90/75";
   public static final String COVER_SIZES = "1920xauto";
