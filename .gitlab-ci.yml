@@ -39,11 +39,10 @@ docker-build:
   before_script:
     - apk add maven
     - API_VERSION=$(mvn help:evaluate -Dexpression="project.version" -q -DforceStdout)
-    - docker login -u $DOCKER_LOGIN -p $DOCKER_TOKEN
+    - docker login registry.dev.juniorisep.com -u $ACCESS_TOKEN -p $ACCESS_TOKEN
   script:
-    - docker build -t iseplife/api:$API_VERSION -t iseplife/api:latest .
-    - docker push iseplife/api:$API_VERSION
-    - docker push iseplife/api:latest
+    - docker build -t registry.dev.juniorisep.com/iseplife/api .
+    - docker push registry.dev.juniorisep.com/iseplife/api
   dependencies:
     - maven-build
   rules:
