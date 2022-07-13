@@ -142,16 +142,21 @@ public class PostService {
       if (feed.getGroup() != null) {
         notifInformations.put("group_name", feed.getGroup().getName());
         builder.type(NotificationType.NEW_GROUP_POST)
-          .link("post/group/" + feed.getGroup().getId() + "/" + post.getId());
+          .link("group/" + feed.getGroup().getId() + "/post/" + post.getId());
         subscribable = feed.getGroup();
+      }else if (feed.getEvent() != null) {
+        notifInformations.put("event_name", feed.getEvent().getTitle());
+        builder.type(NotificationType.NEW_EVENT_POST)
+          .link("event/" + feed.getEvent().getId() + "/post/" + post.getId());
+        subscribable = feed.getEvent();
       } else if (feed.getClub() != null) {
         notifInformations.put("club_name", feed.getClub().getName());
         builder.type(NotificationType.NEW_CLUB_POST)
-          .link("post/club/" + feed.getClub().getId() + "/" + post.getId());
+          .link("club/" + feed.getClub().getId() + "/post/" + post.getId());
         subscribable = feed.getClub();
       } else if (feed.getStudent() != null) {
         builder.type(NotificationType.NEW_STUDENT_POST)
-          .link("post/student/" + feed.getStudent().getId() + "/" + post.getId());
+          .link("student/" + feed.getStudent().getId() + "/post/" + post.getId());
         subscribable = feed.getStudent();
       }
 
