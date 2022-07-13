@@ -8,6 +8,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.stereotype.Service;
 
+import com.iseplife.api.websocket.packets.client.WSPCKeepAlive;
 import com.iseplife.api.websocket.packets.server.WSPSConnected;
 import com.iseplife.api.websocket.packets.server.WSPSEventCreated;
 import com.iseplife.api.websocket.packets.server.WSPSFeedPostCreated;
@@ -50,7 +51,8 @@ public class WSProtocol {
     registerPacketServer(WSPSFeedPostEdited.class);
     registerPacketServer(WSPSFeedPostLikesUpdate.class);
     
-    //Client packets
+    //Client
+    registerPacketClient(WSPCKeepAlive.class);
     return this;
   }
   
