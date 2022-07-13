@@ -1,5 +1,7 @@
 {
   "NEW_STUDENT_POST": "{{author_name}} a posté une nouvelle publication.",
   "NEW_CLUB_POST": "{{author_name}} a posté une nouvelle publication.",
-  "NEW_GROUP_POST": "{{author_name}} a posté une nouvelle publication dans le groupe {{group_name}}."
+  "NEW_GROUP_POST": "{{author_name}} a posté une nouvelle publication dans le groupe {{group_name}}.",
+  "NEW_EVENT_POST": "{{author_name}} a posté une nouvelle publication dans l'événement {{event_name}}.",
+  "NEW_EVENT": "{{club}} a créé l'événement {{title}}."
 }
