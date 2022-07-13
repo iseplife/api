@@ -154,6 +154,7 @@ public class SecurityService {
   static public boolean hasRightOn(Gallery gallery) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
     return userHasRole(Roles.ADMIN)
+            || gallery.getClub() == null
             || payload.getClubsPublisher().contains(gallery.getClub().getId());
   }
 
