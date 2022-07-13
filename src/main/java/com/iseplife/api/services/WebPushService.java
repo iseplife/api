@@ -159,6 +159,8 @@ public class WebPushService {
 
   public void validatePushService(String key) {
     WebPushSubscription sub = pushServiceRegistration.getIfPresent(key);
+    if(sub == null)
+      return;
     pushServiceRegistration.invalidate(key);
     sub.getOwner().getWebPushSubscriptions().add(sub);
 
