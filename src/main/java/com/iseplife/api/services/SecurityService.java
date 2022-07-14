@@ -1,6 +1,9 @@
 package com.iseplife.api.services;
 
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -110,7 +113,8 @@ public class SecurityService {
 
     switch (feed.getType()){
       case EVENT:
-        return payload.getClubsPublisher().contains(feed.getEvent().getClub().getId());
+        List<Long> targetIds = feed.getEvent().getTargets().stream().map(Feed::getId).collect(Collectors.toList());
+        return targetIds.size() == 0 || payload.getFeeds().stream().filter(authorizedFeed -> targetIds.contains(authorizedFeed)).count() > 0;
       case STUDENT:
         return payload.getId().equals(feed.getStudent().getId());
       case CLUB:
