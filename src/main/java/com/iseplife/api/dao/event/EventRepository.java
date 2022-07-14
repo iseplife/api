@@ -52,7 +52,7 @@ public interface EventRepository extends CrudRepository<Event, Long> {
   Page<EventPreviewProjection> findFeedIncomingEvents(Boolean admin, Feed feed, Pageable p);
 
   @Query(
-    "select e from Event e join e.targets t " +
+    "select e from Event e left join e.targets t " +
       "where lower(e.title) like %?1% " +
       "and ((?2 = true) or (" +
         "e.publishedAt < CURRENT_TIMESTAMP " +
