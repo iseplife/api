@@ -34,7 +34,7 @@ public class SearchService {
   final private ClubRepository clubRepository;
   final private GroupRepository groupRepository;
 
-  final private static int RESULTS_PER_PAGE = 10;
+  final private static int RESULTS_PER_PAGE = 18;
 
 
   public Page<SearchItemView> globalSearch(String filter, Integer page, Boolean returnAll, TokenPayload token) {
