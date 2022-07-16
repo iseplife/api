@@ -23,8 +23,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -65,8 +63,8 @@ public class JwtTokenUtil {
         .withIssuer(issuer)
         .build(); //Reusable verifier instance
       return verifier.verify(token);
-    } catch (JWTVerificationException e) {
-      LOG.error("could not decode token", e);
+    } catch (Throwable e) {
+      //LOG.error("could not decode token", e);
     }
     throw new JWTVerificationException("invalid token");
   }
