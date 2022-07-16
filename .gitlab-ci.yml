@@ -28,6 +28,9 @@ maven-build:
   image: maven:3.6.3-jdk-11
   script: "mvn package -B -V -e -fae -Pprod -DskipTests"
   retry: 2
+  cache:
+    paths:
+      - .m2/repository
   artifacts:
     paths:
       - target/*.jar
