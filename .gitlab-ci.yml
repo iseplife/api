@@ -42,8 +42,8 @@ maven-build:
 
 docker-build:
   stage: package
-  image: maven:3.8.6-eclipse-temurin-11-alpine
   before_script:
+    - apk add maven
     - API_VERSION=$(mvn help:evaluate -Dexpression="project.version" -q -DforceStdout)
     - docker login -u $DOCKER_LOGIN -p $DOCKER_TOKEN
     - docker login registry.dev.juniorisep.com -u $ACCESS_TOKEN -p $ACCESS_TOKEN
