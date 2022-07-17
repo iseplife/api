@@ -77,28 +77,33 @@ public class WebPushService {
     String key = RandomString.make(32);
 
     Long loggedId = SecurityService.getLoggedId();
+    Student student = studentService.getStudent(loggedId);
 
-    WebPushSubscription wpsub = webPushSubscriptionRepository.findByAuthAndKeyAndEndpointAndOwner_IdOrFingerprint(
-        sub.getAuth(), sub.getKey(), sub.getEndpoint(), loggedId, sub.getFingerprint()).orElse(null);
-    if (wpsub != null) {
+    WebPushSubscription wpsub = webPushSubscriptionRepository.findByAuthAndKeyAndEndpointOrFingerprint(
+        sub.getAuth(), sub.getKey(), sub.getEndpoint(), sub.getFingerprint()).orElse(null);
+   
+    if(wpsub != null)
       breaking: {
         boolean sameSubscription = sub.getAuth().equals(wpsub.getAuth()) && sub.getEndpoint().equals(wpsub.getEndpoint());
-        if (!sameSubscription || !sub.getFingerprint().equals(wpsub.getFingerprint())) {
+        boolean sameFingerprint = sub.getFingerprint().equals(wpsub.getFingerprint());
+        
+        if (!sameSubscription || !sameFingerprint) {
           wpsub.setFingerprint(sub.getFingerprint());
           wpsub.setLastUpdate(new Date());
-
-          if(sameSubscription)
-            webPushSubscriptionRepository.save(wpsub);
-          else
+          
+          wpsub.setKey(sub.getKey());
+          
+          if(!sameSubscription) {
+            webPushSubscriptionRepository.delete(wpsub);
             break breaking;
+          }
+          
+          webPushSubscriptionRepository.save(wpsub);
         } else
-          webPushSubscriptionRepository.updateDate(wpsub.getId(), new Date());
-
+          webPushSubscriptionRepository.updateDateAndOwner(wpsub.getId(), new Date(), student);
         return;
       }
-    }
 
-    Student student = studentService.getStudent(loggedId);
     if(wpsub == null)
       wpsub = new WebPushSubscription();
     wpsub.setAuth(sub.getAuth());

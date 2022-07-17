@@ -26,7 +26,7 @@ logging:
 media_limit:
   club:
     amount: ${CLUB_MEDIA_MAX_SIZE:2000}
-    max_size: ${CLUB_MEDIA_LIMIT:800000000 } # 800MB
+    max_size: ${CLUB_MEDIA_LIMIT:800000000} # 800MB
   user:
     amount: ${USER_MEDIA_LIMIT:15}
     max_size:  ${USER_MEDIA_MAX_SIZE:100000000} # 100Mb
