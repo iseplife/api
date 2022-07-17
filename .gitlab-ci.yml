@@ -14,6 +14,12 @@ stages:
 test:
   stage: test
   image: maven:3.8.6-eclipse-temurin-11-alpine
+  cache:
+    paths:
+      - .m2/repository
+    key:
+      files:
+        - pom.xml
   script: "mvn package -B -V -e -fae -Pprod -DskipTests"
   rules:
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
