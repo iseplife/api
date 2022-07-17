@@ -18,6 +18,8 @@ public class Video extends Media {
   private Float ratio;
 
   private Integer views = 0;
+  
+  private Integer compressedParts = 0;
 
   public String getEmbedType(){
     return EmbedType.VIDEO;
