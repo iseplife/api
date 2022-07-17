@@ -6,15 +6,10 @@ variables:
   DOCKER_DRIVER: overlay
   SPRING_PROFILES_ACTIVE: gitlab-ci
 
-cache:
-  paths:
-    - .m2/repository
-
 stages:
   - test
   - build
   - package
-
 
 test:
   stage: test
@@ -32,6 +27,9 @@ maven-build:
   cache:
     paths:
       - .m2/repository
+    key:
+      files:
+        - pom.xml
   script: "mvn package $MAVEN_CLI_OPTS -B -V -e -fae -Pprod -DskipTests"
   retry: 2
   artifacts:
