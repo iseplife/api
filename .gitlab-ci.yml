@@ -14,13 +14,16 @@ stages:
 test:
   stage: test
   image: maven:3.8.6-eclipse-temurin-11-alpine
+  variables:
+    MAVEN_OPTS: "-Dhttps.protocols=TLSv1.2 -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
+    MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
   cache:
     paths:
       - .m2/repository
     key:
       files:
         - pom.xml
-  script: "mvn package -B -V -e -fae -Pprod -DskipTests"
+  script: "mvn package $MAVEN_CLI_OPTS -B -V -e -fae -Pprod -DskipTests"
   rules:
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
 
