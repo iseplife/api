@@ -54,7 +54,6 @@ public class ClubService {
 
   @Qualifier("FileHandlerBean") final private FileHandler fileHandler;
 
-  @Cacheable("club")
   public Club getClub(Long id) {
     Optional<Club> club = clubRepository.findById(id);
     if (club.isEmpty())
