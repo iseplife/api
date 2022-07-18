@@ -17,6 +17,7 @@ import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.websocket.handler.PacketHandler;
 import com.iseplife.api.websocket.packets.WSPacketIn;
 import com.iseplife.api.websocket.packets.WSProtocol;
+import com.iseplife.api.websocket.packets.server.WSPSBadToken;
 import com.iseplife.api.websocket.packets.server.WSPSConnected;
 import com.iseplife.api.websocket.services.WSClientService;
 
@@ -46,7 +47,7 @@ public class WSHandler extends TextWebSocketHandler {
       service.addSession(tokenPayload, session);
       new WSPSConnected(tokenPayload.getId()).sendPacket(session);
     } catch (JWTVerificationException e) {
-      session.close();
+      new WSPSBadToken().sendPacket(session);
     }
   }
   
