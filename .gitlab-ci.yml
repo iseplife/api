@@ -45,6 +45,7 @@ maven-build:
 
 docker-build:
   stage: package
+  image: docker:latest
   before_script:
     - apk add maven
     - API_VERSION=$(mvn help:evaluate -Dexpression="project.version" -q -DforceStdout)
