@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -21,6 +23,7 @@ import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.FeedType;
 import com.iseplife.api.constants.NotificationType;
+import com.iseplife.api.dao.event.EventTabPreviewProjection;
 import com.iseplife.api.dao.event.EventFactory;
 import com.iseplife.api.dao.event.EventPositionRepository;
 import com.iseplife.api.dao.event.EventPreviewProjection;
@@ -165,6 +168,14 @@ public class EventService {
       token.getFeeds(),
       PageRequest.of(0, EVENTS_PER_PAGE)
     ).toList();
+  }
+  public Page<EventTabPreviewProjection> getEventsFrom(TokenPayload token, Long clubId, int page) {
+      return eventRepository.findFrom(
+          clubId,
+          token.getRoles().contains("ROLE_ADMIN"),
+          token.getFeeds(),
+          PageRequest.of(page, EVENTS_PER_PAGE, Sort.by(Direction.DESC, "startsAt"))
+      );
   }
 
   public List<EventPreviewProjection> getFeedIncomingEvents(TokenPayload token, Feed feed) {

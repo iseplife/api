@@ -30,6 +30,19 @@ public interface EventRepository extends CrudRepository<Event, Long> {
   )
   List<EventPreviewProjection> findAllInMonth(Date date, Boolean admin, List<Long> feeds);
 
+  // Request unoptimised as we always check if each target if it's inside user's feeds list while
+  @Query(
+    "select distinct e " +
+      "from Event e left join e.targets t " +
+      "left join e.feed.galleries " +
+      "where e.club.id = :clubId " +
+      "and (:admin = true or (" +
+        "e.publishedAt < CURRENT_TIMESTAMP " +
+        "and (e.targets is empty or t.id in :feeds)" +
+      "))"
+  )
+  Page<EventTabPreviewProjection> findFrom(Long clubId, Boolean admin, List<Long> feeds, Pageable p);
+
   @Query(
     "select e from Event e left join e.targets t " +
       "where e.startsAt >= CURRENT_TIMESTAMP " +

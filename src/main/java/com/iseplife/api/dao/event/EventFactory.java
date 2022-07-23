@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import com.iseplife.api.dao.club.ClubFactory;
 import com.iseplife.api.dao.subscription.projection.SubscriptionProjection;
 import com.iseplife.api.dto.event.view.EventPreview;
+import com.iseplife.api.dto.event.view.EventTabPreview;
 import com.iseplife.api.dto.event.view.EventView;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
@@ -64,6 +65,10 @@ public class EventFactory {
 
   public EventPreview toPreview(Event event) {
     return mapper.map(event, EventPreview.class);
+  }
+  
+  public EventTabPreview toTabPreview(EventTabPreviewProjection event) {
+    return mapper.map(event, EventTabPreview.class);
   }
 
   public EventView toView(Event event, SubscriptionProjection subProjection) {
