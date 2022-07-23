@@ -24,7 +24,7 @@ public interface EventRepository extends CrudRepository<Event, Long> {
       "and MONTH(e.startsAt) = MONTH(CAST(?1 as timestamp))" +
       "and ((?2 = true) or (" +
         "e.publishedAt < CURRENT_TIMESTAMP " +
-        "and (e.targets is empty or e.closed = false or t.id in ?3)" +
+        "and (e.targets is empty or t.id in ?3)" +
       ")) " +
       "order by e.startsAt"
   )
@@ -35,7 +35,7 @@ public interface EventRepository extends CrudRepository<Event, Long> {
       "where e.startsAt >= CURRENT_TIMESTAMP " +
       "and ((?1 = true) or (" +
         "e.publishedAt < CURRENT_TIMESTAMP " +
-        "and (e.targets is empty or e.closed = false or t.id in ?2)" +
+        "and (e.targets is empty or t.id in ?2)" +
       ")) " +
       "order by e.startsAt"
   )
@@ -44,9 +44,9 @@ public interface EventRepository extends CrudRepository<Event, Long> {
   @Query(
     "select e from Event e " +
       "where e.startsAt >= CURRENT_TIMESTAMP " +
-      "and (((?1 = true) " +
+      "and (?1 = true " +
         "or (e.publishedAt < CURRENT_TIMESTAMP and ?2 member of e.targets) " +
-      ")) " +
+      ") " +
       "order by e.startsAt"
   )
   Page<EventPreviewProjection> findFeedIncomingEvents(Boolean admin, Feed feed, Pageable p);
@@ -56,7 +56,7 @@ public interface EventRepository extends CrudRepository<Event, Long> {
       "where lower(e.title) like %?1% " +
       "and ((?2 = true) or (" +
         "e.publishedAt < CURRENT_TIMESTAMP " +
-        "and (e.targets is empty or e.closed = false or t.id in ?3)" +
+        "and (e.targets is empty or t.id in ?3)" +
       ")) "
   )
   Page<Event> searchEvent(String name, Boolean admin, List<Long> feed, Pageable pageable);
