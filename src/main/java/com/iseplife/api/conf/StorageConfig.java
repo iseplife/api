@@ -3,7 +3,6 @@ package com.iseplife.api.conf;
 import com.iseplife.api.services.fileHandler.AmazonHandler;
 import com.iseplife.api.services.fileHandler.CloudinaryHandler;
 import com.iseplife.api.services.fileHandler.FileHandler;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +15,7 @@ import java.util.Map;
 public class StorageConfig implements WebMvcConfigurer {
 
   public static final String GALLERY_SIZES = "autox140/70;autox500/75;1920xauto/82;5120xauto/88";
-  public static final String POST_SIZES = "autox500/72;1920xauto";
+  public static final String POST_SIZES = "autox500/72;autox800/70;1920xauto";
   public static final String AVATAR_SIZES = "300x300;200x200;90x90/75";
   public static final String COVER_SIZES = "1920xauto";
 
