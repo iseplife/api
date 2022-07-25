@@ -8,11 +8,11 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+    show-sql: true
   servlet:
     multipart:
       max-file-size: 2000MB
       max-request-size: 2000MB
-
 server:
   port: 8080
 

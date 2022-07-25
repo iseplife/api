@@ -29,22 +29,18 @@ public class Gallery implements Embedable {
 
   private Date creation;
 
-  @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "gallery")
+  @OneToMany(cascade = CascadeType.REMOVE,  mappedBy = "gallery", fetch = FetchType.LAZY)
+  @OrderBy("id ASC")
   private List<Image> images = new ArrayList<>();
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   private Feed feed;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   private Club club;
 
-  @PostLoad
-  public void onCreate(){
-    images.sort((a, b) -> (int)(a.getId() - b.getId()));
-  }
-
   public List<Image> getPreview() {
-    return images.subList(0, Math.min(images.size(), 5));
+    return getImages().subList(0, Math.min(images.size(), 5));
   }
 
   public String getEmbedType(){

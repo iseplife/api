@@ -169,8 +169,7 @@ public class ClubController {
       CommentProjection trendingComment = threadService.getTrendingComment(p.getThread());
       return postFactory.toView(
           p,
-          threadService.isLiked(p.getThread()),
-          trendingComment == null ? null : commentFactory.toView(trendingComment, threadService.isLiked(trendingComment.getThread()))
+          trendingComment == null ? null : commentFactory.toView(trendingComment)
       );
     });
   }

@@ -1,7 +1,6 @@
 package com.iseplife.api.entity.post.embed.media;
 
 import com.iseplife.api.constants.MediaStatus;
-import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.post.embed.Embedable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,7 +30,4 @@ public abstract class Media implements Embedable {
   private boolean NSFW = false;
   private Date creation;
   private String name;
-
-  @ManyToOne
-  private Feed feed;
 }

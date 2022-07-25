@@ -30,7 +30,6 @@ public class PostFactory {
   public void init() {
     mapper.typeMap(PostProjection.class, PostView.class)
       .addMappings(mapper -> {
-        mapper.skip(PostView::setLiked);
         mapper
           .using(ctx -> SecurityService.hasRightOn((PostProjection) ctx.getSource()))
           .map(src -> src, PostView::setHasWriteAccess);
@@ -73,9 +72,8 @@ public class PostFactory {
     return view;
   }
 
-  public PostView toView(PostProjection post, Boolean isLiked, CommentView trendingComment) {
+  public PostView toView(PostProjection post, CommentView trendingComment) {
     PostView view = mapper.map(post, PostView.class);
-    view.setLiked(isLiked);
     view.setTrendingComment(trendingComment);
 
     return view;

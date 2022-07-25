@@ -1,19 +1,15 @@
 package com.iseplife.api.dao.post;
 
 import com.iseplife.api.dao.post.projection.CommentProjection;
-import com.iseplife.api.dao.post.projection.PostProjection;
-import com.iseplife.api.dto.post.view.PostView;
 import com.iseplife.api.dto.thread.view.CommentFormView;
 import com.iseplife.api.dto.thread.view.CommentView;
 import com.iseplife.api.entity.post.Comment;
 import com.iseplife.api.services.SecurityService;
-import com.iseplife.api.services.ThreadService;
 import lombok.RequiredArgsConstructor;
 
 import javax.annotation.PostConstruct;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 
@@ -26,7 +22,6 @@ public class CommentFactory {
   public void init() {
     mapper.typeMap(CommentProjection.class, CommentView.class)
       .addMappings(mapper -> {
-        mapper.skip(CommentView::setLiked);
         mapper
           .using(ctx -> SecurityService.hasRightOn((CommentProjection) ctx.getSource()))
           .map(src -> src, CommentView::setHasWriteAccess);
@@ -39,11 +34,8 @@ public class CommentFactory {
       });
   }
 
-  public CommentView toView(CommentProjection comment, Boolean isLiked) {
-    CommentView view = mapper.map(comment, CommentView.class);
-    view.setLiked(isLiked);
-
-    return view;
+  public CommentView toView(CommentProjection comment) {
+    return mapper.map(comment, CommentView.class);
   }
 
   public CommentFormView toView(Comment comment) {

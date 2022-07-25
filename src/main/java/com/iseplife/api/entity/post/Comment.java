@@ -26,10 +26,10 @@ public class Comment implements ThreadInterface {
 
   private Date lastEdition;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   private Thread parentThread;
 
-  @OneToOne(cascade = CascadeType.ALL)
+  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private Thread thread;
 
   @ManyToOne

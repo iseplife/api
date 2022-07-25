@@ -66,13 +66,13 @@ public class Student implements UserDetails, Feedable, Author, Subscribable {
 
   private String picture;
 
-  @ManyToMany(fetch = FetchType.EAGER)
+  @ManyToMany(fetch = FetchType.LAZY)
   private Set<Role> roles;
 
-  @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   private Feed feed;
 
-  @OneToMany(mappedBy="owner", fetch = FetchType.EAGER)
+  @OneToMany(mappedBy="owner", fetch = FetchType.LAZY)
   private Set<WebPushSubscription> webPushSubscriptions;
 
   @OneToMany(mappedBy = "listener", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

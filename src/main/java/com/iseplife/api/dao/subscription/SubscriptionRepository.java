@@ -52,8 +52,10 @@ public interface SubscriptionRepository extends CrudRepository<Subscription, Lon
       "s.subscribed.id = ?1")
   List<Subscription> findBySubscribedId(Long id);
 
-  @Query("select s from Subscription s where " +
-      "s.subscribed = ?1")
+  @Query("select s from Subscription s " +
+      "join fetch s.listener listener " +
+      "join fetch listener.webPushSubscriptions " +
+      "where s.subscribed = ?1")
   List<Subscription> findBySubscribed(Subscribable subable);
 
   @Transactional
