@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -73,4 +74,7 @@ public interface EventRepository extends CrudRepository<Event, Long> {
       ")) "
   )
   Page<Event> searchEvent(String name, Boolean admin, List<Long> feed, Pageable pageable);
+  
+  @Query("select e from Event e join fetch e.position where e.id = :id")
+  Optional<Event> findByIdWithPosition(Long id);
 }

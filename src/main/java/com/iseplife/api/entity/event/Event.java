@@ -44,7 +44,7 @@ public class Event implements Feedable, Subscribable {
   private Date endsAt;
 
   private String location;
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   private EventPosition position;
   
   private String ticketUrl = null;

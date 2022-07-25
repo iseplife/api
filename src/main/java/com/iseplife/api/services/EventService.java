@@ -100,7 +100,7 @@ public class EventService {
                     "start", event.getStartsAt().getTime()
                 )
             ),
-          false, club, () -> eventRepository.findById(finalEvent.getId()) != null);
+          false, club, () -> eventRepository.findByIdWithPosition(finalEvent.getId()) != null);
     }
     
     wsEventService.broadcastEvent(event);
@@ -191,7 +191,7 @@ public class EventService {
 
 
   public Event getEvent(Long id) {
-    Optional<Event> event = eventRepository.findById(id);
+    Optional<Event> event = eventRepository.findByIdWithPosition(id);
     if (event.isEmpty() || !SecurityService.hasReadAccessOn(event.get()))
       throw new HttpNotFoundException("not_found");
 
