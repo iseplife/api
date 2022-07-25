@@ -3,6 +3,7 @@ package com.iseplife.api.services;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.constants.ThreadType;
+import com.iseplife.api.dao.feed.FeedRepository;
 import com.iseplife.api.dao.post.*;
 import com.iseplife.api.dao.post.projection.CommentProjection;
 import com.iseplife.api.dao.thread.ThreadRepository;
@@ -12,6 +13,7 @@ import com.iseplife.api.dto.thread.view.ThreadProjection;
 import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.ThreadInterface;
 import com.iseplife.api.entity.club.Club;
+import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.post.Comment;
 import com.iseplife.api.entity.post.Like;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
@@ -36,14 +38,26 @@ public class ThreadService {
   final private ThreadRepository threadRepository;
   final private CommentRepository commentRepository;
   final private LikeRepository likeRepository;
+  final private FeedRepository feedRepository;
   final private WSPostService postService;
 
   public Thread getThread(Long id) {
     Optional<Thread> thread = threadRepository.findById(id);
-    if (thread.isEmpty() || !SecurityService.hasReadAccess(thread.get().getFeed()))
+    if (thread.isEmpty() || !SecurityService.hasReadAccess(getFeed(thread.get()).get()))
       throw new HttpNotFoundException("thread_not_found");
 
     return thread.get();
+  }
+  public Optional<Feed> getFeed(Thread thread) {
+    switch(thread.getType()) {
+      case POST:
+        return feedRepository.findByPostThread(thread);
+      case MEDIA:
+        return feedRepository.findByMediaThread(thread);
+      case COMMENT:
+        return getFeed(commentRepository.findByThread(thread).get().getParentThread());
+    }
+    return null;
   }
 
   private Thread getThread(Object entityThread) {
@@ -146,7 +160,7 @@ public class ThreadService {
       throw new HttpNotFoundException("comment_not_found");
 
     Comment comment = optional.get();
-    if (!SecurityService.hasRightOn(comment))
+    if (!SecurityService.hasRightOn(comment, this))
       throw new HttpForbiddenException("insufficient_rights");
 
     comment.setMessage(dto.getMessage());

@@ -1,14 +1,22 @@
 package com.iseplife.api.dao.feed;
 
-import com.iseplife.api.entity.feed.Feed;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import com.iseplife.api.entity.feed.Feed;
+import com.iseplife.api.entity.Thread;
 
 @Repository
 public interface FeedRepository extends CrudRepository<Feed, Long> {
 
   Iterable<FeedProjection> findAllByIdIn(Iterable<Long> id);
+  
+  @Query("select post.feed from Post post join post.thread t on t = :thread")
+  Optional<Feed> findByPostThread(Thread thread);
+  
+  @Query("select media.gallery.feed from Media media join media.thread t on t = :thread")
+  Optional<Feed> findByMediaThread(Thread thread);
 }

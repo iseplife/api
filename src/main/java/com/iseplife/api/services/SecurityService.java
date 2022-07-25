@@ -98,12 +98,12 @@ public class SecurityService {
       || payload.getClubsPublisher().contains(comment.getAuthor().getId());
   }
 
-  static public boolean hasRightOn(Comment comment) {
+  static public boolean hasRightOn(Comment comment, ThreadService threadService) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
     return userHasRole(Roles.ADMIN)
       || comment.getStudent().getId().equals(payload.getId())
       || payload.getClubsPublisher().contains(comment.getAsClub().getId())
-      || hasRightOn(comment.getParentThread().getFeed());
+      || hasRightOn(threadService.getFeed(comment.getParentThread()).get());
   }
 
   static public boolean hasRightOn(Feed feed) {
