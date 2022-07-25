@@ -145,21 +145,21 @@ public class WebPushService {
   }
 
   public void sendNotificationToAll(List<Subscription> subs, com.iseplife.api.entity.subscription.Notification notification) {
-    new Thread(new Runnable() {
-      public void run() {
-        try {
-          for(Subscription sub : subs) {
-            String payload = notification.getPayload(sub.getListener(), translationService);
-            for(WebPushSubscription wpSub : sub.getListener().getWebPushSubscriptions()) {
-              sendAsyncNotification(wpSub, payload);
-              Thread.sleep(5);
-            }
-          }
-        } catch (InterruptedException e) {
-          e.printStackTrace();
+    new Thread(() -> this.sendNotificationToAllSync(subs, notification)).start();
+  }
+  
+  private void sendNotificationToAllSync(List<Subscription> subs, com.iseplife.api.entity.subscription.Notification notification) {
+    try {
+      for(Subscription sub : subs) {
+        String payload = notification.getPayload(sub.getListener(), translationService);
+        for(WebPushSubscription wpSub : sub.getListener().getWebPushSubscriptions()) {
+          sendAsyncNotification(wpSub, payload);
+          Thread.sleep(5);
         }
       }
-    }).start();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
   }
 
   public void validatePushService(String key) {

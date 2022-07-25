@@ -21,10 +21,10 @@ public class Image extends Media {
   @ManyToOne
   private Gallery gallery;
 
-  @OneToOne(cascade = CascadeType.ALL)
+  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private Thread thread;
 
-  @OneToMany(mappedBy = "image", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "image", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<Matched> matched;
 
   public String getEmbedType(){

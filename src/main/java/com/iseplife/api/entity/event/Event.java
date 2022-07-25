@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
@@ -43,14 +44,13 @@ public class Event implements Feedable, Subscribable {
   private Date endsAt;
 
   private String location;
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   private EventPosition position;
   
   private String ticketUrl = null;
   private Float price = null;
 
   private Date publishedAt = new Date();
-  private boolean closed = false;
 
   @Column(columnDefinition = "TEXT")
   private String description;
@@ -62,7 +62,7 @@ public class Event implements Feedable, Subscribable {
   @ManyToOne
   private Club club;
 
-  @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   private Feed feed;
 
   @ManyToMany

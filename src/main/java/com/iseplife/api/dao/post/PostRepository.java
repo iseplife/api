@@ -24,62 +24,82 @@ public interface PostRepository extends CrudRepository<Post, Long> {
   @Query(
     "select distinct " +
       "p as post, " +
-      "p.thread.id as thread, " +
-      "size(p.thread.comments) as nbComments, " +
-      "size(p.thread.likes) as nbLikes " +
+      "t.id as thread, " +
+      "size(t.comments) as nbComments, " +
+      "size(l) as nbLikes, " +
+      "count(likeStudent) > 0 as liked " +
     "from Post p " +
-      "join Student s on s.id = :loggedStudent " +
+      "join Student s on s.id = :loggedUser " +
       "join s.subscriptions subs " +
+      "join p.thread t " +
+      "left join t.likes l " +
+      "left join l.student likeStudent on likeStudent.id = :loggedUser " +
     "where (p.feed.id = subs.subscribedFeed.id or p.homepageForced = true) " +
       "and p.state = 'READY' " +
       "and p.homepagePinned = false " +
-      "and (p.publicationDate <= now() or p.author.id = :loggedStudent) " +
+      "and (p.publicationDate <= now() or p.author.id = :loggedUser) " +
+    "group by p, t " +
     "order by p.publicationDate desc"
   )
-  Page<PostProjection> findHomepagePosts(Long loggedStudent, Pageable pageable);
+  Page<PostProjection> findHomepagePosts(Long loggedUser, Pageable pageable);
 
   @Query(
     "select distinct " +
       "p as post, " +
       "p.thread.id as thread, " +
       "size(p.thread.comments) as nbComments, " +
-      "size(p.thread.likes) as nbLikes " +
+      "size(p.thread.likes) as nbLikes, " +
+      "count(likeStudent) > 0 as liked " +
       "from Post p " +
-        "join Student s on s.id = :loggedStudent " +
+        "join Student s on s.id = :loggedUser " +
         "join s.subscriptions subs " +
+        "join p.thread t " +
+        "left join t.likes l " +
+        "left join l.student likeStudent on likeStudent.id = :loggedUser " +
       "where (p.feed.id = subs.subscribedFeed.id or p.homepageForced = true) " +
         "and p.state = 'READY' " +
         "and p.homepagePinned = true " +
-        "and (p.publicationDate <= now() or p.author.id = :loggedStudent) " +
+        "and (p.publicationDate <= now() or p.author.id = :loggedUser) " +
+      "group by p, t " +
       "order by p.publicationDate desc"
   )
-  List<PostProjection> findHomepagePostsPinned(Long loggedStudent);
+  List<PostProjection> findHomepagePostsPinned(Long loggedUser);
 
   @Query(
       "select distinct " +
         "p as post, " +
         "p.thread.id as thread, " +
         "size(p.thread.comments) as nbComments, " +
-        "size(p.thread.likes) as nbLikes " +
+        "size(p.thread.likes) as nbLikes, " +
+        "count(likeStudent) > 0 as liked " +
       "from Post p " +
-        "join Student s on s.id = :loggedStudent " +
+        "join Student s on s.id = :loggedUser " +
         "join s.subscriptions subs " +
+        "join p.thread t " +
+        "left join t.likes l " +
+        "left join l.student likeStudent on likeStudent.id = :loggedUser " +
       "where p.publicationDate < :lastDate and (p.feed.id = subs.subscribedFeed.id or p.homepageForced = true) " +
         "and p.state = 'READY' and p.pinned = false " +
-        "and (p.publicationDate <= now() or p.author.id = :loggedStudent) " +
+        "and (p.publicationDate <= now() or p.author.id = :loggedUser) " +
+      "group by p, t " +
       "order by p.publicationDate desc"
     )
-    Page<PostProjection> findPreviousHomepagePosts(Long loggedStudent, Date lastDate, Pageable pageable);
+    Page<PostProjection> findPreviousHomepagePosts(Long loggedUser, Date lastDate, Pageable pageable);
 
   @Query(
     "select " +
       "p as post, " +
       "p.thread.id as thread, " +
       "size(p.thread.comments) as nbComments, " +
-      "size(p.thread.likes) as nbLikes " +
+      "size(p.thread.likes) as nbLikes, " +
+      "count(likeStudent) > 0 as liked " +
     "from Post p " +
-    "where p.feed.id = ?1 and p.state = ?2 and p.pinned = false " +
-      "and (p.publicationDate <= now() or ?4 = true or p.author.id = ?3)"
+      "join p.thread t " +
+      "left join t.likes l " +
+      "left join l.student likeStudent on likeStudent.id = :loggedUser " +
+    "where p.feed.id = :feed and p.state = :state and p.pinned = false " +
+      "and (p.publicationDate <= now() or :isAdmin = true or p.author.id = :loggedUser) " +
+    "group by p, t"
   )
   Page<PostProjection> findCurrentFeedPost(Long feed, PostState state, Long loggedUser, Boolean isAdmin, Pageable pageable);
   @Query(
@@ -87,10 +107,15 @@ public interface PostRepository extends CrudRepository<Post, Long> {
         "p as post, " +
         "p.thread.id as thread, " +
         "size(p.thread.comments) as nbComments, " +
-        "size(p.thread.likes) as nbLikes " +
+        "size(p.thread.likes) as nbLikes, " +
+        "count(likeStudent) > 0 as liked " +
       "from Post p " +
+        "join p.thread t " +
+        "left join t.likes l " +
+        "left join l.student likeStudent on likeStudent.id = :loggedUser " +
       "where p.publicationDate < :lastDate and p.feed.id = :feed and p.state = :state and p.pinned = false " +
-        "and (p.publicationDate <= now() or :isAdmin = true or p.author.id = :loggedUser)"
+        "and (p.publicationDate <= now() or :isAdmin = true or p.author.id = :loggedUser) " +
+      "group by p, t"
     )
     Page<PostProjection> findPreviousCurrentFeedPost(Long feed, Date lastDate, PostState state, Long loggedUser, Boolean isAdmin, Pageable pageable);
 
@@ -99,10 +124,15 @@ public interface PostRepository extends CrudRepository<Post, Long> {
       "p as post, " +
       "p.thread.id as thread, " +
       "size(p.thread.comments) as nbComments, " +
-      "size(p.thread.likes) as nbLikes " +
+      "size(p.thread.likes) as nbLikes, " +
+      "count(likeStudent) > 0 as liked " +
     "from Post p " +
+      "join p.thread t " +
+      "left join t.likes l " +
+      "left join l.student likeStudent on likeStudent.id = :loggedUser " +
     "where p.feed = :feed and p.pinned = true " +
       "and (p.publicationDate <= now() or :isAdmin = true or p.author.id = :loggedUser) " +
+    "group by p, t " +
     "order by p.publicationDate desc"
   )
   List<PostProjection> findFeedPinnedPosts(Feed feed, Long loggedUser, Boolean isAdmin);
@@ -111,24 +141,35 @@ public interface PostRepository extends CrudRepository<Post, Long> {
   @Query(
     "select " +
       "p as post, " +
-      "t.id as thread, " +
-      "size(t.comments) as nbComments, " +
-      "size(t.likes) as nbLikes " +
+      "p.thread.id as thread, " +
+      "size(p.thread.comments) as nbComments, " +
+      "size(p.thread.likes) as nbLikes, " +
+      "count(likeStudent) > 0 as liked " +
     "from Post p join p.thread as t " +
-    "where p.feed = ?1 " +
-    "and p.author.id = ?2 and p.state = 'DRAFT'"
+      "join p.thread t " +
+      "left join t.likes l " +
+      "left join l.student likeStudent on likeStudent.id = :loggedUser " +
+    "where p.feed = :feed " +
+    "and p.author.id = :author and p.state = 'DRAFT' " +
+    "group by p, t"
   )
-  Optional<PostProjection> findFeedDraft(Feed feed, Long author);
+  Optional<PostProjection> findFeedDraft(Feed feed, Long loggedUser, Long author);
 
 
   @Query(
-    "select p as post, " +
+    "select " +
+      "p as post, " +
       "p.thread.id as thread, " +
       "size(p.thread.comments) as nbComments, " +
-      "size(p.thread.likes) as nbLikes " +
+      "size(p.thread.likes) as nbLikes, " +
+      "count(likeStudent) > 0 as liked " +
     "from Post p " +
-    "where p.feed.id in ?3 and p.author = ?1 and p.state = 'READY' and " +
-      "(p.publicationDate <= now() or p.author.id = ?2)" +
+      "join p.thread t " +
+      "left join t.likes l " +
+      "left join l.student likeStudent on likeStudent.id = :loggedUser " +
+    "where p.feed.id in :authorizedFeeds and p.author = :author_id and p.state = 'READY' and " +
+      "(p.publicationDate <= now() or p.author.id = :loggedUser)" +
+    "group by p, t " +
     "order by p.publicationDate desc"
   )
   Page<PostProjection> findAuthorPosts(Long author_id, Long loggedUser, List<Long> authorizedFeeds, Pageable pageable);
@@ -143,20 +184,30 @@ public interface PostRepository extends CrudRepository<Post, Long> {
         "p as post, " +
         "p.thread.id as thread, " +
         "size(p.thread.comments) as nbComments, " +
-        "size(p.thread.likes) as nbLikes " +
+        "size(p.thread.likes) as nbLikes, " +
+        "count(likeStudent) > 0 as liked " +
       "from Post p " +
-      "where p.id = ?1"
+        "join p.thread t " +
+        "left join t.likes l " +
+        "left join l.student likeStudent on likeStudent.id = :loggedUser " +
+      "where p.id = :id " +
+      "group by p, t"
   )
-  PostProjection getById(Long id);
+  PostProjection getById(Long id, Long loggedUser);
 
   @Query(
       "select " +
         "p as post, " +
         "p.thread.id as thread, " +
         "size(p.thread.comments) as nbComments, " +
-        "size(p.thread.likes) as nbLikes " +
+        "size(p.thread.likes) as nbLikes, " +
+        "count(likeStudent) > 0 as liked " +
       "from Post p " +
-      "where p.feed.id = ?1 and p.id = ?2"
+        "join p.thread t " +
+        "left join t.likes l " +
+        "left join l.student likeStudent on likeStudent.id = :loggedUser " +
+      "where p.feed.id = :feedId and p.id = :id " +
+      "group by p, t"
   )
-  PostProjection findByFeedIdAndId(Long feedId, Long id);
+  PostProjection findByFeedIdAndId(Long feedId, Long loggedUser, Long id);
 }

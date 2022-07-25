@@ -27,6 +27,7 @@ import com.iseplife.api.dao.gallery.GalleryFactory;
 import com.iseplife.api.dao.media.MediaFactory;
 import com.iseplife.api.dto.event.EventDTO;
 import com.iseplife.api.dto.event.view.EventPreview;
+import com.iseplife.api.dto.event.view.EventTabPreview;
 import com.iseplife.api.dto.event.view.EventView;
 import com.iseplife.api.dto.gallery.view.GalleryPreview;
 import com.iseplife.api.dto.media.view.MediaNameView;
@@ -69,6 +70,12 @@ public class EventController {
   @RolesAllowed({Roles.STUDENT})
   public List<EventPreviewProjection> getIncomingEvents(@AuthenticationPrincipal TokenPayload token, @RequestParam(name = "feed", defaultValue = "1") Long feed) {
     return eventService.getIncomingEvents(token, feed);
+  }
+
+  @GetMapping("/club/{clubId}/{page}")
+  @RolesAllowed({Roles.STUDENT})
+  public Page<EventTabPreview> getEventsFrom(@AuthenticationPrincipal TokenPayload token, @PathVariable Long clubId, @PathVariable int page) {
+    return eventService.getEventsFrom(token, clubId, page).map(factory::toTabPreview);
   }
 
   @GetMapping("/{id}")

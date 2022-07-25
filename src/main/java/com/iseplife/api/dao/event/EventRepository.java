@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -24,18 +25,31 @@ public interface EventRepository extends CrudRepository<Event, Long> {
       "and MONTH(e.startsAt) = MONTH(CAST(?1 as timestamp))" +
       "and ((?2 = true) or (" +
         "e.publishedAt < CURRENT_TIMESTAMP " +
-        "and (e.targets is empty or e.closed = false or t.id in ?3)" +
+        "and (e.targets is empty or t.id in ?3)" +
       ")) " +
       "order by e.startsAt"
   )
   List<EventPreviewProjection> findAllInMonth(Date date, Boolean admin, List<Long> feeds);
+
+  // Request unoptimised as we always check if each target if it's inside user's feeds list while
+  @Query(
+    "select distinct e " +
+      "from Event e left join e.targets t " +
+      "left join e.feed.galleries " +
+      "where e.club.id = :clubId " +
+      "and (:admin = true or (" +
+        "e.publishedAt < CURRENT_TIMESTAMP " +
+        "and (e.targets is empty or t.id in :feeds)" +
+      "))"
+  )
+  Page<EventTabPreviewProjection> findFrom(Long clubId, Boolean admin, List<Long> feeds, Pageable p);
 
   @Query(
     "select e from Event e left join e.targets t " +
       "where e.startsAt >= CURRENT_TIMESTAMP " +
       "and ((?1 = true) or (" +
         "e.publishedAt < CURRENT_TIMESTAMP " +
-        "and (e.targets is empty or e.closed = false or t.id in ?2)" +
+        "and (e.targets is empty or t.id in ?2)" +
       ")) " +
       "order by e.startsAt"
   )
@@ -44,9 +58,9 @@ public interface EventRepository extends CrudRepository<Event, Long> {
   @Query(
     "select e from Event e " +
       "where e.startsAt >= CURRENT_TIMESTAMP " +
-      "and (((?1 = true) " +
+      "and (?1 = true " +
         "or (e.publishedAt < CURRENT_TIMESTAMP and ?2 member of e.targets) " +
-      ")) " +
+      ") " +
       "order by e.startsAt"
   )
   Page<EventPreviewProjection> findFeedIncomingEvents(Boolean admin, Feed feed, Pageable p);
@@ -56,8 +70,11 @@ public interface EventRepository extends CrudRepository<Event, Long> {
       "where lower(e.title) like %?1% " +
       "and ((?2 = true) or (" +
         "e.publishedAt < CURRENT_TIMESTAMP " +
-        "and (e.targets is empty or e.closed = false or t.id in ?3)" +
+        "and (e.targets is empty or t.id in ?3)" +
       ")) "
   )
   Page<Event> searchEvent(String name, Boolean admin, List<Long> feed, Pageable pageable);
+  
+  @Query("select e from Event e join fetch e.position where e.id = :id")
+  Optional<Event> findByIdWithPosition(Long id);
 }

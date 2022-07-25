@@ -56,9 +56,7 @@ public class ThreadService {
   }
 
   public ThreadProjection getView(Long id, Long student){
-    Thread thread = getThread(id);
-
-    return threadRepository.findThreadById(thread.getId(), student);
+    return threadRepository.findThreadById(id, student);
   }
 
   public List<Like> getLikes(Long threadID) {
@@ -101,7 +99,7 @@ public class ThreadService {
   }
 
   public List<CommentProjection> getComments(Long threadID) {
-    return commentRepository.findThreadComments(threadID);
+    return commentRepository.findThreadComments(threadID, SecurityService.getLoggedId());
   }
 
   public CommentProjection getTrendingComment(Long thread) {
@@ -115,10 +113,7 @@ public class ThreadService {
   }
 
   private Boolean canCommentOnThread(Thread thread) {
-    if (thread.getComment() != null) {
-      return thread.getComment().getParentThread().getComment() == null;
-    }
-    return true;
+    return !threadRepository.doesParentCommentExist(thread);
   }
 
   public Comment comment(Long threadID, CommentDTO dto, Long studentID) {

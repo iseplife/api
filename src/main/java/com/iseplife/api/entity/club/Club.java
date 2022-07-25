@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -59,13 +60,13 @@ public class Club implements Feedable, Author, Subscribable {
   @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
   private Feed feed;
 
-  @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   private List<ClubMember> members;
 
-  @OneToMany(mappedBy = "club", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<Event> events;
 
-  @OneToMany(mappedBy = "linkedClub", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "linkedClub", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   private List<Post> posts;
 
   @Override

@@ -52,8 +52,7 @@ public class FeedController {
 
       return factory.toView(
           p,
-          threadService.isLiked(p.getThread()),
-          trendingComment == null ? null : commentFactory.toView(trendingComment, threadService.isLiked(trendingComment.getThread()))
+          trendingComment == null ? null : commentFactory.toView(trendingComment)
       );
     });
   }
@@ -66,8 +65,7 @@ public class FeedController {
 
       return factory.toView(
           p,
-          threadService.isLiked(p.getThread()),
-          trendingComment == null ? null : commentFactory.toView(trendingComment, threadService.isLiked(trendingComment.getThread()))
+          trendingComment == null ? null : commentFactory.toView(trendingComment)
       );
     });
   }
@@ -80,8 +78,7 @@ public class FeedController {
 
       return factory.toView(
         p,
-        threadService.isLiked(p.getThread()),
-        trendingComment == null ? null : commentFactory.toView(trendingComment, threadService.isLiked(trendingComment.getThread()))
+        trendingComment == null ? null : commentFactory.toView(trendingComment)
       );
     }).collect(Collectors.toList());
   }
@@ -93,8 +90,7 @@ public class FeedController {
       CommentProjection trendingComment = threadService.getTrendingComment(p.getThread());
       return factory.toView(
           p,
-          threadService.isLiked(p.getThread()),
-          trendingComment == null ? null : commentFactory.toView(trendingComment, threadService.isLiked(trendingComment.getThread()))
+          trendingComment == null ? null : commentFactory.toView(trendingComment)
       );
     });
   }
@@ -108,8 +104,7 @@ public class FeedController {
     CommentProjection trendingComment = threadService.getTrendingComment(post.getThread());
     return factory.toView(
         post,
-        threadService.isLiked(post.getThread()),
-        trendingComment == null ? null : commentFactory.toView(trendingComment, threadService.isLiked(trendingComment.getThread()))
+        trendingComment == null ? null : commentFactory.toView(trendingComment)
     );
   }
 
@@ -120,8 +115,7 @@ public class FeedController {
       CommentProjection trendingComment = threadService.getTrendingComment(p.getThread());
       return factory.toView(
           p,
-          threadService.isLiked(p.getThread()),
-          trendingComment == null ? null : commentFactory.toView(trendingComment, threadService.isLiked(trendingComment.getThread()))
+          trendingComment == null ? null : commentFactory.toView(trendingComment)
       );
     });
   }
@@ -134,8 +128,7 @@ public class FeedController {
         CommentProjection trendingComment = threadService.getTrendingComment(p.getThread());
         return factory.toView(
             p,
-            threadService.isLiked(p.getThread()),
-            trendingComment == null ? null : commentFactory.toView(trendingComment, threadService.isLiked(trendingComment.getThread()))
+            trendingComment == null ? null : commentFactory.toView(trendingComment)
         );
       })
       .collect(Collectors.toList());
@@ -144,6 +137,6 @@ public class FeedController {
   @GetMapping("/{id}/post/draft")
   @RolesAllowed({Roles.STUDENT})
   public PostProjection getClubPostDraft(@PathVariable Long id) {
-    return factory.toView(feedService.getFeedDrafts(id, SecurityService.getLoggedId()), false, null);
+    return factory.toView(feedService.getFeedDrafts(id, SecurityService.getLoggedId()), null);
   }
 }

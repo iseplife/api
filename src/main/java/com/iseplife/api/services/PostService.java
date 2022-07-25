@@ -168,7 +168,7 @@ public class PostService {
       );
     }
 
-    return postRepository.getById(post.getId());
+    return postRepository.getById(post.getId(), SecurityService.getLoggedId());
   }
 
   public void createPost(Gallery gallery) {
@@ -331,7 +331,7 @@ public class PostService {
   }
 
   public PostProjection getFeedPost(Long feed, Long post) {
-    return postRepository.findByFeedIdAndId(feed, post);
+    return postRepository.findByFeedIdAndId(feed, SecurityService.getLoggedId(), post);
   }
 
   public Page<PostProjection> getPreviousFeedPosts(Long feed, Date lastDate) {
@@ -354,7 +354,7 @@ public class PostService {
   }
 
   public PostProjection getFeedDrafts(Feed feed, Long author) {
-    Optional<PostProjection> post = postRepository.findFeedDraft(feed, author);
+    Optional<PostProjection> post = postRepository.findFeedDraft(feed, SecurityService.getLoggedId(), author);
 
     return post.orElse(null);
   }

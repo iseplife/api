@@ -4,14 +4,14 @@ import com.iseplife.api.constants.ThreadType;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.post.Comment;
 import com.iseplife.api.entity.post.Like;
-import com.iseplife.api.entity.post.Post;
-import com.iseplife.api.entity.post.embed.Gallery;
-import com.iseplife.api.entity.post.embed.media.Image;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+
+import org.hibernate.annotations.Formula;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,15 +30,16 @@ public class Thread {
 
   @Enumerated(EnumType.STRING)
   ThreadType type;
-
-  @OneToOne(mappedBy = "thread", cascade = CascadeType.ALL)
+  
+/*
+  @OneToOne(mappedBy = "thread", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private Post post;
 
-  @OneToOne(mappedBy = "thread", cascade = CascadeType.ALL)
+  @OneToOne(mappedBy = "thread", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private Image image;
 
-  @OneToOne(mappedBy = "thread", cascade = CascadeType.ALL)
-  private Comment comment;
+  @OneToOne(mappedBy = "thread", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  private Comment comment;*/
 
   @OneToMany(mappedBy = "parentThread", cascade = CascadeType.ALL)
   private List<Comment> comments = new ArrayList<>();
@@ -47,14 +48,6 @@ public class Thread {
   private List<Like> likes = new ArrayList<>();
 
   public Feed getFeed() {
-    switch (type){
-      case POST:
-        return post.getFeed();
-      case MEDIA:
-        return image.getGallery().getFeed();
-      case COMMENT:
-        return comment.getParentThread().getFeed();
-    }
     return null;
   }
 }
