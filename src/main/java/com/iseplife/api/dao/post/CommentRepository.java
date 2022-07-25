@@ -2,12 +2,14 @@ package com.iseplife.api.dao.post;
 
 import com.iseplife.api.dao.post.projection.CommentProjection;
 import com.iseplife.api.entity.post.Comment;
+import com.iseplife.api.entity.Thread;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CommentRepository extends CrudRepository<Comment, Long> {
@@ -44,4 +46,7 @@ public interface CommentRepository extends CrudRepository<Comment, Long> {
       "order by c.creation desc"
   )
   List<CommentProjection> findThreadComments(Long thread, Long loggedUser);
+  
+  @Query("select comment from Comment comment where comment.thread = :thread")
+  Optional<Comment> findByThread(Thread thread);
 }
