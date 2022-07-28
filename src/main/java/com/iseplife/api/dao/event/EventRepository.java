@@ -43,7 +43,7 @@ public interface EventRepository extends CrudRepository<Event, Long> {
       "))"
   )
   Page<EventTabPreviewProjection> findFrom(Long clubId, Boolean admin, List<Long> feeds, Pageable p);
-
+  
   @Query(
     "select e from Event e left join e.targets t " +
       "where e.startsAt >= CURRENT_TIMESTAMP " +

@@ -1,5 +1,7 @@
 package com.iseplife.api.services;
 
+import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.dao.gallery.EventGalleryProjection;
 import com.iseplife.api.dao.gallery.GalleryRepository;
 import com.iseplife.api.dao.media.image.ImageRepository;
 import com.iseplife.api.dto.gallery.GalleryDTO;
@@ -14,6 +16,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -57,6 +63,14 @@ public class GalleryService {
     return galleryRepository.findAllByClubOrderByCreationDesc(club, PageRequest.of(page, GALLERY_PER_PAGE));
   }
 
+  public Page<EventGalleryProjection> getEventsGalleriesFrom(TokenPayload token, Long clubId, int page) {
+    return galleryRepository.findEventsGalleriesFrom(
+        clubId,
+        token.getRoles().contains("ROLE_ADMIN"),
+        token.getFeeds(),
+        PageRequest.of(page, GALLERY_PER_PAGE)
+    );
+  }
 
   public Gallery createGallery(GalleryDTO dto) {
     Gallery gallery = new Gallery();

@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -26,6 +25,7 @@ import com.iseplife.api.dao.club.ClubMemberRepository;
 import com.iseplife.api.dao.club.ClubRepository;
 import com.iseplife.api.dao.club.projection.ClubMemberProjection;
 import com.iseplife.api.dao.club.projection.ClubMemberStudentProjection;
+import com.iseplife.api.dao.gallery.EventGalleryProjection;
 import com.iseplife.api.dao.student.projection.StudentPreviewProjection;
 import com.iseplife.api.dto.club.ClubAdminDTO;
 import com.iseplife.api.dto.club.ClubDTO;
@@ -48,6 +48,7 @@ import lombok.RequiredArgsConstructor;
 public class ClubService {
   @Lazy final private StudentService studentService;
   @Lazy final private GalleryService galleryService;
+  @Lazy final private EventService eventService;
   final private ModelMapper mapper;
   final private ClubRepository clubRepository;
   final private ClubMemberRepository clubMemberRepository;
@@ -224,7 +225,10 @@ public class ClubService {
   }
 
   public Page<Gallery> getClubGalleries(Long id, int page) {
-    return galleryService.getClubGalleries(getClub(id), page);
+    return null;//DANGEROUS (can get galleries from events we don't have access ! galleryService.getClubGalleries(getClub(id), page);
+  }
+  public Page<EventGalleryProjection> getClubEventsGalleries(TokenPayload payload, Long id, int page) {
+    return galleryService.getEventsGalleriesFrom(payload, id, page);
   }
 
   public Set<StudentPreviewProjection> getAdmins(Long clubId) {
