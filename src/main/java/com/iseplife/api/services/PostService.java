@@ -280,7 +280,7 @@ public class PostService {
         attachement = galleryService.getGallery(id);
         break;
       case EmbedType.POLL:
-        attachement = pollService.getPoll(id);
+        attachement = pollService.getPoll(id, post.getFeed());
         ((Poll) attachement).setFeed(post.getFeed());
         break;
       case EmbedType.VIDEO:
