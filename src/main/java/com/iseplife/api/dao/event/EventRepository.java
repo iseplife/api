@@ -75,6 +75,6 @@ public interface EventRepository extends CrudRepository<Event, Long> {
   )
   Page<Event> searchEvent(String name, Boolean admin, List<Long> feed, Pageable pageable);
   
-  @Query("select e from Event e join fetch e.position where e.id = :id")
+  @Query("select e from Event e left join fetch e.position where e.id = :id")
   Optional<Event> findByIdWithPosition(Long id);
 }
