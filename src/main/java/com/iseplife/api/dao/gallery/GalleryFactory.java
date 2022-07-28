@@ -3,6 +3,7 @@ package com.iseplife.api.dao.gallery;
 import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.dao.club.ClubFactory;
 import com.iseplife.api.dao.media.MediaFactory;
+import com.iseplife.api.dto.gallery.view.EventGalleryView;
 import com.iseplife.api.dto.gallery.view.GalleryPreview;
 import com.iseplife.api.dto.gallery.view.GalleryView;
 import com.iseplife.api.dto.gallery.view.PseudoGalleryView;
@@ -75,6 +76,9 @@ public class GalleryFactory {
     preview.setEmbedType(EmbedType.GALLERY);
 
     return preview;
+  }
+  public EventGalleryView toPreview(EventGalleryProjection eventGallery) {
+    return mapper.map(eventGallery, EventGalleryView.class);
   }
 
 }

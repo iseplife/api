@@ -24,7 +24,6 @@ import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.FeedType;
 import com.iseplife.api.constants.NotificationType;
 import com.iseplife.api.dao.event.EventTabPreviewProjection;
-import com.iseplife.api.dao.event.EventFactory;
 import com.iseplife.api.dao.event.EventPositionRepository;
 import com.iseplife.api.dao.event.EventPreviewProjection;
 import com.iseplife.api.dao.event.EventRepository;
