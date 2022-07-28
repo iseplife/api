@@ -19,7 +19,6 @@ import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -40,8 +39,11 @@ public class PollService {
   final private PollVoteRepository pollVoteRepository;
 
   public Poll getPoll(Long id) {
+    return getPoll(id, null);
+  }
+  public Poll getPoll(Long id, Feed proposedPollFeed) {
     Optional<Poll> poll = pollRepository.findById(id);
-    if (poll.isEmpty() || !SecurityService.hasReadAccess(poll.get().getFeed()))
+    if (poll.isEmpty() || !SecurityService.hasReadAccess(poll.get().getFeed() == null ? proposedPollFeed : poll.get().getFeed()))
       throw new HttpNotFoundException("poll_not_found");
 
     return poll.get();
