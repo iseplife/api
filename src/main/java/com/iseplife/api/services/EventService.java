@@ -191,6 +191,7 @@ public class EventService {
 
   public Event getEvent(Long id) {
     Optional<Event> event = eventRepository.findByIdWithPosition(id);
+    System.out.println("empty "+event.isEmpty());
     if (event.isEmpty() || !SecurityService.hasReadAccessOn(event.get()))
       throw new HttpNotFoundException("not_found");
 

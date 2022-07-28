@@ -184,6 +184,7 @@ public class SecurityService {
 
   static public boolean hasReadAccessOn(Event event) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    System.out.println(event.getTargets());
     return userHasRole(Roles.ADMIN)
       || event.getTargets().size() == 0
       || event.getTargets().stream().anyMatch(f -> payload.getFeeds().contains(f.getId()));
