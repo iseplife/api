@@ -52,7 +52,7 @@ public interface SubscriptionRepository extends CrudRepository<Subscription, Lon
       "s.subscribed.id = ?1")
   List<Subscription> findBySubscribedId(Long id);
 
-  @Query("select s from Subscription s " +
+  @Query("select distinct s from Subscription s " +
       "join fetch s.listener listener " +
       "left join fetch listener.webPushSubscriptions " +
       "where s.subscribed = ?1")
