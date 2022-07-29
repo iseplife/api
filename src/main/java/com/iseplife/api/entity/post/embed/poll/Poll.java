@@ -19,7 +19,6 @@ public class Poll implements Embedable {
   private Long id;
 
   private Date creation;
-  private String title;
   private Date endsAt;
   private boolean multiple;
   private boolean anonymous;

@@ -136,7 +136,6 @@ public class PollService {
     if (!SecurityService.hasRightOn(postService.getPostFromEmbed(poll)))
       throw new HttpForbiddenException("insufficient_rights");
 
-    poll.setTitle(dto.getTitle());
     poll.setAnonymous(dto.isAnonymous());
     poll.setMultiple(dto.isMultiple());
     poll.setEndsAt(dto.getEndsAt());
