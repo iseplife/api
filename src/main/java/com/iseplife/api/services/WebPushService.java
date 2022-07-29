@@ -167,8 +167,6 @@ public class WebPushService {
     if(sub == null)
       return;
     pushServiceRegistration.invalidate(key);
-    sub.getOwner().getWebPushSubscriptions().add(sub);
-
     webPushSubscriptionRepository.save(sub);
   }
 }
