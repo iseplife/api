@@ -136,7 +136,6 @@ public class PollService {
     if (!SecurityService.hasRightOn(postService.getPostFromEmbed(poll)))
       throw new HttpForbiddenException("insufficient_rights");
 
-    poll.setTitle(dto.getTitle());
     poll.setAnonymous(dto.isAnonymous());
     poll.setMultiple(dto.isMultiple());
     poll.setEndsAt(dto.getEndsAt());
@@ -150,7 +149,7 @@ public class PollService {
       if (dq.isPresent()) {
         if (!choice.getContent().equals(dq.get().getContent())) {
           choice.setContent(dq.get().getContent());
-          pollChoiceRepository.save(choice);
+          choice.getVotes().clear();
         }
 
         // We remove it, so we only have new choices left at the end

@@ -11,7 +11,6 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 public class PollView extends EmbedView {
   private Long id;
-  private String title;
   private Date endsAt;
   private List<PollChoiceView> choices;
   private Boolean multiple;

@@ -23,7 +23,6 @@ public class PollFactory {
     PollView view = new PollView();
 
     view.setId(poll.getId());
-    view.setTitle(poll.getTitle());
 
     view.setEndsAt(poll.getEndsAt());
     view.setMultiple(poll.isMultiple());

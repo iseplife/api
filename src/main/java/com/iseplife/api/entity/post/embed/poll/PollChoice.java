@@ -22,7 +22,7 @@ public class PollChoice {
   @ManyToOne
   private Poll poll;
 
-  @OneToMany(mappedBy = "choice", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "choice", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<PollVote> votes = new ArrayList<>();
 
   public int getVotesNb() {

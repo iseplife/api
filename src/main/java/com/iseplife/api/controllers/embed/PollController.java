@@ -8,7 +8,6 @@ import com.iseplife.api.dto.poll.view.PollView;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.services.PollService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 

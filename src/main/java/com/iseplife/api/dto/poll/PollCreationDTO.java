@@ -7,7 +7,6 @@ import java.util.List;
 
 @Data
 public class PollCreationDTO {
-  private String title;
   private List<PollChoiceDTO> choices;
   private Date endsAt;
   private boolean multiple;
