@@ -149,8 +149,12 @@ public class ThreadService {
 
       comment.setAsClub(club);
     }
-
-    return commentRepository.save(comment);
+    
+    try {
+      return commentRepository.save(comment);
+    } finally {
+      postService.broadcastCommentsUpdate(thread.getId(), commentRepository.countByParentThreadId(thread.getId()));
+    }
   }
 
   public Comment editComment(Long id, Long comID, CommentEditDTO dto) {
@@ -180,6 +184,8 @@ public class ThreadService {
       throw new HttpForbiddenException("insufficient_rights");
 
     commentRepository.deleteById(comID);
+    
+    postService.broadcastCommentsUpdate(comment.getParentThread().getId(), commentRepository.countByParentThreadId(comment.getParentThread().getId()));
   }
 
 

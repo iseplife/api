@@ -1,7 +1,6 @@
 package com.iseplife.api.entity;
 
 import com.iseplife.api.constants.ThreadType;
-import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.post.Comment;
 import com.iseplife.api.entity.post.Like;
 import lombok.Getter;
@@ -9,8 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-
-import org.hibernate.annotations.Formula;
 
 import java.util.ArrayList;
 import java.util.List;

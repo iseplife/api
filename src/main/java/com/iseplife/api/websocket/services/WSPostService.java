@@ -14,6 +14,7 @@ import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dao.post.PostFactory;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.services.SecurityService;
+import com.iseplife.api.websocket.packets.server.WSPSFeedPostCommentsUpdate;
 import com.iseplife.api.websocket.packets.server.WSPSFeedPostCreated;
 import com.iseplife.api.websocket.packets.server.WSPSFeedPostEdited;
 import com.iseplife.api.websocket.packets.server.WSPSFeedPostLikesUpdate;
@@ -64,6 +65,15 @@ public class WSPostService {
           e.printStackTrace();
         }
     }
+  }
+  public void broadcastCommentsUpdate(Long threadId, int comments) {
+    WSPSFeedPostCommentsUpdate packet = new WSPSFeedPostCommentsUpdate(threadId, comments);
+    for(Long studentId : clientService.getConnectedStudentIds())
+      try {
+        clientService.sendPacket(studentId, packet);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
   }
   public void broadcastRemove(Long postId) {
     WSPSFeedPostRemoved packet = new WSPSFeedPostRemoved(postId);
