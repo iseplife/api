@@ -25,10 +25,6 @@ import com.iseplife.api.dao.club.ClubFactory;
 import com.iseplife.api.dao.club.projection.ClubMemberProjection;
 import com.iseplife.api.dao.gallery.GalleryFactory;
 import com.iseplife.api.dao.media.MediaFactory;
-import com.iseplife.api.dao.post.CommentFactory;
-import com.iseplife.api.dao.post.PostFactory;
-import com.iseplife.api.dao.post.projection.CommentProjection;
-import com.iseplife.api.dao.post.projection.PostProjection;
 import com.iseplife.api.dao.student.projection.StudentPreviewProjection;
 import com.iseplife.api.dto.club.ClubAdminDTO;
 import com.iseplife.api.dto.club.ClubDTO;
@@ -42,9 +38,7 @@ import com.iseplife.api.dto.gallery.view.GalleryPreview;
 import com.iseplife.api.dto.media.view.MediaNameView;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.services.ClubService;
-import com.iseplife.api.services.PostService;
 import com.iseplife.api.services.SubscriptionService;
-import com.iseplife.api.services.ThreadService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -52,14 +46,10 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/club")
 @RequiredArgsConstructor
 public class ClubController {
-  final private PostService postService;
   final private SubscriptionService subscriptionService;
-  final private ThreadService threadService;
   final private ClubService clubService;
-  final private PostFactory postFactory;
   final private GalleryFactory galleryFactory;
   final private ClubFactory factory;
-  final private CommentFactory commentFactory;
 
   @GetMapping
   @RolesAllowed({Roles.STUDENT})
@@ -167,17 +157,5 @@ public class ClubController {
   public void deleteMember(@PathVariable Long member,
                            @AuthenticationPrincipal TokenPayload payload) {
     clubService.removeMember(member, payload);
-  }
-
-  @GetMapping("/{id}/post")
-  @RolesAllowed({Roles.STUDENT})
-  public Page<PostProjection> getPosts(@PathVariable Long id, @RequestParam(defaultValue = "0") int page, @AuthenticationPrincipal TokenPayload token) {
-    return postService.getAuthorPosts(id, page, token).map(p -> {
-      CommentProjection trendingComment = threadService.getTrendingComment(p.getThread());
-      return postFactory.toView(
-          p,
-          trendingComment == null ? null : commentFactory.toView(trendingComment)
-      );
-    });
   }
 }
