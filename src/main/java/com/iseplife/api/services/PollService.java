@@ -102,7 +102,7 @@ public class PollService {
     
     pollVoteRepository.save(pollVote);
     
-    wsPostService.broadcastPollChange(postRepository.findPostIdByEmbed(poll), pollChoiceRepository.findAllByPoll(poll, student));
+    wsPostService.broadcastPollChange(postRepository.findPostIdByEmbed(poll), pollChoiceRepository.findAllByPoll(poll));
   }
 
 
@@ -118,7 +118,7 @@ public class PollService {
 
     pollVoteRepository.delete(vote.get());
     
-    wsPostService.broadcastPollChange(postRepository.findPostIdByEmbed(poll), pollChoiceRepository.findAllByPoll(poll, studentId));
+    wsPostService.broadcastPollChange(postRepository.findPostIdByEmbed(poll), pollChoiceRepository.findAllByPoll(poll));
   }
 
 

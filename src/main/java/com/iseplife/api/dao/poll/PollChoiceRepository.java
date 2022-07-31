@@ -16,6 +16,15 @@ public interface PollChoiceRepository extends CrudRepository<PollChoice, Long> {
   @Query(
       "select " +
         "p as p, " +
+        "false as voted " +
+      "from PollChoice p " +
+      "where p.poll = :poll " +
+      "group by p.id"
+  )
+  List<PollChoiceProjection> findAllByPoll(Poll poll);
+  @Query(
+      "select " +
+        "p as p, " +
         "count(votedStudent) > 0 as voted " +
       "from PollChoice p " +
         "left join p.votes votedStudent on votedStudent.student = :student " +
