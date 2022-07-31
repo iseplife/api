@@ -69,7 +69,7 @@ public class PollService {
   }
 
 
-  public void addVote(Long pollId, Long choiceId, Long studentId) {
+  public List<PollChoiceView> addVote(Long pollId, Long choiceId, Long studentId) {
     Poll poll = getPoll(pollId);
 
     if (poll.getEndsAt().before(new Date()))
@@ -103,10 +103,15 @@ public class PollService {
     pollVoteRepository.save(pollVote);
     
     wsPostService.broadcastPollChange(postRepository.findPostIdByEmbed(poll), pollChoiceRepository.findAllByPoll(poll));
+
+    return pollChoiceRepository.findAllByPoll(poll, student)
+        .stream()
+        .map(pollFactory::toView)
+        .collect(Collectors.toList());
   }
 
 
-  public void removeVote(Long pollId, Long choiceId, Long studentId) {
+  public List<PollChoiceView> removeVote(Long pollId, Long choiceId, Long studentId) {
     Poll poll = getPoll(pollId);
 
     if (poll.getEndsAt().before(new Date()))
@@ -119,6 +124,11 @@ public class PollService {
     pollVoteRepository.delete(vote.get());
     
     wsPostService.broadcastPollChange(postRepository.findPostIdByEmbed(poll), pollChoiceRepository.findAllByPoll(poll));
+    
+    return pollChoiceRepository.findAllByPoll(poll, studentId)
+        .stream()
+        .map(pollFactory::toView)
+        .collect(Collectors.toList());
   }
 
 
