@@ -5,10 +5,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import javax.persistence.*;
 
 
 @Entity
@@ -19,19 +19,9 @@ public class PollChoice {
   private Long id;
   private String content;
 
-  @ManyToOne
-  private Poll poll;
-
-  @OneToMany(mappedBy = "choice", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "choice", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<PollVote> votes = new ArrayList<>();
 
-  public int getVotesNb() {
-    return votes.size();
-  }
-
-  public List<Long> getVoters() {
-    return votes.stream()
-      .map(v -> v.getStudent().getId())
-      .collect(Collectors.toList());
-  }
+  @ManyToOne
+  private Poll poll;
 }

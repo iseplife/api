@@ -1,68 +1,50 @@
 package com.iseplife.api.dao.poll;
 
+import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Component;
+
 import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.dto.poll.view.PollChoiceView;
 import com.iseplife.api.dto.poll.view.PollView;
 import com.iseplife.api.entity.post.embed.poll.Poll;
-import com.iseplife.api.entity.post.embed.poll.PollChoice;
-import com.iseplife.api.services.SecurityService;
-import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
 public class PollFactory {
   final private ModelMapper mapper;
-
-  static public PollView toView(Poll poll) {
-    PollView view = new PollView();
-
-    view.setId(poll.getId());
-
-    view.setEndsAt(poll.getEndsAt());
-    view.setMultiple(poll.isMultiple());
-    view.setAnonymous(poll.isAnonymous());
-
-
-    List<PollChoiceView> choices = new ArrayList<>();
-    poll.getChoices().forEach(option -> {
-      choices.add(poll.isAnonymous() ? toAnonymousView(option) : toView(option));
-    });
-    view.setChoices(choices);
-    view.setEmbedType(EmbedType.POLL);
-
-    return view;
+  final private PollRepository pollRepository;
+  final private PollChoiceRepository pollChoiceRepository;
+  
+  public PollView toView(PollProjection poll, Long studentId) {
+    PollView mapped = mapper.map(poll, PollView.class);
+    if (mapped.getChoices().size() == 0 && studentId != null)
+      fillChoices(mapped, studentId);
+    mapped.setEmbedType(EmbedType.POLL);
+    return mapped;
   }
 
-  static public PollChoiceView toView(PollChoice choice) {
-    PollChoiceView choiceView = new PollChoiceView();
-
-    choiceView.setId(choice.getId());
-    choiceView.setVotesNumber(choice.getVotesNb());
-    choiceView.setContent(choice.getContent());
-
-    choiceView.setVoters(choice.getVoters());
-
-    return choiceView;
+  public void fillChoices(PollView mapped, Long studentId) {
+    mapped.setChoices(pollChoiceRepository.findAllByPoll(mapped.getId(), studentId)
+        .stream()
+        .map(this::toView)
+        .collect(Collectors.toList())
+    );
   }
 
-  static public PollChoiceView toAnonymousView(PollChoice choice) {
-    PollChoiceView anonymousChoiceView = new PollChoiceView();
+  public PollChoiceView toView(PollChoiceProjection pollChoiceProjection) {
+    return mapper.map(pollChoiceProjection, PollChoiceView.class);
+  }
 
-    anonymousChoiceView.setId(choice.getId());
-    anonymousChoiceView.setVotesNumber(choice.getVotesNb());
-    anonymousChoiceView.setContent(choice.getContent());
+  public PollView toView(Poll poll, Long studentId) {
+    return toView(pollRepository.findProjectionById(poll.getId()), studentId);
+  }
 
-    anonymousChoiceView.setVoters(choice.getVoters());
-    if (choice.getVoters().contains(SecurityService.getLoggedId())) {
-      anonymousChoiceView.setVoters(Collections.singletonList(SecurityService.getLoggedId()));
-    }
-    return anonymousChoiceView;
+  public PollView toView(Poll poll) {
+    return toView(pollRepository.findProjectionById(poll.getId()), null);
   }
 
 }

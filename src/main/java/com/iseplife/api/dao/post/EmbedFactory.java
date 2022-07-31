@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 public class EmbedFactory {
   @Lazy final private GalleryFactory galleryFactory;
   @Lazy final private MediaFactory mediaFactory;
+  @Lazy final private PollFactory pollFactory;
 
   public EmbedView toView(Embedable embed) {
     if (embed == null || embed.getEmbedType() == null)
@@ -32,7 +33,7 @@ public class EmbedFactory {
           galleryFactory.toPreview((Gallery) embed);
         break;
       case EmbedType.POLL:
-        view = PollFactory.toView((Poll) embed);
+        view = pollFactory.toView((Poll) embed);
         break;
       case EmbedType.VIDEO:
       case EmbedType.IMAGE:

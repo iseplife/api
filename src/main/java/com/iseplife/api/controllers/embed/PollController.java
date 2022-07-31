@@ -7,6 +7,8 @@ import com.iseplife.api.dto.poll.view.PollChoiceView;
 import com.iseplife.api.dto.poll.view.PollView;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.services.PollService;
+import com.iseplife.api.services.SecurityService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -23,35 +25,35 @@ public class PollController {
 
   @GetMapping("/{id}")
   public PollView getPoll(@PathVariable Long id) {
-    return pollService.getPollView(id);
+    return pollService.getPollView(id, SecurityService.getLoggedId());
   }
 
   @PostMapping
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
   public PollView createPoll(@RequestBody PollCreationDTO dto) {
-    return pollService.createPoll(dto);
+    return pollService.createPoll(dto, SecurityService.getLoggedId());
   }
 
   @PutMapping
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
-  public PollView update(@RequestBody PollEditionDTO dto) { return pollService.updatePoll(dto);}
+  public PollView update(@RequestBody PollEditionDTO dto) { return pollService.updatePoll(dto, SecurityService.getLoggedId());}
 
 
   @PostMapping("/{id}/choice/{choiceId}")
   @RolesAllowed({Roles.STUDENT})
-  public void vote(@PathVariable Long id, @PathVariable Long choiceId, @AuthenticationPrincipal TokenPayload auth) {
-    pollService.addVote(id, choiceId, auth.getId());
+  public List<PollChoiceView> vote(@PathVariable Long id, @PathVariable Long choiceId, @AuthenticationPrincipal TokenPayload auth) {
+    return pollService.addVote(id, choiceId, auth.getId());
   }
 
   @DeleteMapping("/{id}/choice/{choiceId}")
   @RolesAllowed({Roles.STUDENT})
-  public void unvote(@PathVariable Long id, @PathVariable Long choiceId, @AuthenticationPrincipal TokenPayload auth) {
-    pollService.removeVote(id, choiceId, auth.getId());
+  public List<PollChoiceView> unvote(@PathVariable Long id, @PathVariable Long choiceId, @AuthenticationPrincipal TokenPayload auth) {
+    return pollService.removeVote(id, choiceId, auth.getId());
   }
 
   @GetMapping("/{id}/vote")
   public List<PollChoiceView> getPollVotes(@PathVariable Long id) {
-    return pollService.getPollVotes(id);
+    return pollService.getPollVotes(id, SecurityService.getLoggedId());
   }
 
 }

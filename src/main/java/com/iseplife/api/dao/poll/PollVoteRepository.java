@@ -1,5 +1,6 @@
 package com.iseplife.api.dao.poll;
 
+import com.iseplife.api.entity.post.embed.poll.PollChoice;
 import com.iseplife.api.entity.post.embed.poll.PollVote;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -15,4 +16,6 @@ public interface PollVoteRepository extends CrudRepository<PollVote, Long> {
   List<PollVote> findByChoice_Poll_IdAndStudent_Id(Long pollId, Long studentId);
 
   List<PollVote> findByChoice_Poll_Id(Long pollId);
+  
+  void deleteAllByChoice(PollChoice choice);
 }

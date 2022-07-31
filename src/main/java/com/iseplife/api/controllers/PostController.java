@@ -26,7 +26,7 @@ public class PostController {
   @PostMapping
   @RolesAllowed({Roles.STUDENT})
   public PostView createPost(@RequestBody PostCreationDTO dto) {
-    return factory.toView(postService.createPost(dto), null);
+    return factory.toView(postService.createPost(dto), null, SecurityService.getLoggedId());
   }
 
   @PutMapping("/{id}")

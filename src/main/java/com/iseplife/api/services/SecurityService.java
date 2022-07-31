@@ -143,9 +143,6 @@ public class SecurityService {
   }
   static public boolean hasReadAccess(Group group) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-    System.out.println(payload.getFeeds());
-    System.out.println(group.getFeed().getId());
-    System.out.println(payload.getFeeds().contains(group.getFeed().getId()));
     return payload.getFeeds().contains(group.getFeed().getId());
   }
 
@@ -184,7 +181,6 @@ public class SecurityService {
 
   static public boolean hasReadAccessOn(Event event) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-    System.out.println(event.getTargets());
     return userHasRole(Roles.ADMIN)
       || event.getTargets().size() == 0
       || event.getTargets().stream().anyMatch(f -> payload.getFeeds().contains(f.getId()));

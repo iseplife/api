@@ -49,4 +49,6 @@ public interface CommentRepository extends CrudRepository<Comment, Long> {
   
   @Query("select comment from Comment comment where comment.thread = :thread")
   Optional<Comment> findByThread(Thread thread);
+  
+  int countByParentThreadId(Long thread);
 }
