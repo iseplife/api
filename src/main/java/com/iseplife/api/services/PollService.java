@@ -14,9 +14,12 @@ import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.dao.poll.PollChoiceRepository;
 import com.iseplife.api.dao.poll.PollRepository;
 import com.iseplife.api.dao.poll.PollVoteRepository;
+import com.iseplife.api.dao.post.PostRepository;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
+import com.iseplife.api.websocket.services.WSPostService;
+
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
@@ -35,8 +38,11 @@ public class PollService {
   @Lazy final private PostService postService;
   final private ModelMapper mapper;
   final private PollRepository pollRepository;
+  final private PostRepository postRepository;
   final private PollChoiceRepository pollChoiceRepository;
   final private PollVoteRepository pollVoteRepository;
+  final private WSPostService wsPostService;
+  final private PollFactory pollFactory;
 
   public Poll getPoll(Long id) {
     return getPoll(id, null);
@@ -49,10 +55,10 @@ public class PollService {
     return poll.get();
   }
 
-  public PollView getPollView(Long id) {
+  public PollView getPollView(Long id, Long studentId) {
     Poll poll = getPoll(id);
 
-    return PollFactory.toView(poll);
+    return pollFactory.toView(poll, studentId);
   }
 
   public Poll bindPollToPost(Long id, Feed feed) {
@@ -76,20 +82,27 @@ public class PollService {
     Optional<PollChoice> pollAnswer = pollChoiceRepository.findById(choiceId);
     if (pollAnswer.isEmpty())
       throw new HttpNotFoundException("poll_not_found");
+    
+    PollChoice pollChoice = pollAnswer.get();
 
     if (!poll.isMultiple()) {
       List<PollVote> voteList = pollVoteRepository.findByChoice_Poll_IdAndStudent_Id(poll.getId(), studentId).stream()
         .filter(votes -> !votes.getChoice().getId().equals(choiceId))
         .collect(Collectors.toList());
+      
       pollVoteRepository.deleteAll(voteList);
     }
 
 
     Student student = studentService.getStudent(studentId);
+    
     PollVote pollVote = new PollVote();
-    pollVote.setChoice(pollAnswer.get());
+    pollVote.setChoice(pollChoice);
     pollVote.setStudent(student);
+    
     pollVoteRepository.save(pollVote);
+    
+    wsPostService.broadcastPollChange(postRepository.findPostIdByEmbed(poll), pollChoiceRepository.findAllByPoll(poll, student));
   }
 
 
@@ -104,10 +117,12 @@ public class PollService {
       throw new HttpBadRequestException("student_answer_not_found");
 
     pollVoteRepository.delete(vote.get());
+    
+    wsPostService.broadcastPollChange(postRepository.findPostIdByEmbed(poll), pollChoiceRepository.findAllByPoll(poll, studentId));
   }
 
 
-  public PollView createPoll(PollCreationDTO dto) {
+  public PollView createPoll(PollCreationDTO dto, Long studentId) {
     Poll poll = new Poll();
 
     mapper.map(dto, poll);
@@ -123,14 +138,14 @@ public class PollService {
       poll.getChoices().add(pollChoice);
     });
 
-    return PollFactory.toView(pollRepository.save(poll));
+    return pollFactory.toView(pollRepository.save(poll), studentId);
   }
 
   public void deletePoll(Poll poll){
     pollRepository.delete(poll);
   }
 
-  public PollView updatePoll(PollEditionDTO dto) {
+  public PollView updatePoll(PollEditionDTO dto, Long studentId) {
     Poll poll = getPoll(dto.getId());
 
     if (!SecurityService.hasRightOn(postService.getPostFromEmbed(poll)))
@@ -149,7 +164,7 @@ public class PollService {
       if (dq.isPresent()) {
         if (!choice.getContent().equals(dq.get().getContent())) {
           choice.setContent(dq.get().getContent());
-          choice.getVotes().clear();
+          pollVoteRepository.deleteAllByChoice(choice);
         }
 
         // We remove it, so we only have new choices left at the end
@@ -168,16 +183,15 @@ public class PollService {
       poll.getChoices().add(pollChoice);
     });
 
-    return PollFactory.toView(pollRepository.save(poll));
+    return pollFactory.toView(pollRepository.save(poll), studentId);
   }
 
 
-  public List<PollChoiceView> getPollVotes(Long pollId) {
-    Poll poll = getPoll(pollId);
-
-    return poll.getChoices().stream()
-      .map(choice -> poll.isAnonymous() ? PollFactory.toAnonymousView(choice) : PollFactory.toView(choice))
-      .collect(Collectors.toList());
+  public List<PollChoiceView> getPollVotes(Long pollId, Long studentId) {
+    return pollChoiceRepository.findAllByPoll(pollId, studentId)
+        .stream()
+        .map(pollFactory::toView)
+        .collect(Collectors.toList());
   }
 
 }

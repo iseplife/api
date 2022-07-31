@@ -1,6 +1,9 @@
 package com.iseplife.api.dao.poll;
 
 import com.iseplife.api.entity.post.embed.poll.Poll;
+import com.iseplife.api.entity.user.Student;
+
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,4 +13,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface PollRepository extends CrudRepository<Poll, Long> {
+  @Query("select p from Poll p where p.id = :id")
+  PollProjection findProjectionById(Long id);
 }

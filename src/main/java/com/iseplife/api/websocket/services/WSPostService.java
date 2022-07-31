@@ -3,6 +3,7 @@ package com.iseplife.api.websocket.services;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,6 +12,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.dao.poll.PollChoiceProjection;
 import com.iseplife.api.dao.post.PostFactory;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.services.SecurityService;
@@ -18,6 +20,7 @@ import com.iseplife.api.websocket.packets.server.WSPSFeedPostCommentsUpdate;
 import com.iseplife.api.websocket.packets.server.WSPSFeedPostCreated;
 import com.iseplife.api.websocket.packets.server.WSPSFeedPostEdited;
 import com.iseplife.api.websocket.packets.server.WSPSFeedPostLikesUpdate;
+import com.iseplife.api.websocket.packets.server.WSPSFeedPostPollChoiceUpdate;
 import com.iseplife.api.websocket.packets.server.WSPSFeedPostRemoved;
 
 import lombok.RequiredArgsConstructor;
@@ -59,7 +62,7 @@ public class WSPostService {
             studentId,
             new WSPSFeedPostCreated(followers.contains(studentId),
               SecurityService.hasRightOn(post, token),
-              postFactory.toView(post, false, null))
+              postFactory.toView(post, false, null, null))
           );
         } catch (IOException e) {
           e.printStackTrace();
@@ -99,6 +102,15 @@ public class WSPostService {
   }
   public void broadcastLikeChange(Long threadID, int likes) {
     WSPSFeedPostLikesUpdate packet = new WSPSFeedPostLikesUpdate(threadID, likes);
+    for(Long studentId : clientService.getConnectedStudentIds())
+      try {
+        clientService.sendPacket(studentId, packet);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+  }
+  public void broadcastPollChange(Long postId, List<PollChoiceProjection> pollChoices) {
+    WSPSFeedPostPollChoiceUpdate packet = new WSPSFeedPostPollChoiceUpdate(postId, pollChoices);
     for(Long studentId : clientService.getConnectedStudentIds())
       try {
         clientService.sendPacket(studentId, packet);

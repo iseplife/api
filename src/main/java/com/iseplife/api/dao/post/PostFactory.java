@@ -2,12 +2,14 @@ package com.iseplife.api.dao.post;
 
 import javax.annotation.PostConstruct;
 
+import com.iseplife.api.dto.poll.view.PollView;
 import com.iseplife.api.dto.post.view.PostContextView;
 import com.iseplife.api.entity.feed.Feed;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import com.iseplife.api.dao.poll.PollFactory;
 import com.iseplife.api.dao.post.projection.PostProjection;
 import com.iseplife.api.dto.post.view.PostFormView;
 import com.iseplife.api.dto.post.view.PostView;
@@ -25,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class PostFactory {
   @Lazy final private EmbedFactory embedFactory;
   final private ModelMapper mapper;
+  final private PollFactory pollFactory;
 
   @PostConstruct
   public void init() {
@@ -72,19 +75,25 @@ public class PostFactory {
     return view;
   }
 
-  public PostView toView(PostProjection post, CommentView trendingComment) {
+  public PostView toView(PostProjection post, CommentView trendingComment, Long studentId) {
     PostView view = mapper.map(post, PostView.class);
     view.setTrendingComment(trendingComment);
+    
+    if(view.getEmbed() instanceof PollView && studentId != null)
+      pollFactory.fillChoices((PollView) view.getEmbed(), studentId);
 
     return view;
   }
 
-  public PostView toView(Post post, Boolean isLiked, CommentView trendingComment) {
+  public PostView toView(Post post, Boolean isLiked, CommentView trendingComment, Long studentId) {
     PostView view = mapper.map(post, PostView.class);
-    view.setLiked(isLiked);
     view.setTrendingComment(trendingComment);
+    view.setLiked(isLiked);
     if(post.getLinkedClub() != null)
       view.setAuthor(AuthorFactory.toView(post.getLinkedClub()));
+    
+    if(view.getEmbed() instanceof PollView && studentId != null)
+      pollFactory.fillChoices((PollView) view.getEmbed(), studentId);
 
     return view;
   }

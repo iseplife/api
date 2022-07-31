@@ -210,4 +210,12 @@ public interface PostRepository extends CrudRepository<Post, Long> {
       "group by p, t"
   )
   PostProjection findByFeedIdAndId(Long feedId, Long loggedUser, Long id);
+  
+  @Query(
+      "select " +
+        "p.id " +
+       "from Post p " +
+       "where p.embed = :embed"
+  )
+  Long findPostIdByEmbed(Embedable embed);
 }
