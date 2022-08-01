@@ -14,6 +14,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import com.iseplife.api.entity.feed.Feedable;
+import com.iseplife.api.entity.post.Post;
+import com.iseplife.api.entity.post.embed.poll.PollVote;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -74,6 +77,12 @@ public class Student implements UserDetails, Feedable, Author, Subscribable {
 
   @OneToMany(mappedBy="owner", fetch = FetchType.LAZY)
   private Set<WebPushSubscription> webPushSubscriptions;
+  
+  @OneToMany(mappedBy="student", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  private Set<PollVote> pollVotes;
+  
+  @OneToMany(mappedBy="author", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  private Set<Post> posts;
 
   @OneToMany(mappedBy = "listener", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<Subscription> subscriptions;
