@@ -13,6 +13,7 @@ import com.iseplife.api.dto.group.GroupUpdateDTO;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.group.GroupMember;
+import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
@@ -239,6 +240,22 @@ public class GroupService {
     
     groupMemberRepository.delete(groupMember);
     return true;
+  }
+
+  public void addToPromoGroup(Student student) {
+    Optional<Group> optional = groupRepository.findOneByName("Promo "+student.getPromo());
+    Group group;
+    if(optional.isEmpty()) {
+      GroupCreationDTO dto = new GroupCreationDTO();
+      dto.setAdmins(Arrays.asList(1L));
+      dto.setName("Promo "+student.getPromo());
+      dto.setRestricted(false);
+      group = createGroup(dto);
+    }else group = optional.get();
+    
+    GroupMemberDTO memberDTO = new GroupMemberDTO();
+    memberDTO.setStudentId(student.getId());
+    addMember(group.getId(), memberDTO);
   }
 
 }
