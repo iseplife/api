@@ -207,12 +207,17 @@ public class GroupService {
   }
 
   public GroupMember addMember(Long id, GroupMemberDTO dto) {
+    return addMember(id, dto, false);
+  }
+  public GroupMember addMember(Long id, GroupMemberDTO dto, boolean force) {
     Group group = getGroup(id);
-    if (!SecurityService.hasRightOn(group))
-      throw new HttpForbiddenException("insufficient_rights");
-    
-    if(groupMemberRepository.isMemberOfGroup(id, dto.getStudentId()))
-      throw new HttpBadRequestException("student_already_in_group");
+    if(!force) {
+      if (!SecurityService.hasRightOn(group))
+        throw new HttpForbiddenException("insufficient_rights");
+      
+      if(groupMemberRepository.isMemberOfGroup(id, dto.getStudentId()))
+        throw new HttpBadRequestException("student_already_in_group");
+    }
 
     GroupMember member = new GroupMember();
     member.setAdmin(false);
@@ -249,13 +254,13 @@ public class GroupService {
       GroupCreationDTO dto = new GroupCreationDTO();
       dto.setAdmins(Arrays.asList(1L));
       dto.setName("Promo "+student.getPromo());
-      dto.setRestricted(false);
+      dto.setRestricted(true);
       group = createGroup(dto);
     }else group = optional.get();
     
     GroupMemberDTO memberDTO = new GroupMemberDTO();
     memberDTO.setStudentId(student.getId());
-    addMember(group.getId(), memberDTO);
+    addMember(group.getId(), memberDTO, true);
   }
 
 }
