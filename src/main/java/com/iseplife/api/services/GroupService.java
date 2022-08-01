@@ -207,15 +207,14 @@ public class GroupService {
   }
 
   public GroupMember addMember(Long id, GroupMemberDTO dto) {
-    return addMember(id, dto, false);
+    return addMember(getGroup(id), dto, false);
   }
-  public GroupMember addMember(Long id, GroupMemberDTO dto, boolean force) {
-    Group group = getGroup(id);
+  public GroupMember addMember(Group group, GroupMemberDTO dto, boolean force) {
     if(!force) {
       if (!SecurityService.hasRightOn(group))
         throw new HttpForbiddenException("insufficient_rights");
       
-      if(groupMemberRepository.isMemberOfGroup(id, dto.getStudentId()))
+      if(groupMemberRepository.isMemberOfGroup(group.getId(), dto.getStudentId()))
         throw new HttpBadRequestException("student_already_in_group");
     }
 
@@ -228,7 +227,6 @@ public class GroupService {
     
     subService.subscribe(group, member.getStudent(), false);
     wsGroupService.sendJoin(groupFactory.toPreview(group), member.getStudent());
-    
     return member;
   }
 
@@ -260,7 +258,7 @@ public class GroupService {
     
     GroupMemberDTO memberDTO = new GroupMemberDTO();
     memberDTO.setStudentId(student.getId());
-    addMember(group.getId(), memberDTO, true);
+    addMember(group, memberDTO, true);
   }
 
 }
