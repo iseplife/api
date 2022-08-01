@@ -1,6 +1,5 @@
 package com.iseplife.api.dto.event.view;
 
-import com.iseplife.api.dao.event.EventPreviewProjection;
 import com.iseplife.api.dto.gallery.view.GalleryPreview;
 
 import lombok.Data;
@@ -10,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 @Data
-public class EventTabPreview implements EventPreviewProjection {
+public class EventTabPreview {
   private Long id;
   private Long feedId;
   private String title;

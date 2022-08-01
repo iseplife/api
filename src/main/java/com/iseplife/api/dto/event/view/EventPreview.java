@@ -1,6 +1,8 @@
 package com.iseplife.api.dto.event.view;
 
 import com.iseplife.api.dao.event.EventPreviewProjection;
+import com.iseplife.api.dto.club.view.ClubPreview;
+
 import lombok.Data;
 
 import java.util.Date;
@@ -17,4 +19,5 @@ public class EventPreview implements EventPreviewProjection {
   private Date endsAt;
   private String cover;
   private boolean published;
+  private ClubPreview club;
 }
