@@ -54,6 +54,7 @@ public class StudentService {
   final private GroupRepository groupRepository;
   final private RoleRepository roleRepository;
   final private ClubRepository clubRepository;
+  final private GroupService groupService;
 
   @Qualifier("FileHandlerBean")
   final private FileHandler fileHandler;
@@ -119,6 +120,8 @@ public class StudentService {
 
     student = studentRepository.save(student);
     subscriptionService.subscribe(student, student, false);
+    
+    groupService.addToPromoGroup(student);
 
     return student;
   }
