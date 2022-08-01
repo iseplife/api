@@ -60,7 +60,7 @@ public class PostService {
   final private ModelMapper mapper;
   final private PostRepository postRepository;
 
-  private final int POSTS_PER_PAGE = 8;
+  private final int POSTS_PER_PAGE = 16;
 
   private Post getPost(Long postID) {
     Optional<Post> post = postRepository.findById(postID);
