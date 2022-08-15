@@ -86,6 +86,34 @@ public class FeedController {
     }).collect(Collectors.toList());
   }
 
+  @GetMapping("/explore/post")
+  @RolesAllowed({Roles.STUDENT})
+  public Page<PostProjection> getExploreFeedPosts(@RequestParam(defaultValue = "0") int page){
+    return feedService.getExploreFeedPosts(page).map(p -> {
+      CommentProjection trendingComment = threadService.getTrendingComment(p.getThread());
+
+      return factory.toView(
+          p,
+          trendingComment == null ? null : commentFactory.toView(trendingComment),
+          SecurityService.getLoggedId()
+      );
+    });
+  }
+
+  @GetMapping("/explore/prevposts")
+  @RolesAllowed({Roles.STUDENT})
+  public Page<PostProjection> getPreviousExploreFeedPosts(@RequestParam(defaultValue = "0") Long lastDate){
+    return feedService.getPreviousExploreFeedPosts(lastDate).map(p -> {
+      CommentProjection trendingComment = threadService.getTrendingComment(p.getThread());
+
+      return factory.toView(
+          p,
+          trendingComment == null ? null : commentFactory.toView(trendingComment),
+          SecurityService.getLoggedId()
+      );
+    });
+  }
+  
   @GetMapping("/{id}/post")
   @RolesAllowed({Roles.STUDENT})
   public Page<PostProjection> getFeedPosts(@PathVariable Long id, @RequestParam(defaultValue = "0") int page) {
