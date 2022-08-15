@@ -320,6 +320,21 @@ public class PostService {
     return postRepository.findHomepagePostsPinned(loggedUser);
   }
 
+  public Page<PostProjection> getExploreFeedPost(Long loggedUser, int page) {
+    return postRepository.findExplorePosts(
+      loggedUser,
+      PageRequest.of(page, POSTS_PER_PAGE, Sort.by(Sort.Direction.DESC, "publicationDate"))
+    );
+  }
+
+  public Page<PostProjection> getPreviousExploreFeedPost(Long loggedUser, Date lastDate) {
+    return postRepository.findPreviousExplorePosts(
+      loggedUser,
+      lastDate,
+      PageRequest.of(0, POSTS_PER_PAGE, Sort.by(Sort.Direction.DESC, "publicationDate"))
+    );
+  }
+
   public Page<PostProjection> getFeedPosts(Long feed, int page) {
     return postRepository.findCurrentFeedPost(
       feed,

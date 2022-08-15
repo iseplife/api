@@ -52,6 +52,19 @@ public class FeedService {
       new Date(lastDate)
     );
   }
+  public Page<PostProjection> getExploreFeedPosts(int page) {
+    return postService.getExploreFeedPost(
+      SecurityService.getLoggedId(),
+      page
+    );
+  }
+
+  public Page<PostProjection> getPreviousExploreFeedPosts(Long lastDate) {
+    return postService.getPreviousExploreFeedPost(
+      SecurityService.getLoggedId(),
+      new Date(lastDate)
+    );
+  }
 
   public Page<PostProjection> getFeedPosts(Long id, int page) {
     return postService.getFeedPosts(id, page);

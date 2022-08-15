@@ -66,25 +66,65 @@ public interface PostRepository extends CrudRepository<Post, Long> {
   List<PostProjection> findHomepagePostsPinned(Long loggedUser);
 
   @Query(
-      "select distinct " +
-        "p as post, " +
-        "p.thread.id as thread, " +
-        "size(p.thread.comments) as nbComments, " +
-        "size(p.thread.likes) as nbLikes, " +
-        "count(likeStudent) > 0 as liked " +
-      "from Post p " +
-        "join Student s on s.id = :loggedUser " +
-        "join s.subscriptions subs " +
-        "join p.thread t " +
-        "left join t.likes l " +
-        "left join l.student likeStudent on likeStudent.id = :loggedUser " +
-      "where p.publicationDate < :lastDate and (p.feed.id = subs.subscribedFeed.id or p.homepageForced = true) " +
-        "and p.state = 'READY' and p.pinned = false " +
-        "and (p.publicationDate <= now() or p.author.id = :loggedUser) " +
-      "group by p, t " +
-      "order by p.publicationDate desc"
-    )
-    Page<PostProjection> findPreviousHomepagePosts(Long loggedUser, Date lastDate, Pageable pageable);
+    "select distinct " +
+      "p as post, " +
+      "p.thread.id as thread, " +
+      "size(p.thread.comments) as nbComments, " +
+      "size(p.thread.likes) as nbLikes, " +
+      "count(likeStudent) > 0 as liked " +
+    "from Post p " +
+      "join Student s on s.id = :loggedUser " +
+      "join s.subscriptions subs " +
+      "join p.thread t " +
+      "left join t.likes l " +
+      "left join l.student likeStudent on likeStudent.id = :loggedUser " +
+    "where p.publicationDate <= :lastDate and (p.feed.id = subs.subscribedFeed.id or p.homepageForced = true) " +
+      "and p.state = 'READY' " +
+      "and p.homepagePinned = false " +
+      "and (p.publicationDate <= now() or p.author.id = :loggedUser) " +
+    "group by p, t " +
+    "order by p.publicationDate desc"
+  )
+  Page<PostProjection> findPreviousHomepagePosts(Long loggedUser, Date lastDate, Pageable pageable);
+
+  @Query(
+    "select distinct " +
+      "p as post, " +
+      "t.id as thread, " +
+      "size(t.comments) as nbComments, " +
+      "size(l) as nbLikes, " +
+      "count(likeStudent) > 0 as liked " +
+    "from Post p " +
+      "join p.thread t " +
+      "left join t.likes l " +
+      "left join l.student likeStudent on likeStudent.id = :loggedUser " +
+    "where p.state = 'READY' " +
+      "and p.linkedClub is not NULL " +
+      "and p.publicationDate <= now() " +
+    "group by p, t " +
+    "order by p.publicationDate desc"
+  )
+  Page<PostProjection> findExplorePosts(Long loggedUser, Pageable pageable);
+
+  @Query(
+    "select distinct " +
+      "p as post, " +
+      "p.thread.id as thread, " +
+      "size(p.thread.comments) as nbComments, " +
+      "size(p.thread.likes) as nbLikes, " +
+      "count(likeStudent) > 0 as liked " +
+    "from Post p " +
+      "join p.thread t " +
+      "left join t.likes l " +
+      "left join l.student likeStudent on likeStudent.id = :loggedUser " +
+    "where p.publicationDate <= :lastDate " +
+      "and p.state = 'READY' " +
+      "and p.linkedClub is not NULL " +
+      "and p.publicationDate <= now() " +
+    "group by p, t " +
+    "order by p.publicationDate desc"
+  )
+  Page<PostProjection> findPreviousExplorePosts(Long loggedUser, Date lastDate, Pageable pageable);
 
   @Query(
     "select " +
