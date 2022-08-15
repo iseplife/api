@@ -306,4 +306,8 @@ public class StudentService {
     student.setDidFirstFollow(true);
     return studentRepository.save(student);
   }
+
+  public void updateLastExplore(Date date) {
+    studentRepository.updateLastExplore(SecurityService.getLoggedId(), date);
+  }
 }

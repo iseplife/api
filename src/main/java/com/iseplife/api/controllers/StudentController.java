@@ -1,5 +1,6 @@
 package com.iseplife.api.controllers;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -95,6 +96,14 @@ public class StudentController {
   @RolesAllowed({Roles.STUDENT})
   public StudentPictures updatePicture(@RequestBody MultipartFile file) {
     return studentService.updateProfilePicture(SecurityService.getLoggedId(), file);
+  }
+
+  @PostMapping("/me/last-explore")
+  @RolesAllowed({Roles.STUDENT})
+  public Long updateLastExplore() {
+    Date date = new Date();
+    studentService.updateLastExplore(date);
+    return date.getTime();
   }
 
   @PatchMapping("/me/setting")

@@ -100,7 +100,7 @@ public interface PostRepository extends CrudRepository<Post, Long> {
       "left join l.student likeStudent on likeStudent.id = :loggedUser " +
     "where p.state = 'READY' " +
       "and p.linkedClub is not NULL " +
-      "and (p.publicationDate <= now() or p.author.id = :loggedUser) " +
+      "and p.publicationDate <= now() " +
     "group by p, t " +
     "order by p.publicationDate desc"
   )
@@ -120,7 +120,7 @@ public interface PostRepository extends CrudRepository<Post, Long> {
     "where p.publicationDate <= :lastDate " +
       "and p.state = 'READY' " +
       "and p.linkedClub is not NULL " +
-      "and (p.publicationDate <= now() or p.author.id = :loggedUser) " +
+      "and p.publicationDate <= now() " +
     "group by p, t " +
     "order by p.publicationDate desc"
   )

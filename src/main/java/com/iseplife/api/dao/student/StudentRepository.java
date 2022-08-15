@@ -4,10 +4,13 @@ import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -69,5 +72,10 @@ public interface StudentRepository extends CrudRepository<Student, Long> {
   List<Integer> findDistinctPromo();
 
   List<Student> findAllByPromo(Integer promo);
+
+  @Transactional
+  @Modifying
+  @Query("update Student s set s.lastExploreWatch = :date where s.id = :loggedUser")
+  void updateLastExplore(Long loggedUser, Date date);
 
 }
