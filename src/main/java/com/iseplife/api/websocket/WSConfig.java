@@ -1,6 +1,5 @@
 package com.iseplife.api.websocket;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -21,7 +20,7 @@ public class WSConfig implements WebSocketConfigurer {
 
   private final WSHandler handler;
 
-  @Value("${websocket.allowed-origins}")
+  @Value("${cors.allowed-origin}")
   private String allowedOrigins;
   
   @Override

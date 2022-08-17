@@ -40,6 +40,8 @@ public class SecurityService {
 
   @Value("${jwt.refresh-token-duration}")
   private int refreshTokenDuration;
+  @Value("${cors.insecure}")
+  boolean corsInsecure;
 
   /**
    * Check if user has one of the roles listed
@@ -204,10 +206,11 @@ public class SecurityService {
   private TokenSet setRefreshTokenCookie(TokenSet set) {
     Cookie cRefreshToken = new Cookie("refresh-token", set.getRefreshToken());
     cRefreshToken.setMaxAge(refreshTokenDuration);
-    cRefreshToken.setPath("/");
+    cRefreshToken.setPath("/auth/refresh");
     cRefreshToken.setHttpOnly(true);
-    cRefreshToken.setSecure(true);
-
+    if(!corsInsecure)
+      cRefreshToken.setSecure(true);
+    
     response.addCookie(cRefreshToken);
 
     return set;

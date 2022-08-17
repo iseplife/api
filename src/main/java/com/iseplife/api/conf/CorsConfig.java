@@ -1,5 +1,6 @@
 package com.iseplife.api.conf;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -13,12 +14,15 @@ import java.io.IOException;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CorsConfig implements Filter {
 
+  @Value("${cors.allowed-origin}")
+  private String allowedOrigin;
+
   @Override
   public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
     HttpServletResponse response = (HttpServletResponse) res;
     HttpServletRequest request = (HttpServletRequest) req;
 
-    response.setHeader("Access-Control-Allow-Origin", "*");
+    response.setHeader("Access-Control-Allow-Origin", allowedOrigin);
     response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE");
     response.setHeader("Access-Control-Allow-Credentials", "true");
     response.setHeader("Access-Control-Max-Age", "3600");

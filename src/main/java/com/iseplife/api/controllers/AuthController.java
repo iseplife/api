@@ -39,6 +39,8 @@ public class AuthController {
   Boolean passwordEnable;
   @Value("${auth.auto-generation}")
   Boolean autoGeneration;
+  @Value("${cors.insecure}")
+  boolean corsInsecure;
 
   @PostMapping
   public TokenSet getToken(@RequestBody JwtAuthRequest authRequest) {
@@ -87,10 +89,11 @@ public class AuthController {
   public void logoutCurrentUser(HttpServletResponse response) {
     Cookie expiredCookie = new Cookie("refresh-token", null);
     expiredCookie.setMaxAge(0);
-    expiredCookie.setSecure(true);
+    if(!corsInsecure)
+      expiredCookie.setSecure(true);
     expiredCookie.setHttpOnly(true);
-    expiredCookie.setPath("/");
-
+    expiredCookie.setPath("/auth/refresh");
+  
     response.addCookie(expiredCookie);
   }
 
