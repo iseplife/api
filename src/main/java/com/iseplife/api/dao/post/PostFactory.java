@@ -72,6 +72,9 @@ public class PostFactory {
     PostFormView view = mapper.map(post, PostFormView.class);
     if(post.getLinkedClub() != null)
     	view.setAuthor(AuthorFactory.toView(post.getLinkedClub()));
+    
+    if(view.getEmbed() instanceof PollView)
+      pollFactory.fillChoices((PollView) view.getEmbed(), null);
     return view;
   }
 
@@ -92,7 +95,7 @@ public class PostFactory {
     if(post.getLinkedClub() != null)
       view.setAuthor(AuthorFactory.toView(post.getLinkedClub()));
     
-    if(view.getEmbed() instanceof PollView && studentId != null)
+    if(view.getEmbed() instanceof PollView)
       pollFactory.fillChoices((PollView) view.getEmbed(), studentId);
 
     return view;
