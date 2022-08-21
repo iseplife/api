@@ -49,7 +49,8 @@ public interface PollChoiceRepository extends CrudRepository<PollChoice, Long> {
       "from PollChoice p " +
         "left join p.votes votedStudent on votedStudent.student.id = :studentId " +
       "where p.poll.id = :pollId " +
-      "group by p.id"
+      "group by p.id " +
+      "order by p.id "
   )
   List<PollChoiceProjection> findAllByPoll(Long pollId, Long studentId);
 }
