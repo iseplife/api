@@ -16,6 +16,7 @@ import com.iseplife.api.websocket.packets.server.WSPSFeedPostCommentsUpdate;
 import com.iseplife.api.websocket.packets.server.WSPSFeedPostCreated;
 import com.iseplife.api.websocket.packets.server.WSPSFeedPostEdited;
 import com.iseplife.api.websocket.packets.server.WSPSFeedPostLikesUpdate;
+import com.iseplife.api.websocket.packets.server.WSPSFeedPostOwnLikeUpdate;
 import com.iseplife.api.websocket.packets.server.WSPSFeedPostPollChoiceUpdate;
 import com.iseplife.api.websocket.packets.server.WSPSFeedPostRemoved;
 import com.iseplife.api.websocket.packets.server.WSPSGroupJoined;
@@ -56,6 +57,7 @@ public class WSProtocol {
     registerPacketServer(WSPSBadToken.class);
     registerPacketServer(WSPSFeedPostCommentsUpdate.class);
     registerPacketServer(WSPSFeedPostPollChoiceUpdate.class);
+    registerPacketServer(WSPSFeedPostOwnLikeUpdate.class);
     
     //Client
     registerPacketClient(WSPCKeepAlive.class);

@@ -21,6 +21,7 @@ import com.iseplife.api.websocket.packets.server.WSPSFeedPostCommentsUpdate;
 import com.iseplife.api.websocket.packets.server.WSPSFeedPostCreated;
 import com.iseplife.api.websocket.packets.server.WSPSFeedPostEdited;
 import com.iseplife.api.websocket.packets.server.WSPSFeedPostLikesUpdate;
+import com.iseplife.api.websocket.packets.server.WSPSFeedPostOwnLikeUpdate;
 import com.iseplife.api.websocket.packets.server.WSPSFeedPostPollChoiceUpdate;
 import com.iseplife.api.websocket.packets.server.WSPSFeedPostRemoved;
 
@@ -110,6 +111,13 @@ public class WSPostService {
       } catch (IOException e) {
         e.printStackTrace();
       }
+  }
+  public void sendLikeUpdate(Long studentId, boolean liked, Long threadId) {
+    try {
+      clientService.sendPacket(studentId, new WSPSFeedPostOwnLikeUpdate(threadId, liked));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
   public void broadcastPollChange(Long postId, List<PollChoiceProjection> pollChoices) {
     WSPSFeedPostPollChoiceUpdate packet = new WSPSFeedPostPollChoiceUpdate(postId, pollChoices);
