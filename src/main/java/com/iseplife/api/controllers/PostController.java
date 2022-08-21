@@ -32,7 +32,7 @@ public class PostController {
   @PutMapping("/{id}")
   @RolesAllowed({Roles.ADMIN, Roles.STUDENT})
   public PostFormView updatePost(@PathVariable Long id, @RequestBody PostUpdateDTO update) {
-    return factory.toFormView(postService.updatePost(id, update));
+    return factory.toFormView(postService.updatePost(id, update), SecurityService.getLoggedId());
   }
 
   @DeleteMapping("/{id}")

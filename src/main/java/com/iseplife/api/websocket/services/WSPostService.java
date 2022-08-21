@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dao.poll.PollChoiceProjection;
 import com.iseplife.api.dao.post.PostFactory;
+import com.iseplife.api.dto.post.view.PostView;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.services.SecurityService;
 import com.iseplife.api.websocket.packets.server.WSPSFeedPostCommentsUpdate;
@@ -54,6 +55,7 @@ public class WSPostService {
   public void broadcastPost(Post post) {
     boolean plannedPost = post.getPublicationDate().after(new Date());
     Set<Long> followers = clientsByFeedId.getOrDefault(post.getFeed().getId(), EMPTY_SET);
+    PostView postView = postFactory.toView(post, false, null, null);
     for(Long studentId : clientService.getConnectedStudentIds()) {
       TokenPayload token = clientService.getToken(studentId);
       if(plannedPost ? SecurityService.hasRightOn(post, token) : SecurityService.hasReadAccess(post.getFeed(), token))
@@ -62,7 +64,7 @@ public class WSPostService {
             studentId,
             new WSPSFeedPostCreated(followers.contains(studentId),
               SecurityService.hasRightOn(post, token),
-              postFactory.toView(post, false, null, null))
+              postView)
           );
         } catch (IOException e) {
           e.printStackTrace();

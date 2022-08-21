@@ -166,22 +166,16 @@ public class PollService {
     poll.setEndsAt(dto.getEndsAt());
 
     // Edit or remove existing choices
-    poll.getChoices().forEach(choice -> {
+    new ArrayList<>(poll.getChoices()).forEach(choice -> {
       Optional<PollChoiceDTO> dq = dto.getChoices().stream()
         .filter(c -> choice.getId().equals(c.getId()))
         .findAny();
 
-      if (dq.isPresent()) {
-        if (!choice.getContent().equals(dq.get().getContent())) {
-          choice.setContent(dq.get().getContent());
-          pollVoteRepository.deleteAllByChoice(choice);
-        }
-
-        // We remove it, so we only have new choices left at the end
-        dto.getChoices().remove(dq.get());
-      } else {
+      if (!dq.isPresent()) {
+        poll.getChoices().remove(choice);
         pollChoiceRepository.delete(choice);
-      }
+      } else
+        dto.getChoices().remove(dq.get());
     });
 
     // Add all new choices
@@ -192,6 +186,8 @@ public class PollService {
 
       poll.getChoices().add(pollChoice);
     });
+    
+    poll.getChoices().forEach(choice -> System.out.println(choice.getContent()));
 
     return pollFactory.toView(pollRepository.save(poll), studentId);
   }

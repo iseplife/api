@@ -69,9 +69,15 @@ public class PostFactory {
   }
 
   public PostFormView toFormView(Post post) {
+    return toFormView(post, null);
+  }
+  public PostFormView toFormView(Post post, Long studentId) {
     PostFormView view = mapper.map(post, PostFormView.class);
     if(post.getLinkedClub() != null)
     	view.setAuthor(AuthorFactory.toView(post.getLinkedClub()));
+    
+    if(view.getEmbed() instanceof PollView)
+      pollFactory.fillChoices((PollView) view.getEmbed(), studentId);
     return view;
   }
 
@@ -92,7 +98,7 @@ public class PostFactory {
     if(post.getLinkedClub() != null)
       view.setAuthor(AuthorFactory.toView(post.getLinkedClub()));
     
-    if(view.getEmbed() instanceof PollView && studentId != null)
+    if(view.getEmbed() instanceof PollView)
       pollFactory.fillChoices((PollView) view.getEmbed(), studentId);
 
     return view;
