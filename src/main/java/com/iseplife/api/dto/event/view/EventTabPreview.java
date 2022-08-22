@@ -13,6 +13,7 @@ public class EventTabPreview {
   private Long id;
   private Long feedId;
   private String title;
+  private String description;
   private String type;
   private Set<Long> targets;
   private List<GalleryPreview> galleries;

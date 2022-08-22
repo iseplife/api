@@ -13,6 +13,7 @@ public interface EventTabPreviewProjection {
   @Value("#{target.feed.id}")
   Long getFeedId();
   String getTitle();
+  String getDescription();
   String getType();
   Date getStartsAt();
   Date getEndsAt();
