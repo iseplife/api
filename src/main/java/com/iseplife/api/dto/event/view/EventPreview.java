@@ -13,6 +13,7 @@ public class EventPreview implements EventPreviewProjection {
   private Long id;
   private Long feedId;
   private String title;
+  private String description;
   private String type;
   private Set<Long> targets;
   private Date startsAt;

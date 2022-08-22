@@ -43,6 +43,7 @@ public class SearchFactory {
     searchItem.setName(club.getName());
     searchItem.setThumbURL(club.getLogoUrl());
     searchItem.setType(SearchItem.CLUB);
+    searchItem.setDescription(club.getDescription());
 
     // Status is false when club is archived
     searchItem.setStatus(!club.isArchived());

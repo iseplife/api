@@ -16,6 +16,8 @@ public interface EventPreviewProjection {
   Date getStartsAt();
   Date getEndsAt();
   
+  String getDescription();
+  
   ClubPreviewProjection getClub();
 
   @Value("#{target.publishedAt.before(new java.util.Date())}")

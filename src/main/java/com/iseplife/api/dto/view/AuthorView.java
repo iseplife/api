@@ -11,4 +11,5 @@ public class AuthorView implements AuthorProjection {
   private AuthorType authorType;
   private String name;
   private String thumbnail;
+  private String description;
 }
