@@ -93,9 +93,11 @@ public class ThreadService {
   public Boolean toggleLike(Long threadID, Long studentID) {
     Like like = likeRepository.findOneByThreadIdAndStudentId(threadID, studentID);
 
+    boolean liked = like != null;
+    
     //TODO: check permissions
     try {
-      if (like != null) {
+      if (liked) {
         likeRepository.delete(like);
   
         return false;
@@ -109,6 +111,7 @@ public class ThreadService {
       }
     } finally {
       postService.broadcastLikeChange(threadID, likeRepository.countByThreadId(threadID));
+      postService.sendLikeUpdate(studentID, !liked, threadID);
     }
   }
 
