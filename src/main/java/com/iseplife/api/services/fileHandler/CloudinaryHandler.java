@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.Map;
 
@@ -67,6 +68,11 @@ public class CloudinaryHandler extends FileHandler {
     } catch (IOException e) {
       throw new FileException("Couldn't delete file", e);
     }
+  }
+
+  @Override
+  public String upload(InputStream stream, String path, Boolean pathContainName, Map metadata) {
+    return null;
   }
 
 }

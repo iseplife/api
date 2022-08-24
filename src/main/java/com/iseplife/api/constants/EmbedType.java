@@ -6,4 +6,5 @@ public interface EmbedType {
   String DOCUMENT = "document";
   String VIDEO = "video";
   String IMAGE = "image";
+  String RICH_LINK = "rich_link";
 }

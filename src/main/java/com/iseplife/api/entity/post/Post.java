@@ -11,6 +11,7 @@ import com.iseplife.api.entity.post.embed.media.Document;
 import com.iseplife.api.entity.post.embed.media.Image;
 import com.iseplife.api.entity.post.embed.media.Video;
 import com.iseplife.api.entity.post.embed.poll.Poll;
+import com.iseplife.api.entity.post.embed.rich.RichLink;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.constants.PostState;
 import lombok.Getter;
@@ -42,7 +43,6 @@ public class Post implements ThreadInterface {
   private boolean homepageForced = false;
   private boolean homepagePinned = false;
 
-  @SuppressWarnings("JpaAttributeTypeInspection")
   @Any(
     fetch = FetchType.EAGER,
     metaColumn = @Column(name = "embed_type")
@@ -55,7 +55,8 @@ public class Post implements ThreadInterface {
       @MetaValue(value = EmbedType.POLL, targetEntity = Poll.class),
       @MetaValue(value = EmbedType.DOCUMENT, targetEntity = Document.class),
       @MetaValue(value = EmbedType.VIDEO, targetEntity = Video.class),
-      @MetaValue(value = EmbedType.IMAGE, targetEntity = Image.class)
+      @MetaValue(value = EmbedType.IMAGE, targetEntity = Image.class),
+      @MetaValue(value = EmbedType.RICH_LINK, targetEntity = RichLink.class),
     }
   )
   @JoinColumn(name = "embed_id")
