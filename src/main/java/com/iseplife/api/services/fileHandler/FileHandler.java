@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Map;
 
@@ -27,6 +28,8 @@ public abstract class FileHandler {
   public abstract String upload(MultipartFile file, String path, Boolean pathContainName, Map metadata);
 
   public abstract String upload(File file, String path, Boolean pathContainName, Map metadata);
+  
+  public abstract String upload(InputStream stream, String path, Boolean pathContainName, Map metadata);
 
   public abstract boolean delete(String name, Boolean clean);
   public abstract boolean delete(String name);
@@ -44,7 +47,7 @@ public abstract class FileHandler {
     return tempFile;
   }
 
-  protected String generateRandomName(File file, int length) {
+  protected String generateRandomName(int length) {
     return RandomString.generate(length) + ".webp";
   }
 
@@ -53,7 +56,7 @@ public abstract class FileHandler {
     return index != -1 ? filename.substring(index + 1) : "";
   }
 
-  protected String generateRandomName(File file) {
-    return generateRandomName(file, 30);
+  protected String generateRandomName() {
+    return generateRandomName(30);
   }
 }

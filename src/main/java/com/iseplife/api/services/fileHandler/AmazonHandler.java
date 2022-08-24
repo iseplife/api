@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -36,12 +37,25 @@ public class AmazonHandler extends FileHandler {
 
   @Override
   public String upload(File file, String path, Boolean pathContainName, Map metadata) {
-    String completePath = pathContainName ? path : path + "/" + generateRandomName(file);
+    String completePath = pathContainName ? path : path + "/" + generateRandomName();
     PutObjectRequest request = new PutObjectRequest(bucket, completePath, file);
 
     ObjectMetadata m = new ObjectMetadata();
     metadata.forEach((k, v) -> m.addUserMetadata(k.toString(), v.toString()));
     request.setMetadata(m);
+
+    s3client.putObject(request);
+    return completePath;
+  }
+  
+  @Override
+  public String upload(InputStream stream, String path, Boolean pathContainName, Map metadata) {
+    String completePath = pathContainName ? path : path + "/" + generateRandomName();
+
+    ObjectMetadata m = new ObjectMetadata();
+    metadata.forEach((k, v) -> m.addUserMetadata(k.toString(), v.toString()));
+    
+    PutObjectRequest request = new PutObjectRequest(bucket, completePath, stream, m);
 
     s3client.putObject(request);
     return completePath;

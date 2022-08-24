@@ -1,5 +1,6 @@
 package com.iseplife.api.services;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -34,14 +35,17 @@ import com.iseplife.api.entity.post.embed.Embedable;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.post.embed.media.Media;
 import com.iseplife.api.entity.post.embed.poll.Poll;
+import com.iseplife.api.entity.post.embed.rich.RichLink;
 import com.iseplife.api.entity.subscription.Notification;
 import com.iseplife.api.entity.subscription.Subscribable;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
-import org.springframework.cache.annotation.Cacheable;
 import com.iseplife.api.websocket.services.WSPostService;
+import com.linkedin.urls.Url;
+import com.linkedin.urls.detection.UrlDetector;
+import com.linkedin.urls.detection.UrlDetectorOptions;
 
 import lombok.RequiredArgsConstructor;
 
@@ -104,6 +108,19 @@ public class PostService {
     post.setAuthor(author);
 
     dto.getAttachements().forEach((type, id) -> bindAttachementToPost(type, id, post));
+    
+    if(dto.getAttachements().size() == 0) {
+      List<Url> parser = new UrlDetector(post.getDescription(), UrlDetectorOptions.Default).detect();
+      if(parser.size() > 0) {
+        String linkStr = parser.get(0).getFullUrl();
+        try {
+          post.setEmbed(mediaService.createRichLink(linkStr));
+        } catch (IOException e) {
+          System.err.println("Failed to get OG for "+linkStr);
+          e.printStackTrace();
+        }
+      }
+    }
 
     post.setThread(new Thread(ThreadType.POST));
     post.setCreationDate(new Date());
@@ -206,6 +223,25 @@ public class PostService {
       removeEmbed(post.getEmbed());
       dto.getAttachements().forEach((type, id) -> bindAttachementToPost(type, id, post));
     }
+    
+    boolean currentRichLink = post.getEmbed() != null && post.getEmbed() instanceof RichLink;
+    if(dto.getAttachements().isEmpty() && (post.getEmbed() == null || currentRichLink)) {
+      List<Url> parser = new UrlDetector(post.getDescription(), UrlDetectorOptions.Default).detect();
+      if(parser.size() > 0) {
+        String linkStr = parser.get(0).getFullUrl();
+        if(!currentRichLink || !((RichLink)post.getEmbed()).getLink().equals(linkStr)) {
+          if(currentRichLink)
+            removeEmbed(post.getEmbed());
+          
+          try {
+            post.setEmbed(mediaService.createRichLink(linkStr));
+          } catch (IOException e) {
+            System.err.println("Failed to get OG for "+linkStr);
+            e.printStackTrace();
+          }
+        }
+      }
+    }
 
     if (dto.getRemoveEmbed()) {
       removeEmbed(post.getEmbed());
@@ -231,6 +267,9 @@ public class PostService {
         case EmbedType.VIDEO:
         case EmbedType.DOCUMENT:
           mediaService.deleteMedia((Media) embed);
+          break;
+        case EmbedType.RICH_LINK:
+          mediaService.deleteRichLink((RichLink) embed);
           break;
       }
     }
