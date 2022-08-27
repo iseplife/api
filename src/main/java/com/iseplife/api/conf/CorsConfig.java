@@ -21,13 +21,17 @@ public class CorsConfig implements Filter {
   public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
     HttpServletResponse response = (HttpServletResponse) res;
     HttpServletRequest request = (HttpServletRequest) req;
-
-    response.setHeader("Access-Control-Allow-Origin", allowedOrigin);
-    response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE");
-    response.setHeader("Access-Control-Allow-Credentials", "true");
-    response.setHeader("Access-Control-Max-Age", "3600");
-    response.setHeader("Access-Control-Allow-Headers", request.getHeader("Access-Control-Request-Headers"));
-    response.setHeader("Access-Control-Expose-Headers", "x-refresh-token, authorization");
+    
+    String origin = request.getHeader("Origin");
+    
+    if(origin != null && allowedOrigin.contains(origin.toLowerCase())) {
+      response.setHeader("Access-Control-Allow-Origin", origin);
+      response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE");
+      response.setHeader("Access-Control-Allow-Credentials", "true");
+      response.setHeader("Access-Control-Max-Age", "3600");
+      response.setHeader("Access-Control-Allow-Headers", request.getHeader("Access-Control-Request-Headers"));
+      response.setHeader("Access-Control-Expose-Headers", "x-refresh-token, authorization");
+    }
 
     if (request.getMethod().equalsIgnoreCase("OPTIONS")) {
       response.setStatus(HttpServletResponse.SC_OK);

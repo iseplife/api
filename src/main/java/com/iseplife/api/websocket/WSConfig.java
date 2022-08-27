@@ -25,7 +25,7 @@ public class WSConfig implements WebSocketConfigurer {
   
   @Override
   public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-    registry.addHandler(handler, "/ws").setAllowedOrigins(allowedOrigins);
+    registry.addHandler(handler, "/ws").setAllowedOrigins(allowedOrigins.replaceAll("'", "").split(","));
   }
 
 }
