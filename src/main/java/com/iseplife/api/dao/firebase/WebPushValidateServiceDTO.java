@@ -1,4 +1,4 @@
-package com.iseplife.api.dao.webpush;
+package com.iseplife.api.dao.firebase;
 
 import lombok.Getter;
 

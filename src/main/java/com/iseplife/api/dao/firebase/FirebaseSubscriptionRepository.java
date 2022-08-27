@@ -1,4 +1,4 @@
-package com.iseplife.api.dao.webpush;
+package com.iseplife.api.dao.firebase;
 
 import java.util.Date;
 import java.util.Optional;
@@ -9,15 +9,15 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.iseplife.api.entity.subscription.WebPushSubscription;
+import com.iseplife.api.entity.subscription.FirebaseSubscription;
 import com.iseplife.api.entity.user.Student;
 
 @Repository
-public interface WebPushSubscriptionRepository extends CrudRepository<WebPushSubscription, Long> {
-  Optional<WebPushSubscription> findByAuthAndKeyAndEndpointOrFingerprint(String auth, String key, String endpoint, String fingerprint);
+public interface FirebaseSubscriptionRepository extends CrudRepository<FirebaseSubscription, Long> {
+  Optional<FirebaseSubscription> findByTokenOrFingerprint(String token, String fingerprint);
   
   @Transactional
   @Modifying
-  @Query("update WebPushSubscription s set s.lastUpdate = :lastUpdate, s.owner = :student where s.id = :id")
+  @Query("update FirebaseSubscription s set s.lastUpdate = :lastUpdate, s.owner = :student where s.id = :id")
   void updateDateAndOwner(Long id, Date lastUpdate, Student student);
 }

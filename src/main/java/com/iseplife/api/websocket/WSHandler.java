@@ -2,7 +2,6 @@ package com.iseplife.api.websocket;
 
 import java.io.IOException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.CloseStatus;
@@ -12,6 +11,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.google.api.client.util.Value;
 import com.iseplife.api.conf.jwt.JwtTokenUtil;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.websocket.handler.PacketHandler;
@@ -23,20 +23,20 @@ import com.iseplife.api.websocket.services.WSClientService;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class WSHandler extends TextWebSocketHandler {
 
-  @Autowired
-  private WSClientService service;
+  private final WSClientService service;
+  private final PacketHandler packetHandler;
+  private final JwtTokenUtil jwtTokenUtil;
   
   private WSProtocol protocol = WSProtocol.getInstance();
   
-  @Autowired
-  private PacketHandler packetHandler;
-
-  @Autowired
-  private JwtTokenUtil jwtTokenUtil;
+  @Value("${cors.allowed-origin}")
+  private String allowedOrigins;
 
   @Override
   protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {

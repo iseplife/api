@@ -35,6 +35,7 @@ storage:
   api-key:    ${STORAGE_API_KEY:}
   api-secret: ${STORAGE_API_SECRET:}
   bucket:     ${STORAGE_BUCKET:iseplife-dev}
+  url:        ${STORAGE_URL:https://iseplife-dev.s3.eu-west-3.amazonaws.com/}
 
 jwt:
   secret:               ${JWT_SECRET:1jmhvPXhI40vqAnm}
@@ -42,11 +43,6 @@ jwt:
   token-duration:        ${JWT_TOKEN_DURATION:600}                 # default: 10 min
   refresh-token-duration: ${JWT_REFRESH_TOKEN_DURATION:604800}      # default: 7 days
   issuer:               iseplife
-
-push:
-  web:
-    public-key: ${WEB_PUBLICKEY:BLWwNN2_bMjIeoh9JDxSVIx2qwrBchWDMHrb6nD1nDijSMoq6ZidqapvWMv5Git2SrObd8Do9glexD9wT-jECnY}
-    private-key: ${WEB_PRIVATEKEY:6WCXXQvA_RxtTBH2i9si-yHu-Kzd36uzHM5CRE68dp4}
 
 cors:
   allowed-origin: ${ALLOWED_ORIGINS:http://localhost:3000}

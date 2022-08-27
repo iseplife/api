@@ -35,11 +35,14 @@ maven-build:
     key:
       files:
         - pom.xml
-  script: "mvn package $MAVEN_CLI_OPTS -B -V -e -fae -Pprod -DskipTests"
+  script: 
+    - "mvn package $MAVEN_CLI_OPTS -B -V -e -fae -Pprod -DskipTests"
+    - echo $FIREBASE_AUTH > firebase-auth.json
   retry: 2
   artifacts:
     paths:
       - target/*.jar
+      - firebase-auth.json
   rules:
     - if: '$CI_COMMIT_REF_NAME == "master"'
 

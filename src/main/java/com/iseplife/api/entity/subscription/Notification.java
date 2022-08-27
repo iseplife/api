@@ -16,6 +16,7 @@ import javax.persistence.PrePersist;
 
 import org.jose4j.json.internal.json_simple.JSONObject;
 
+import com.iseplife.api.constants.Language;
 import com.iseplife.api.constants.NotificationType;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.services.NotificationTranslationService;
@@ -67,10 +68,10 @@ public class Notification {
     creation = new Date();
   }
 
-  public String getPayload(Student student, NotificationTranslationService translationService) {
+  public String getPayload(Language lang, NotificationTranslationService translationService) {
     HashMap<String, Object> map = new HashMap<>();
     map.put("type", "notification");
-    map.put("text", translationService.getTranslation(type, informations, student.getLanguage()));
+    map.put("text", translationService.getTranslation(type, informations, lang));
     map.put("icon", icon);
     map.put("link", link);
     return new JSONObject(map).toString();

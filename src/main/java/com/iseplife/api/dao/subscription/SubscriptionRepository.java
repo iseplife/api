@@ -54,7 +54,7 @@ public interface SubscriptionRepository extends CrudRepository<Subscription, Lon
 
   @Query("select distinct s from Subscription s " +
       "join fetch s.listener listener " +
-      "left join fetch listener.webPushSubscriptions " +
+      "left join fetch listener.firebaseSubscriptions " +
       "where s.subscribed = ?1")
   List<Subscription> findBySubscribed(Subscribable subable);
 

@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class RegisterPushServiceDTO {
-  private String auth, key, endpoint, fingerprint;
+  private String subscriptionKey, fingerprint;
 }

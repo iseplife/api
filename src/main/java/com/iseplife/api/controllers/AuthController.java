@@ -4,6 +4,7 @@ import com.iseplife.api.conf.jwt.JwtAuthRequest;
 import com.iseplife.api.conf.jwt.TokenSet;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dto.ISEPCAS.CASUserDTO;
+import com.iseplife.api.dto.auth.RefreshAppDTO;
 import com.iseplife.api.dto.student.StudentDTO;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
@@ -98,11 +99,11 @@ public class AuthController {
   }
 
   @PostMapping("/refresh")
-  public TokenSet getRefreshedTokens(@CookieValue(value = "refresh-token", defaultValue = "") String refreshToken) {
-    if (refreshToken.equals(""))
+  public TokenSet getRefreshedTokens(@CookieValue(value = "refresh-token", defaultValue = "") String refreshToken, @RequestBody RefreshAppDTO dto) {
+    if (refreshToken.equals("") && (dto.getRefreshToken() == null || dto.getRefreshToken().equals("")))
       throw new HttpUnauthorizedException("refresh_token_expired");
-
-    return securityService.refreshUserToken(refreshToken);
+    
+    return securityService.refreshUserToken(dto.getRefreshToken() != null && !dto.getRefreshToken().equals("") ? dto.getRefreshToken() : refreshToken);
   }
 
   @GetMapping("/roles")

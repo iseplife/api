@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
-  @Lazy private final WebPushService webPushService;
+  @Lazy private final FirebaseMessengerService webPushService;
   @Lazy private final WSNotificationService wsNotifService;
   private final SubscriptionRepository subscriptionRepository;
   private final NotificationRepository notificationRepository;

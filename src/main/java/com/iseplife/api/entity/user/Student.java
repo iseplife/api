@@ -13,10 +13,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
-import com.iseplife.api.entity.feed.Feedable;
-import com.iseplife.api.entity.post.Post;
-import com.iseplife.api.entity.post.embed.poll.PollVote;
-
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -24,10 +20,13 @@ import com.iseplife.api.constants.AuthorType;
 import com.iseplife.api.constants.Language;
 import com.iseplife.api.entity.Author;
 import com.iseplife.api.entity.feed.Feed;
+import com.iseplife.api.entity.feed.Feedable;
+import com.iseplife.api.entity.post.Post;
+import com.iseplife.api.entity.post.embed.poll.PollVote;
+import com.iseplife.api.entity.subscription.FirebaseSubscription;
 import com.iseplife.api.entity.subscription.Notification;
 import com.iseplife.api.entity.subscription.Subscribable;
 import com.iseplife.api.entity.subscription.Subscription;
-import com.iseplife.api.entity.subscription.WebPushSubscription;
 import com.sun.istack.NotNull;
 
 import lombok.Getter;
@@ -78,7 +77,7 @@ public class Student implements UserDetails, Feedable, Author, Subscribable {
   private Feed feed;
 
   @OneToMany(mappedBy="owner", fetch = FetchType.LAZY)
-  private Set<WebPushSubscription> webPushSubscriptions;
+  private Set<FirebaseSubscription> firebaseSubscriptions;
   
   @OneToMany(mappedBy="student", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   private Set<PollVote> pollVotes;
