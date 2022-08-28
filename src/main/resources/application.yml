@@ -18,6 +18,7 @@ server:
 app:
   name: "iseplife-api"
   version: "@project.version@"
+  fronturl: ${FRONT_URL:https://iseplife.fr}
 logging:
   level:
     com.iseplife.api: INFO
