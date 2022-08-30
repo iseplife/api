@@ -123,7 +123,9 @@ public class FirebaseMessengerService {
             .setImage(image)
             .setTitle("iseplife")
             .build()
-        ).build()).build());
+        ).build())
+        .putData("link", notification.getLink())
+      .build());
     }
     try {
       FirebaseMessaging.getInstance().sendAll(messages);
