@@ -60,4 +60,13 @@ public class HealthController {
     
     return new JSONObject();
   }
+  @GetMapping("/updatee")
+  public Object getUpdatee(@RequestHeader("cap_version_name") String versionName){
+    //i'm an idiot
+    String version = getLatestVersion();
+    if(!version.equals(versionName))
+      return new AppUpdateResponse(version, frontUrl+"/app.zip");
+    
+    return new JSONObject();
+  }
 }
