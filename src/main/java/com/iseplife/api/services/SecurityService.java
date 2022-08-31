@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.iseplife.api.exceptions.http.HttpUnauthorizedException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -198,9 +200,12 @@ public class SecurityService {
   }
 
   public TokenSet refreshUserToken(String refreshToken) {
-    TokenSet set = jwtTokenUtil.refreshWithToken(refreshToken);
-
-    return setRefreshTokenCookie(set);
+    try {
+      TokenSet set = jwtTokenUtil.refreshWithToken(refreshToken);
+      return setRefreshTokenCookie(set);
+    }catch (JWTVerificationException e){
+      throw new HttpUnauthorizedException("refresh_token_invalid");
+    }
   }
 
   private TokenSet setRefreshTokenCookie(TokenSet set) {
@@ -210,7 +215,7 @@ public class SecurityService {
     cRefreshToken.setHttpOnly(true);
     if(!corsInsecure)
       cRefreshToken.setSecure(true);
-    
+
     response.addCookie(cRefreshToken);
 
     return set;

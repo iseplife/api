@@ -24,11 +24,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
 
 
 @Service
@@ -55,6 +54,14 @@ public class JwtTokenUtil {
   private int tokenDuration;
   @Value("${jwt.refresh-token-duration}")
   private int refreshTokenDuration;
+  
+  Algorithm standardAlgorithm, refreshAlgorithm;
+  
+  @PostConstruct
+  private void init() {
+    standardAlgorithm = Algorithm.HMAC256(secret);
+    refreshAlgorithm = Algorithm.HMAC256(refreshSecret);
+  }
 
   public DecodedJWT decodeToken(String token) throws JWTVerificationException {
     try {
@@ -104,19 +111,14 @@ public class JwtTokenUtil {
       DecodedJWT decodedJWT = JWT.decode(token);
       Long id = decodedJWT.getClaim(CLAIM_USER_ID).asLong();
       Student student = studentService.getStudent(id);
-      TokenPayload tokenPayload = generatePayload(student);
-      String secret = generateRefreshSecret(tokenPayload);
 
-      if (secret != null) {
-        Algorithm algorithm = Algorithm.HMAC256(secret);
-        JWTVerifier verifier = JWT.require(algorithm)
-          .withIssuer(issuer)
-          .build(); //Reusable verifier instance
-        verifier.verify(token);
-        return generateTokenSet(student);
-      }
+      JWTVerifier verifier = JWT.require(refreshAlgorithm)
+        .withIssuer(issuer)
+        .build();
+      verifier.verify(token);
+      return generateTokenSet(student);
     } catch (JWTVerificationException | HttpBadRequestException e) {
-      LOG.error("could not refresh token", e);
+      LOG.error("could not refresh token (" +e.getMessage()+")");
     }
     throw new JWTVerificationException("token invalid");
   }
@@ -160,48 +162,28 @@ public class JwtTokenUtil {
 
     try {
       String payload = new ObjectMapper().writeValueAsString(tokenPayload);
-      Algorithm algorithm = Algorithm.HMAC256(secret);
       return JWT.create()
         .withIssuer(issuer)
         .withIssuedAt(Calendar.getInstance(locale).getTime())
         .withExpiresAt(calendar.getTime())
         .withClaim(CLAIM_PAYLOAD, payload)
-        .sign(algorithm);
+        .sign(standardAlgorithm);
     } catch (JsonProcessingException e) {
       e.printStackTrace();
     }
     return null;
   }
 
-  private String generateRefreshSecret(TokenPayload tokenPayload) {
-    try {
-      MessageDigest digest = MessageDigest.getInstance(SECRET_HASHING_ALGORITHM);
-      String hashString = Base64.getEncoder().encodeToString(
-        digest.digest(tokenPayload.toString().getBytes(StandardCharsets.UTF_8))
-      );
-
-      return hashString + refreshSecret;
-    } catch (NoSuchAlgorithmException e) {
-      throw new JWTVerificationException(e.getMessage());
-    }
-  }
-
   private String generateRefreshToken(TokenPayload tokenPayload) {
     Calendar calendar = Calendar.getInstance(locale); // gets a calendar using the default time zone and locale.
     calendar.add(Calendar.SECOND, refreshTokenDuration);
     try {
-      String secret = generateRefreshSecret(tokenPayload);
-      if (secret != null) {
-        Algorithm algorithm = Algorithm.HMAC256(secret);
-        return JWT.create()
-          .withIssuer(issuer)
-          .withIssuedAt(Calendar.getInstance(locale).getTime())
-          .withExpiresAt(calendar.getTime())
-          .withClaim(CLAIM_USER_ID, tokenPayload.getId())
-          .sign(algorithm);
-      } else {
-        throw new JWTVerificationException("Could not generate secret");
-      }
+      return JWT.create()
+        .withIssuer(issuer)
+        .withIssuedAt(Calendar.getInstance(locale).getTime())
+        .withExpiresAt(calendar.getTime())
+        .withClaim(CLAIM_USER_ID, tokenPayload.getId())
+        .sign(refreshAlgorithm);
     } catch (JWTCreationException e) {
       e.printStackTrace();
     }
