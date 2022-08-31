@@ -115,8 +115,8 @@ public class JwtTokenUtil {
         verifier.verify(token);
         return generateTokenSet(student);
       }
-    } catch (JWTVerificationException | HttpBadRequestException e) {
-      LOG.error("could not refresh token", e);
+    } catch (JWTVerificationException e) {
+      LOG.error("could not refresh token (" +e.getMessage()+")");
     }
     throw new JWTVerificationException("token invalid");
   }
