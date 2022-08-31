@@ -41,9 +41,13 @@ public class HealthController {
     if(now-latestVersionFetch > 15000) {
       try {
         String oldVersion = latestVersion;
-        latestVersion = Jsoup.connect(frontUrl+"/version.txt").ignoreContentType(true).get().text();
-        if(!oldVersion.equals(latestVersion))
-          System.out.println("New latest version is "+latestVersion);
+        String latestVersion = Jsoup.connect(frontUrl+"/version.txt").ignoreContentType(true).get().text();
+        String version = "";
+        for(char c : latestVersion.toCharArray())
+          version += c < 97 ? c - 48 : c - 97 + 9;
+        this.latestVersion = version;
+        if(!oldVersion.equals(version))
+          System.out.println("New latest version is "+version+"("+latestVersion+")");
       } catch (IOException e) {
         e.printStackTrace();
       }
