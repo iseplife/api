@@ -3,8 +3,10 @@ package com.iseplife.api.controllers;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.post.CommentFactory;
+import com.iseplife.api.dao.post.PostFactory;
 import com.iseplife.api.dao.post.projection.CommentProjection;
 import com.iseplife.api.dao.post.projection.ReportProjection;
+import com.iseplife.api.dto.post.view.ReportView;
 import com.iseplife.api.dto.thread.CommentDTO;
 import com.iseplife.api.dto.thread.CommentEditDTO;
 import com.iseplife.api.dto.thread.view.CommentFormView;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 public class ThreadController {
   final private ThreadService threadService;
   final private CommentFactory commentFactory;
+  final private PostFactory postFactory;
 
   @GetMapping("/{id}")
   public ThreadProjection getThread(@PathVariable Long id) {
@@ -40,8 +43,8 @@ public class ThreadController {
   
   @GetMapping("/reports")
   @RolesAllowed({Roles.ADMIN})
-  public List<ReportProjection> getAllReports() {
-    return threadService.getAllReports();
+  public List<ReportView> getAllReports() {
+    return threadService.getAllReports().stream().map(report -> postFactory.toView(report, SecurityService.getLoggedId())).collect(Collectors.toList());
   }
 
   @PutMapping("/{id}/like")

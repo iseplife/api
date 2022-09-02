@@ -11,8 +11,11 @@ import org.springframework.stereotype.Component;
 
 import com.iseplife.api.dao.poll.PollFactory;
 import com.iseplife.api.dao.post.projection.PostProjection;
+import com.iseplife.api.dao.post.projection.PostSimpleProjection;
+import com.iseplife.api.dao.post.projection.ReportProjection;
 import com.iseplife.api.dto.post.view.PostFormView;
 import com.iseplife.api.dto.post.view.PostView;
+import com.iseplife.api.dto.post.view.ReportView;
 import com.iseplife.api.dto.thread.view.CommentView;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.post.embed.Embedable;
@@ -39,6 +42,12 @@ public class PostFactory {
         mapper
           .using(ctx -> embedFactory.toView((Embedable) ctx.getSource()))
           .map(PostProjection::getEmbed, PostView::setEmbed);
+      });
+    mapper.typeMap(PostSimpleProjection.class, PostView.class)
+      .addMappings(mapper -> {
+        mapper
+          .using(ctx -> embedFactory.toView((Embedable) ctx.getSource()))
+          .map(PostSimpleProjection::getEmbed, PostView::setEmbed);
       });
 
     mapper.typeMap(Post.class, PostView.class)
@@ -81,6 +90,15 @@ public class PostFactory {
     return view;
   }
 
+  public ReportView toView(ReportProjection report, Long studentId) {
+    ReportView view = mapper.map(report, ReportView.class);
+    
+    if(view.getPost() != null && view.getPost().getEmbed() instanceof PollView && studentId != null)
+      pollFactory.fillChoices((PollView) view.getPost().getEmbed(), studentId);
+
+    return view;
+  }
+  
   public PostView toView(PostProjection post, CommentView trendingComment, Long studentId) {
     PostView view = mapper.map(post, PostView.class);
     view.setTrendingComment(trendingComment);
@@ -90,7 +108,7 @@ public class PostFactory {
 
     return view;
   }
-
+  
   public PostView toView(Post post, Boolean isLiked, CommentView trendingComment, Long studentId) {
     PostView view = mapper.map(post, PostView.class);
     view.setTrendingComment(trendingComment);
