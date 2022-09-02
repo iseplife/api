@@ -57,6 +57,7 @@ public class AuthController {
       student = studentService.getStudent(user.getNumero());
     } catch (HttpNotFoundException e) {
       if (autoGeneration) {
+        String[] split = user.getTitre().split("-");
         LOG.info("User {} {} not found but pass authentication, creating account", user.getPrenom(), user.getPrenom());
         student = studentService.createStudent(
           StudentDTO.builder()
@@ -64,7 +65,7 @@ public class AuthController {
             .firstName(user.getPrenom())
             .lastName(user.getNom())
             .mail(user.getMail())
-            .promo(Integer.valueOf(user.getTitre().split("-")[2]))
+            .promo(Integer.valueOf(split[split.length-1]))
             .roles(Collections.singletonList(Roles.STUDENT))
             .build()
         );
