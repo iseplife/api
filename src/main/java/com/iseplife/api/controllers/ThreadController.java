@@ -4,6 +4,7 @@ import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.post.CommentFactory;
 import com.iseplife.api.dao.post.projection.CommentProjection;
+import com.iseplife.api.dao.post.projection.ReportProjection;
 import com.iseplife.api.dto.thread.CommentDTO;
 import com.iseplife.api.dto.thread.CommentEditDTO;
 import com.iseplife.api.dto.thread.view.CommentFormView;
@@ -36,11 +37,23 @@ public class ThreadController {
   public List<Like> getLikes(@PathVariable Long id) {
     return threadService.getLikes(id);
   }
+  
+  @GetMapping("/reports")
+  @RolesAllowed({Roles.ADMIN})
+  public List<ReportProjection> getAllReports() {
+    return threadService.getAllReports();
+  }
 
   @PutMapping("/{id}/like")
   @RolesAllowed({Roles.STUDENT})
   public Boolean toggleLike(@PathVariable Long id, @AuthenticationPrincipal TokenPayload auth) {
     return threadService.toggleLike(id, auth.getId());
+  }
+
+  @PutMapping("/{id}/report")
+  @RolesAllowed({Roles.STUDENT})
+  public void reportComment(@PathVariable Long id) {
+    threadService.reportComment(id, SecurityService.getLoggedId());
   }
 
   @GetMapping("/{id}/comment")
@@ -66,6 +79,11 @@ public class ThreadController {
   @DeleteMapping("/{id}/comment/{comID}")
   @RolesAllowed({Roles.STUDENT})
   public void deleteComment(@PathVariable Long comID, @AuthenticationPrincipal TokenPayload auth) {
+    threadService.deleteComment(comID, auth);
+  }
+  @DeleteMapping("/comment/{comID}")
+  @RolesAllowed({Roles.STUDENT})
+  public void deleteCommentWithId(@PathVariable Long comID, @AuthenticationPrincipal TokenPayload auth) {
     threadService.deleteComment(comID, auth);
   }
 }

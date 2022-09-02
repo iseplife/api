@@ -50,6 +50,13 @@ public class PostController {
   ) {
     postService.updatePostPinnedStatus(id, pinned, homepage);
   }
+  @PutMapping("/{id}/report")
+  @RolesAllowed({Roles.STUDENT})
+  public void reportPost(
+    @PathVariable Long id
+  ) {
+    postService.reportPost(id, SecurityService.getLoggedId());
+  }
 
   @PutMapping("/{id}/homepage")
   @RolesAllowed({Roles.ADMIN})

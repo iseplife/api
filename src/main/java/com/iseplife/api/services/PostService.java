@@ -24,6 +24,7 @@ import com.iseplife.api.constants.Roles;
 import com.iseplife.api.constants.ThreadType;
 import com.iseplife.api.dao.post.AuthorFactory;
 import com.iseplife.api.dao.post.PostRepository;
+import com.iseplife.api.dao.post.ReportRepository;
 import com.iseplife.api.dao.post.projection.PostProjection;
 import com.iseplife.api.dto.post.PostCreationDTO;
 import com.iseplife.api.dto.post.PostUpdateDTO;
@@ -31,6 +32,7 @@ import com.iseplife.api.dto.view.AuthorView;
 import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.post.Post;
+import com.iseplife.api.entity.post.Report;
 import com.iseplife.api.entity.post.embed.Embedable;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.entity.post.embed.media.Media;
@@ -63,13 +65,14 @@ public class PostService {
   @Lazy final private NotificationService notificationService;
   final private ModelMapper mapper;
   final private PostRepository postRepository;
+  final private ReportRepository reportRepository;
 
   private final int POSTS_PER_PAGE = 16;
 
   private Post getPost(Long postID) {
     Optional<Post> post = postRepository.findById(postID);
     if (post.isEmpty())
-      throw new HttpNotFoundException("poll_not_found");
+      throw new HttpNotFoundException("post_not_found");
 
     return post.get();
   }
@@ -415,5 +418,17 @@ public class PostService {
 
   public Page<PostProjection> getAuthorPosts(Long id, int page, TokenPayload token) {
     return postRepository.findAuthorPosts(id, SecurityService.getLoggedId(), token.getFeeds(), PageRequest.of(page, POSTS_PER_PAGE));
+  }
+
+  public void reportPost(Long id, Long loggedId) {
+    Student student = studentService.getStudent(loggedId);
+    Post post = getPost(id);
+    
+    if(!reportRepository.existsByPostAndStudent(post, student)) {
+      Report report = new Report();
+      report.setStudent(studentService.getStudent(loggedId));
+      report.setPost(getPost(id));
+      reportRepository.save(report);
+    }
   }
 }

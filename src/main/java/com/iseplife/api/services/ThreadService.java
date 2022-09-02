@@ -1,11 +1,22 @@
 package com.iseplife.api.services;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.constants.ThreadType;
 import com.iseplife.api.dao.feed.FeedRepository;
-import com.iseplife.api.dao.post.*;
+import com.iseplife.api.dao.post.CommentRepository;
+import com.iseplife.api.dao.post.LikeRepository;
+import com.iseplife.api.dao.post.ReportRepository;
 import com.iseplife.api.dao.post.projection.CommentProjection;
+import com.iseplife.api.dao.post.projection.ReportProjection;
 import com.iseplife.api.dao.thread.ThreadRepository;
 import com.iseplife.api.dto.thread.CommentDTO;
 import com.iseplife.api.dto.thread.CommentEditDTO;
@@ -16,19 +27,14 @@ import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.post.Comment;
 import com.iseplife.api.entity.post.Like;
-import com.iseplife.api.exceptions.http.HttpForbiddenException;
+import com.iseplife.api.entity.post.Report;
+import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.exceptions.CommentMaxDepthException;
+import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import com.iseplife.api.websocket.services.WSPostService;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +46,7 @@ public class ThreadService {
   final private LikeRepository likeRepository;
   final private FeedRepository feedRepository;
   final private WSPostService postService;
+  final private ReportRepository reportRepository;
 
   public Thread getThread(Long id) {
     Optional<Thread> thread = threadRepository.findById(id);
@@ -133,6 +140,18 @@ public class ThreadService {
     return !threadRepository.doesParentCommentExist(thread);
   }
 
+  public void reportComment(Long commentId, Long loggedId) {
+    Student student = studentService.getStudent(loggedId);
+    Comment comment = commentRepository.findById(commentId).get();
+    
+    if(!reportRepository.existsByCommentAndStudent(comment, student)) {
+      Report report = new Report();
+      report.setStudent(student);
+      report.setComment(comment);
+      reportRepository.save(report);
+    }
+  }
+  
   public Comment comment(Long threadID, CommentDTO dto, Long studentID) {
     Thread thread = getThread(threadID);
 
@@ -189,6 +208,10 @@ public class ThreadService {
     commentRepository.deleteById(comID);
     
     postService.broadcastCommentsUpdate(comment.getParentThread().getId(), commentRepository.countByParentThreadId(comment.getParentThread().getId()));
+  }
+  
+  public List<ReportProjection> getAllReports() {
+    return reportRepository.getAllReports();
   }
 
 

@@ -70,6 +70,9 @@ public class Post implements ThreadInterface {
 
   @ManyToOne
   private Club linkedClub = null;
+  
+  @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = CascadeType.ALL)
+  private List<Report> reports;
 
   @ManyToOne
   private Feed feed;

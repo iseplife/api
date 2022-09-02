@@ -34,6 +34,9 @@ public class Comment implements ThreadInterface {
 
   @ManyToOne
   private Student student;
+  
+  @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment", cascade = CascadeType.ALL)
+  private List<Report> reports;
 
   @ManyToOne
   private Club asClub;
