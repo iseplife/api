@@ -38,6 +38,7 @@ import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
+import com.iseplife.api.exceptions.http.HttpUnauthorizedException;
 import com.iseplife.api.services.fileHandler.FileHandler;
 import com.iseplife.api.utils.MediaUtils;
 
@@ -97,8 +98,16 @@ public class StudentService {
     student.setLastName(user.getNom());
     student.setMail(user.getMail());
 
-    String[] titre = user.getTitre().split("-");
-    student.setPromo(Integer.valueOf(titre[2]));
+    String[] split = user.getTitre().split("-");
+    Integer promo = null;
+    for(int i = split.length - 1;i != 0;i--) {
+      try {
+        promo = Integer.valueOf(split[i]);
+      }catch(Exception err) { }
+    }
+    if(promo == null)
+      throw new HttpUnauthorizedException("error_moodle_acc");
+    student.setPromo(Integer.valueOf(promo));
 
     return studentRepository.save(student);
   }

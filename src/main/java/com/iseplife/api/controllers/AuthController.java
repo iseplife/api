@@ -58,15 +58,22 @@ public class AuthController {
     } catch (HttpNotFoundException e) {
       if (autoGeneration) {
         String[] split = user.getTitre().split("-");
-        System.out.println(user.getTitre());
         LOG.info("User {} {} not found but pass authentication, creating account {}", user.getPrenom(), user.getNom(), user.getTitre());
+        Integer promo = null;
+        for(int i = split.length - 1;i != 0;i--) {
+          try {
+            promo = Integer.valueOf(split[i]);
+          }catch(Exception err) { }
+        }
+        if(promo == null)
+          throw new HttpUnauthorizedException("error_moodle_acc");
         student = studentService.createStudent(
           StudentDTO.builder()
             .id(user.getNumero())
             .firstName(user.getPrenom())
             .lastName(user.getNom())
             .mail(user.getMail())
-            .promo(Integer.valueOf(split[split.length-1]))
+            .promo(promo)
             .roles(Collections.singletonList(Roles.STUDENT))
             .build()
         );
