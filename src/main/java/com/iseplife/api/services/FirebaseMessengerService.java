@@ -85,6 +85,7 @@ public class FirebaseMessengerService {
       
       subscription.setFingerprint(sub.getFingerprint());
       subscription.setToken(sub.getSubscriptionKey());
+      subscription.setOwner(student);
       
       firebaseSubscriptionRepository.save(subscription);
       System.out.println("New sub added");
