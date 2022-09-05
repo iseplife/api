@@ -58,7 +58,7 @@ public class ClubService {
   public Club getClub(Long id) {
     Optional<Club> club = clubRepository.findById(id);
     if (club.isEmpty())
-      throw new HttpBadRequestException("club_not_found");
+      throw new HttpNotFoundException("club_not_found");
 
     return club.get();
   }
