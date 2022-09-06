@@ -16,8 +16,8 @@ public class StorageConfig implements WebMvcConfigurer {
 
   public static final String GALLERY_SIZES = "autox140/70;autox500/75;1920xauto/82;5120xauto/88";
   public static final String POST_SIZES = "autox500/72;autox800/70;1920xauto";
-  public static final String AVATAR_SIZES = "300x300;200x200;90x90/75";
-  public static final String COVER_SIZES = "1920xauto";
+  public static final String AVATAR_SIZES = "500x500;300x300;200x200;90x90/75";
+  public static final String COVER_SIZES = "2880xauto;1920xauto";
   public static final String OG_SIZE = "250x250/65";
 
   public static class MediaConf {
