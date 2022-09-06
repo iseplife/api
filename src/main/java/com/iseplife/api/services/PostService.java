@@ -54,15 +54,24 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class PostService {
-  @Lazy final private WSPostService postsService;
-  @Lazy final private StudentService studentService;
-  @Lazy final private ClubService clubService;
-  @Lazy final private MediaService mediaService;
-  @Lazy final private PollService pollService;
-  @Lazy final private GalleryService galleryService;
-  @Lazy final private FeedService feedService;
-  @Lazy final private SecurityService securityService;
-  @Lazy final private NotificationService notificationService;
+  @Lazy
+  final private WSPostService postsService;
+  @Lazy
+  final private StudentService studentService;
+  @Lazy
+  final private ClubService clubService;
+  @Lazy
+  final private MediaService mediaService;
+  @Lazy
+  final private PollService pollService;
+  @Lazy
+  final private GalleryService galleryService;
+  @Lazy
+  final private FeedService feedService;
+  @Lazy
+  final private SecurityService securityService;
+  @Lazy
+  final private NotificationService notificationService;
   final private ModelMapper mapper;
   final private PostRepository postRepository;
   final private ReportRepository reportRepository;
@@ -111,15 +120,15 @@ public class PostService {
     post.setAuthor(author);
 
     dto.getAttachements().forEach((type, id) -> bindAttachementToPost(type, id, post));
-    
-    if(dto.getAttachements().size() == 0) {
+
+    if (dto.getAttachements().size() == 0) {
       List<Url> parser = new UrlDetector(post.getDescription(), UrlDetectorOptions.Default).detect();
-      if(parser.size() > 0) {
+      if (parser.size() > 0) {
         String linkStr = parser.get(0).getFullUrl();
         try {
           post.setEmbed(mediaService.createRichLink(linkStr));
         } catch (IOException e) {
-          System.err.println("Failed to get OG for "+linkStr);
+          System.err.println("Failed to get OG for " + linkStr);
           e.printStackTrace();
         }
       }
@@ -137,10 +146,10 @@ public class PostService {
     );
 
     Post postToReturn = postRepository.save(post);
-    
+
     if (!dto.isDraft())
       postsService.broadcastPost(postToReturn);
-    
+
     if (!dto.isDraft() && !customDate) {
       Map<String, Object> notifInformations = new HashMap<>(Map.of(
         "post_id", post.getId(),
@@ -164,7 +173,7 @@ public class PostService {
         builder.type(NotificationType.NEW_GROUP_POST)
           .link("group/" + feed.getGroup().getId() + "/post/" + post.getId());
         subscribable = feed.getGroup();
-      }else if (feed.getEvent() != null) {
+      } else if (feed.getEvent() != null) {
         notifInformations.put("event_name", feed.getEvent().getTitle());
         builder.type(NotificationType.NEW_EVENT_POST)
           .link("event/" + feed.getEvent().getId() + "/post/" + post.getId());
@@ -218,28 +227,28 @@ public class PostService {
       throw new HttpForbiddenException("insufficient_rights");
 
     post.setDescription(dto.getDescription());
-    
-    if(post.getPublicationDate().after(new Date()) && dto.getPublicationDate().after(new Date()))
+
+    if (post.getPublicationDate().after(new Date()) && dto.getPublicationDate().after(new Date()))
       post.setPublicationDate(dto.getPublicationDate());
 
     if (!dto.getAttachements().isEmpty()) {
       removeEmbed(post.getEmbed());
       dto.getAttachements().forEach((type, id) -> bindAttachementToPost(type, id, post));
     }
-    
+
     boolean currentRichLink = post.getEmbed() != null && post.getEmbed() instanceof RichLink;
-    if(dto.getAttachements().isEmpty() && (post.getEmbed() == null || currentRichLink)) {
+    if (dto.getAttachements().isEmpty() && (post.getEmbed() == null || currentRichLink)) {
       List<Url> parser = new UrlDetector(post.getDescription(), UrlDetectorOptions.Default).detect();
-      if(parser.size() > 0) {
+      if (parser.size() > 0) {
         String linkStr = parser.get(0).getFullUrl();
-        if(!currentRichLink || !((RichLink)post.getEmbed()).getLink().equals(linkStr)) {
-          if(currentRichLink)
+        if (!currentRichLink || !((RichLink) post.getEmbed()).getLink().equals(linkStr)) {
+          if (currentRichLink)
             removeEmbed(post.getEmbed());
-          
+
           try {
             post.setEmbed(mediaService.createRichLink(linkStr));
           } catch (IOException e) {
-            System.err.println("Failed to get OG for "+linkStr);
+            System.err.println("Failed to get OG for " + linkStr);
             e.printStackTrace();
           }
         }
@@ -337,7 +346,8 @@ public class PostService {
 
   public Set<AuthorView> getAuthorizedPublish(Long studentId) {
     Student student = studentService.getStudent(studentId);
-    return studentService.getPublisherClubs(student)
+
+    return (SecurityService.hasRoles(Roles.ADMIN) ? clubService.getAll() : studentService.getPublisherClubs(student))
       .stream()
       .map(AuthorFactory::toView)
       .collect(Collectors.toSet());
@@ -423,8 +433,8 @@ public class PostService {
   public void reportPost(Long id, Long loggedId) {
     Student student = studentService.getStudent(loggedId);
     Post post = getPost(id);
-    
-    if(!reportRepository.existsByPostAndStudent(post, student)) {
+
+    if (!reportRepository.existsByPostAndStudent(post, student)) {
       Report report = new Report();
       report.setStudent(studentService.getStudent(loggedId));
       report.setPost(getPost(id));
