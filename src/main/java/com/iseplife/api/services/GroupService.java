@@ -260,5 +260,10 @@ public class GroupService {
     memberDTO.setStudentId(student.getId());
     addMember(group, memberDTO, true);
   }
+  
+  public boolean isInPromoGroup(Student student) {
+    Optional<Group> optional = groupRepository.findOneByName("Promo "+student.getPromo());
+    return optional.isPresent() && groupMemberRepository.isMemberOfGroup(optional.get().getId(), student.getId());
+  }
 
 }

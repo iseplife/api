@@ -109,7 +109,12 @@ public class StudentService {
       throw new HttpUnauthorizedException("error_moodle_acc");
     student.setPromo(Integer.valueOf(promo));
 
-    return studentRepository.save(student);
+    try {
+      return student = studentRepository.save(student);
+    } finally {
+      if(!groupService.isInPromoGroup(student))
+        groupService.addToPromoGroup(student);
+    }
   }
 
   public void updateSettings(StudentSettingsDTO settingDTO) {
