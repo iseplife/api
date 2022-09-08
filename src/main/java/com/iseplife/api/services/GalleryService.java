@@ -36,6 +36,7 @@ public class GalleryService {
 
   final private static int GALLERY_PER_PAGE = 5;
   final private static int PSEUDO_GALLERY_MAX_SIZE = 5;
+  final private static int GALLERY_MAX_SIZE = 2000;
 
   private void checkIfHasRightsOnGallery(Gallery gallery){
     if ((gallery.isPseudo() && !SecurityService.hasRightOn(postService.getPostFromEmbed(gallery))) || !SecurityService.hasRightOn(gallery))
@@ -74,9 +75,11 @@ public class GalleryService {
 
   public Gallery createGallery(GalleryDTO dto) {
     Gallery gallery = new Gallery();
-    if (dto.isPseudo() && dto.getImages().size() > PSEUDO_GALLERY_MAX_SIZE)
-      throw new HttpBadRequestException("pseudo_gallery_max_size_reached");
+    if (dto.getImages().size() > (dto.isPseudo() ? PSEUDO_GALLERY_MAX_SIZE: GALLERY_MAX_SIZE) )
+      throw new HttpBadRequestException("gallery_max_size_reached");
 
+    if(dto.getDescription().length() > PostService.MAX_DESCRIPTION_LENGTH)
+      throw new HttpBadRequestException("gallery_description_too_long");
 
     gallery.setCreation(new Date());
     gallery.setPseudo(dto.isPseudo());
