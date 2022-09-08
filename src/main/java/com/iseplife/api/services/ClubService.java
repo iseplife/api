@@ -54,7 +54,7 @@ public class ClubService {
 
   @Qualifier("FileHandlerBean") final private FileHandler fileHandler;
 
-  final private static int MAX_DESCRIPTION_LENGTH = 2000;
+  final public static int MAX_DESCRIPTION_LENGTH = 2000;
 
   public Club getClub(Long id) {
     Optional<Club> club = clubRepository.findById(id);
@@ -104,7 +104,7 @@ public class ClubService {
       throw new HttpForbiddenException("insufficient_rights");
 
     if(dto.getDescription().length() > MAX_DESCRIPTION_LENGTH)
-      throw new HttpBadRequestException("event_description_too_long");
+      throw new HttpBadRequestException("club_description_too_long");
 
     mapper.map(dto, club);
     return clubRepository.save(club);

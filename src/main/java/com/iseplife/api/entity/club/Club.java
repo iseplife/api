@@ -23,6 +23,7 @@ import com.iseplife.api.entity.feed.Feedable;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.subscription.Subscribable;
 
+import com.iseplife.api.services.ClubService;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -40,7 +41,7 @@ public class Club implements Feedable, Author, Subscribable {
   @Enumerated(EnumType.STRING)
   private ClubType type;
 
-  @Column(length = 500)
+  @Column(length = ClubService.MAX_DESCRIPTION_LENGTH)
   private String description;
 
   private String logoUrl;

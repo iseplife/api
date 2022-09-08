@@ -49,7 +49,7 @@ public class ThreadService {
   final private WSPostService postService;
   final private ReportRepository reportRepository;
 
-  final static int MAX_COMMENT_LENGTH = 2000;
+  public final static int MAX_COMMENT_LENGTH = 2000;
 
   public Thread getThread(Long id) {
     Optional<Thread> thread = threadRepository.findById(id);
