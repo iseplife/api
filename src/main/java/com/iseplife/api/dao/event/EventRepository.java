@@ -46,7 +46,7 @@ public interface EventRepository extends CrudRepository<Event, Long> {
   
   @Query(
     "select e from Event e left join e.targets t " +
-      "where e.startsAt >= CURRENT_TIMESTAMP " +
+      "where e.endsAt >= CURRENT_TIMESTAMP " +
       "and ((?1 = true) or (" +
         "e.publishedAt < CURRENT_TIMESTAMP " +
         "and (e.targets is empty or t.id in ?2)" +
@@ -57,7 +57,7 @@ public interface EventRepository extends CrudRepository<Event, Long> {
 
   @Query(
     "select e from Event e " +
-      "where e.startsAt >= CURRENT_TIMESTAMP " +
+      "where e.endsAt >= CURRENT_TIMESTAMP " +
       "and (?1 = true " +
         "or (e.publishedAt < CURRENT_TIMESTAMP and ?2 member of e.targets) " +
       ") " +
