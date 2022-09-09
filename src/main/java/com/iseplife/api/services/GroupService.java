@@ -213,10 +213,10 @@ public class GroupService {
     if(!force) {
       if (!SecurityService.hasRightOn(group))
         throw new HttpForbiddenException("insufficient_rights");
-      
-      if(groupMemberRepository.isMemberOfGroup(group.getId(), dto.getStudentId()))
-        throw new HttpBadRequestException("student_already_in_group");
     }
+    
+    if(groupMemberRepository.isMemberOfGroup(group.getId(), dto.getStudentId()))
+      throw new HttpBadRequestException("student_already_in_group");
 
     GroupMember member = new GroupMember();
     member.setAdmin(false);
