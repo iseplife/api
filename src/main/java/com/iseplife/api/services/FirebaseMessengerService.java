@@ -128,11 +128,13 @@ public class FirebaseMessengerService {
         .putData("link", notification.getLink())
       .build());
     }
-    try {
-      FirebaseMessaging.getInstance().sendAll(messages);
-    } catch (FirebaseMessagingException e) {
-      e.printStackTrace();
-    }
+    
+    if(!messages.isEmpty())
+      try {
+        FirebaseMessaging.getInstance().sendAll(messages);
+      } catch (FirebaseMessagingException e) {
+        e.printStackTrace();
+      }
     
     
   }
