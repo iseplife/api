@@ -85,21 +85,22 @@ public class EventService {
       event = eventRepository.save(event);
       Event finalEvent = event;
       //We send the notification if the event is not private
-      notificationService.delayNotification(
-          Notification.builder()
-            .type(NotificationType.NEW_EVENT)
-            .icon(club.getLogoUrl())
-            .link("event/"+event.getId())
-            .informations(
-                Map.of(
-                    "id", event.getId(),
-                    "title", event.getTitle(),
-                    "type", event.getType().name(),
-                    "club", event.getClub().getName(),
-                    "start", event.getStartsAt().getTime()
-                )
-            ),
-          false, club, () -> eventRepository.findByIdWithPosition(finalEvent.getId()) != null);
+      if(event.getStartsAt().after(new Date()))
+        notificationService.delayNotification(
+            Notification.builder()
+              .type(NotificationType.NEW_EVENT)
+              .icon(club.getLogoUrl())
+              .link("event/"+event.getId())
+              .informations(
+                  Map.of(
+                      "id", event.getId(),
+                      "title", event.getTitle(),
+                      "type", event.getType().name(),
+                      "club", event.getClub().getName(),
+                      "start", event.getStartsAt().getTime()
+                  )
+              ),
+            false, club, () -> eventRepository.findByIdWithPosition(finalEvent.getId()) != null);
     }
     
     wsEventService.broadcastEvent(event);
