@@ -231,6 +231,23 @@ public class EventService {
     updateCoordinates(event, dto);
     
     event.setStartsAt(dto.getStartsAt());
+    event.setEndsAt(dto.getEndsAt());
+
+    event.setPrice(dto.getPrice());
+    event.setTicketUrl(dto.getTicketURL());
+
+    if (dto.getTargets().size() > 0) {
+      Set<Feed> targets = new HashSet<>();
+      feedRepository.findAllById(dto.getTargets()).forEach(targets::add);
+
+      event.setTargets(targets);
+    }
+    
+    Club club = clubService.getClub(dto.getClub());
+    if (club == null || !SecurityService.hasRightOn(club))
+      throw new HttpForbiddenException("insufficient_rights");
+    event.setClub(club);
+    
     if (dto.getPreviousEditionId() != null) {
       Event prev = getEvent(dto.getPreviousEditionId());
       event.setPreviousEdition(prev);
