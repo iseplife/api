@@ -13,6 +13,7 @@ import java.util.StringJoiner;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import org.jose4j.lang.JoseException;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +31,7 @@ import com.google.firebase.messaging.AndroidNotification.Priority;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.MulticastMessage;
 import com.google.firebase.messaging.Notification;
 import com.iseplife.api.constants.Language;
 import com.iseplife.api.dao.firebase.FirebaseSubscriptionRepository;
@@ -96,46 +98,48 @@ public class FirebaseMessengerService {
   }
 
   public void sendNotificationToAll(List<Subscription> subs, com.iseplife.api.entity.subscription.Notification notification) {
-    HashMap<Language, StringJoiner> conditions = new HashMap<>();
+    HashMap<Language, List<String>> tokens = new HashMap<>();
     
     for(Subscription sub : subs) {
-      StringJoiner sj = conditions.get(sub.getListener().getLanguage());
+      List<String> list = tokens.get(sub.getListener().getLanguage());
       
-      if(sj == null)
-        conditions.put(sub.getListener().getLanguage(), sj = new StringJoiner(" || "));
+      if(list == null)
+        tokens.put(sub.getListener().getLanguage(), list = new ArrayList<>());
         
-      sj.add("'s"+sub.getListener().getId()+"' in topics");
+      list.addAll(sub.getListener().getFirebaseSubscriptions().stream().map(s -> s.getToken()).collect(Collectors.toList()));
     }
     
-    ArrayList<Message> messages = new ArrayList<>();
     String image = mediaPath(notification.getIcon(), "300x300");
-    for(Entry<Language, StringJoiner> entry : conditions.entrySet()) {
+    int sent = 0;
+    for(Entry<Language, List<String>> entry : tokens.entrySet()) {
       String body = translationService.getTranslation(notification.getType(), notification.getInformations(), entry.getKey());
-      messages.add(Message.builder().setCondition(entry.getValue().toString()).setNotification(
-        Notification.builder()
-          .setBody(body)
-          .setImage(image)
-          .setTitle("iseplife")
-          .build()
-        ).setAndroidConfig(AndroidConfig.builder().setNotification(
-          AndroidNotification.builder()
-            .setPriority(Priority.HIGH)
-            .setBody(body)
-            .setImage(image)
-            .setTitle("iseplife")
-            .build()
-        ).build())
-        .putData("link", notification.getLink())
-      .build());
+      int max = entry.getValue().size();
+      for(int i = 0;i<max;i+=1000) {
+        List<String> list = entry.getValue().subList(i, Math.min(i+1000, max));
+        MulticastMessage message = MulticastMessage.builder().addAllTokens(list).setNotification(
+            Notification.builder()
+              .setBody(body)
+              .setImage(image)
+              .setTitle("iseplife")
+              .build()
+            ).setAndroidConfig(AndroidConfig.builder().setNotification(
+              AndroidNotification.builder()
+                .setPriority(Priority.HIGH)
+                .setBody(body)
+                .setImage(image)
+                .setTitle("iseplife")
+                .build()
+            ).build())
+            .putData("link", notification.getLink())
+          .build();
+        
+        sent += entry.getValue().size();
+        
+        FirebaseMessaging.getInstance().sendMulticastAsync(message);
+      }
     }
     
-    if(!messages.isEmpty())
-      try {
-        FirebaseMessaging.getInstance().sendAll(messages);
-      } catch (FirebaseMessagingException e) {
-        e.printStackTrace();
-      }
-    
+    System.out.println("Notification sent to "+sent+" users");
     
   }
   private String mediaPath(String fullPath, String size) {
