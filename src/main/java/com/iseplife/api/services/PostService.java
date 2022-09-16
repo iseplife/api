@@ -76,7 +76,8 @@ public class PostService {
   final private PostRepository postRepository;
   final private ReportRepository reportRepository;
 
-  private final int POSTS_PER_PAGE = 16;
+  final private static int POSTS_PER_PAGE = 16;
+  final static int MAX_DESCRIPTION_LENGTH = 3000;
 
   private Post getPost(Long postID) {
     Optional<Post> post = postRepository.findById(postID);
@@ -98,15 +99,20 @@ public class PostService {
     Post post = mapper.map(dto, Post.class);
     Student author = securityService.getLoggedUser();
 
+    if(dto.getDescription().length() > MAX_DESCRIPTION_LENGTH)
+      throw new HttpBadRequestException("post_description_too_long");
+
     // Author should be an admin or club publisher
     if (dto.getLinkedClub() != null && !SecurityService.hasAuthorAccessOn(dto.getLinkedClub()))
       throw new HttpForbiddenException("insufficient_rights");
+
     post.setLinkedClub(dto.getLinkedClub() != null ? clubService.getClub(dto.getLinkedClub()) : null);
+
 
     Feed feed;
     if (dto.getFeed() != null) {
       feed = feedService.getFeed(dto.getFeed());
-      // We disallow students to post on feeds they don't have write right on, and to post as a club in a student feed.
+      // We disallow students to post on feeds where they don't have write permission on, and to post as a club in a student feed.
       if (!SecurityService.hasRightOn(feed) || (feed.getStudent() != null && dto.getLinkedClub() != null))
         throw new HttpForbiddenException("insufficient_rights");
     } else {
@@ -226,6 +232,9 @@ public class PostService {
     if (dto.getLinkedClub() != null && !SecurityService.hasAuthorAccessOn(dto.getLinkedClub()))
       throw new HttpForbiddenException("insufficient_rights");
 
+
+    if(dto.getDescription().length() > MAX_DESCRIPTION_LENGTH)
+      throw new HttpBadRequestException("post_description_too_long");
     post.setDescription(dto.getDescription());
 
     if (post.getPublicationDate().after(new Date()) && dto.getPublicationDate().after(new Date()))

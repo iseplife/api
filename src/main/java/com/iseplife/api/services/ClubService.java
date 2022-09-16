@@ -48,12 +48,13 @@ import lombok.RequiredArgsConstructor;
 public class ClubService {
   @Lazy final private StudentService studentService;
   @Lazy final private GalleryService galleryService;
-  @Lazy final private EventService eventService;
   final private ModelMapper mapper;
   final private ClubRepository clubRepository;
   final private ClubMemberRepository clubMemberRepository;
 
   @Qualifier("FileHandlerBean") final private FileHandler fileHandler;
+
+  final public static int MAX_DESCRIPTION_LENGTH = 2000;
 
   public Club getClub(Long id) {
     Optional<Club> club = clubRepository.findById(id);
@@ -75,6 +76,9 @@ public class ClubService {
     Club club = mapper.map(dto, Club.class);
     if (dto.getAdmins().size() == 0)
       throw new HttpBadRequestException("admins_required");
+
+    if(dto.getDescription().length() > MAX_DESCRIPTION_LENGTH)
+      throw new HttpBadRequestException("club_description_too_long");
 
     List<Student> admins = studentService.getStudents(dto.getAdmins());
     List<ClubMember> members = new ArrayList<>();
@@ -98,6 +102,9 @@ public class ClubService {
     Club club = getClub(id);
     if (!SecurityService.hasRightOn(club))
       throw new HttpForbiddenException("insufficient_rights");
+
+    if(dto.getDescription().length() > MAX_DESCRIPTION_LENGTH)
+      throw new HttpBadRequestException("club_description_too_long");
 
     mapper.map(dto, club);
     return clubRepository.save(club);

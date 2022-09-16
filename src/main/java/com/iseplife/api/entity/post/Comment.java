@@ -4,6 +4,7 @@ import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.ThreadInterface;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.user.Student;
+import com.iseplife.api.services.ThreadService;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,7 +20,7 @@ public class Comment implements ThreadInterface {
   @GeneratedValue
   private Long id;
 
-  @Column(length = 500)
+  @Column(length = ThreadService.MAX_COMMENT_LENGTH)
   private String message;
 
   private Date creation = new Date();
@@ -34,7 +35,7 @@ public class Comment implements ThreadInterface {
 
   @ManyToOne
   private Student student;
-  
+
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment", cascade = CascadeType.ALL)
   private List<Report> reports;
 

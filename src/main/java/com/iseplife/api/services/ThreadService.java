@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -47,6 +48,8 @@ public class ThreadService {
   final private FeedRepository feedRepository;
   final private WSPostService postService;
   final private ReportRepository reportRepository;
+
+  public final static int MAX_COMMENT_LENGTH = 2000;
 
   public Thread getThread(Long id) {
     Optional<Thread> thread = threadRepository.findById(id);
@@ -101,19 +104,19 @@ public class ThreadService {
     Like like = likeRepository.findOneByThreadIdAndStudentId(threadID, studentID);
 
     boolean liked = like != null;
-    
+
     //TODO: check permissions
     try {
       if (liked) {
         likeRepository.delete(like);
-  
+
         return false;
       } else {
         like = new Like();
         like.setStudent(studentService.getStudent(studentID));
         like.setThread(getThread(threadID));
         likeRepository.save(like);
-  
+
         return true;
       }
     } finally {
@@ -143,7 +146,7 @@ public class ThreadService {
   public void reportComment(Long commentId, Long loggedId) {
     Student student = studentService.getStudent(loggedId);
     Comment comment = commentRepository.findById(commentId).get();
-    
+
     if(!reportRepository.existsByCommentAndStudent(comment, student)) {
       Report report = new Report();
       report.setStudent(student);
@@ -151,12 +154,15 @@ public class ThreadService {
       reportRepository.save(report);
     }
   }
-  
+
   public Comment comment(Long threadID, CommentDTO dto, Long studentID) {
     Thread thread = getThread(threadID);
 
     if (!canCommentOnThread(thread))
       throw new CommentMaxDepthException("Comment max depth reached (1)");
+
+    if(dto.getMessage().length() > MAX_COMMENT_LENGTH)
+      throw new HttpBadRequestException("comment_too_long");
 
     Comment comment = new Comment();
     comment.setParentThread(thread);
@@ -171,7 +177,7 @@ public class ThreadService {
 
       comment.setAsClub(club);
     }
-    
+
     try {
       return commentRepository.save(comment);
     } finally {
@@ -189,6 +195,8 @@ public class ThreadService {
     if (!SecurityService.hasRightOn(comment, this))
       throw new HttpForbiddenException("insufficient_rights");
 
+    if(dto.getMessage().length() > MAX_COMMENT_LENGTH)
+      throw new HttpBadRequestException("comment_too_long");
     comment.setMessage(dto.getMessage());
     comment.setLastEdition(new Date());
 
@@ -206,10 +214,10 @@ public class ThreadService {
       throw new HttpForbiddenException("insufficient_rights");
 
     commentRepository.deleteById(comID);
-    
+
     postService.broadcastCommentsUpdate(comment.getParentThread().getId(), commentRepository.countByParentThreadId(comment.getParentThread().getId()));
   }
-  
+
   public List<ReportProjection> getAllReports() {
     return reportRepository.getAllReports();
   }

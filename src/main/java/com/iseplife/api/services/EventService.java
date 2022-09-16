@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
@@ -48,7 +49,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class EventService {
   private static String REVERSE_URL = "https://api-adresse.data.gouv.fr/reverse/?lon=%s&lat=%s";
-  
+
   @Lazy final private ClubService clubService;
   @Lazy final private GalleryService galleryService;
   @Lazy final private FeedService feedService;
@@ -59,10 +60,12 @@ public class EventService {
   final private EventPositionRepository eventPositionRepository;
   final private WebClient http = WebClient.builder().build();
   final private WsEventService wsEventService;
-  
+
   @Qualifier("FileHandlerBean") final private FileHandler fileHandler;
 
   final private static int EVENTS_PER_PAGE = 10;
+  final private static int MAX_TITLE_LENGTH = 100;
+  final private static int MAX_DESCRIPTION_LENGTH = 2000;
 
   public Event createEvent(EventDTO dto) {
     Club club = clubService.getClub(dto.getClub());
@@ -74,9 +77,14 @@ public class EventService {
 
     event.setClub(club);
     event.setFeed(new Feed(dto.getTitle(), FeedType.EVENT));
-     
+
+    if(dto.getTitle().length() > MAX_TITLE_LENGTH)
+      throw new HttpBadRequestException("event_title_too_long");
+    if(dto.getDescription().length() > MAX_DESCRIPTION_LENGTH)
+      throw new HttpBadRequestException("event_description_too_long");
+
     updateCoordinates(event, dto);
-    
+
     if (dto.getTargets().size() > 0) {
       Set<Feed> targets = new HashSet<>();
       feedRepository.findAllById(dto.getTargets()).forEach(targets::add);
@@ -104,15 +112,15 @@ public class EventService {
               ),
             false, club, () -> eventRepository.findByIdWithPosition(finalEvent.getId()) != null);
     }
-    
+
     wsEventService.broadcastEvent(event);
-    
+
     return event;
   }
 
   private void updateCoordinates(Event event, EventDTO dto) {
     event.setLocation(dto.getLocation());
-    
+
     if(dto.getCoordinates() != null) {
       PositionRequestAPIResponse coordinatesData = http.get()
           .uri(
@@ -124,12 +132,12 @@ public class EventService {
           )
           .retrieve()
           .bodyToMono(PositionRequestAPIResponse.class).block();
-      
+
       EventPosition position = coordinatesData.features.get(0).properties;
       position.setCoordinates(dto.getCoordinates()[0] + ";" + dto.getCoordinates()[1]);
-      
+
       eventPositionRepository.save(position);
-      
+
       event.setPosition(position);
     } else
       event.setPosition(null);
@@ -229,10 +237,16 @@ public class EventService {
       throw new HttpForbiddenException("insufficient_rights");
 
     event.setTitle(dto.getTitle());
+
+    if(dto.getDescription().length() > MAX_DESCRIPTION_LENGTH)
+      throw new HttpBadRequestException("event_description_too_long");
+
+    if(dto.getTitle().length() > MAX_TITLE_LENGTH)
+      throw new HttpBadRequestException("event_title_too_long");
     event.setDescription(dto.getDescription());
-    
+
     updateCoordinates(event, dto);
-    
+
     event.setStartsAt(dto.getStartsAt());
     event.setEndsAt(dto.getEndsAt());
 
