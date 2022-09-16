@@ -140,6 +140,10 @@ public class PollService {
     poll.setCreation(new Date());
 
     poll.setChoices(new ArrayList<>());
+    
+    if(dto.getChoices().size() > 10)
+      throw new HttpBadRequestException("poll_too_long");
+    
     dto.getChoices().forEach(choice -> {
       PollChoice pollChoice = new PollChoice();
       pollChoice.setContent(choice.getContent());
@@ -160,6 +164,9 @@ public class PollService {
 
     if (!SecurityService.hasRightOn(postService.getPostFromEmbed(poll)))
       throw new HttpForbiddenException("insufficient_rights");
+    
+    if(dto.getChoices().size() > 10)
+      throw new HttpBadRequestException("poll_too_long");
 
     poll.setAnonymous(dto.isAnonymous());
     poll.setMultiple(dto.isMultiple());
