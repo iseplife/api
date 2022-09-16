@@ -145,6 +145,9 @@ public class MediaService {
     Author author = club > 0 ?
       clubService.getClub(club) :
       studentService.getStudent(SecurityService.getLoggedId());
+    
+    if(club > 0 && !SecurityService.hasAuthorAccessOn(club))
+      throw new HttpForbiddenException("insufficient_rights");
 
     if (gallery && club <= 0)
       throw new HttpForbiddenException("insufficient_rights");
