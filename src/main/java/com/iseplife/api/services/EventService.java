@@ -66,6 +66,9 @@ public class EventService {
 
   public Event createEvent(EventDTO dto) {
     Club club = clubService.getClub(dto.getClub());
+    
+    if(!SecurityService.hasAuthorAccessOn(club.getId()))
+      throw new HttpNotFoundException("club_not_found");
 
     Event event = mapper.map(dto, Event.class);
 
