@@ -21,6 +21,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.constants.EventType;
 import com.iseplife.api.constants.FeedType;
 import com.iseplife.api.constants.NotificationType;
 import com.iseplife.api.dao.event.EventTabPreviewProjection;
@@ -65,8 +66,6 @@ public class EventService {
 
   public Event createEvent(EventDTO dto) {
     Club club = clubService.getClub(dto.getClub());
-    if (club == null || !SecurityService.hasRightOn(club))
-      throw new HttpForbiddenException("insufficient_rights");
 
     Event event = mapper.map(dto, Event.class);
 
@@ -236,6 +235,8 @@ public class EventService {
 
     event.setPrice(dto.getPrice());
     event.setTicketUrl(dto.getTicketURL());
+    
+    event.setType(EventType.valueOf(dto.getType()));
 
     if (dto.getTargets().size() > 0) {
       Set<Feed> targets = new HashSet<>();
