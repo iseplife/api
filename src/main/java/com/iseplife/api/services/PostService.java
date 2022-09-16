@@ -341,6 +341,8 @@ public class PostService {
       default:
         throw new HttpBadRequestException("invalid_embed_type");
     }
+    if(postRepository.existsByEmbed(attachement))
+      throw new HttpBadRequestException("invalid_embed");
     post.setEmbed(attachement);
   }
 

@@ -258,4 +258,12 @@ public interface PostRepository extends CrudRepository<Post, Long> {
        "where p.embed = :embed"
   )
   Long findPostIdByEmbed(Embedable embed);
+
+  @Query(
+      "select " +
+        "COUNT(p) > 0 " +
+       "from Post p " +
+       "where p.embed = :embed"
+  )
+  boolean existsByEmbed(Embedable embed);
 }
