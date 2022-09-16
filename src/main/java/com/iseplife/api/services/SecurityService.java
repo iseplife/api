@@ -117,8 +117,11 @@ public class SecurityService {
 
     switch (feed.getType()){
       case EVENT:
-        List<Long> targetIds = feed.getEvent().getTargets().stream().map(Feed::getId).collect(Collectors.toList());
-        return targetIds.size() == 0 || payload.getFeeds().stream().filter(authorizedFeed -> targetIds.contains(authorizedFeed)).count() > 0;
+        if(feed.getEvent().isAllowPublications()) {
+          List<Long> targetIds = feed.getEvent().getTargets().stream().map(Feed::getId).collect(Collectors.toList());
+          return targetIds.size() == 0 || payload.getFeeds().stream().filter(authorizedFeed -> targetIds.contains(authorizedFeed)).count() > 0;
+        }else
+          return SecurityService.hasAuthorAccessOn(feed.getEvent().getClub().getId());
       case STUDENT:
         return payload.getId().equals(feed.getStudent().getId());
       case CLUB:

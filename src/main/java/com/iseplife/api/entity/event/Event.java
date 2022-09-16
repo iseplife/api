@@ -51,6 +51,8 @@ public class Event implements Feedable, Subscribable {
   private Float price = null;
 
   private Date publishedAt = new Date();
+  
+  private boolean allowPublications = false;
 
   @Column(columnDefinition = "TEXT")
   private String description;

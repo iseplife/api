@@ -30,4 +30,5 @@ public class EventView {
   private ClubPreview club;
   private Set<FeedView> targets;
   private Long feed;
+  private boolean allowPublications;
 }
