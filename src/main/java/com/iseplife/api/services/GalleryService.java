@@ -1,12 +1,14 @@
 package com.iseplife.api.services;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.constants.FeedType;
 import com.iseplife.api.dao.gallery.EventGalleryProjection;
 import com.iseplife.api.dao.gallery.GalleryRepository;
 import com.iseplife.api.dao.media.image.ImageRepository;
 import com.iseplife.api.dto.gallery.GalleryDTO;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
+import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.post.embed.media.Image;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
@@ -81,6 +83,7 @@ public class GalleryService {
     gallery.setCreation(new Date());
     gallery.setPseudo(dto.isPseudo());
     gallery.setFeed(feedService.getFeed(dto.getFeed()));
+    
     if (!dto.isPseudo()) {
       Club club = clubService.getClub(dto.getClub());
       if (!SecurityService.hasRightOn(club))
@@ -89,6 +92,10 @@ public class GalleryService {
       gallery.setClub(club);
       gallery.setName(dto.getName());
       gallery.setDescription(dto.getDescription());
+      
+      //Galleries can only be posted on events feeds !
+      if (gallery.getFeed().getType() != FeedType.EVENT || !SecurityService.hasRightOn(gallery.getFeed()))
+        throw new HttpForbiddenException("insufficient_rights");
     }
 
     galleryRepository.save(gallery);
