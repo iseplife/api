@@ -80,9 +80,6 @@ public class GalleryService {
     if (dto.getImages().size() > (dto.isPseudo() ? PSEUDO_GALLERY_MAX_SIZE: GALLERY_MAX_SIZE) )
       throw new HttpBadRequestException("gallery_max_size_reached");
 
-    if(dto.getDescription().length() > PostService.MAX_DESCRIPTION_LENGTH)
-      throw new HttpBadRequestException("gallery_description_too_long");
-
     gallery.setCreation(new Date());
     gallery.setPseudo(dto.isPseudo());
     gallery.setFeed(feedService.getFeed(dto.getFeed()));
@@ -91,6 +88,9 @@ public class GalleryService {
       Club club = clubService.getClub(dto.getClub());
       if (!SecurityService.hasRightOn(club))
         throw new HttpForbiddenException("insufficient_rights");
+
+      if(dto.getDescription().length() > PostService.MAX_DESCRIPTION_LENGTH)
+        throw new HttpBadRequestException("gallery_description_too_long");
 
       gallery.setClub(club);
       gallery.setName(dto.getName());
