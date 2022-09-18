@@ -1,5 +1,6 @@
 package com.iseplife.api.services;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +13,7 @@ import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dao.feed.FeedProjection;
 import com.iseplife.api.dao.feed.FeedRepository;
 import com.iseplife.api.dao.post.projection.PostProjection;
+import com.iseplife.api.dao.student.StudentRepository;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
 
@@ -22,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class FeedService {
   @Lazy final private PostService postService;
   final private FeedRepository feedRepository;
+  @Lazy final private StudentRepository studentRepository;
 
   public Feed getFeed(Long id) {
     Optional<Feed> feed = feedRepository.findById(id);
@@ -64,6 +67,17 @@ public class FeedService {
       SecurityService.getLoggedId(),
       new Date(lastDate)
     );
+  }
+  
+  public List<Long> getTargettedUserId(Feed feed){
+    switch(feed.getType()) {
+      case CLUB:
+        return studentRepository.findAllEditorIdByClub(feed.getClub());
+      case GROUP:
+        return studentRepository.findAllIdByGroup(feed.getGroup());
+      default:
+        return new ArrayList<>();
+    }
   }
 
   public Page<PostProjection> getFeedPosts(Long id, int page) {

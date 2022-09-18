@@ -1,5 +1,6 @@
 package com.iseplife.api.services;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -84,33 +85,45 @@ public class EventService {
       throw new HttpBadRequestException("event_description_too_long");
 
     updateCoordinates(event, dto);
+    event = eventRepository.save(event);
+    
+    Notification.NotificationBuilder notif = Notification.builder()
+        .type(NotificationType.NEW_EVENT)
+        .icon(club.getLogoUrl())
+        .link("event/"+event.getId())
+        .informations(
+            Map.of(
+                "id", event.getId(),
+                "title", event.getTitle(),
+                "type", event.getType().name(),
+                "club", event.getClub().getName(),
+                "start", event.getStartsAt().getTime()
+            )
+        );
+    
 
     if (dto.getTargets().size() > 0) {
       Set<Feed> targets = new HashSet<>();
       feedRepository.findAllById(dto.getTargets()).forEach(targets::add);
 
       event.setTargets(targets);
-      event = eventRepository.save(event);
-    } else {
+      
       event = eventRepository.save(event);
       Event finalEvent = event;
-      //We send the notification if the event is not private
+      
+      ArrayList<Long> targetted = new ArrayList<>();
+      for(Feed target : targets)
+        targetted.addAll(feedService.getTargettedUserId(target));
+      
+      System.out.println("Event targets "+targetted.size()+" students.");
+
       if(event.getStartsAt().after(new Date()))
-        notificationService.delayNotification(
-            Notification.builder()
-              .type(NotificationType.NEW_EVENT)
-              .icon(club.getLogoUrl())
-              .link("event/"+event.getId())
-              .informations(
-                  Map.of(
-                      "id", event.getId(),
-                      "title", event.getTitle(),
-                      "type", event.getType().name(),
-                      "club", event.getClub().getName(),
-                      "start", event.getStartsAt().getTime()
-                  )
-              ),
-            false, club, () -> eventRepository.findByIdWithPosition(finalEvent.getId()) != null);
+        notificationService.delayNotification(notif, false, club, () -> eventRepository.findByIdWithPosition(finalEvent.getId()) != null, (stu) -> targetted.contains(stu.getId()));
+    } else {
+      //We send the notification if the event is not private
+      Event finalEvent = event;
+      if(event.getStartsAt().after(new Date()))
+        notificationService.delayNotification(notif, false, club, () -> eventRepository.findByIdWithPosition(finalEvent.getId()) != null);
     }
 
     wsEventService.broadcastEvent(event);

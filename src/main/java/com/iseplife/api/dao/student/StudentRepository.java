@@ -1,5 +1,7 @@
 package com.iseplife.api.dao.student;
 
+import com.iseplife.api.entity.club.Club;
+import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
 import org.springframework.data.domain.Page;
@@ -77,5 +79,21 @@ public interface StudentRepository extends CrudRepository<Student, Long> {
   @Modifying
   @Query("update Student s set s.lastExploreWatch = :date where s.id = :loggedUser")
   void updateLastExplore(Long loggedUser, Date date);
+  
+  @Query(
+    "select " +
+      "s.id " +
+    "from Student s " +
+      "inner join ClubMember cm on cm.student = s and cm.club = :club"
+  )
+  List<Long> findAllEditorIdByClub(Club club);
+  
+  @Query(
+    "select " +
+      "s.id " +
+    "from Student s " +
+      "inner join GroupMember gm on gm.student = s and gm.group = :group"
+  )
+  List<Long> findAllIdByGroup(Group group);
 
 }
