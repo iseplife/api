@@ -92,7 +92,7 @@ public class GroupService {
     group = groupRepository.save(group);
 
     for(GroupMember member : group.getMembers()) {
-      subService.subscribe(group, member.getStudent(), false);
+      subService.subscribe(group, member.getStudent(), true);
       wsGroupService.sendJoin(groupFactory.toPreview(group), member.getStudent());
     }
     
@@ -225,7 +225,7 @@ public class GroupService {
 
     member = groupMemberRepository.save(member);
     
-    subService.subscribe(group, member.getStudent(), false);
+    subService.subscribe(group, member.getStudent(), true);
     wsGroupService.sendJoin(groupFactory.toPreview(group), member.getStudent());
     return member;
   }
