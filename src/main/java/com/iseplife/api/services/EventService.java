@@ -83,6 +83,8 @@ public class EventService {
       throw new HttpBadRequestException("event_title_too_long");
     if(dto.getDescription().length() > MAX_DESCRIPTION_LENGTH)
       throw new HttpBadRequestException("event_description_too_long");
+    if(dto.getTargets() == null)
+      throw new HttpBadRequestException("bad_targets");
 
     updateCoordinates(event, dto);
     event = eventRepository.save(event);
