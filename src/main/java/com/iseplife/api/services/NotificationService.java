@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.stream.Collectors;
 
 import com.iseplife.api.entity.subscription.Notification.NotificationBuilder;
 import org.springframework.context.annotation.Lazy;
@@ -72,10 +73,15 @@ public class NotificationService {
           notif = notificationRepository.save(notif);
 
           wsNotifService.broadcastNotification(getUnwatchedNotificationProjection(notif.getId()), notified);
-          webPushService.sendNotificationToAll(subs, notif);
+          webPushService.sendNotificationToAll(subs.stream().map(sub -> sub.getListener()).collect(Collectors.toList()), notif);
         }
       }
     }, 1000 * 10);
+  }
+  
+  public void sendTempNotification(Notification notif, Iterable<Student> subs) {
+    wsNotifService.broadcastNotification(getUnwatchedNotificationProjection(notif.getId()), subs);
+    webPushService.sendNotificationToAll(subs, notif);
   }
 
 
