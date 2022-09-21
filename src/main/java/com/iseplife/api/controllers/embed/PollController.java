@@ -41,13 +41,13 @@ public class PollController {
 
   @PostMapping("/{id}/choice/{choiceId}")
   @RolesAllowed({Roles.STUDENT})
-  public List<PollChoiceView> vote(@PathVariable Long id, @PathVariable Long choiceId, @AuthenticationPrincipal TokenPayload auth) {
+  public synchronized List<PollChoiceView> vote(@PathVariable Long id, @PathVariable Long choiceId, @AuthenticationPrincipal TokenPayload auth) {
     return pollService.addVote(id, choiceId, auth.getId());
   }
 
   @DeleteMapping("/{id}/choice/{choiceId}")
   @RolesAllowed({Roles.STUDENT})
-  public List<PollChoiceView> unvote(@PathVariable Long id, @PathVariable Long choiceId, @AuthenticationPrincipal TokenPayload auth) {
+  public synchronized List<PollChoiceView> unvote(@PathVariable Long id, @PathVariable Long choiceId, @AuthenticationPrincipal TokenPayload auth) {
     return pollService.removeVote(id, choiceId, auth.getId());
   }
 

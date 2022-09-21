@@ -49,7 +49,7 @@ public class ThreadController {
 
   @PutMapping("/{id}/like")
   @RolesAllowed({Roles.STUDENT})
-  public Boolean toggleLike(@PathVariable Long id, @AuthenticationPrincipal TokenPayload auth) {
+  public synchronized Boolean toggleLike(@PathVariable Long id, @AuthenticationPrincipal TokenPayload auth) {
     return threadService.toggleLike(id, auth.getId());
   }
 
