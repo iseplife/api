@@ -97,16 +97,16 @@ public class FirebaseMessengerService {
     }
   }
 
-  public void sendNotificationToAll(List<Subscription> subs, com.iseplife.api.entity.subscription.Notification notification) {
+  public void sendNotificationToAll(Iterable<Student> subs, com.iseplife.api.entity.subscription.Notification notification) {
     HashMap<Language, List<String>> tokens = new HashMap<>();
     
-    for(Subscription sub : subs) {
-      List<String> list = tokens.get(sub.getListener().getLanguage());
+    for(Student sub : subs) {
+      List<String> list = tokens.get(sub.getLanguage());
       
       if(list == null)
-        tokens.put(sub.getListener().getLanguage(), list = new ArrayList<>());
+        tokens.put(sub.getLanguage(), list = new ArrayList<>());
         
-      list.addAll(sub.getListener().getFirebaseSubscriptions().stream().map(s -> s.getToken()).collect(Collectors.toList()));
+      list.addAll(sub.getFirebaseSubscriptions().stream().map(s -> s.getToken()).collect(Collectors.toList()));
     }
     
     String image = mediaPath(notification.getIcon(), "300x300");
