@@ -158,6 +158,10 @@ public class WeiController {
       throw new HttpNotFoundException("not_found");
     
     WeiRoom room = optRoom.get();
+    
+    if(room.isBooked())
+      throw new HttpBadRequestException("room_booked");
+    
     Optional<WeiRoomMember> myMember = room.getMembers().stream().filter(mem -> mem.getStudent().getId().equals(SecurityService.getLoggedId())).findFirst();
     if(!myMember.isEmpty()) {
       WeiRoomMember member = myMember.get();
