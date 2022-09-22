@@ -172,6 +172,7 @@ public class WeiController {
       
       room.setBooked(false);
       room.setId(UUID.randomUUID().toString());
+      room.setReservedUpTo(new Date());
       room.getMembers().clear();
       
       weiRoomRepository.save(room);
