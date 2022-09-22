@@ -84,6 +84,7 @@ public class WeiController {
     WeiRoom room = booked.get().findFirst().get();
     if(room.getMembers().size() != 0) {
       roomMemberRepository.deleteByRoom(room);
+      room.getMembers().clear();
       //notif de tej'
     }
     
