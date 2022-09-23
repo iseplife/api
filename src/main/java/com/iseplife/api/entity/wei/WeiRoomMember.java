@@ -24,7 +24,7 @@ public class WeiRoomMember {
   @OneToOne(fetch = FetchType.LAZY)
   private WeiRoom room;
 
-  @OneToOne(fetch = FetchType.LAZY)
+  @OneToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "id")
   @MapsId
   private Student student;

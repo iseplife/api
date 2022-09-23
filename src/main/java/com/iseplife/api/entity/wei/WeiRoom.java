@@ -24,7 +24,7 @@ public class WeiRoom {
   
   private boolean booked = false;
   
-  @OneToMany(mappedBy = "room")
+  @OneToMany(mappedBy = "room", fetch = FetchType.EAGER)
   private List<WeiRoomMember> members;
   
   private Date reservedUpTo = new Date();
