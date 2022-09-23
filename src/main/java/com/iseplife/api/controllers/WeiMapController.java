@@ -73,12 +73,12 @@ public class WeiMapController {
   @GetMapping("/activated")
   @RolesAllowed({ Roles.STUDENT })
   public JSONObject activated() {
-    return new JSONObject(Map.of("enabled", true, "snapmap", true));
+    return new JSONObject(Map.of("enabled", false, "snapmap", true));
   }
   @GetMapping("/background")
   @RolesAllowed({ Roles.STUDENT })
   public JSONObject getBackground() {
-    return new JSONObject(Map.of("color", "#ceead6"/*"#99B68C"*/, "assetUrl", "/img/wei/map/bg.png"));
+    return new JSONObject(Map.of("color", "#99B68C"/*"#99B68C"*/, "assetUrl", "/img/wei/map/bg.svg"));
   }
 
 }

@@ -13,9 +13,10 @@ import com.iseplife.api.entity.user.Student;
 @Entity
 @Getter @Setter @NoArgsConstructor
 public class WeiMapStudentLocation {
-  
+
   @Id
-  private int id;
+  @GeneratedValue
+  private Long id;
   
   private double lat;
   private double lng;

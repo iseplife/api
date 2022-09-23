@@ -28,5 +28,5 @@ public class WeiMapEntity {
   
   private boolean enabled;
   
-  private Date end;
+  private Date disappearDate;
 }
