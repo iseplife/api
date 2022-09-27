@@ -144,7 +144,7 @@ public class PostService {
     post.setCreationDate(new Date());
     post.setState(dto.isDraft() ? PostState.DRAFT : PostState.READY);
 
-    boolean customDate = post.getPublicationDate() != null && !dto.getPublicationDate().before(new Date());
+    boolean customDate = post.getPublicationDate() != null && Math.abs(dto.getPublicationDate().getTime() - System.currentTimeMillis()) < 60 * 5 * 1000;
     // If publication's date is missing or past, then set it at today to avoid any confusion
     post.setPublicationDate(customDate ?
       dto.getPublicationDate() :
@@ -157,53 +157,58 @@ public class PostService {
       postsService.broadcastPost(postToReturn);
 
     if (!dto.isDraft() && !customDate) {
-      Map<String, Object> notifInformations = new HashMap<>(Map.of(
-        "post_id", post.getId(),
-        "author_id", post.getAuthor().getId(),
-        "author_name", (post.getLinkedClub() != null ? post.getLinkedClub() : securityService.getLoggedUser()).getName(),
-        "content_text", post.getDescription(),
-        "date", post.getPublicationDate()
-      ));
-
-      if (post.getLinkedClub() != null)
-        notifInformations.put("club_id", post.getLinkedClub().getName());
-
-      Notification.NotificationBuilder builder = Notification.builder()
-        .icon(post.getLinkedClub() != null ? post.getLinkedClub().getLogoUrl() : securityService.getLoggedUser().getPicture())
-        .informations(notifInformations);
-
-      Subscribable subscribable = null;
-
-      if (feed.getGroup() != null) {
-        notifInformations.put("group_name", feed.getGroup().getName());
-        builder.type(NotificationType.NEW_GROUP_POST)
-          .link("group/" + feed.getGroup().getId() + "/post/" + post.getId());
-        subscribable = feed.getGroup();
-      } else if (feed.getEvent() != null) {
-        notifInformations.put("event_name", feed.getEvent().getTitle());
-        builder.type(NotificationType.NEW_EVENT_POST)
-          .link("event/" + feed.getEvent().getId() + "/post/" + post.getId());
-        subscribable = feed.getEvent();
-      } else if (feed.getClub() != null) {
-        notifInformations.put("club_name", feed.getClub().getName());
-        builder.type(NotificationType.NEW_CLUB_POST)
-          .link("club/" + feed.getClub().getId() + "/post/" + post.getId());
-        subscribable = feed.getClub();
-      } else if (feed.getStudent() != null) {
-        builder.type(NotificationType.NEW_STUDENT_POST)
-          .link("student/" + feed.getStudent().getId() + "/post/" + post.getId());
-        subscribable = feed.getStudent();
-      }
-
-      notificationService.delayNotification(
-        builder,
-        true,
-        subscribable,
-        () -> postRepository.existsById(postToReturn.getId())
-      );
+      notifyNewPost(postToReturn);
     }
 
     return postRepository.getById(post.getId(), SecurityService.getLoggedId());
+  }
+  
+  private void notifyNewPost(Post post) {
+    Feed feed = post.getFeed();
+    Map<String, Object> notifInformations = new HashMap<>(Map.of(
+      "post_id", post.getId(),
+      "author_id", post.getAuthor().getId(),
+      "author_name", (post.getLinkedClub() != null ? post.getLinkedClub() : securityService.getLoggedUser()).getName(),
+      "content_text", post.getDescription(),
+      "date", post.getPublicationDate()
+    ));
+
+    if (post.getLinkedClub() != null)
+      notifInformations.put("club_id", post.getLinkedClub().getName());
+
+    Notification.NotificationBuilder builder = Notification.builder()
+      .icon(post.getLinkedClub() != null ? post.getLinkedClub().getLogoUrl() : securityService.getLoggedUser().getPicture())
+      .informations(notifInformations);
+
+    Subscribable subscribable = null;
+
+    if (feed.getGroup() != null) {
+      notifInformations.put("group_name", feed.getGroup().getName());
+      builder.type(NotificationType.NEW_GROUP_POST)
+        .link("group/" + feed.getGroup().getId() + "/post/" + post.getId());
+      subscribable = feed.getGroup();
+    } else if (feed.getEvent() != null) {
+      notifInformations.put("event_name", feed.getEvent().getTitle());
+      builder.type(NotificationType.NEW_EVENT_POST)
+        .link("event/" + feed.getEvent().getId() + "/post/" + post.getId());
+      subscribable = feed.getEvent();
+    } else if (feed.getClub() != null) {
+      notifInformations.put("club_name", feed.getClub().getName());
+      builder.type(NotificationType.NEW_CLUB_POST)
+        .link("club/" + feed.getClub().getId() + "/post/" + post.getId());
+      subscribable = feed.getClub();
+    } else if (feed.getStudent() != null) {
+      builder.type(NotificationType.NEW_STUDENT_POST)
+        .link("student/" + feed.getStudent().getId() + "/post/" + post.getId());
+      subscribable = feed.getStudent();
+    }
+
+    notificationService.delayNotification(
+      builder,
+      true,
+      subscribable,
+      () -> postRepository.existsById(post.getId())
+    );
   }
 
   public void createPost(Gallery gallery) {
@@ -220,7 +225,9 @@ public class PostService {
     post.setLinkedClub(gallery.getClub());
     post.setThread(new Thread(ThreadType.POST));
 
-    postRepository.save(post);
+    post = postRepository.save(post);
+    
+    notifyNewPost(post);
   }
 
   public Post updatePost(Long postID, PostUpdateDTO dto) {
