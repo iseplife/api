@@ -29,9 +29,10 @@ public class MediaController {
     @RequestParam(defaultValue = "0") Boolean nsfw,
     @RequestParam(defaultValue = "0") Float ratio,
     @RequestParam(defaultValue = "fff") String color,
+    @RequestParam(defaultValue = "document") String type,
     @RequestParam("file") MultipartFile file
   ){
-    return factory.toBasicView(mediaService.createMedia(file, club, gallery, nsfw, color, ratio));
+    return factory.toBasicView(mediaService.createMedia(file, club, gallery, nsfw, color, ratio, type));
   }
 
   @PutMapping("/{id}/nsfw")

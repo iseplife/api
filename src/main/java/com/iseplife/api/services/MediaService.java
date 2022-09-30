@@ -141,7 +141,7 @@ public class MediaService {
     return false;
   }
 
-  public Media createMedia(MultipartFile file, Long club, Boolean gallery, Boolean nsfw, String averageColor, Float ratio) {
+  public Media createMedia(MultipartFile file, Long club, Boolean gallery, Boolean nsfw, String averageColor, Float ratio, String type) {
     Author author = club > 0 ?
       clubService.getClub(club) :
       studentService.getStudent(SecurityService.getLoggedId());
@@ -155,54 +155,51 @@ public class MediaService {
     if (isAllowedToCreateMedia(author, file.getSize())) {
       String name, mime = file.getContentType().split("/")[0];
       Media media;
-      switch (mime) {
-        case "video":
-          media = new Video();
-          ((Video) media).setRatio(ratio);
-          name = fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("video").path, false,
+      
+      if (mime.equals("video") && type.equals("video")) {
+        media = new Video();
+        ((Video) media).setRatio(ratio);
+        name = fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("video").path, false,
+          Map.of(
+            "process", "compress"
+          )
+        );
+      } else if(mime.equals("image") && type.equals("image")) {
+        media = new Image();
+        if(averageColor.length() > 6)
+          throw new HttpBadRequestException("color_bad_format");
+        ((Image) media).setColor(averageColor);
+        ((Image) media).setRatio(ratio);
+        ((Image) media).setThread(new Thread(ThreadType.MEDIA));
+        if (gallery) {
+          name = fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("gallery").path, false,
             Map.of(
-              "process", "compress"
+              "process", "compress",
+              "sizes", StorageConfig.MEDIAS_CONF.get("gallery").sizes
             )
           );
-          break;
-        case "image":
-          media = new Image();
-          if(averageColor.length() > 6)
-            throw new HttpBadRequestException("color_bad_format");
-          ((Image) media).setColor(averageColor);
-          ((Image) media).setRatio(ratio);
-          ((Image) media).setThread(new Thread(ThreadType.MEDIA));
-          if (gallery) {
-            name = fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("gallery").path, false,
-              Map.of(
-                "process", "compress",
-                "sizes", StorageConfig.MEDIAS_CONF.get("gallery").sizes
-              )
-            );
-          } else {
-            name = fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("post").path, false,
-              Map.of(
-                "process", "compress",
-                "sizes", StorageConfig.MEDIAS_CONF.get("post").sizes
-              )
-            );
-          }
-          break;
-        default:
-          if(file.getOriginalFilename().length() > 128)
-            throw new HttpBadRequestException("file_name_too_long");
-          
-          Document doc;
-          media = doc = new Document();
-          name = fileHandler.upload(
-            file,
-            StorageConfig.MEDIAS_CONF.get("document").path+"/"+RandomString.generate(30)+"/"+file.getOriginalFilename(),
-            true,
-            Collections.EMPTY_MAP
+        } else {
+          name = fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("post").path, false,
+            Map.of(
+              "process", "compress",
+              "sizes", StorageConfig.MEDIAS_CONF.get("post").sizes
+            )
           );
-          doc.setTitle(file.getOriginalFilename());
-          doc.setSizeBytes(file.getSize());
-          break;
+        }
+      } else {
+        if(file.getOriginalFilename().length() > 128)
+          throw new HttpBadRequestException("file_name_too_long");
+        
+        Document doc;
+        media = doc = new Document();
+        name = fileHandler.upload(
+          file,
+          StorageConfig.MEDIAS_CONF.get("document").path+"/"+RandomString.generate(30)+"/"+file.getOriginalFilename(),
+          true,
+          Collections.EMPTY_MAP
+        );
+        doc.setTitle(file.getOriginalFilename());
+        doc.setSizeBytes(file.getSize());
       }
 
       media.setName(name);
