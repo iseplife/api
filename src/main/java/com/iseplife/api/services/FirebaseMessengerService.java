@@ -114,8 +114,8 @@ public class FirebaseMessengerService {
     for(Entry<Language, List<String>> entry : tokens.entrySet()) {
       String body = translationService.getTranslation(notification.getType(), notification.getInformations(), entry.getKey());
       int max = entry.getValue().size();
-      for(int i = 0;i<max;i+=1000) {
-        List<String> list = entry.getValue().subList(i, Math.min(i+1000, max));
+      for(int i = 0;i<max;i+=500) {
+        List<String> list = entry.getValue().subList(i, Math.min(i+500, max));
         MulticastMessage message = MulticastMessage.builder().addAllTokens(list).setNotification(
             Notification.builder()
               .setBody(body)
