@@ -144,7 +144,7 @@ public class PostService {
     post.setCreationDate(new Date());
     post.setState(dto.isDraft() ? PostState.DRAFT : PostState.READY);
 
-    boolean customDate = post.getPublicationDate() != null && Math.abs(dto.getPublicationDate().getTime() - System.currentTimeMillis()) < 60 * 5 * 1000;
+    boolean customDate = post.getPublicationDate() != null && dto.getPublicationDate().getTime() - System.currentTimeMillis() > 60 * 5 * 1000;
     // If publication's date is missing or past, then set it at today to avoid any confusion
     post.setPublicationDate(customDate ?
       dto.getPublicationDate() :
