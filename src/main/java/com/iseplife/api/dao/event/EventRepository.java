@@ -46,7 +46,7 @@ public interface EventRepository extends CrudRepository<Event, Long> {
   
   @Query(
     "select e from Event e left join e.targets t " +
-      "where e.endsAt >= CURRENT_TIMESTAMP " +
+      "where e.endsAt >= CURRENT_TIMESTAMP and DATE_PART('day', AGE(CURRENT_TIMESTAMP, e.startsAt)) <= 2 " +
       "and ((?1 = true) or (" +
         "e.publishedAt < CURRENT_TIMESTAMP " +
         "and (e.targets is empty or t.id in ?2)" +
