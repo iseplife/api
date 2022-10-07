@@ -29,7 +29,7 @@ public interface EventRepository extends CrudRepository<Event, Long> {
       ")) " +
       "order by e.startsAt"
   )
-  List<EventPreviewProjection> findAllInMonth(Date date, Boolean admin, List<Long> feeds);
+  List<EventCalendarPreviewProjection> findAllInMonth(Date date, Boolean admin, List<Long> feeds);
 
   // Request unoptimised as we always check if each target if it's inside user's feeds list while
   @Query(

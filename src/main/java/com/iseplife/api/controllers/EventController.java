@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
+import com.iseplife.api.dao.event.EventCalendarPreviewProjection;
 import com.iseplife.api.dao.event.EventFactory;
 import com.iseplife.api.dao.event.EventPreviewProjection;
 import com.iseplife.api.dao.gallery.GalleryFactory;
@@ -62,7 +63,7 @@ public class EventController {
 
   @GetMapping("/m/{timestamp}")
   @RolesAllowed({Roles.STUDENT})
-  public List<EventPreviewProjection> getMonthEvents(@PathVariable Long timestamp, @AuthenticationPrincipal TokenPayload token) {
+  public List<EventCalendarPreviewProjection> getMonthEvents(@PathVariable Long timestamp, @AuthenticationPrincipal TokenPayload token) {
     return eventService.getMonthEvents(new Date(timestamp), token);
   }
 

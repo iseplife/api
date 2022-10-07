@@ -27,6 +27,7 @@ import com.iseplife.api.constants.EventType;
 import com.iseplife.api.constants.FeedType;
 import com.iseplife.api.constants.NotificationType;
 import com.iseplife.api.dao.event.EventTabPreviewProjection;
+import com.iseplife.api.dao.event.EventCalendarPreviewProjection;
 import com.iseplife.api.dao.event.EventPositionRepository;
 import com.iseplife.api.dao.event.EventPreviewProjection;
 import com.iseplife.api.dao.event.EventRepository;
@@ -180,7 +181,7 @@ public class EventService {
   }
 
 
-  public List<EventPreviewProjection> getMonthEvents(Date date, TokenPayload token) {
+  public List<EventCalendarPreviewProjection> getMonthEvents(Date date, TokenPayload token) {
     return eventRepository.findAllInMonth(date, token.getRoles().contains("ROLE_ADMIN"), token.getFeeds());
   }
 
