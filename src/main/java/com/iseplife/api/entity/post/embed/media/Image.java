@@ -4,6 +4,8 @@ import com.iseplife.api.constants.EmbedType;
 import com.iseplife.api.constants.MediaType;
 import com.iseplife.api.entity.Thread;
 import com.iseplife.api.entity.post.embed.Gallery;
+import com.iseplife.api.entity.post.embed.media.face.FaceMatch;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,6 +28,9 @@ public class Image extends Media {
 
   @OneToMany(mappedBy = "image", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<Matched> matched;
+  
+  @OneToMany(mappedBy = "image", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  private List<FaceMatch> faceMatchs;
 
   public String getEmbedType(){
     return EmbedType.IMAGE;

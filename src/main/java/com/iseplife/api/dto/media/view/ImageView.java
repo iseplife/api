@@ -1,5 +1,9 @@
 package com.iseplife.api.dto.media.view;
 
+import java.util.List;
+
+import com.iseplife.api.entity.post.embed.media.face.FaceMatch;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -9,4 +13,5 @@ public class ImageView extends MediaView {
   private Float ratio;
   private String color;
   private Long thread;
+  private List<FaceMatch> faces;
 }

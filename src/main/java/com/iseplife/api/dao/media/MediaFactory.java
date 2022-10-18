@@ -57,6 +57,7 @@ public class MediaFactory {
           ((ImageView) view).setThread(image.getThread().getId());
         ((ImageView) view).setColor(image.getColor());
         ((ImageView) view).setRatio(image.getRatio());
+        ((ImageView) view).setFaces(image.getFaceMatchs());
         break;
       default:
         throw new HttpBadRequestException("invalid_attachment");
