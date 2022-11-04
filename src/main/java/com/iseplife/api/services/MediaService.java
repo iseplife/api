@@ -55,10 +55,10 @@ import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import com.iseplife.api.services.fileHandler.FileHandler;
+import com.iseplife.api.utils.OpenGraphExtractor;
 import com.iseplife.api.utils.RandomString;
 import com.sigpwned.opengraph4j.model.OpenGraphImage;
 import com.sigpwned.opengraph4j.model.OpenGraphMetadata;
-import com.sigpwned.opengraph4j.util.OpenGraph;
 
 import lombok.RequiredArgsConstructor;
 
@@ -224,13 +224,12 @@ public class MediaService {
     fileHandler.delete(name);
     mediaRepository.delete(media);
   }
-
-
   public List<Matched> getImageTags(Long id) {
     Image image = getImage(id);
 
     return image.getMatched();
   }
+
 
   public Page<MatchedView> getPhotosTaggedByStudent(Long studentId, int page) {
     return matchedRepository.findAllByMatchId(studentId, PageRequest.of(page, PHOTOS_PER_PAGE)).map(m -> {
@@ -287,8 +286,8 @@ public class MediaService {
   
   public RichLink createRichLink(String link) throws IOException {
     System.out.println("Trying to get informations from "+link);
-    org.jsoup.nodes.Document document = Jsoup.connect(link).timeout(5000).maxBodySize(1_000_000).get();
-    Optional<OpenGraphMetadata> og = OpenGraph.extract(document);
+    org.jsoup.nodes.Document document = Jsoup.connect(link).userAgent("facebookexternalhit/1.1").timeout(5000).maxBodySize(2_000_000).get();
+    Optional<OpenGraphMetadata> og = new OpenGraphExtractor().extract(document);
     if(og.isPresent()) {
       OpenGraphMetadata data = og.get();
       
@@ -326,7 +325,8 @@ public class MediaService {
       }
       System.out.println("OG retrieved for "+link);
       return richLinkRepository.save(richLink);
-    }
+    }else
+      System.out.println("No OG in "+link);
     return null;
   }
   
