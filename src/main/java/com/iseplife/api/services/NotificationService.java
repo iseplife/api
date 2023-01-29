@@ -43,7 +43,7 @@ public class NotificationService {
   }
   public void delayNotification(NotificationBuilder builder, boolean extensive, Subscribable subable, DelayedNotificationCheck check, StudentValidationCallback studentValidator) {
     Timer timer = new Timer();
-    //We wait 10s so that we don't send a notification for an aborted event.
+    //We wait 1m so that we don't send a notification for an aborted event.
     timer.schedule(new TimerTask() {
 
       @Override
@@ -76,7 +76,7 @@ public class NotificationService {
           webPushService.sendNotificationToAll(subs.stream().map(sub -> sub.getListener()).collect(Collectors.toList()), notif);
         }
       }
-    }, 1000 * 10);
+    }, 1000 * 60);
   }
   
   public void sendTempNotification(Notification notif, Iterable<Student> subs) {
