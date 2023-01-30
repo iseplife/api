@@ -10,8 +10,8 @@ spring:
       ddl-auto: update
   servlet:
     multipart:
-      max-file-size: 2000MB
-      max-request-size: 2000MB
+      max-file-size: 7000MB
+      max-request-size: 7000MB
 server:
   port: 8080
 
@@ -26,10 +26,10 @@ logging:
 media_limit:
   club:
     amount: ${CLUB_MEDIA_MAX_SIZE:2000}
-    max_size: ${CLUB_MEDIA_LIMIT:800000000} # 800MB
+    max_size: ${CLUB_MEDIA_LIMIT:8000000000} # 8000MB
   user:
     amount: ${USER_MEDIA_LIMIT:15}
-    max_size:  ${USER_MEDIA_MAX_SIZE:100000000} # 100Mb
+    max_size:  ${USER_MEDIA_MAX_SIZE:3000000000} # 3000Mb
 
 storage:
   name:       ${STORAGE_NAME:aws}
