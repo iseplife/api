@@ -5,5 +5,6 @@ public enum NotificationType {
   NEW_GROUP_POST,
   NEW_EVENT_POST,
   NEW_CLUB_POST,
-  NEW_STUDENT_POST;
+  NEW_STUDENT_POST,
+  DISCOVER_NEURCHI;
 }

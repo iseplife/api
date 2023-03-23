@@ -3,5 +3,6 @@
   "NEW_CLUB_POST": "{{author_name}} published a new post.",
   "NEW_GROUP_POST": "{{author_name}} published a new post in the group {{group_name}}.",
   "NEW_EVENT_POST": "{{author_name}} published a new post in the event {{event_name}}.",
-  "NEW_EVENT": "{{club}} created the event {{title}}."
+  "NEW_EVENT": "{{club}} created the event {{title}}.",
+  "DISCOVER_NEURCHI": "The neurchi is now on IsepLife. Post your best memes!"
 }
