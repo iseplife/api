@@ -4,9 +4,10 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import lombok.Getter;
@@ -23,9 +24,9 @@ public class IORSession {
   
   private Date start, end;
   
-  @OneToOne(optional = true)
+  @OneToOne(optional = true, fetch = FetchType.LAZY)
   private IORSession parentSession;
 
-  @ManyToMany()
+  @OneToMany(mappedBy="session", fetch = FetchType.LAZY)
   private List<IORQuestion> questions;
 }
