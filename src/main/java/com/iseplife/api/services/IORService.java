@@ -6,11 +6,12 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.iseplife.api.dao.isepdor.IORSessionProjection;
+import com.iseplife.api.dao.isepdor.IORVotedSessionProjection;
 import com.iseplife.api.dao.isepdor.IORSessionRepository;
 import com.iseplife.api.dao.isepdor.IORVoteRepository;
 import com.iseplife.api.dao.isepdor.IORQuestionProjection;
 import com.iseplife.api.dao.isepdor.IORQuestionRepository;
+import com.iseplife.api.dao.isepdor.IORSessionProjection;
 import com.iseplife.api.entity.isepdor.IORQuestion;
 import com.iseplife.api.entity.isepdor.IORSession;
 import com.iseplife.api.entity.isepdor.IORVote;
@@ -31,11 +32,11 @@ public class IORService {
   private final EventService eventService;
   private final StudentService studentService;
   
-  public IORSessionProjection getCurrentSessionWithVotes() {
+  public IORVotedSessionProjection getCurrentSessionWithVotes() {
     return sessionRepository.findOngoingSessionWithVotes(SecurityService.getLoggedId());
   }
   
-  public IORSession getCurrentSession() {
+  public IORSessionProjection getCurrentSession() {
     return sessionRepository.findOngoingSession();
   }
   
@@ -50,7 +51,7 @@ public class IORService {
     
     IORSession session = optSession.get();
     
-    if(session.getStart().after(new Date()) || session.getEnd().before(new Date()))
+    if(session.getStart().after(new Date()) || session.getEnding().before(new Date()))
       throw new HttpForbiddenException("Session not available");
     
     return session;
@@ -64,14 +65,14 @@ public class IORService {
     IORQuestionProjection question = optQuestion.get();
     IORSession session = question.getQuestion().getSession();
     
-    if(session.getStart().after(new Date()) || session.getEnd().before(new Date()))
+    if(session.getStart().after(new Date()) || session.getEnding().before(new Date()))
       throw new HttpForbiddenException("Session not available");
     
     return question;
   }
 
-  public void updateVote(IORVote vote, Long voted) {
-    vote.setVote(getVoted(vote.getQuestion(), voted));
+  public void updateVote(IORQuestion question, Long voted) {
+    voteRepository.updateVote(studentService.getStudent(SecurityService.getLoggedId()), question, getVoted(question, voted));
   }
   
   public void createVote(IORQuestion question, Long voted) {

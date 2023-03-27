@@ -8,10 +8,12 @@ import org.springframework.stereotype.Component;
 import com.iseplife.api.dao.club.ClubFactory;
 import com.iseplife.api.dao.event.EventFactory;
 import com.iseplife.api.dao.student.StudentFactory;
-import com.iseplife.api.dto.isepdor.view.IORVoteView;
+import com.iseplife.api.dto.isepdor.view.IORQuestionView;
+import com.iseplife.api.dto.isepdor.view.IORSessionView;
+import com.iseplife.api.dto.isepdor.view.IORVotedQuestionView;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
-import com.iseplife.api.entity.isepdor.IORVote;
+import com.iseplife.api.entity.isepdor.IORQuestion;
 import com.iseplife.api.entity.subscription.Subscribable;
 import com.iseplife.api.entity.user.Student;
 
@@ -28,15 +30,15 @@ public class IORFactory {
   
   @PostConstruct()
   public void init() {
-    mapper.typeMap(IORVote.class, IORVoteView.class)
+    mapper.typeMap(IORQuestionProjection.class, IORVotedQuestionView.class)
       .addMappings(mapper -> {
         mapper
           .using(ctx -> factorEntity((Subscribable) ctx.getSource()))
-          .map(IORVote::getVote, IORVoteView::setVote);
+          .map(IORQuestionProjection::getVote, IORVotedQuestionView::setVote);
       });
   }
   
-  private Object factorEntity(Subscribable entity) {
+  public Object factorEntity(Subscribable entity) {
     if(entity instanceof Student)
       return studentFactory.toPreview((Student)entity);
     if(entity instanceof Event)
@@ -47,8 +49,16 @@ public class IORFactory {
     return null;
   }
 
-  public IORVoteView toView(IORVote vote) {
-    return mapper.map(vote, IORVoteView.class);
+  public IORVotedQuestionView toView(IORQuestionProjection vote) {
+    return mapper.map(vote, IORVotedQuestionView.class);
+  }
+
+  public IORSessionView toView(IORSessionProjection session) {
+    return mapper.map(session, IORSessionView.class);
+  }
+
+  public IORQuestionView toView(IORQuestion question) {
+    return mapper.map(question, IORQuestionView.class);
   }
 
 }

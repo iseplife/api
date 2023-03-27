@@ -1,5 +1,7 @@
 package com.iseplife.api.dto.view;
 
+import java.util.Date;
+
 import com.iseplife.api.constants.SearchItem;
 import lombok.Data;
 
@@ -11,4 +13,5 @@ public class SearchItemView {
   private String thumbURL;
   private String description;
   private Boolean status; // Event passed, club archived, student archived
+  private Date startsAt;
 }

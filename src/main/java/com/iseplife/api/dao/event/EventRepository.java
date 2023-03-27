@@ -75,6 +75,17 @@ public interface EventRepository extends CrudRepository<Event, Long> {
   )
   Page<Event> searchEvent(String name, Boolean admin, List<Long> feed, Pageable pageable);
   
+  @Query(
+    "select e from Event e left join e.targets t " +
+      "where unaccent(lower(e.title)) like '%' || unaccent(?1) || '%' " +
+      "and ((?2 = true) or (" +
+        "e.publishedAt < CURRENT_TIMESTAMP " +
+        "and (e.targets is empty or t.id in ?3)" +
+        "and EXTRACT('Year' FROM e.startsAt) >= ?4" +
+      ")) "
+  )
+  Page<Event> searchEventAfterYear(String name, Boolean admin, List<Long> feed, int year, Pageable pageable);
+  
   @Query("select e from Event e left join fetch e.position where e.id = :id")
   Optional<Event> findByIdWithPosition(Long id);
 }
