@@ -156,14 +156,13 @@ public class PostService {
     if (!dto.isDraft())
       postsService.broadcastPost(postToReturn);
 
-    if (!dto.isDraft() && !customDate) {
-      notifyNewPost(postToReturn);
-    }
+    if (!dto.isDraft() && !customDate) 
+        notifyNewPost(postToReturn, postRepository.countPostsPostedOneDayBefore(post.getFeed().getId(), PostState.READY, new Date(post.getPublicationDate().getTime() - 1000 * 60 * 60 * 24)) < 2);
 
     return postRepository.getById(post.getId(), SecurityService.getLoggedId());
   }
   
-  private void notifyNewPost(Post post) {
+  private void notifyNewPost(Post post, boolean pushNotification) {
     Feed feed = post.getFeed();
     Map<String, Object> notifInformations = new HashMap<>(Map.of(
       "post_id", post.getId(),
@@ -207,7 +206,8 @@ public class PostService {
       builder,
       true,
       subscribable,
-      () -> postRepository.existsById(post.getId())
+      () -> postRepository.existsById(post.getId()),
+      pushNotification
     );
   }
 
@@ -227,7 +227,7 @@ public class PostService {
 
     post = postRepository.save(post);
     
-    notifyNewPost(post);
+    notifyNewPost(post, true);
   }
 
   public Post updatePost(Long postID, PostUpdateDTO dto) {

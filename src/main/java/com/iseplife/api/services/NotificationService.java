@@ -39,9 +39,15 @@ public class NotificationService {
   private final static int NOTIFICATIONS_PER_PAGE = 15;
 
   public void delayNotification(NotificationBuilder builder, boolean extensive, Subscribable subable, DelayedNotificationCheck check) {
-    delayNotification(builder, extensive, subable, check, null);
+    delayNotification(builder, extensive, subable, check, null, true);
+  }
+  public void delayNotification(NotificationBuilder builder, boolean extensive, Subscribable subable, DelayedNotificationCheck check, boolean pushNotification) {
+    delayNotification(builder, extensive, subable, check, null, pushNotification);
   }
   public void delayNotification(NotificationBuilder builder, boolean extensive, Subscribable subable, DelayedNotificationCheck check, StudentValidationCallback studentValidator) {
+    delayNotification(builder, extensive, subable, check, studentValidator, true);
+  }
+  public void delayNotification(NotificationBuilder builder, boolean extensive, Subscribable subable, DelayedNotificationCheck check, StudentValidationCallback studentValidator, boolean pushNotification) {
     Timer timer = new Timer();
     //We wait 1m so that we don't send a notification for an aborted event.
     timer.schedule(new TimerTask() {
@@ -73,7 +79,8 @@ public class NotificationService {
           notif = notificationRepository.save(notif);
 
           wsNotifService.broadcastNotification(getUnwatchedNotificationProjection(notif.getId()), notified);
-          webPushService.sendNotificationToAll(subs.stream().map(sub -> sub.getListener()).collect(Collectors.toList()), notif);
+          if(pushNotification)
+            webPushService.sendNotificationToAll(subs.stream().map(sub -> sub.getListener()).collect(Collectors.toList()), notif);
         }
       }
     }, 1000 * 60);

@@ -266,4 +266,13 @@ public interface PostRepository extends CrudRepository<Post, Long> {
        "where p.embed = :embed"
   )
   boolean existsByEmbed(Embedable embed);
+
+  @Query(
+    "select " +
+      "count(p) " +
+    "from Post p " +
+    "where p.feed.id = :feed and p.state = :state and p.pinned = false " +
+      "and p.publicationDate <= now() and p.publicationDate >= :startDate"
+  )
+  int countPostsPostedOneDayBefore(Long feed, PostState state, Date startDate);
 }
