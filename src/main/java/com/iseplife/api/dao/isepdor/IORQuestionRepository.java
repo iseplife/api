@@ -1,69 +1,48 @@
 package com.iseplife.api.dao.isepdor;
 
 import java.util.List;
+import java.util.Optional;
 
-import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.iseplife.api.dao.subscription.projection.SubscriptionProjection;
 import com.iseplife.api.entity.isepdor.IORQuestion;
+import com.iseplife.api.entity.isepdor.IORSession;
 import com.iseplife.api.entity.subscription.Subscribable;
-import com.iseplife.api.entity.subscription.Subscription;
 
 @Repository
 public interface IORQuestionRepository extends CrudRepository<IORQuestion, Long> {
-
-  @Query("select case when (count(s) > 0) then true else false end "
-      + "from Subscription s where s.listener.id = ?2 and s.subscribed.id = ?1")
-  Boolean existsSubscriptionBySubscribedIdAndListenerId(Long id, Long listenerID);
-
-  @Query("select s from Subscription s where " +
-    "s.listener.id = ?2 and s.subscribed.id = ?1")
-  Subscription findBySubscribedIdAndListenerId(Long id, Long listenerID);
-
-  @Query("select s.subscribedFeed.id from Subscription s where " +
-    "s.listener.id = ?1")
-  List<Long> findFeedsByListenerId(Long listenerID);
-
-  @Query("select s.subscribedFeed.id from Subscription s where " +
-    "s.listener.id = ?2 and s.subscribed.id = ?1")
-  Long findFeedBySubscribedIdAndListenerId(Long id, Long listenerID);
-
-  @Query(
-    "select " +
-      "case when count(sub)> 0 then true else false end " +
-    "from Subscription sub where " +
-      "sub.listener.id = :listener and " +
-      "sub.subscribed = :sub"
+  @Query("select distinct " +
+      "q as question, " +
+      "v as vote " +
+    "from IORQuestion q " +
+      "left join q.votes v on v.voter.id = :loggedId " +
+    "where " +
+      "q.session = :session"
   )
-  boolean existsBySubscribedAndListener_Id(Subscribable sub, Long listener);
+  List<IORQuestionProjection> findQuestions(Long loggedId, IORSession session);
 
-  @Query("select s from Subscription s where " +
-      "s.listener.id = ?2 and s.subscribed.id = ?1")
-  SubscriptionProjection findProjectionBySubscribedIdAndListenerId(Long id, Long listenerID);
-
-  @Query("select s from Subscription s where " +
-      "s.listener.id = ?2 and s.subscribed = ?1")
-  SubscriptionProjection findProjectionBySubscribedAndListenerId(Subscribable subable, Long listenerID);
-
-  @Query("select s from Subscription s where " +
-      "s.subscribed.id = ?1")
-  List<Subscription> findBySubscribedId(Long id);
-
-  @Query("select distinct s from Subscription s " +
-      "join fetch s.listener listener " +
-      "left join fetch listener.firebaseSubscriptions " +
-      "where s.subscribed = ?1")
-  List<Subscription> findBySubscribed(Subscribable subable);
-
-  @Transactional
-  @Modifying
-  @Query("delete from Subscription s where " +
-    "s.listener.id = ?2 and s.subscribed.id = ?1")
-  void deleteBySubscribedIdAndListenerId(Long id, Long listenerID);
-
+  @Query("select distinct " +
+      "q as question, " +
+      "v as vote " +
+    "from IORQuestion q " +
+      "left join q.votes v on v.voter.id = :loggedId " +
+    "where " +
+      "q.id = :questionId"
+  )
+  Optional<IORQuestionProjection> findQuestion(Long loggedId, Long questionId);
+  
+  @Query("select " +
+      "v.vote as vote," +
+      "count(v.id) as votes " +
+    "from IORVote v " +
+    "where " +
+      "v.question = :question " +
+    "group by v.vote, v.id"
+  )
+  Page<IOROptionProjection> findOptions(IORQuestion question, Pageable pageable);
 }
 

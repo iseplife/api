@@ -44,7 +44,7 @@ public class SearchService {
       );
 
       CompletableFuture<List<SearchItemView>> eventAsync = CompletableFuture.supplyAsync(() ->
-        searchEvent(filter, page, returnAll, token).getContent()
+        searchEvent(filter, page, returnAll, token, 0).getContent()
       );
 
       CompletableFuture<List<SearchItemView>> clubAsync = CompletableFuture.supplyAsync(() ->
@@ -97,11 +97,12 @@ public class SearchService {
     return students.map(SearchFactory::toSearchItemView);
   }
 
-  public Page<SearchItemView> searchEvent(String filter, int page, Boolean returnAll, TokenPayload token) {
-    Page<Event> events = eventRepository.searchEvent(
+  public Page<SearchItemView> searchEvent(String filter, int page, Boolean returnAll, TokenPayload token, int minYear) {
+    Page<Event> events = eventRepository.searchEventAfterYear(
       filter.toLowerCase(),
       token.getRoles().contains("ROLE_ADMIN"),
       token.getFeeds(),
+      minYear,
       PageRequest.of(page, RESULTS_PER_PAGE)
     );
 

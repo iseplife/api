@@ -21,6 +21,7 @@ public class SearchFactory {
     searchItem.setThumbURL(event.getCover());
     searchItem.setDescription(event.getDescription());
     searchItem.setType(SearchItem.EVENT);
+    searchItem.setStartsAt(event.getStartsAt());
 
     // Status is false when event is passed
     searchItem.setStatus(!event.getEndsAt().before(new Date()));

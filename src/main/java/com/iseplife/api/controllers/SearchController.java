@@ -65,9 +65,10 @@ public class SearchController {
     @AuthenticationPrincipal TokenPayload token,
     @RequestParam String name,
     @RequestParam(required = false, defaultValue = "0") Integer page,
-    @RequestParam(required = false, defaultValue = "0") Boolean allAnswer
+    @RequestParam(required = false, defaultValue = "0") Boolean allAnswer,
+    @RequestParam(required = false, defaultValue = "0") int minYear
   ) {
-    return searchService.searchEvent(name, page, allAnswer, token);
+    return searchService.searchEvent(name, page, allAnswer, token, minYear);
   }
 
 }

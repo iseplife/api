@@ -43,27 +43,27 @@ public interface StudentRepository extends CrudRepository<Student, Long> {
 
   @Query(
     "select s from Student s " +
-      "where lower(concat(s.firstName, ' ', s.lastName)) like %?1%"
+      "where unaccent(lower(concat(s.firstName, ' ', s.lastName))) like '%' || unaccent(?1) || '%'"
   )
   Page<Student> searchStudent(String name, Pageable pageable);
 
   @Query(
     "select s from Student s " +
-      "where lower(concat(s.firstName, ' ', s.lastName)) like %?1% " +
+      "where unaccent(lower(concat(s.firstName, ' ', s.lastName))) like '%' || unaccent(?1) || '%' " +
       "and (?2 = true or s.archivedAt is null)"
   )
   List<Student> searchStudent(String name, Boolean active);
 
   @Query(
     "select s from Student s " +
-      "where lower(concat(s.firstName, ' ', s.lastName)) like %?1% " +
+      "where unaccent(lower(concat(s.firstName, ' ', s.lastName))) like '%' || unaccent(?1) || '%' " +
       "and s.promo in ?2 "
   )
   List<Student> searchStudent(String name, List<String> promo);
 
   @Query(
     "select s from Student s " +
-      "where lower(concat(s.firstName, ' ', s.lastName)) like %?1% " +
+      "where unaccent(lower(concat(s.firstName, ' ', s.lastName))) like '%' || unaccent(?1) || '%' " +
       "and s.promo in ?2 "
   )
   Page<Student> searchStudent(String name, List<Integer> promo, Pageable pageable);
