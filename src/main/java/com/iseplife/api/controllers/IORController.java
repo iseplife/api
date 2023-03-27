@@ -105,8 +105,7 @@ public class IORController {
     return service.getQuestions(session).stream().map(question -> {
       IORVotedQuestionView view = factory.toView(question);
       view.setChoices(
-          questionRepository.findOptions(question.getQuestion(), PageRequest.of(0, 3, Sort.by(Direction.DESC, "votes")))
-            .toList().stream().map(opt -> factory.factorEntity(opt.getVote())).toList()
+          questionRepository.findOptions(question.getQuestion(), PageRequest.of(0, 3, Sort.by(Direction.DESC, "votes"))).stream().map(opt -> factory.factorEntity(opt.getVote())).collect(Collectors.toList())
       );
       return view;
     }).collect(Collectors.toList());
@@ -125,8 +124,7 @@ public class IORController {
 
     IORVotedQuestionView view = factory.toView(service.getQuestion(questionId));
     view.setChoices(
-        questionRepository.findOptions(question.getQuestion(), PageRequest.of(0, 3, Sort.by(Direction.DESC, "votes")))
-          .toList().stream().map(opt -> factory.factorEntity(opt.getVote())).toList()
+        questionRepository.findOptions(question.getQuestion(), PageRequest.of(0, 3, Sort.by(Direction.DESC, "votes"))).stream().map(opt -> factory.factorEntity(opt.getVote())).collect(Collectors.toList())
     );
     return view;
   }
