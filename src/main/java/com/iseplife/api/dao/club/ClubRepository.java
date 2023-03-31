@@ -21,12 +21,16 @@ import java.util.Set;
 public interface ClubRepository extends CrudRepository<Club, Long> {
 
 
+  @Query(
+    "select c from Club c " +
+      "where c.viewable = true"
+  )
   List<Club> findAllByOrderByName();
 
   @Query(
     "select c from Club c " +
       "join c.members m " +
-      "where m.student = :student "
+      "where m.student = :student and c.viewable = true"
   )
   List<Club> findAllStudentClub(Student student);
 
@@ -34,7 +38,7 @@ public interface ClubRepository extends CrudRepository<Club, Long> {
     "select c from Club c " +
       "join c.members m " +
       "where m.student = :student " +
-      "and m.role in :role"
+      "and m.role in :role and c.viewable = true"
   )
   List<Club> findByMemberRole(@Param("student") Student student, @Param("role") Set<ClubRole> roles);
 
@@ -56,6 +60,10 @@ public interface ClubRepository extends CrudRepository<Club, Long> {
   List<Club> findCurrentByRoleWithInheritance(@Param("student") Student student, @Param("role") ClubRole role, @Param("year") Integer year);
 
 
+  @Query(
+    "select c from Club c " +
+        "where unaccent(lower(c.name)) like '%' || unaccent(lower(:name)) || '%' and c.viewable = true"
+  )
   Page<Club> findAllByNameContainingIgnoringCase(String name, Pageable pageable);
 
 }

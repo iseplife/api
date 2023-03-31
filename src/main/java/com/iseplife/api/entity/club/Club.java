@@ -32,6 +32,7 @@ import lombok.Setter;
 @Entity
 @Getter @Setter @NoArgsConstructor
 public class Club implements Feedable, Author, Subscribable {
+  
   @Id
   @GeneratedValue
   private Long id;
@@ -57,6 +58,9 @@ public class Club implements Feedable, Author, Subscribable {
 
   private Integer mediaCounter;
   private Date mediaCooldown;
+
+  @Column(columnDefinition = "boolean default true")
+  private Boolean viewable = true;
 
   @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
   private Feed feed;
