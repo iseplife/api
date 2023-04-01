@@ -3,8 +3,9 @@ package com.iseplife.api.services;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -15,9 +16,12 @@ import com.iseplife.api.constants.ThreadType;
 import com.iseplife.api.dao.feed.FeedRepository;
 import com.iseplife.api.dao.post.CommentRepository;
 import com.iseplife.api.dao.post.LikeRepository;
+import com.iseplife.api.dao.post.PostRepository;
 import com.iseplife.api.dao.post.ReportRepository;
 import com.iseplife.api.dao.post.projection.CommentProjection;
 import com.iseplife.api.dao.post.projection.ReportProjection;
+import com.iseplife.api.dao.subscription.NotificationRepository;
+import com.iseplife.api.dao.subscription.SubscriptionRepository;
 import com.iseplife.api.dao.thread.ThreadRepository;
 import com.iseplife.api.dto.thread.CommentDTO;
 import com.iseplife.api.dto.thread.CommentEditDTO;
@@ -28,9 +32,14 @@ import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.post.Comment;
 import com.iseplife.api.entity.post.Like;
+import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.post.Report;
+import com.iseplife.api.entity.subscription.Notification;
+import com.iseplife.api.entity.subscription.Subscribable;
+import com.iseplife.api.entity.subscription.Subscription;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.exceptions.CommentMaxDepthException;
+import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import com.iseplife.api.websocket.services.WSPostService;
@@ -43,11 +52,15 @@ public class ThreadService {
   @Lazy final private StudentService studentService;
   @Lazy final private ClubService clubService;
   final private ThreadRepository threadRepository;
+  final private PostRepository postRepository;
   final private CommentRepository commentRepository;
   final private LikeRepository likeRepository;
   final private FeedRepository feedRepository;
   final private WSPostService postService;
   final private ReportRepository reportRepository;
+  final private NotificationRepository notificationRepository;
+  private final FirebaseMessengerService webPushService;
+  final private SubscriptionRepository subscriptionRepository;
 
   public final static int MAX_COMMENT_LENGTH = 2000;
 
@@ -99,6 +112,8 @@ public class ThreadService {
   public Boolean isLiked(Object entity) {
     return isLiked(getThread(entity));
   }
+  
+  Long lastLikeNotif = 0L;
 
   public Boolean toggleLike(Long threadID, Long studentID) {
     Like like = likeRepository.findOneByThreadIdAndStudentId(threadID, studentID);
@@ -116,6 +131,11 @@ public class ThreadService {
         like.setStudent(studentService.getStudent(studentID));
         like.setThread(getThread(threadID));
         likeRepository.save(like);
+        
+        if(System.currentTimeMillis() - lastLikeNotif > 1500) {
+          lastLikeNotif = System.currentTimeMillis();
+          checkPostNotif(like.getThread(), studentID);
+        }
 
         return true;
       }
@@ -125,6 +145,51 @@ public class ThreadService {
     }
   }
 
+  private void checkPostNotif(Thread thread, Long student) {
+    Post post = postRepository.findPostByThread(thread);
+    if(post != null && !post.getNotified() &&
+        thread.getLikes().size() > 10 &&
+        (post.getFeed().getLastNotification() == null || System.currentTimeMillis() - post.getFeed().getLastNotification().getTime() > 1000 * 60 * 60) && // 1 par heure
+        System.currentTimeMillis() - post.getPublicationDate().getTime() < 1000 * 60 * 60 * 2
+      ) {
+      Optional<Notification> optNotif = notificationRepository.findByIdInLink(post.getId());
+      
+      if(optNotif.isEmpty())
+        return;
+      
+      feedRepository.updateLastNotification(post.getFeed().getId());
+      postRepository.setNotified(post.getId());
+
+      Notification notif = optNotif.get();
+      
+      Subscribable subscribable = null;
+      Feed feed = post.getFeed();
+      if (feed.getGroup() != null)
+        subscribable = feed.getGroup();
+      else if (feed.getEvent() != null)
+        subscribable = feed.getEvent();
+      else if (feed.getClub() != null)
+        subscribable = feed.getClub();
+      else if (feed.getStudent() != null)
+        subscribable = feed.getStudent();
+      
+      List<Subscription> subs = subscriptionRepository.findBySubscribed(subscribable);
+
+      subs = 
+        subs.stream()
+          .filter(Subscription::isExtensive)
+          .collect(Collectors.toList());
+      Stream<Like> likes = thread.getLikes().stream();
+      subs = 
+          subs.stream()
+            .filter(sub -> (sub.getListener().getLastConnection() == null || System.currentTimeMillis() - sub.getListener().getLastConnection().getTime() > 1000 * 60 * 15) && sub.getListener().getId() != student)
+            .filter(sub -> !likes.anyMatch(like -> like.getStudent().getId() == sub.getId()))
+            .collect(Collectors.toList());
+
+      System.out.println("Sending notification based on like for "+post.getId()+" in a "+subscribable);
+      webPushService.sendNotificationToAll(subs.stream().map(sub -> sub.getListener()).collect(Collectors.toList()), notif);
+    }
+  }
   public List<CommentProjection> getComments(Long threadID) {
     return commentRepository.findThreadComments(threadID, SecurityService.getLoggedId());
   }

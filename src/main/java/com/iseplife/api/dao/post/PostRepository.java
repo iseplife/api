@@ -4,11 +4,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.iseplife.api.constants.PostState;
 import com.iseplife.api.dao.post.projection.PostProjection;
@@ -258,6 +260,11 @@ public interface PostRepository extends CrudRepository<Post, Long> {
        "where p.embed = :embed"
   )
   Long findPostIdByEmbed(Embedable embed);
+  
+  @Query(
+    "select p from Post p where p.thread = :thread"
+  )
+  Post findPostByThread(com.iseplife.api.entity.Thread thread);
 
   @Query(
       "select " +
@@ -275,4 +282,10 @@ public interface PostRepository extends CrudRepository<Post, Long> {
       "and p.publicationDate <= now() and p.publicationDate >= :startDate"
   )
   int countPostsPostedOneDayBefore(Long feed, PostState state, Date startDate);
+
+
+  @Transactional
+  @Modifying
+  @Query("update Post p set p.notified = true where p.id = :postId")
+  void setNotified(Long postId);
 }

@@ -1,5 +1,6 @@
 package com.iseplife.api.entity.feed;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.*;
@@ -36,6 +37,8 @@ public class Feed {
   @Enumerated(EnumType.STRING)
   @Column(updatable = false)
   private FeedType type;
+  
+  private Date lastNotification;
 
   @Where(clause = "pseudo = false")
   @OneToMany(mappedBy = "feed", orphanRemoval = true, fetch = FetchType.LAZY)

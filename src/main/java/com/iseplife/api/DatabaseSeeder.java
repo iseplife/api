@@ -9,6 +9,7 @@ import com.iseplife.api.dao.group.GroupRepository;
 import com.iseplife.api.dao.post.PostRepository;
 import com.iseplife.api.dao.student.RoleRepository;
 import com.iseplife.api.dao.student.StudentRepository;
+import com.iseplife.api.dao.subscription.NotificationRepository;
 import com.iseplife.api.dao.subscription.SubscriptionRepository;
 import com.iseplife.api.dao.wei.room.WeiRoomRepository;
 import com.iseplife.api.dto.group.GroupMemberDTO;
@@ -46,6 +47,7 @@ class DatabaseSeeder {
   final private SubscriptionService subscriptionService;
   final private WeiRoomRepository roomRepository;
   final private NotificationService notificationService;
+  final private NotificationRepository notificationRepository;
   final private GroupService groupService;
   final private ClubRepository clubRepository;
   final private GroupMemberRepository groupMemberRepository;
@@ -54,12 +56,12 @@ class DatabaseSeeder {
   final private Logger LOG = LoggerFactory.getLogger(DatabaseSeeder.class);
 
   void seedDatabase() {
-
-   /* Club c = clubRepository.findById(126259L).get();
-    Club c2 = clubRepository.findById(126264L).get();
+    
+    /*Club c = clubRepository.findById(136037L).get();
+    Club c2 = clubRepository.findById(135989L).get();
     System.out.println("start");
     studentRepository.findAll().forEach(student -> {
-      if(student.getPromo() != 2027)
+      if(student.getPromo() <= 2022)
         return;
 
       try {

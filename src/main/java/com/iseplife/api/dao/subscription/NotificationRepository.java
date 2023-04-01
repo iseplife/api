@@ -1,5 +1,7 @@
 package com.iseplife.api.dao.subscription;
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
@@ -79,4 +81,9 @@ public interface NotificationRepository extends CrudRepository<Notification, Lon
     "left join notif.watched w on w.id = :student"
   )
   NotificationCountProjection countUnwatchedAndAllByStudents(Long student);
+
+  @Query(
+    "select n from Notification n where n.link like '%' || :id || '%'"
+  )
+  Optional<Notification> findByIdInLink(Long id);
 }

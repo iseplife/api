@@ -18,10 +18,12 @@ import org.springframework.stereotype.Service;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.EmbedType;
+import com.iseplife.api.constants.FeedType;
 import com.iseplife.api.constants.NotificationType;
 import com.iseplife.api.constants.PostState;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.constants.ThreadType;
+import com.iseplife.api.dao.feed.FeedRepository;
 import com.iseplife.api.dao.post.AuthorFactory;
 import com.iseplife.api.dao.post.PostRepository;
 import com.iseplife.api.dao.post.ReportRepository;
@@ -75,6 +77,7 @@ public class PostService {
   final private ModelMapper mapper;
   final private PostRepository postRepository;
   final private ReportRepository reportRepository;
+  final private FeedRepository feedRepository;
 
   final private static int POSTS_PER_PAGE = 16;
   final static int MAX_DESCRIPTION_LENGTH = 3000;
@@ -156,9 +159,10 @@ public class PostService {
     if (!dto.isDraft())
       postsService.broadcastPost(postToReturn);
 
-    if (!dto.isDraft() && !customDate) 
-        notifyNewPost(postToReturn, postRepository.countPostsPostedOneDayBefore(post.getFeed().getId(), PostState.READY, new Date(post.getPublicationDate().getTime() - 1000 * 60 * 60 * 24)) < 2);
-
+    if (!dto.isDraft() && !customDate) {
+        notifyNewPost(postToReturn, postRepository.countPostsPostedOneDayBefore(post.getFeed().getId(), PostState.READY, new Date(post.getPublicationDate().getTime() - 1000 * 60 * 60 * 24)) <= (feed.getType() == FeedType.GROUP ? 2 : 3));
+    }
+    
     return postRepository.getById(post.getId(), SecurityService.getLoggedId());
   }
   
@@ -201,7 +205,12 @@ public class PostService {
         .link("student/" + feed.getStudent().getId() + "/post/" + post.getId());
       subscribable = feed.getStudent();
     }
-
+    
+    if(pushNotification) {
+      feedRepository.updateLastNotification(post.getFeed().getId());
+      postRepository.setNotified(post.getId());
+    }
+    
     notificationService.delayNotification(
       builder,
       true,

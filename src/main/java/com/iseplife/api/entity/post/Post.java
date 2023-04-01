@@ -76,4 +76,7 @@ public class Post implements ThreadInterface {
 
   @ManyToOne
   private Feed feed;
+
+  @Column(columnDefinition = "boolean default false")
+  private Boolean notified = false;
 }
