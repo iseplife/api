@@ -147,13 +147,18 @@ public class ThreadService {
 
   private void checkPostNotif(Thread thread, Long student) {
     Post post = postRepository.findPostByThread(thread);
+    if(post == null) {
+      System.out.println("liked not post");
+    }
+    if(post != null)
+      System.out.println("Post "+post.getId()+" liked with "+thread.getLikes().size()+" "+post.getNotified()+" "+(post.getFeed().getLastNotification() == null || System.currentTimeMillis() - post.getFeed().getLastNotification().getTime() > 1000 * 60 * 60)+" "+(System.currentTimeMillis()-post.getFeed().getLastNotification().getTime())+" "+(System.currentTimeMillis() - post.getPublicationDate().getTime()));
     if(post != null && !post.getNotified() &&
         thread.getLikes().size() > 10 &&
         (post.getFeed().getLastNotification() == null || System.currentTimeMillis() - post.getFeed().getLastNotification().getTime() > 1000 * 60 * 60) && // 1 par heure
-        System.currentTimeMillis() - post.getPublicationDate().getTime() < 1000 * 60 * 60 * 2
+        System.currentTimeMillis() - post.getPublicationDate().getTime() < 1000 * 60 * 60 * 3 / 2
       ) {
       Optional<Notification> optNotif = notificationRepository.findByIdInLink(post.getId());
-      
+      System.out.println("opt notif "+optNotif.isEmpty());
       if(optNotif.isEmpty())
         return;
       
@@ -179,11 +184,9 @@ public class ThreadService {
         subs.stream()
           .filter(Subscription::isExtensive)
           .collect(Collectors.toList());
-      Stream<Like> likes = thread.getLikes().stream();
       subs = 
           subs.stream()
-            .filter(sub -> (sub.getListener().getLastConnection() == null || System.currentTimeMillis() - sub.getListener().getLastConnection().getTime() > 1000 * 60 * 15) && sub.getListener().getId() != student)
-            .filter(sub -> !likes.anyMatch(like -> like.getStudent().getId() == sub.getId()))
+            .filter(sub -> (sub.getListener().getLastConnection() == null || System.currentTimeMillis() - sub.getListener().getLastConnection().getTime() > 1000 * 60 * 15) && sub.getListener().getId() != student && (!thread.getLikes().stream().anyMatch(like -> like.getStudent().getId() == sub.getId())))
             .collect(Collectors.toList());
 
       System.out.println("Sending notification based on like for "+post.getId()+" in a "+subscribable);
