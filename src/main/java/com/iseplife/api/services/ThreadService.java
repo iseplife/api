@@ -23,6 +23,7 @@ import com.iseplife.api.dao.post.projection.ReportProjection;
 import com.iseplife.api.dao.subscription.NotificationRepository;
 import com.iseplife.api.dao.subscription.SubscriptionRepository;
 import com.iseplife.api.dao.thread.ThreadRepository;
+import com.iseplife.api.dao.thread.projection.LikeProjection;
 import com.iseplife.api.dto.thread.CommentDTO;
 import com.iseplife.api.dto.thread.CommentEditDTO;
 import com.iseplife.api.dto.thread.view.ThreadProjection;
@@ -96,9 +97,8 @@ public class ThreadService {
     return threadRepository.findThreadById(id, student);
   }
 
-  public List<Like> getLikes(Long threadID) {
-    Thread thread = getThread(threadID);
-    return thread.getLikes();
+  public List<LikeProjection> getLikes(Long threadID) {
+    return threadRepository.findLikesByThreadId(threadID);
   }
 
   public Boolean isLiked(Thread thread) {

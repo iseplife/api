@@ -1,26 +1,34 @@
 package com.iseplife.api.controllers;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.annotation.security.RolesAllowed;
+
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.post.CommentFactory;
 import com.iseplife.api.dao.post.PostFactory;
 import com.iseplife.api.dao.post.projection.CommentProjection;
-import com.iseplife.api.dao.post.projection.ReportProjection;
+import com.iseplife.api.dao.thread.projection.LikeProjection;
 import com.iseplife.api.dto.post.view.ReportView;
 import com.iseplife.api.dto.thread.CommentDTO;
 import com.iseplife.api.dto.thread.CommentEditDTO;
 import com.iseplife.api.dto.thread.view.CommentFormView;
 import com.iseplife.api.dto.thread.view.ThreadProjection;
-import com.iseplife.api.entity.post.Like;
 import com.iseplife.api.services.SecurityService;
 import com.iseplife.api.services.ThreadService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.security.RolesAllowed;
-import java.util.List;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/thread")
@@ -37,7 +45,7 @@ public class ThreadController {
 
   @GetMapping("/{id}/likes")
   @RolesAllowed({Roles.STUDENT})
-  public List<Like> getLikes(@PathVariable Long id) {
+  public List<LikeProjection> getLikes(@PathVariable Long id) {
     return threadService.getLikes(id);
   }
   
