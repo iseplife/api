@@ -55,10 +55,10 @@ public class SearchService {
         searchGroup(filter, page, returnAll, token).getContent()
       );
 
-      CompletableFuture<Void> promiseAllAsync = CompletableFuture.allOf(userAsync, eventAsync, clubAsync, groupAsync);
+      CompletableFuture<Void> promiseAllAsync = CompletableFuture.allOf(clubAsync, userAsync, groupAsync, eventAsync);
 
       promiseAllAsync.get();
-      List<SearchItemView> globalSearchToList = Stream.of(userAsync.get(), eventAsync.get(), clubAsync.get(), groupAsync.get())
+      List<SearchItemView> globalSearchToList = Stream.of(clubAsync.get(), userAsync.get(), groupAsync.get(), eventAsync.get())
         .flatMap(Collection::stream)
         .collect(Collectors.toList());
 
