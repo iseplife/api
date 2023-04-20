@@ -53,4 +53,15 @@ public interface PollChoiceRepository extends CrudRepository<PollChoice, Long> {
       "order by p.id "
   )
   List<PollChoiceProjection> findAllByPoll(Long pollId, Long studentId);
+  @Query(
+      "select " +
+        "p as p, " +
+        "count(votedStudent) > 0 as voted " +
+      "from PollChoice p " +
+        "left join p.votes votedStudent " +
+      "where p.poll.id = :pollId " +
+      "group by p.id " +
+      "order by p.id "
+  )
+  List<PollChoiceGetProjection> findAllVotesByPoll(Long pollId);
 }

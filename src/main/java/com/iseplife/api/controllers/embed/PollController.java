@@ -6,6 +6,7 @@ import com.iseplife.api.dto.poll.PollEditionDTO;
 import com.iseplife.api.dto.poll.view.PollChoiceView;
 import com.iseplife.api.dto.poll.view.PollView;
 import com.iseplife.api.constants.Roles;
+import com.iseplife.api.dao.poll.PollChoiceGetProjection;
 import com.iseplife.api.services.PollService;
 import com.iseplife.api.services.SecurityService;
 
@@ -52,7 +53,8 @@ public class PollController {
   }
 
   @GetMapping("/{id}/vote")
-  public List<PollChoiceView> getPollVotes(@PathVariable Long id) {
+  @RolesAllowed({Roles.STUDENT})
+  public List<PollChoiceGetProjection> getPollVotes(@PathVariable Long id) {
     return pollService.getPollVotes(id, SecurityService.getLoggedId());
   }
 

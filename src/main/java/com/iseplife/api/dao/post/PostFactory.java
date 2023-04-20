@@ -2,9 +2,6 @@ package com.iseplife.api.dao.post;
 
 import javax.annotation.PostConstruct;
 
-import com.iseplife.api.dto.poll.view.PollView;
-import com.iseplife.api.dto.post.view.PostContextView;
-import com.iseplife.api.entity.feed.Feed;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -13,14 +10,17 @@ import com.iseplife.api.dao.poll.PollFactory;
 import com.iseplife.api.dao.post.projection.PostProjection;
 import com.iseplife.api.dao.post.projection.PostSimpleProjection;
 import com.iseplife.api.dao.post.projection.ReportProjection;
+import com.iseplife.api.dto.poll.view.PollView;
+import com.iseplife.api.dto.post.view.PostContextView;
 import com.iseplife.api.dto.post.view.PostFormView;
 import com.iseplife.api.dto.post.view.PostView;
 import com.iseplife.api.dto.post.view.ReportView;
 import com.iseplife.api.dto.thread.view.CommentView;
+import com.iseplife.api.entity.Thread;
+import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.post.embed.Embedable;
 import com.iseplife.api.services.SecurityService;
-import com.iseplife.api.entity.Thread;
 
 import lombok.RequiredArgsConstructor;
 
@@ -76,7 +76,7 @@ public class PostFactory {
       });
 
   }
-
+  
   public PostFormView toFormView(Post post) {
     return toFormView(post, null);
   }

@@ -11,6 +11,7 @@ import com.iseplife.api.entity.post.embed.poll.Poll;
 import com.iseplife.api.entity.post.embed.poll.PollChoice;
 import com.iseplife.api.entity.post.embed.poll.PollVote;
 import com.iseplife.api.entity.user.Student;
+import com.iseplife.api.dao.poll.PollChoiceGetProjection;
 import com.iseplife.api.dao.poll.PollChoiceRepository;
 import com.iseplife.api.dao.poll.PollRepository;
 import com.iseplife.api.dao.poll.PollVoteRepository;
@@ -84,7 +85,7 @@ public class PollService {
       throw new HttpNotFoundException("poll_not_found");
     
     PollChoice pollChoice = pollAnswer.get();
-
+    
     if (!poll.isMultiple()) {
       List<PollVote> voteList = pollVoteRepository.findByChoice_Poll_IdAndStudent_Id(poll.getId(), studentId).stream()
         .filter(votes -> !votes.getChoice().getId().equals(choiceId))
@@ -141,6 +142,8 @@ public class PollService {
 
     poll.setChoices(new ArrayList<>());
     
+    poll.setAnonymous(dto.isAnonymous());
+    
     if(dto.getChoices().size() > 10)
       throw new HttpBadRequestException("poll_too_long");
     
@@ -168,7 +171,6 @@ public class PollService {
     if(dto.getChoices().size() > 10)
       throw new HttpBadRequestException("poll_too_long");
 
-    poll.setAnonymous(dto.isAnonymous());
     poll.setMultiple(dto.isMultiple());
     poll.setEndsAt(dto.getEndsAt());
 
@@ -198,12 +200,13 @@ public class PollService {
 
     return pollFactory.toView(pollRepository.save(poll), studentId);
   }
-
-
-  public List<PollChoiceView> getPollVotes(Long pollId, Long studentId) {
-    return pollChoiceRepository.findAllByPoll(pollId, studentId)
+  
+  public List<PollChoiceGetProjection> getPollVotes(Long pollId, Long studentId) {
+    Poll poll = getPoll(pollId);
+    if (!SecurityService.hasRightOn(postService.getPostFromEmbed(poll)) || poll.isAnonymous())
+      throw new HttpForbiddenException("insufficient_rights");
+    return pollChoiceRepository.findAllVotesByPoll(pollId)
         .stream()
-        .map(pollFactory::toView)
         .collect(Collectors.toList());
   }
 
