@@ -83,26 +83,26 @@ public class PollService {
     Optional<PollChoice> pollAnswer = pollChoiceRepository.findById(choiceId);
     if (pollAnswer.isEmpty())
       throw new HttpNotFoundException("poll_not_found");
-    
+
     PollChoice pollChoice = pollAnswer.get();
-    
+
     if (!poll.isMultiple()) {
       List<PollVote> voteList = pollVoteRepository.findByChoice_Poll_IdAndStudent_Id(poll.getId(), studentId).stream()
         .filter(votes -> !votes.getChoice().getId().equals(choiceId))
         .collect(Collectors.toList());
-      
+
       pollVoteRepository.deleteAll(voteList);
     }
 
 
     Student student = studentService.getStudent(studentId);
-    
+
     PollVote pollVote = new PollVote();
     pollVote.setChoice(pollChoice);
     pollVote.setStudent(student);
-    
+
     pollVoteRepository.save(pollVote);
-    
+
     wsPostService.broadcastPollChange(postRepository.findPostIdByEmbed(poll), pollChoiceRepository.findAllByPoll(poll));
 
     return pollChoiceRepository.findAllByPoll(poll, student)
@@ -123,9 +123,9 @@ public class PollService {
       throw new HttpBadRequestException("student_answer_not_found");
 
     pollVoteRepository.delete(vote.get());
-    
+
     wsPostService.broadcastPollChange(postRepository.findPostIdByEmbed(poll), pollChoiceRepository.findAllByPoll(poll));
-    
+
     return pollChoiceRepository.findAllByPoll(poll, studentId)
         .stream()
         .map(pollFactory::toView)
@@ -141,12 +141,12 @@ public class PollService {
     poll.setCreation(new Date());
 
     poll.setChoices(new ArrayList<>());
-    
+
     poll.setAnonymous(dto.isAnonymous());
-    
+
     if(dto.getChoices().size() > 10)
       throw new HttpBadRequestException("poll_too_long");
-    
+
     dto.getChoices().forEach(choice -> {
       PollChoice pollChoice = new PollChoice();
       pollChoice.setContent(choice.getContent());
@@ -167,7 +167,7 @@ public class PollService {
 
     if (!SecurityService.hasRightOn(postService.getPostFromEmbed(poll)))
       throw new HttpForbiddenException("insufficient_rights");
-    
+
     if(dto.getChoices().size() > 10)
       throw new HttpBadRequestException("poll_too_long");
 
@@ -195,15 +195,15 @@ public class PollService {
 
       poll.getChoices().add(pollChoice);
     });
-    
+
     poll.getChoices().forEach(choice -> System.out.println(choice.getContent()));
 
     return pollFactory.toView(pollRepository.save(poll), studentId);
   }
-  
+
   public List<PollChoiceGetProjection> getPollVotes(Long pollId, Long studentId) {
     Poll poll = getPoll(pollId);
-    if (!SecurityService.hasRightOn(postService.getPostFromEmbed(poll)) || poll.isAnonymous())
+    if (!SecurityService.hasReadAccess(poll.getFeed()) || poll.isAnonymous())
       throw new HttpForbiddenException("insufficient_rights");
     return pollChoiceRepository.findAllVotesByPoll(pollId)
         .stream()
