@@ -35,9 +35,9 @@ public class IORVote {
   @ManyToOne
   private Student voter;
   
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   private IORQuestion question;
-  
+
   @Any(
       fetch = FetchType.EAGER,
       metaColumn = @Column(name = "vote_type")

@@ -86,7 +86,7 @@ public class IORService {
     voteRepository.save(vote);
   }
   
-  private Subscribable getVoted(IORQuestion question, Long voted) {
+  public Subscribable getVoted(IORQuestion question, Long voted) {
     switch(question.getType()) {
       case CLUB:
         return clubService.getClub(voted);

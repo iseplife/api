@@ -1,8 +1,12 @@
 package com.iseplife.api.dao.isepdor;
 
-import com.iseplife.api.entity.subscription.Subscribable;
+import org.springframework.beans.factory.annotation.Value;
 
 public interface IOROptionProjection {
-  Subscribable getVote();
+  @Value("#{target.votes}")
   int getVotes();
+  @Value("#{target.vote_id}")
+  Long getVoteId();
+  @Value("#{target.vote_type}")
+  String getVoteType();
 }

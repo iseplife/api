@@ -5,12 +5,14 @@ import javax.annotation.PostConstruct;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
+import com.iseplife.api.dao.SearchFactory;
 import com.iseplife.api.dao.club.ClubFactory;
 import com.iseplife.api.dao.event.EventFactory;
 import com.iseplife.api.dao.student.StudentFactory;
 import com.iseplife.api.dto.isepdor.view.IORQuestionView;
 import com.iseplife.api.dto.isepdor.view.IORSessionView;
 import com.iseplife.api.dto.isepdor.view.IORVotedQuestionView;
+import com.iseplife.api.dto.view.SearchItemView;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
 import com.iseplife.api.entity.isepdor.IORQuestion;
@@ -38,13 +40,13 @@ public class IORFactory {
       });
   }
   
-  public Object factorEntity(Subscribable entity) {
+  public SearchItemView factorEntity(Subscribable entity) {
     if(entity instanceof Student)
-      return studentFactory.toPreview((Student)entity);
+      return SearchFactory.toSearchItemView((Student)entity);
     if(entity instanceof Event)
-      return eventFactory.toPreview((Event)entity);
+      return SearchFactory.toSearchItemView((Event)entity);
     if(entity instanceof Club)
-      return clubFactory.toPreview((Club)entity);
+      return SearchFactory.toSearchItemView((Club)entity);
     
     return null;
   }

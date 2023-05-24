@@ -38,7 +38,7 @@ public class GalleryService {
 
   final private static int GALLERY_PER_PAGE = 5;
   final private static int PSEUDO_GALLERY_MAX_SIZE = 5;
-  final private static int GALLERY_MAX_SIZE = 2000;
+  final private static int GALLERY_MAX_SIZE = 4000;
 
   private void checkIfHasRightsOnGallery(Gallery gallery){
     if ((gallery.isPseudo() && !SecurityService.hasRightOn(postService.getPostFromEmbed(gallery))) || !SecurityService.hasRightOn(gallery))

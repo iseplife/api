@@ -3,15 +3,12 @@ package com.iseplife.api.dao.isepdor;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import com.iseplife.api.entity.isepdor.IORQuestion;
 import com.iseplife.api.entity.isepdor.IORSession;
-import com.iseplife.api.entity.subscription.Subscribable;
 
 @Repository
 public interface IORQuestionRepository extends CrudRepository<IORQuestion, Long> {
@@ -35,14 +32,16 @@ public interface IORQuestionRepository extends CrudRepository<IORQuestion, Long>
   )
   Optional<IORQuestionProjection> findQuestion(Long loggedId, Long questionId);
   
-  @Query("select " +
-      "v.vote as vote," +
-      "count(v.id) as votes " +
-    "from IORVote v " +
+  @Query(value="select " +
+      "v.vote_id as vote_id, " +
+      "v.vote_type as vote_type, " +
+      "count(v) as votes " +
+    "from IORQuestion as q " +
+      "inner join IORVote v on v.question_id = q.id " +
     "where " +
-      "v.question = :question " +
-    "group by v.vote, v.id"
-  )
-  Page<IOROptionProjection> findOptions(IORQuestion question, Pageable pageable);
+      "q.id = :question_id " +
+    "group by vote_id, vote_type order by votes desc limit 3"
+  , nativeQuery = true)
+  List<IOROptionProjection> findOptions(Long question_id);
 }
 

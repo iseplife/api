@@ -1,18 +1,15 @@
 package com.iseplife.api.controllers;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -104,9 +101,15 @@ public class IORController {
     IORSession session = service.getSession(sessionId);
     return service.getQuestions(session).stream().map(question -> {
       IORVotedQuestionView view = factory.toView(question);
-      view.setChoices(
-          questionRepository.findOptions(question.getQuestion(), PageRequest.of(0, 3, Sort.by(Direction.DESC, "votes"))).stream().map(opt -> factory.factorEntity(opt.getVote())).collect(Collectors.toList())
-      );
+      if(question.getQuestion().getParentQuestion() != null) {
+        view.setChoices(
+            questionRepository.findOptions(question.getQuestion().getParentQuestion().getId()).stream()
+              .map(opt -> service.getVoted(question.getQuestion().getParentQuestion(), opt.getVoteId()))
+              .map(entity -> factory.factorEntity(entity))
+              .collect(Collectors.toList())
+        );
+        Collections.shuffle(view.getChoices());
+      }
       return view;
     }).collect(Collectors.toList());
   }
@@ -116,6 +119,13 @@ public class IORController {
   public IORVotedQuestionView updateVote(@PathVariable Long questionId, @PathVariable Long voted) {
     IORQuestionProjection question = service.getQuestion(questionId);
     
+    List<Long> entitiesId = question.getQuestion().getParentQuestion() == null ? null : questionRepository.findOptions(question.getQuestion().getParentQuestion().getId()).stream()
+        .map(opt -> opt.getVoteId())
+        .collect(Collectors.toList());
+    
+    if(question.getQuestion().getParentQuestion() != null && !entitiesId.contains(voted))
+      throw new IllegalArgumentException(voted+" is not listed in the vote candidates.");
+    
     if(question.getVote() != null) {
       System.out.println("Updating vote "+question.getQuestion().getId()+" from "+question.getVote().getId()+" to "+voted);
       service.updateVote(question.getQuestion(), voted);
@@ -123,9 +133,15 @@ public class IORController {
       service.createVote(question.getQuestion(), voted);
 
     IORVotedQuestionView view = factory.toView(service.getQuestion(questionId));
-    view.setChoices(
-        questionRepository.findOptions(question.getQuestion(), PageRequest.of(0, 3, Sort.by(Direction.DESC, "votes"))).stream().map(opt -> factory.factorEntity(opt.getVote())).collect(Collectors.toList())
-    );
+    if(question.getQuestion().getParentQuestion() != null) {
+      view.setChoices(
+          entitiesId.stream()
+          .map(id -> service.getVoted(question.getQuestion().getParentQuestion(), id))
+          .map(entity -> factory.factorEntity(entity))
+          .collect(Collectors.toList())
+      );
+      Collections.shuffle(view.getChoices());
+    }
     return view;
   }
 }
