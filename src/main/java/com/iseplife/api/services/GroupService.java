@@ -217,6 +217,8 @@ public class GroupService {
     
     if(groupMemberRepository.isMemberOfGroup(group.getId(), dto.getStudentId()))
       throw new HttpBadRequestException("student_already_in_group");
+    
+    System.out.println(SecurityService.getLoggedId()+" added "+dto.getStudentId()+" to group "+group.getName());
 
     GroupMember member = new GroupMember();
     member.setAdmin(false);
