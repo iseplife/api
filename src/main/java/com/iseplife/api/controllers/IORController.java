@@ -40,33 +40,35 @@ public class IORController {
   
   @GetMapping("")
   public void get() {
-    IORSession session = IORSession.builder().start(new Date()).ending(new Date(new Date().getTime() + 1000 * 60 * 30)).build();
+    if(true)
+      return;
+    IORSession session = IORSession.builder().start(new Date()).ending(new Date(new Date().getTime() + 6 * 24 * 60 * 60 * 1000)).build();
     String[] textQuestions = new String[] {
         "L’association de l’année",
-        "L’association spammeuse ?",
         "L’association fantôme",
-        "L’asso bordel",
+        "L’association bordel",
         "Le meilleur événement",
+        "Le pire événement",
         "Le/La Président(e)",
         "Le meilleur membre du bureau",
         "le roi de l’isep",
         "la reine de l’isep",
         "L’épave",
+        "Le clodo",
         "Le canard",
+        "Le bg",
         "Le couple en or (1ère personne)",
         "Le couple en or (2ème personne)",
         "le/la tchatcheur(se)",
-        "le drama king/queen",
+        "le/la beauf",
         "Le/la commère",
         "Le/la rageur(se)",
         "L’imbécile heureux(euse)",
         "Le melon",
-        "Le/la fantome",
         "L'influenceur(se)",
         "Le dj/musicien",
         "Le/la crack",
         "Le/la pro de la créa",
-        "Le/la hackeur(se)",
         "Le/la photographe",
     };
     
