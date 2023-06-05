@@ -22,7 +22,6 @@ import com.iseplife.api.dao.isepdor.IORSessionRepository;
 import com.iseplife.api.dto.isepdor.view.IORSessionView;
 import com.iseplife.api.dto.isepdor.view.IORVotedQuestionView;
 import com.iseplife.api.entity.isepdor.IORQuestion;
-import com.iseplife.api.entity.isepdor.IORQuestionType;
 import com.iseplife.api.entity.isepdor.IORSession;
 import com.iseplife.api.services.IORService;
 
@@ -72,8 +71,23 @@ public class IORController {
         "Le/la photographe",
     };
     
-    session = sessionRepository.save(session);
+    IORSession old = sessionRepository.findAll().iterator().next();
     
+    session = sessionRepository.save(session);
+
+    for(IORQuestion question : old.getQuestions()) {
+      System.out.println("found! "+question.getTitle());
+      System.out.println((question.getPosition()+old.getQuestions().size() + 1)+" vs "+question.getPosition());
+      IORQuestion dbQuestion = IORQuestion.builder()
+          .position(question.getPosition()+old.getQuestions().size() + 1)
+          .session(session)
+          .title(question.getTitle())
+          .type(question.getType())
+          .parentQuestion(question)
+          .build();
+        dbQuestion = questionRepository.save(dbQuestion);
+    }
+    /*
     int i = 0;
     for(String question : textQuestions) {
       IORQuestion dbQuestion = IORQuestion.builder()
@@ -83,7 +97,7 @@ public class IORController {
         .type(IORQuestionType.STUDENT)
         .build();
       dbQuestion = questionRepository.save(dbQuestion);
-    }
+    }*/
     
     
   }
@@ -113,7 +127,7 @@ public class IORController {
         Collections.shuffle(view.getChoices());
       }
       return view;
-    }).collect(Collectors.toList());
+    }).sorted((a, b) -> a.getQuestion().getPosition() - b.getQuestion().getPosition()). collect(Collectors.toList());
   }
   
   @PostMapping("question/{questionId}/{voted}")

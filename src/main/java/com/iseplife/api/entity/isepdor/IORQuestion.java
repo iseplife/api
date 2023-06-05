@@ -26,7 +26,7 @@ public class IORQuestion {
   @GeneratedValue
   private Long id;
 
-  @Column(unique = true)
+  @Column//(unique = true)
   private int position;
 
   private String title;
