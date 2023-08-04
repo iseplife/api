@@ -175,7 +175,6 @@ public class SecurityService {
   static public boolean hasAuthorAccessOn(Long clubId) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
     return userHasRole(Roles.ADMIN)
-      || payload.getClubsAdmin().contains(clubId)
       || payload.getClubsPublisher().contains(clubId)
       || payload.getClubsPublisher().contains(37L); // Permet aux admins et éditeurs d'ISEPLive d'accéder aux droits d'édition
   }
@@ -184,7 +183,6 @@ public class SecurityService {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
     return userHasRole(Roles.ADMIN)
       || payload.getClubsPublisher().contains(event.getClub().getId())
-      || payload.getClubsAdmin().contains(event.getClub().getId())
       || payload.getClubsPublisher().contains(37L); // Permet aux admins et éditeurs d'ISEPLive d'accéder aux droits d'édition
   }
 
