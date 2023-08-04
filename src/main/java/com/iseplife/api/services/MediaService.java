@@ -110,7 +110,7 @@ public class MediaService {
 
   private Boolean isAllowedToCreateMedia(Author author, Long fileSize) {
     boolean isStudent = author instanceof Student;
-    if (!isStudent && !SecurityService.hasRightOn((Club) author))
+    if (!isStudent && !SecurityService.hasAuthorAccessOn(author.getId()))
       throw new HttpForbiddenException("insufficient_rights");
 
     if(fileSize > (isStudent ? USER_MEDIA_MAX_SIZE: CLUB_MEDIA_MAX_SIZE) )
@@ -145,7 +145,7 @@ public class MediaService {
     Author author = club > 0 ?
       clubService.getClub(club) :
       studentService.getStudent(SecurityService.getLoggedId());
-    
+
     if(club > 0 && !SecurityService.hasAuthorAccessOn(club))
       throw new HttpForbiddenException("insufficient_rights");
 
@@ -155,7 +155,7 @@ public class MediaService {
     if (isAllowedToCreateMedia(author, file.getSize())) {
       String name, mime = file.getContentType().split("/")[0];
       Media media;
-      
+
       if (mime.equals("video") && type.equals("video")) {
         media = new Video();
         ((Video) media).setRatio(ratio);
@@ -189,7 +189,7 @@ public class MediaService {
       } else {
         if(file.getOriginalFilename().length() > 128)
           throw new HttpBadRequestException("file_name_too_long");
-        
+
         Document doc;
         media = doc = new Document();
         name = fileHandler.upload(
@@ -283,27 +283,27 @@ public class MediaService {
       }
     });
   }
-  
+
   public RichLink createRichLink(String link) throws IOException {
     System.out.println("Trying to get informations from "+link);
     org.jsoup.nodes.Document document = Jsoup.connect(link).userAgent("facebookexternalhit/1.1").timeout(5000).maxBodySize(2_000_000).get();
     Optional<OpenGraphMetadata> og = new OpenGraphExtractor().extract(document);
     if(og.isPresent()) {
       OpenGraphMetadata data = og.get();
-      
+
       RichLink richLink = new RichLink();
       richLink.setDescription(data.getDescription().length() > 250 ? data.getDescription().substring(0, 250) : data.getDescription());
       richLink.setTitle(data.getTitle().length() > 100 ? data.getTitle().substring(0, 100) : data.getTitle());
       richLink.setLink(link);
-      
+
       if(data.getImages().size() > 0) {
         try {
           OpenGraphImage image = data.getImages().get(0);
           String md5 = HexUtils.toHexString(Md5Utils.computeMD5Hash(image.getUrl().getBytes(StandardCharsets.UTF_8)));
           BufferedImage decoded = ImageIO.read(Jsoup.connect(image.getUrl()).method(Method.GET).ignoreContentType(true).timeout(10000).maxBodySize(2_000_000).execute().bodyStream());
-          
+
           decoded = processOGImage(decoded);
-          
+
           ByteArrayOutputStream out = new ByteArrayOutputStream();
           ImageIO.write(decoded, "JPG", out);
           ByteArrayInputStream bais = new ByteArrayInputStream(out.toByteArray());
@@ -329,7 +329,7 @@ public class MediaService {
       System.out.println("No OG in "+link);
     return null;
   }
-  
+
   private BufferedImage processOGImage(BufferedImage image) {
     int side = 300;
     BufferedImage resizedImage = new BufferedImage(side, side, BufferedImage.TYPE_INT_RGB);
@@ -341,7 +341,7 @@ public class MediaService {
       graphics2D.drawImage(image, 0, (int)((side - ratio * side) / 2), side, (int)(side * ratio), null);
     else // wider
       graphics2D.drawImage(image, (int)((side - ratioInv * side) / 2), 0, (int)(side * ratioInv), side, null);
-    
+
     graphics2D.dispose();
     return resizedImage;
   }

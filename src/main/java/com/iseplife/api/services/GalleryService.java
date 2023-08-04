@@ -83,10 +83,10 @@ public class GalleryService {
     gallery.setCreation(new Date());
     gallery.setPseudo(dto.isPseudo());
     gallery.setFeed(feedService.getFeed(dto.getFeed()));
-    
+
     if (!dto.isPseudo()) {
       Club club = clubService.getClub(dto.getClub());
-      if (!SecurityService.hasRightOn(club))
+      if (!SecurityService.hasAuthorAccessOn(club.getId()))
         throw new HttpForbiddenException("insufficient_rights");
 
       if(dto.getDescription().length() > PostService.MAX_DESCRIPTION_LENGTH)
@@ -95,7 +95,7 @@ public class GalleryService {
       gallery.setClub(club);
       gallery.setName(dto.getName());
       gallery.setDescription(dto.getDescription());
-      
+
       //Galleries can only be posted on events feeds !
       if (gallery.getFeed().getType() != FeedType.EVENT || !SecurityService.hasRightOn(gallery.getFeed()))
         throw new HttpForbiddenException("insufficient_rights");
