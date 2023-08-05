@@ -2,6 +2,7 @@ package com.iseplife.api.services;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -9,6 +10,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.iseplife.api.entity.Author;
 import com.iseplife.api.exceptions.http.HttpUnauthorizedException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -120,7 +122,7 @@ public class SecurityService {
         if(feed.getEvent().isAllowPublications()) {
           List<Long> targetIds = feed.getEvent().getTargets().stream().map(Feed::getId).collect(Collectors.toList());
           return targetIds.size() == 0 || payload.getFeeds().stream().filter(authorizedFeed -> targetIds.contains(authorizedFeed)).count() > 0;
-        }else
+        } else
           return SecurityService.hasAuthorAccessOn(feed.getEvent().getClub().getId());
       case STUDENT:
         return payload.getId().equals(feed.getStudent().getId());
@@ -163,7 +165,8 @@ public class SecurityService {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
     return userHasRole(Roles.ADMIN)
             || gallery.getClub() == null
-            || payload.getClubsPublisher().contains(gallery.getClub().getId());
+            || payload.getClubsPublisher().contains(gallery.getClub().getId())
+            || (gallery.getFeed().getClub() != null ? payload.getClubsPublisher().contains(gallery.getFeed().getClub().getId()) : false);
   }
 
   static public boolean hasRightOn(Club club) {
@@ -175,15 +178,28 @@ public class SecurityService {
   static public boolean hasAuthorAccessOn(Long clubId) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
     return userHasRole(Roles.ADMIN)
-      || payload.getClubsPublisher().contains(clubId)
-      || payload.getClubsPublisher().contains(37L); // Permet aux admins et éditeurs d'ISEPLive d'accéder aux droits d'édition
+      || payload.getClubsPublisher().contains(clubId);
+  }
+
+  static public List<Long> hasGalleryClubsAccessOn(Event event) {
+    TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return payload.getClubsPublisher().stream().filter(club -> userHasRole(Roles.ADMIN)
+        || club.equals(event.getClub().getId())
+        || club.equals(37L)  // Permet aux admins et éditeurs d'ISEPLive d'accéder aux droits d'édition
+      ).collect(Collectors.toList());
+  }
+
+  static public boolean hasGalleryAuthorAccessOn(Gallery gallery) {
+    TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return userHasRole(Roles.ADMIN)
+      || payload.getClubsPublisher().contains(gallery.getFeed().getEvent().getClub().getId())
+      || (payload.getClubsPublisher().contains(37L) && gallery.getClub().getId() == 37L);
   }
 
   static public boolean hasRightOn(Event event) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
     return userHasRole(Roles.ADMIN)
-      || payload.getClubsPublisher().contains(event.getClub().getId())
-      || payload.getClubsPublisher().contains(37L); // Permet aux admins et éditeurs d'ISEPLive d'accéder aux droits d'édition
+      || payload.getClubsPublisher().contains(event.getClub().getId());
   }
 
   static public boolean hasReadAccessOn(Event event) {

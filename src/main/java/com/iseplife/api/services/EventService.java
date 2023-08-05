@@ -71,7 +71,7 @@ public class EventService {
 
   public Event createEvent(EventDTO dto) {
     Club club = clubService.getClub(dto.getClub());
-    
+
     if(!SecurityService.hasAuthorAccessOn(club.getId()))
       throw new HttpNotFoundException("club_not_found");
 
@@ -89,7 +89,7 @@ public class EventService {
 
     updateCoordinates(event, dto);
     event = eventRepository.save(event);
-    
+
     Notification.NotificationBuilder notif = Notification.builder()
         .type(NotificationType.NEW_EVENT)
         .icon(club.getLogoUrl())
@@ -103,21 +103,21 @@ public class EventService {
                 "start", event.getStartsAt().getTime()
             )
         );
-    
+
 
     if (dto.getTargets().size() > 0) {
       Set<Feed> targets = new HashSet<>();
       feedRepository.findAllById(dto.getTargets()).forEach(targets::add);
 
       event.setTargets(targets);
-      
+
       event = eventRepository.save(event);
       Event finalEvent = event;
-      
+
       ArrayList<Long> targetted = new ArrayList<>();
       for(Feed target : targets)
         targetted.addAll(feedService.getTargettedUserId(target));
-      
+
       System.out.println("Event targets "+targetted.size()+" students.");
 
       if(event.getStartsAt().after(new Date()))
@@ -268,7 +268,7 @@ public class EventService {
 
     event.setPrice(dto.getPrice());
     event.setTicketUrl(dto.getTicketURL());
-    
+
     event.setType(EventType.valueOf(dto.getType()));
 
     if (dto.getTargets().size() > 0) {
@@ -277,12 +277,12 @@ public class EventService {
 
       event.setTargets(targets);
     }
-    
+
     Club club = clubService.getClub(dto.getClub());
     if (club == null || !SecurityService.hasRightOn(club))
       throw new HttpForbiddenException("insufficient_rights");
     event.setClub(club);
-    
+
     if (dto.getPreviousEditionId() != null) {
       Event prev = getEvent(dto.getPreviousEditionId());
       event.setPreviousEdition(prev);

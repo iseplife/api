@@ -3,11 +3,13 @@ package com.iseplife.api.dto.event.view;
 import com.iseplife.api.dao.subscription.projection.SubscriptionProjection;
 import com.iseplife.api.dto.club.view.ClubPreview;
 import com.iseplife.api.dto.view.FeedView;
+import com.iseplife.api.entity.Author;
 import com.iseplife.api.entity.event.EventPosition;
 
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -31,4 +33,5 @@ public class EventView {
   private Set<FeedView> targets;
   private Long feed;
   private boolean allowPublications;
+  private List<Long> clubsAllowedToPublishGallery;
 }
