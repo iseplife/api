@@ -249,7 +249,7 @@ public class EventService {
 
   public Event updateEvent(Long id, EventDTO dto) {
     Event event = getEvent(id);
-    if (!SecurityService.hasRightOn(event))
+    if (!SecurityService.hasAuthorAccessOn(event.getClub().getId()))
       throw new HttpForbiddenException("insufficient_rights");
 
     event.setTitle(dto.getTitle());
@@ -279,7 +279,7 @@ public class EventService {
     }
 
     Club club = clubService.getClub(dto.getClub());
-    if (club == null || !SecurityService.hasRightOn(club))
+    if (club == null || !SecurityService.hasAuthorAccessOn(club.getId()))
       throw new HttpForbiddenException("insufficient_rights");
     event.setClub(club);
 
