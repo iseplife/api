@@ -56,6 +56,7 @@ public class StudentService {
   final private RoleRepository roleRepository;
   final private ClubRepository clubRepository;
   @Lazy final private GroupService groupService;
+  final private ClubService clubService;
 
   @Qualifier("FileHandlerBean")
   final private FileHandler fileHandler;
@@ -281,7 +282,7 @@ public class StudentService {
   }
 
   public List<Club> getPublisherClubs(Student student) {
-    return clubRepository.findCurrentByRoleWithInheritance(student, ClubRole.PUBLISHER, ClubService.getCurrentSchoolYear());
+    return clubService.getUserCurrentClubsWith(student, ClubRole.PUBLISHER);
   }
 
   public List<Role> getRoles() {

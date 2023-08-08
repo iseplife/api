@@ -62,7 +62,7 @@ public class EventFactory {
           .using(ctx -> SecurityService.hasRightOn((Event) ctx.getSource()))
           .map(src -> src, EventView::setHasRight);
         mapper
-          .using(ctx -> SecurityService.hasGalleryClubsAccessOn((Event) ctx.getSource(), clubService.getAll().stream().map(Club::getId).collect(Collectors.toList())))
+          .using(ctx -> SecurityService.hasGalleryClubsAccessOn((Event) ctx.getSource()))
           .map(src -> src, EventView::setClubsAllowedToPublishGallery);
         mapper
           .using(ctx -> clubFactory.toPreview((Club) ctx.getSource()))

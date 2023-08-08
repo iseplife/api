@@ -181,14 +181,16 @@ public class SecurityService {
       || payload.getClubsPublisher().contains(clubId);
   }
 
-  static public List<Long> hasGalleryClubsAccessOn(Event event, List<Long> clubs) {
+  static public List<Long> hasGalleryClubsAccessOn(Event event) {
     TokenPayload payload = ((TokenPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    List<Long> clubs = payload.getClubsPublisher();
 
     if(userHasRole(Roles.ADMIN))
       return clubs;
 
-    return payload.getClubsPublisher().stream().filter(club -> club.equals(event.getClub().getId())
-        || club.equals(37L)  // Permet aux admins et éditeurs d'ISEPLive d'accéder aux droits d'édition
+    return clubs.stream().filter(club ->
+        club == event.getClub().getId()
+        || club == 37L  // Permet aux admins et éditeurs d'ISEPLive d'accéder aux droits d'édition
       ).collect(Collectors.toList());
   }
 
