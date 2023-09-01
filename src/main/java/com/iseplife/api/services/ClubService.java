@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.iseplife.api.entity.user.Role;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
@@ -208,7 +209,7 @@ public class ClubService {
 
 
   public List<Club> getUserCurrentClubsWith(Student student, ClubRole role) {
-    return clubRepository.findCurrentByRoleWithInheritance(student, role, getCurrentSchoolYear());
+    return clubRepository.findCurrentByRoleWithInheritance(student, role, getCurrentSchoolYear(), student.getRoles().stream().anyMatch(r -> r.getRole().equals(Roles.ADMIN)));
   }
 
 

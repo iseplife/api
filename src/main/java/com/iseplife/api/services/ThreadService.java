@@ -112,7 +112,7 @@ public class ThreadService {
   public Boolean isLiked(Object entity) {
     return isLiked(getThread(entity));
   }
-  
+
   Long lastLikeNotif = 0L;
 
   public Boolean toggleLike(Long threadID, Long studentID) {
@@ -131,7 +131,7 @@ public class ThreadService {
         like.setStudent(studentService.getStudent(studentID));
         like.setThread(getThread(threadID));
         likeRepository.save(like);
-        
+
         if(System.currentTimeMillis() - lastLikeNotif > 1500) {
           lastLikeNotif = System.currentTimeMillis();
           checkPostNotif(like.getThread(), studentID);
@@ -161,12 +161,12 @@ public class ThreadService {
       System.out.println("opt notif "+optNotif.isEmpty());
       if(optNotif.isEmpty())
         return;
-      
+
       feedRepository.updateLastNotification(post.getFeed().getId());
       postRepository.setNotified(post.getId());
 
       Notification notif = optNotif.get();
-      
+
       Subscribable subscribable = null;
       Feed feed = post.getFeed();
       if (feed.getGroup() != null)
@@ -177,14 +177,14 @@ public class ThreadService {
         subscribable = feed.getClub();
       else if (feed.getStudent() != null)
         subscribable = feed.getStudent();
-      
+
       List<Subscription> subs = subscriptionRepository.findBySubscribed(subscribable);
 
-      subs = 
+      subs =
         subs.stream()
           .filter(Subscription::isExtensive)
           .collect(Collectors.toList());
-      subs = 
+      subs =
           subs.stream()
             .filter(sub -> (sub.getListener().getLastConnection() == null || System.currentTimeMillis() - sub.getListener().getLastConnection().getTime() > 1000 * 60 * 15) && sub.getListener().getId() != student && (!thread.getLikes().stream().anyMatch(like -> like.getStudent().getId() == sub.getId())))
             .collect(Collectors.toList());
@@ -240,7 +240,7 @@ public class ThreadService {
 
     if (dto.getAsClub() != null) {
       Club club = clubService.getClub(dto.getAsClub());
-      if (!SecurityService.hasRightOn(club))
+      if (!SecurityService.hasAuthorAccessOn(club.getId()))
         throw new HttpForbiddenException("insufficient_rights");
 
       comment.setAsClub(club);

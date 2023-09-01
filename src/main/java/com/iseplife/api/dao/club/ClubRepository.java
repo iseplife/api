@@ -51,13 +51,15 @@ public interface ClubRepository extends CrudRepository<Club, Long> {
   Set<Integer> findClubSessions(Long club);
 
   @Query(
-    "select c from Club c " +
+    "select distinct c from Club c " +
       "join c.members m " +
-      "where m.student = :#{#student} " +
-      "and m.role in :#{#role.getParents()} " +
-      "and (m.fromYear <= :#{#year} and m.toYear >=:#{#year})"
+      "where :#{#admin} = true or (" +
+        "m.student = :#{#student} " +
+        "and (m.role in :#{#role.getParents()} " +
+        "and (m.fromYear <= :#{#year} and m.toYear >=:#{#year}))" +
+      ")"
   )
-  List<Club> findCurrentByRoleWithInheritance(@Param("student") Student student, @Param("role") ClubRole role, @Param("year") Integer year);
+  List<Club> findCurrentByRoleWithInheritance(@Param("student") Student student, @Param("role") ClubRole role, @Param("year") Integer year, @Param("admin") boolean admin);
 
 
   @Query(

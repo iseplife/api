@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import com.iseplife.api.entity.post.embed.Gallery;
+import com.iseplife.api.services.ClubService;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -29,7 +31,9 @@ public class EventFactory {
   @Lazy
   final private ClubFactory clubFactory;
   final private ModelMapper mapper;
-  
+  @Lazy
+  final private ClubService clubService;
+
   @SuppressWarnings("unchecked")
   @PostConstruct()
   public void init() {
@@ -58,6 +62,9 @@ public class EventFactory {
           .using(ctx -> SecurityService.hasRightOn((Event) ctx.getSource()))
           .map(src -> src, EventView::setHasRight);
         mapper
+          .using(ctx -> SecurityService.hasGalleryClubsAccessOn((Event) ctx.getSource()))
+          .map(src -> src, EventView::setClubsAllowedToPublishGallery);
+        mapper
           .using(ctx -> clubFactory.toPreview((Club) ctx.getSource()))
           .map(Event::getClub, EventView::setClub);
       });
@@ -66,7 +73,7 @@ public class EventFactory {
   public EventPreview toPreview(Event event) {
     return mapper.map(event, EventPreview.class);
   }
-  
+
   public EventTabPreview toTabPreview(EventTabPreviewProjection event) {
     return mapper.map(event, EventTabPreview.class);
   }
@@ -74,7 +81,7 @@ public class EventFactory {
   public EventView toView(Event event, SubscriptionProjection subProjection) {
     EventView view = mapper.map(event, EventView.class);
     view.setSubscribed(subProjection);
-    
+
     return view;
   }
 

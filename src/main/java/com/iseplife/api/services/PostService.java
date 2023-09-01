@@ -162,10 +162,10 @@ public class PostService {
     if (!dto.isDraft() && !customDate) {
         notifyNewPost(postToReturn, postRepository.countPostsPostedOneDayBefore(post.getFeed().getId(), PostState.READY, new Date(post.getPublicationDate().getTime() - 1000 * 60 * 60 * 24)) <= (feed.getType() == FeedType.GROUP ? 2 : 3));
     }
-    
+
     return postRepository.getById(post.getId(), SecurityService.getLoggedId());
   }
-  
+
   private void notifyNewPost(Post post, boolean pushNotification) {
     Feed feed = post.getFeed();
     Map<String, Object> notifInformations = new HashMap<>(Map.of(
@@ -205,12 +205,12 @@ public class PostService {
         .link("student/" + feed.getStudent().getId() + "/post/" + post.getId());
       subscribable = feed.getStudent();
     }
-    
+
     if(pushNotification) {
       feedRepository.updateLastNotification(post.getFeed().getId());
       postRepository.setNotified(post.getId());
     }
-    
+
     notificationService.delayNotification(
       builder,
       true,
@@ -235,7 +235,7 @@ public class PostService {
     post.setThread(new Thread(ThreadType.POST));
 
     post = postRepository.save(post);
-    
+
     notifyNewPost(post, true);
   }
 

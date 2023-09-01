@@ -83,22 +83,21 @@ public class GalleryService {
     gallery.setCreation(new Date());
     gallery.setPseudo(dto.isPseudo());
     gallery.setFeed(feedService.getFeed(dto.getFeed()));
-    
+
     if (!dto.isPseudo()) {
       Club club = clubService.getClub(dto.getClub());
-      if (!SecurityService.hasRightOn(club))
+      gallery.setClub(club);
+
+      //Galleries can only be posted on events feeds !
+      if (!SecurityService.hasGalleryAuthorAccessOn(gallery) || gallery.getFeed().getType() != FeedType.EVENT)
         throw new HttpForbiddenException("insufficient_rights");
 
       if(dto.getDescription().length() > PostService.MAX_DESCRIPTION_LENGTH)
         throw new HttpBadRequestException("gallery_description_too_long");
 
-      gallery.setClub(club);
       gallery.setName(dto.getName());
       gallery.setDescription(dto.getDescription());
-      
-      //Galleries can only be posted on events feeds !
-      if (gallery.getFeed().getType() != FeedType.EVENT || !SecurityService.hasRightOn(gallery.getFeed()))
-        throw new HttpForbiddenException("insufficient_rights");
+
     }
 
     galleryRepository.save(gallery);
