@@ -286,7 +286,7 @@ public class ClubService {
   }
 
   public List<ClubMemberStudentProjection> getStudentClubs(Long id) {
-    return clubMemberRepository.findByStudentId(id);
+    return clubMemberRepository.findByStudentId(id, ClubService.getCurrentSchoolYear());
   }
 
   public Set<Integer> getClubAllSchoolSessions(Long id) {
