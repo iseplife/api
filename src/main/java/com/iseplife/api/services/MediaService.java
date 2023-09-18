@@ -292,7 +292,9 @@ public class MediaService {
       OpenGraphMetadata data = og.get();
 
       RichLink richLink = new RichLink();
-      richLink.setDescription(data.getDescription().length() > 250 ? data.getDescription().substring(0, 250) : data.getDescription());
+
+      if(data.getDescription() != null)
+        richLink.setDescription(data.getDescription().length() > 250 ? data.getDescription().substring(0, 250) : data.getDescription());
       richLink.setTitle(data.getTitle().length() > 100 ? data.getTitle().substring(0, 100) : data.getTitle());
       richLink.setLink(link);
 
