@@ -1,5 +1,6 @@
 package com.iseplife.api.dto.student.view;
 
+import com.iseplife.api.constants.FamilyType;
 import com.iseplife.api.dao.subscription.projection.SubscriptionProjection;
 
 import lombok.Data;
@@ -19,4 +20,5 @@ public class StudentOverview {
   private String twitter;
   private String instagram;
   private String snapchat;
+  private FamilyType family;
 }

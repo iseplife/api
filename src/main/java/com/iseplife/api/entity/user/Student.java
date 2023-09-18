@@ -17,6 +17,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.iseplife.api.constants.AuthorType;
+import com.iseplife.api.constants.FamilyType;
 import com.iseplife.api.constants.Language;
 import com.iseplife.api.entity.Author;
 import com.iseplife.api.entity.feed.Feed;
@@ -69,6 +70,8 @@ public class Student implements UserDetails, Feedable, Author, Subscribable {
   private String picture;
   
   private Date lastExploreWatch = new Date(0);
+  
+  private FamilyType family;
 
   @ManyToMany(fetch = FetchType.LAZY)
   private Set<Role> roles;

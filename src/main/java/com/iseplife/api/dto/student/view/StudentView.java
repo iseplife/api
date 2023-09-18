@@ -5,6 +5,8 @@ import lombok.Data;
 import java.util.Date;
 import java.util.List;
 
+import com.iseplife.api.constants.FamilyType;
+
 @Data
 public class StudentView {
   private Long id;
@@ -27,6 +29,8 @@ public class StudentView {
   private String twitter;
   private String instagram;
   private String snapchat;
+
+  private FamilyType family;
 
   private List<String> roles;
 }
