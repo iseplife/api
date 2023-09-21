@@ -189,7 +189,7 @@ public class SecurityService {
       return clubs;
 
     return clubs.stream().filter(club ->
-        club == event.getClub().getId()
+        club.equals(event.getClub().getId())
         || club == 37L  // Permet aux admins et éditeurs d'ISEPLive d'accéder aux droits d'édition
       ).collect(Collectors.toList());
   }
