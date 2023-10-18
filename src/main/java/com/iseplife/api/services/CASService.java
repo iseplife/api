@@ -25,7 +25,7 @@ import javax.annotation.PostConstruct;
 public class CASService {
   final private JsonUtils jsonUtils;
   final private Logger LOG = LoggerFactory.getLogger(CASService.class);
-  final private static String ISEP_CAS_URL = "https://sso-portal.isep.fr";
+  final private static String ISEP_CAS_URL = "https://portail-ovh.isep.fr/";
 
   private WebClient client;
 
