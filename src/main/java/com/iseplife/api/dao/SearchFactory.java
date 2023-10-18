@@ -18,8 +18,8 @@ public class SearchFactory {
     SearchItemView searchItem = new SearchItemView();
     searchItem.setId(event.getId());
     searchItem.setName(event.getTitle());
-    searchItem.setThumbURL(event.getCover());
-    searchItem.setDescription(event.getDescription());
+    searchItem.setThumbURL(event.getClub().getLogoUrl());
+    searchItem.setDescription(event.getClub().getName());
     searchItem.setType(SearchItem.EVENT);
     searchItem.setStartsAt(event.getStartsAt());
 
