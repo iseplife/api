@@ -31,10 +31,9 @@ public interface ClubMemberRepository extends CrudRepository<ClubMember, Long> {
   @Query(
     "select cm from ClubMember cm " +
       "where cm.student.id = :student_id " +
-      "and cm.club.viewable = true " +
-      "and cm.fromYear <= :year and cm.toYear >= :year "
+      "and cm.club.viewable = true "
   )
-  List<ClubMemberStudentProjection> findByStudentId(Long student_id, Integer year);
+  List<ClubMemberStudentProjection> findByStudentId(Long student_id);
 
   @Query(
     "select count(cm.id) from ClubMember cm " +
