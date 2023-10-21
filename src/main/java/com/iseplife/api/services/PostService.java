@@ -285,6 +285,12 @@ public class PostService {
       post.setEmbed(null);
     }
 
+    if(post.getEmbed() != null)
+      if(post.getEmbed().getEmbedType().equals(EmbedType.GALLERY)){
+        Gallery gallery = galleryService.getGallery(post.getEmbed().getId());
+        galleryService.setDescriptionFromPost(gallery, post.getDescription());
+      }
+
     Post postToReturn = postRepository.save(post);
 
     postsService.broadcastEdit(postToReturn);
@@ -467,5 +473,12 @@ public class PostService {
       report.setPost(getPost(id));
       reportRepository.save(report);
     }
+  }
+
+  public void setDescriptionFromGallery(Gallery gallery, String description){
+      Post post = getPostFromEmbed(gallery);
+      post.setDescription(description);
+      postRepository.save(post);
+      postsService.broadcastEdit(post);
   }
 }

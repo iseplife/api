@@ -5,10 +5,12 @@ import com.iseplife.api.constants.FeedType;
 import com.iseplife.api.dao.gallery.EventGalleryProjection;
 import com.iseplife.api.dao.gallery.GalleryRepository;
 import com.iseplife.api.dao.media.image.ImageRepository;
+import com.iseplife.api.dao.post.PostRepository;
 import com.iseplife.api.dto.gallery.GalleryDTO;
+import com.iseplife.api.dto.gallery.GalleryUpdateDTO;
 import com.iseplife.api.entity.club.Club;
 import com.iseplife.api.entity.event.Event;
-import com.iseplife.api.entity.feed.Feed;
+import com.iseplife.api.entity.post.Post;
 import com.iseplife.api.entity.post.embed.media.Image;
 import com.iseplife.api.entity.post.embed.Gallery;
 import com.iseplife.api.exceptions.http.HttpForbiddenException;
@@ -18,10 +20,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -51,6 +49,19 @@ public class GalleryService {
       throw new HttpNotFoundException("gallery_not_found");
 
     return gallery.get();
+  }
+
+  public Gallery updateGallery(Long id, GalleryUpdateDTO galleryDTO) {
+    Gallery gallery = getGallery(id);
+    checkIfHasRightsOnGallery(gallery);
+
+    gallery.setName(galleryDTO.getName());
+    gallery.setDescription(galleryDTO.getDescription());
+
+    postService.setDescriptionFromGallery(gallery, galleryDTO.getDescription());
+    galleryRepository.save(gallery);
+
+    return gallery;
   }
 
   public List<Image> getGalleryImages(Long id) {
@@ -157,6 +168,11 @@ public class GalleryService {
     imageRepository
       .findAllById(images)
       .forEach(mediaService::deleteMedia);
+  }
+
+  public void setDescriptionFromPost(Gallery gallery, String description){
+    gallery.setDescription(description);
+    galleryRepository.save(gallery);
   }
 
 }

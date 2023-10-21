@@ -27,7 +27,7 @@ public class GalleryFactory {
   @Lazy final private ClubFactory clubFactory;
   @Lazy final private MediaFactory mediaFactory;
   final private ModelMapper mapper;
-  
+
   @SuppressWarnings("unchecked")
   @PostConstruct
   public void init() {
@@ -42,7 +42,7 @@ public class GalleryFactory {
           .using(ctx -> ((List<Image>) ctx.getSource()).stream().map(mediaFactory::toView).collect(Collectors.toList()))
           .map(Gallery::getImages, GalleryView::setImages);
       });
-    
+
     mapper.typeMap(Gallery.class, PseudoGalleryView.class)
       .addMappings(mapper -> {
         mapper
@@ -60,7 +60,7 @@ public class GalleryFactory {
   public GalleryView toView(Gallery gallery) {
     GalleryView view = mapper.map(gallery, GalleryView.class);
     view.setHasRight(SecurityService.hasRightOn(gallery));
-    
+
     return view;
   }
 

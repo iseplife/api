@@ -15,4 +15,5 @@ public class GalleryView {
   private List<ImageView> images;
   private ClubPreview club;
   private Boolean hasRight;
+  private String description;
 }

@@ -3,7 +3,9 @@ package com.iseplife.api.controllers.embed;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.gallery.GalleryFactory;
 import com.iseplife.api.dto.gallery.GalleryDTO;
+import com.iseplife.api.dto.gallery.GalleryUpdateDTO;
 import com.iseplife.api.dto.gallery.view.GalleryView;
+import com.iseplife.api.dto.post.PostUpdateDTO;
 import com.iseplife.api.entity.post.embed.media.Image;
 import com.iseplife.api.exceptions.http.HttpNotFoundException;
 import com.iseplife.api.entity.post.embed.Gallery;
@@ -46,6 +48,11 @@ public class GalleryController {
     }
 
     galleryService.deleteGallery(gallery);
+  }
+
+  @PutMapping("/{id}")
+  public GalleryView updateGallery(@PathVariable Long id, @RequestBody GalleryUpdateDTO update) {
+    return factory.toView(galleryService.updateGallery(id, update));
   }
 
   @GetMapping("/{id}/images")
