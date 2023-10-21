@@ -23,23 +23,38 @@ public class StudentImportService {
 
   public Student importStudents(Student newStudent, MultipartFile file) {
 
-    Role studentRole = studentService.getRole(Roles.STUDENT);
-    Set<Role> roles = new HashSet<>();
-    roles.add(studentRole);
+    if(studentService.getStudent(newStudent.getId()) == null){
 
-    Student student = new Student();
-    student.setId(newStudent.getId());
-    student.setFirstName(newStudent.getFirstName());
-    student.setLastName(newStudent.getLastName());
-    student.setFeed(new Feed(student.getName(), FeedType.STUDENT));
-    student.setPromo(newStudent.getPromo());
-    student.setRoles(roles);
-    if (file != null) {
-      student.setPicture(studentService.uploadOriginalPicture(null, file));
+      Role studentRole = studentService.getRole(Roles.STUDENT);
+      Set<Role> roles = new HashSet<>();
+      roles.add(studentRole);
+
+      Student student = new Student();
+      student.setId(newStudent.getId());
+      student.setFirstName(newStudent.getFirstName());
+      student.setLastName(newStudent.getLastName());
+      student.setFeed(new Feed(student.getName(), FeedType.STUDENT));
+      student.setPromo(newStudent.getPromo());
+      student.setRoles(roles);
+      if (file != null) {
+        student.setPicture(studentService.uploadOriginalPicture(null, file));
+      }
+
+      studentRepository.save(student);
+      return student;
+
+    } else {
+      Student student = studentService.getStudent(newStudent.getId());
+
+      if(!student.getHasDefaultPicture() && file != null){
+        student.setPicture(studentService.uploadOriginalPicture(null, file));
+      }
+
+      studentRepository.save(student);
+
+      return student;
     }
 
-    studentRepository.save(student);
-    return student;
   }
 
 }
