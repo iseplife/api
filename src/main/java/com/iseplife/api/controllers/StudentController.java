@@ -2,6 +2,7 @@ package com.iseplife.api.controllers;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.annotation.security.RolesAllowed;
@@ -22,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
-import com.iseplife.api.constants.FeedType;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.club.projection.ClubMemberStudentProjection;
 import com.iseplife.api.dao.post.projection.PostProjection;
@@ -37,7 +37,6 @@ import com.iseplife.api.dto.student.view.StudentPictures;
 import com.iseplife.api.dto.student.view.StudentPreviewAdmin;
 import com.iseplife.api.dto.student.view.StudentView;
 import com.iseplife.api.dto.view.MatchedView;
-import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
 import com.iseplife.api.exceptions.http.HttpBadRequestException;
@@ -46,7 +45,6 @@ import com.iseplife.api.services.MediaService;
 import com.iseplife.api.services.NotificationService;
 import com.iseplife.api.services.PostService;
 import com.iseplife.api.services.SecurityService;
-import com.iseplife.api.services.StudentImportService;
 import com.iseplife.api.services.StudentService;
 import com.iseplife.api.services.SubscriptionService;
 
@@ -57,14 +55,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class StudentController {
   final private PostService postService;
-  final private StudentImportService studentImportService;
   final private MediaService mediaService;
   final private StudentService studentService;
   final private ClubService clubService;
   final private NotificationService notificationService;
   final private StudentFactory factory;
   final private SubscriptionService subscriptionService;
-  
+
   @GetMapping("/me")
   @RolesAllowed({Roles.STUDENT})
   public LoggedStudentPreview getLoggedStudentPreview() {
@@ -84,7 +81,7 @@ public class StudentController {
     Student student = studentService.getStudent(id);
     return factory.toOverview(student, subscriptionService.getSubscriptionProjection(student));
   }
-  
+
   @PutMapping("/me/did-first-follow")
   @RolesAllowed({Roles.STUDENT})
   public LoggedStudentPreview didFirstFollow() {
@@ -123,7 +120,7 @@ public class StudentController {
   public Page<MatchedView> getPhotosStudent(@PathVariable Long id, @RequestParam(defaultValue = "0") int page) {
     return mediaService.getPhotosTaggedByStudent(id, page);
   }
-  
+
   @GetMapping("/{id}/clubs")
   @RolesAllowed({Roles.STUDENT})
   public List<ClubMemberStudentProjection> getStudentClubs(@PathVariable Long id) {
@@ -148,7 +145,7 @@ public class StudentController {
   public StudentAdminView createStudent(@RequestBody StudentDTO dto) {
     return factory.toAdminView(studentService.createStudent(dto));
   }
-  
+
   @DeleteMapping("/{id}")
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
   public void deleteStudent(@PathVariable Long id) {
@@ -197,42 +194,44 @@ public class StudentController {
 
   @PostMapping("/import")
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
-  public StudentAdminView importStudent(@ModelAttribute Student student, @RequestParam(value = "file",
+  public StudentAdminView importStudent(@ModelAttribute StudentDTO student, @RequestParam(value = "file",
           required = false) MultipartFile file) {
-    return factory.toAdminView(studentImportService.importStudents(student, file));
+    return factory.toAdminView(studentService.createStudent(student));
   }
 
   @PostMapping("/import/multiple")
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
-  public StudentAdminView[] importStudents(
-    @RequestParam(value = "firstName[]") String[] firstNames,
+  public StudentAdminView[] importStudents (
+    @RequestParam(value = "id[]") String[] id,
+    @RequestParam(value = "firstName[]") String[] firstName,
     @RequestParam(value = "lastName[]") String[] lastName,
-    @RequestParam(value = "id[]") Long[] ids,
-    @RequestParam(value = "promo[]") Integer[] promos,
-    @RequestParam(value = "hasFile[]") boolean[] hasFiles,
-    @RequestParam(value = "file[]", required = false) MultipartFile[] files) {
+    @RequestParam(value = "promo[]") String[] promo) {
 
-    int numStudent = ids.length;
-    int fileIndex = 0;
+    StudentAdminView[] studentAdminViews = new StudentAdminView[id.length];
 
-    StudentAdminView[] studentAdminViews = new StudentAdminView[numStudent];
+    for(int x = 0;x <id.length;x++){
+      StudentDTO dto = StudentDTO.builder().id(Long.valueOf(id[x]))
+          .lastName(lastName[x])
+            .firstName(firstName[x])
+              .promo(Integer.valueOf(promo[x])).build();
 
-    for(int x = 0;x <numStudent;x++){
-      Student student = new Student();
-      student.setId(ids[x]);
-      student.setFirstName(firstNames[x]);
-      student.setLastName(lastName[x]);
-      student.setPromo(promos[x]);
-      student.setFeed(new Feed(student.getName(), FeedType.STUDENT));
-
-      studentAdminViews[x] = factory.toAdminView(studentImportService.importStudents(student, hasFiles[x] ? files[fileIndex] : null));
-
-      if(hasFiles[x]){
-        fileIndex++;
-      }
+      studentAdminViews[x] = factory.toAdminView(studentService.createStudent(dto));
     }
 
     return studentAdminViews;
+  }
+
+  @PostMapping("/import/multiple/pictures")
+  @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
+  public Integer importStudentsPictures(
+    @RequestParam(value = "files[]", required = false) MultipartFile[] files) {
+
+    for (MultipartFile file : files) {
+        Long studentId = Long.valueOf(Objects.requireNonNull(file.getOriginalFilename()).split("\\.")[0]);
+        studentService.updateOriginalPicture(studentId, file);
+    }
+
+    return files.length;
   }
 
   @GetMapping("/promos")

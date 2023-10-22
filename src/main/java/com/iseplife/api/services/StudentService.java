@@ -1,5 +1,6 @@
 package com.iseplife.api.services;
 
+import com.google.common.collect.Sets;
 import com.iseplife.api.constants.FeedType;
 import java.util.Date;
 import java.util.List;
@@ -10,6 +11,10 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import com.iseplife.api.constants.Roles;
+import com.iseplife.api.dao.group.GroupMemberRepository;
+import com.iseplife.api.dto.group.GroupMemberDTO;
+import com.iseplife.api.entity.group.GroupMember;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
@@ -53,6 +58,7 @@ public class StudentService {
   final private SubscriptionService subscriptionService;
   final private StudentRepository studentRepository;
   final private GroupRepository groupRepository;
+  final private GroupMemberRepository groupMemberRepository;
   final private RoleRepository roleRepository;
   final private ClubRepository clubRepository;
   @Lazy final private GroupService groupService;
@@ -109,14 +115,16 @@ public class StudentService {
     if(promo == null)
       throw new HttpUnauthorizedException("error_moodle_acc");
     student.setPromo(Integer.valueOf(promo));
-    
+
     student = studentRepository.save(student);
-    
+
     boolean wasInPromo = groupService.isInPromoGroup(student);
     System.out.println("Was "+student.getFirstName()+" in promo "+student.getPromo()+"'s group ? "+wasInPromo);
     if(!wasInPromo)
       groupService.addToPromoGroup(student);
-    
+
+    groupService.addToNeurchiIfNotPresent(student);
+
     return student;
   }
 
@@ -128,21 +136,38 @@ public class StudentService {
   }
 
   public Student createStudent(StudentDTO dto) {
-    if (studentRepository.existsById(dto.getId()))
-      throw new HttpBadRequestException("student_id_already_exist");
+    if (studentRepository.existsById(dto.getId())){
+      Optional<Student> student= studentRepository.findById(dto.getId());
 
-    Student student = mapper.map(dto, Student.class);
-    student.setRoles(roleRepository.findAllByRoleIn(dto.getRoles()));
-    student.setFeed(new Feed(student.getName(), FeedType.STUDENT));
+      if(student.isPresent()){
+        groupService.addToNeurchiIfNotPresent(student.get());
+        return student.get();
+      } else {
+        throw new HttpNotFoundException("Student not found");
+      }
 
-    student = studentRepository.save(student);
-    subscriptionService.subscribe(student, student, false);
-    
-    groupService.addToPromoGroup(student);
+    } else {
+      Student student = mapper.map(dto, Student.class);
 
-    return student;
+      if(dto.getRoles() == null){
+        student.setRoles(roleRepository.findAllByRoleIn(List.of(Roles.STUDENT)));
+      } else {
+        student.setRoles(roleRepository.findAllByRoleIn(dto.getRoles()));
+      }
+
+      student.setFeed(new Feed(student.getName(), FeedType.STUDENT));
+
+      student = studentRepository.save(student);
+      subscriptionService.subscribe(student, student, false);
+
+      groupService.addToPromoGroup(student);
+      groupService.addToNeurchiIfNotPresent(student);
+
+      return student;
+    }
+
   }
-  
+
   public void deleteStudent(Long id) {
     studentRepository.deleteById(id);
   }

@@ -20,4 +20,5 @@ public class StudentDTO {
   private String mailISEP;
   private String address;
   private List<String> roles;
+  private String file;
 }
