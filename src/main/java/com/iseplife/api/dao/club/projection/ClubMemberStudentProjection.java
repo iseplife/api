@@ -7,4 +7,7 @@ public interface ClubMemberStudentProjection {
   String getPosition();
   ClubRole getRole();
   ClubPreviewProjection getClub();
+
+  Integer getFromYear();
+  Integer getToYear();
 }
