@@ -227,8 +227,13 @@ public class StudentController {
     @RequestParam(value = "files[]", required = false) MultipartFile[] files) {
 
     for (MultipartFile file : files) {
-        Long studentId = Long.valueOf(Objects.requireNonNull(file.getOriginalFilename()).split("\\.")[0]);
-        studentService.updateOriginalPicture(studentId, file);
+        try {
+          Long studentId = Long.valueOf(Objects.requireNonNull(file.getOriginalFilename()).split("\\.")[0]);
+          studentService.updateOriginalPicture(studentId, file);
+        } catch (Exception e){
+          System.out.println("Failed to import " + file.getOriginalFilename() + ": " + e.getMessage());
+        }
+
     }
 
     return files.length;
