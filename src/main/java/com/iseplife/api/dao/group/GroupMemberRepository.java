@@ -2,6 +2,9 @@ package com.iseplife.api.dao.group;
 
 import com.iseplife.api.entity.group.GroupMember;
 import com.iseplife.api.entity.group.Group;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
@@ -17,7 +20,7 @@ public interface GroupMemberRepository extends CrudRepository<GroupMember, Long>
   )
   Boolean isMemberOfGroup(Long id, Long student);
 
-  List<GroupMember> findByGroup_Id(Long groupId);
+  Page<GroupMember> findByGroup_Id(Long groupId, Pageable pageable);
 
   List<GroupMember> findByGroup_IdAndAdminIsTrue(Long groupId);
 
