@@ -13,6 +13,7 @@ import com.iseplife.api.dto.group.view.GroupView;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dto.media.view.MediaNameView;
 import com.iseplife.api.entity.group.Group;
+import com.iseplife.api.entity.group.GroupMember;
 import com.iseplife.api.services.FeedService;
 import com.iseplife.api.services.GroupService;
 import com.iseplife.api.services.SubscriptionService;
@@ -26,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.security.RolesAllowed;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @RestController
@@ -82,8 +84,10 @@ public class GroupController {
 
   @GetMapping("/{id}/member")
   @RolesAllowed({Roles.STUDENT})
-  public List<GroupMemberView> getClubMembers(@PathVariable Long id) {
-    return groupService.getGroupMembers(id).stream().map(factory::toView).collect(Collectors.toList());
+  public List<GroupMemberView> getGroupMembers(@PathVariable Long id, @RequestParam Boolean minimal) {
+    Stream<GroupMember> stream = (minimal ? groupService.getMinimalGroupMembers(id) : groupService.getGroupMembers(id)).stream();
+    
+    return stream.map(factory::toView).collect(Collectors.toList());
   }
 
   @PostMapping("/{id}/member")

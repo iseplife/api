@@ -26,6 +26,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -60,7 +63,10 @@ public class GroupService {
   }
 
   public List<GroupMember> getGroupMembers(Long id) {
-    return groupMemberRepository.findByGroup_Id(id);
+    return groupMemberRepository.findByGroup_Id(id, Pageable.unpaged()).toList();
+  }
+  public List<GroupMember> getMinimalGroupMembers(Long id) {
+    return groupMemberRepository.findByGroup_Id(id, PageRequest.of(0, 30, Sort.by(Direction.DESC, "admin"))).toList();
   }
 
   public GroupMember getGroupMember(Long id) {
