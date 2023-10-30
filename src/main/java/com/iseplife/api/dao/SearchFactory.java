@@ -19,7 +19,8 @@ public class SearchFactory {
     searchItem.setId(event.getId());
     searchItem.setName(event.getTitle());
     searchItem.setThumbURL(event.getClub().getLogoUrl());
-    searchItem.setDescription(event.getClub().getName());
+    searchItem.setDescription(event.getDescription());
+
     searchItem.setType(SearchItem.EVENT);
     searchItem.setStartsAt(event.getStartsAt());
 
