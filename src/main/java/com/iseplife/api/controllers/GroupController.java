@@ -84,7 +84,7 @@ public class GroupController {
 
   @GetMapping("/{id}/member")
   @RolesAllowed({Roles.STUDENT})
-  public List<GroupMemberView> getGroupMembers(@PathVariable Long id, @RequestParam Boolean minimal) {
+  public List<GroupMemberView> getGroupMembers(@PathVariable Long id, @RequestParam(defaultValue = "false", required = false) Boolean minimal) {
     Stream<GroupMember> stream = (minimal ? groupService.getMinimalGroupMembers(id) : groupService.getGroupMembers(id)).stream();
     
     return stream.map(factory::toView).collect(Collectors.toList());
