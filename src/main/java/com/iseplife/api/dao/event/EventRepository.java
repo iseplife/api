@@ -43,7 +43,7 @@ public interface EventRepository extends CrudRepository<Event, Long> {
       "))"
   )
   Page<EventTabPreviewProjection> findFrom(Long clubId, Boolean admin, List<Long> feeds, Pageable p);
-  
+
   @Query(
     "select e from Event e left join e.targets t " +
       "where e.endsAt >= CURRENT_TIMESTAMP and DATE_PART('day', AGE(CURRENT_TIMESTAMP, e.startsAt)) <= 2 " +
@@ -74,7 +74,7 @@ public interface EventRepository extends CrudRepository<Event, Long> {
       ")) "
   )
   Page<Event> searchEvent(String name, Boolean admin, List<Long> feed, Pageable pageable);
-  
+
   @Query(
     "select e from Event e left join e.targets t " +
       "where unaccent(lower(e.title)) like '%' || unaccent(?1) || '%' " +
@@ -82,10 +82,11 @@ public interface EventRepository extends CrudRepository<Event, Long> {
         "e.publishedAt < CURRENT_TIMESTAMP " +
         "and (e.targets is empty or t.id in ?3)" +
         "and EXTRACT('Year' FROM e.startsAt) >= ?4" +
-      ")) "
+      ")) " +
+      "ORDER BY e.startsAt DESC"
   )
   Page<Event> searchEventAfterYear(String name, Boolean admin, List<Long> feed, int year, Pageable pageable);
-  
+
   @Query("select e from Event e left join fetch e.position where e.id = :id")
   Optional<Event> findByIdWithPosition(Long id);
 }
