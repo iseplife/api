@@ -84,7 +84,7 @@ public class GroupService {
 
   public Group createGroup(GroupCreationDTO dto) {
     Group group = mapper.map(dto, Group.class);
-    
+
     group.setFeed(new Feed(group.getName(), FeedType.GROUP));
 
     group.setMembers(createGroupAdminMembers(dto.getAdmins(), group));
@@ -95,7 +95,7 @@ public class GroupService {
       subService.subscribe(group, member.getStudent(), true);
       wsGroupService.sendJoin(groupFactory.toPreview(group), member.getStudent());
     }
-    
+
     return group;
   }
 
@@ -117,7 +117,7 @@ public class GroupService {
   public Group updateGroup(Long id, GroupUpdateDTO dto) {
     Group group = getGroup(id);
     mapper.map(dto, group);
-    
+
     // Keep only admins that are in dto.admins
     for(GroupMember m : group.getMembers())
       if (dto.getAdmins().contains(m.getStudent().getId())) {
@@ -126,7 +126,7 @@ public class GroupService {
 
         dto.getAdmins().remove(m.getStudent().getId());
       }
-    
+
     // We create a group member admin for all leftovers ids
     group.getMembers().addAll(createGroupAdminMembers(dto.getAdmins(), group));
 
@@ -172,7 +172,7 @@ public class GroupService {
     if (group.getType() != GroupType.DEFAULT) {
       throw new HttpBadRequestException("deletion_impossible");
     }
-    
+
     for(GroupMember member : group.getMembers()) {
       subService.unsubscribe(group.getId(), member.getStudent().getId());
       wsGroupService.sendLeave(group.getId(), member.getStudent());
@@ -214,10 +214,10 @@ public class GroupService {
       if (!SecurityService.hasRightOn(group))
         throw new HttpForbiddenException("insufficient_rights");
     }
-    
+
     if(groupMemberRepository.isMemberOfGroup(group.getId(), dto.getStudentId()))
       throw new HttpBadRequestException("student_already_in_group");
-    
+
     System.out.println(SecurityService.getLoggedId()+" added "+dto.getStudentId()+" to group "+group.getName());
 
     GroupMember member = new GroupMember();
@@ -226,7 +226,7 @@ public class GroupService {
     member.setGroup(group);
 
     member = groupMemberRepository.save(member);
-    
+
     subService.subscribe(group, member.getStudent(), true);
     wsGroupService.sendJoin(groupFactory.toPreview(group), member.getStudent());
     return member;
@@ -239,10 +239,10 @@ public class GroupService {
 
     if (groupMember.isAdmin() && groupMemberRepository.findGroupAdminCount(groupMember.getGroup()) < 1)
       throw new HttpBadRequestException("minimum_admins_size_required");
-    
+
     subService.unsubscribe(groupMember.getGroup().getId(), groupMember.getStudent().getId());
     wsGroupService.sendLeave(groupMember.getGroup().getId(), groupMember.getStudent());
-    
+
     groupMemberRepository.delete(groupMember);
     return true;
   }
@@ -257,15 +257,29 @@ public class GroupService {
       dto.setRestricted(true);
       group = createGroup(dto);
     }else group = optional.get();
-    
+
     GroupMemberDTO memberDTO = new GroupMemberDTO();
     memberDTO.setStudentId(student.getId());
     addMember(group, memberDTO, true);
   }
-  
+
   public boolean isInPromoGroup(Student student) {
     Optional<Group> optional = groupRepository.findOneByName("Promo "+student.getPromo());
     return optional.isPresent() && groupMemberRepository.isMemberOfGroup(optional.get().getId(), student.getId());
+  }
+
+  public void addToNeurchiIfNotPresent(Student student){
+    Optional<Group> optionalNeurchi = groupRepository.findById(118826L);
+
+    if(optionalNeurchi.isPresent()){
+      GroupMemberDTO groupMemberDTO = new GroupMemberDTO();
+      groupMemberDTO.setStudentId(student.getId());
+
+      if(!groupMemberRepository.isMemberOfGroup(optionalNeurchi.get().getId(), student.getId())){
+        addMember(optionalNeurchi.get(), groupMemberDTO, true);
+      }
+    }
+
   }
 
 }
