@@ -1,7 +1,8 @@
 package com.iseplife.api.services;
 
 import com.google.common.collect.Sets;
-import com.iseplife.api.constants.FeedType;
+import com.iseplife.api.constants.*;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,6 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
-import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.group.GroupMemberRepository;
 import com.iseplife.api.dto.group.GroupMemberDTO;
 import com.iseplife.api.entity.group.GroupMember;
@@ -25,8 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
-import com.iseplife.api.constants.ClubRole;
-import com.iseplife.api.constants.Language;
 import com.iseplife.api.dao.club.ClubRepository;
 import com.iseplife.api.dao.group.GroupRepository;
 import com.iseplife.api.dao.student.RoleRepository;
@@ -351,5 +349,13 @@ public class StudentService {
 
   public void updateLastExplore(Date date) {
     studentRepository.updateLastExplore(SecurityService.getLoggedId(), date);
+  }
+
+  public void setFamily(Long id, FamilyType family){
+    Optional<Student> student = studentRepository.findById(id);
+    if (student.isPresent()){
+      student.get().setFamily(family);
+      studentRepository.save(student.get());
+    }
   }
 }

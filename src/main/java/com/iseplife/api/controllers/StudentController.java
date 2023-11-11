@@ -1,12 +1,10 @@
 package com.iseplife.api.controllers;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import javax.annotation.security.RolesAllowed;
 
+import com.iseplife.api.constants.FamilyType;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -219,6 +217,27 @@ public class StudentController {
     }
 
     return studentAdminViews;
+  }
+
+  @PostMapping("/import/family")
+  @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
+  public int importStudentsFamily (
+    @RequestParam(value = "id[]") String[] id,
+    @RequestParam(value = "family[]") String[] family) {
+
+    System.out.println("import family");
+
+    for(int x = 0;x <id.length;x++){
+
+      System.out.println(id.length);
+
+      FamilyType familyType = FamilyType.valueOf(family[x]);
+      System.out.println(familyType);
+
+      studentService.setFamily(Long.valueOf(id[x]), familyType);
+    }
+
+    return id.length;
   }
 
   @PostMapping("/import/multiple/pictures")
