@@ -5,10 +5,13 @@ import java.io.IOException;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.iseplife.api.dto.app.AppUpdateRequest;
 import com.iseplife.api.dto.app.AppUpdateResponse;
 
 import net.minidev.json.JSONObject;
@@ -60,6 +63,14 @@ public class HealthController {
   public Object getUpdate(@RequestHeader("cap_version_name") String versionName){
     String version = getLatestVersion();
     if(!version.equals(versionName))
+      return new AppUpdateResponse(version, frontUrl+"/app.zip");
+    
+    return new JSONObject();
+  }
+  @PostMapping("/update")
+  public Object postUpdate(@RequestBody() AppUpdateRequest body){
+    String version = getLatestVersion();
+    if(!version.equals(body.getVersion_name()))
       return new AppUpdateResponse(version, frontUrl+"/app.zip");
     
     return new JSONObject();
