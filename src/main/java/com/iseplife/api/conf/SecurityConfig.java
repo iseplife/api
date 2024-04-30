@@ -38,6 +38,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
       .antMatchers("/auth/**").permitAll()
       .antMatchers("/health/**").permitAll()
+      .antMatchers("/dd/").permitAll()
       .antMatchers("/webpush/register/validate").permitAll()
 
       .anyRequest().authenticated();
