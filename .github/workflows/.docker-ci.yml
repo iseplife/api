@@ -60,7 +60,7 @@ jobs:
       - name: Build with Maven
         run: |
           mvn package $MAVEN_CLI_OPTS -B -V -e -fae -Pprod -DskipTests
-          echo $FIREBASE_AUTH > firebase-auth.json
+          echo ${{ secrets.FIREBASE_AUTH }} > firebase-auth.json
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
@@ -94,11 +94,13 @@ jobs:
 
       - name: Extract API Version
         id: api_version
-        run: echo "::set-output name=version::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
+        run: | 
+          apk add maven
+          echo "API_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
       
       - name: Build Docker Image
         run: |
-          docker build -t $IMAGE_NAME:${{ steps.api_version.outputs.version }} -t $IMAGE_NAME:latest .
+          docker build -t $IMAGE_NAME:${{ steps.api_version.outputs.API_VERSION }} -t $IMAGE_NAME:latest .
 
       - name: Push Docker Image
         if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'master'
