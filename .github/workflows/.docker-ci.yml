@@ -80,16 +80,14 @@ jobs:
     env: 
       IMAGE_NAME: ghcr.io/iseplife/api
     steps:
+
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Download Artifacts
         uses: actions/download-artifact@v3
         with:
           name: build-artifacts
-
-      - name: Checkout code
-        uses: actions/checkout@v4
 
       - name: Log in to GitHub Container Registry
         env:
