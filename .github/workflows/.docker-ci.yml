@@ -58,9 +58,11 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
 
       - name: Build with Maven
+        env: 
+          FIREBASE_AUTH: ${{ secrets.FIREBASE_AUTH }}
         run: |
           mvn package $MAVEN_CLI_OPTS -B -V -e -fae -Pprod -DskipTests
-          echo ${{ secrets.FIREBASE_AUTH }} > firebase-auth.json
+          echo $FIREBASE_AUTH > firebase-auth.json
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
@@ -90,7 +92,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Log in to GitHub Container Registry
-        run: echo ${{ secrets.DOCKER_TOKEN }} | docker login ghcr.io -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
+        env:
+          DOCKER_LOGIN: ${{ secrets.DOCKER_LOGIN }}
+          DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+        run: echo $DOCKER_TOKEN | docker login ghcr.io -u $DOCKER_LOGIN --password-stdin
 
       - name: Extract API Version
         id: api_version
