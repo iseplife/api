@@ -56,11 +56,8 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
 
       - name: Build with Maven
-        env: 
-          FIREBASE_AUTH: ${{ secrets.FIREBASE_AUTH }}
         run: |
           mvn package $MAVEN_CLI_OPTS -B -V -e -fae -Pprod -DskipTests
-          echo $FIREBASE_AUTH > firebase-auth.json
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
@@ -68,7 +65,6 @@ jobs:
           name: build-artifacts
           path: |
             target/*.jar
-            firebase-auth.json
 
   docker-build:
     runs-on: ubuntu-latest
