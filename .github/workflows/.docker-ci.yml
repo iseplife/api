@@ -106,8 +106,9 @@ jobs:
           docker build -t $IMAGE_NAME:${{ steps.api_version.outputs.API_VERSION }} -t $IMAGE_NAME:latest .
 
       - name: Push Docker Image
-        if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'master'
+        #if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'master'
         run: |
+          echo ${{ github.event.pull_request.merged }} ${{ github.event.pull_request.base.ref}}
           docker push $IMAGE_NAME:${{ steps.api_version.outputs.version }}
           docker push $IMAGE_NAME:latest
 
