@@ -30,10 +30,10 @@ jobs:
       image: maven:3.8.6-eclipse-temurin-11-alpine
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Cache Maven packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -47,10 +47,10 @@ jobs:
       image: maven:3.8.6-eclipse-temurin-11-alpine
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Cache Maven packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -80,6 +80,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts
+          path: target
 
       - name: Log in to GitHub Container Registry
         env:
@@ -100,7 +101,7 @@ jobs:
       - name: Push Docker Image
         if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'master'
         run: |
-          docker push $IMAGE_NAME:${{ steps.api_version.outputs.API_VERSION }}
+          docker push $IMAGE_NAME:${{ steps.api_version.outputs.version }}
           docker push $IMAGE_NAME:latest
 
   push-notification:
