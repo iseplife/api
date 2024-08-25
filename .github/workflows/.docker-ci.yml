@@ -1,10 +1,12 @@
 name: CI/CD Pipeline
 
 on:
+  push:
+    branches:
+      - master
   pull_request:
-  pull_request_target:
-    branches: [ master ]
-    types: [closed]
+    branches:
+      - master
 
 env:
   DOCKER_DRIVER: overlay
@@ -24,23 +26,6 @@ env:
     -DdeployAtEnd=true
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    container:
-      image: maven:3.8.6-eclipse-temurin-11-alpine
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Cache Maven packages
-        uses: actions/cache@v4
-        with:
-          path: .m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-
-      - name: Test with Maven
-        run: mvn package $MAVEN_CLI_OPTS -B -V -e -fae -Pprod -DskipTests
-
   build:
     runs-on: ubuntu-latest
     container:
@@ -99,7 +84,7 @@ jobs:
           docker build -t $IMAGE_NAME:${{ steps.api_version.outputs.API_VERSION }} -t $IMAGE_NAME:latest .
 
       - name: Push Docker Image
-        if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'master'
+        if: github.ref == 'refs/heads/master'
         run: |
           docker push $IMAGE_NAME:${{ steps.api_version.outputs.API_VERSION }}
           docker push $IMAGE_NAME:latest
@@ -107,9 +92,9 @@ jobs:
   push-notification:
     runs-on: ubuntu-latest
     needs: docker-build
+    if: github.ref == 'refs/heads/master'
     steps:
       - name: Deploy notification
-        if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'master'
         env:
           DEPLOY_WEBHOOK_URL: ${{ secrets.DEPLOY_WEBHOOK_URL }}
         run: |
