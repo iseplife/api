@@ -80,6 +80,6 @@ public class Post implements ThreadInterface {
   @Column(columnDefinition = "boolean default false")
   private Boolean notified = false;
 
-  @Column(columnDefinition = "forced likes")
+  @Column
   private Integer oldLikes = 0;
 }
