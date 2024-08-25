@@ -26,4 +26,5 @@ public class PostView implements PostProjection {
   private Integer nbComments;
   private CommentView trendingComment;
   private Boolean hasWriteAccess;
+  private Integer oldLikes;
 }

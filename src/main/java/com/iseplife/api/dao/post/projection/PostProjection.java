@@ -1,10 +1,11 @@
 package com.iseplife.api.dao.post.projection;
 
 
-import com.iseplife.api.entity.post.embed.Embedable;
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Value;
 
-import java.util.Date;
+import com.iseplife.api.entity.post.embed.Embedable;
 
 public interface PostProjection {
     @Value("#{target.post.id}")
@@ -21,6 +22,9 @@ public interface PostProjection {
     boolean isHomepagePinned();
     @Value("#{target.post.homepageForced}")
     boolean isHomepageForced();
+    
+    @Value("#{target.post.oldLikes}")
+    Integer getOldLikes();
 
     @Value("#{target.post.embed}")
     Embedable getEmbed();

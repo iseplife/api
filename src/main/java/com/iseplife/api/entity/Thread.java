@@ -44,4 +44,7 @@ public class Thread {
   @OneToMany(mappedBy = "thread", cascade = CascadeType.REMOVE, orphanRemoval = true)
   private List<Like> likes = new ArrayList<>();
 
+  @Column(columnDefinition = "forced likes")
+  private Integer oldLikes = 0;
+
 }

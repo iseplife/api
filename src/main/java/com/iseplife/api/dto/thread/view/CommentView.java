@@ -17,4 +17,5 @@ public class CommentView implements CommentProjection {
   private boolean liked;
   private Date lastEdition;
   private Boolean hasWriteAccess;
+  private Integer oldLikes;
 }
