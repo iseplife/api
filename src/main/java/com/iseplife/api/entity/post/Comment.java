@@ -41,4 +41,7 @@ public class Comment implements ThreadInterface {
 
   @ManyToOne
   private Club asClub;
+
+  @Column
+  private Integer oldLikes = 0;
 }
