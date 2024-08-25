@@ -236,7 +236,7 @@ public class PostService {
 
     post = postRepository.save(post);
 
-    notifyNewPost(post, true);
+    //notifyNewPost(post, true);
   }
 
   public Post updatePost(Long postID, PostUpdateDTO dto) {
