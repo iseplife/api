@@ -21,4 +21,7 @@ public interface CommentProjection {
   Long getThread();
   Integer getLikes();
   Integer getComments();
+
+  @Value("#{target.comment.oldLikes}")
+  Integer getOldLikes();
 }
