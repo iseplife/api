@@ -30,3 +30,4 @@ bin
 
 .temp-*.txt
 firebase-auth.json
+.env
