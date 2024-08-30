@@ -99,17 +99,22 @@ public class FirebaseMessengerService {
 
   private List<String> getTokens(Student student) {
     var subs = student.getFirebaseSubscriptions();
+
+    //enable in 3 days
+    if(System.currentTimeMillis() < 1725033452513L + 1000*60*60*24*3) {
+      return subs.stream().map(s -> s.getToken()).collect(Collectors.toList());
+    }
     var goodSubs = subs
       .stream()
       .filter(s -> s.getLastUpdate() != null && s.getLastUpdate().after(new Date(System.currentTimeMillis() - 1000*60*60*24*30*3)))
       .collect(Collectors.toList());
       
     return (
-        (goodSubs.size() >= 3 || goodSubs.size() > subs.size()/2) ? 
+        goodSubs.size() >= 1 ? 
           goodSubs
         :
           subs
-      ).stream().map(s -> s.getToken()).toList();
+      ).stream().map(s -> s.getToken()).collect(Collectors.toList());
   }
 
   public void sendNotificationToAll(Iterable<Student> subs, com.iseplife.api.entity.subscription.Notification notification) {
