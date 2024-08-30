@@ -80,8 +80,10 @@ jobs:
           echo "API_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
       
       - name: Build Docker Image
+        env:
+          REPO_URL: ${{ vars.REPO_URL }}
         run: |
-          docker build -t $IMAGE_NAME:${{ steps.api_version.outputs.API_VERSION }} -t $IMAGE_NAME:latest .
+          docker build --build-arg=COMMIT=$(git rev-parse --short HEAD) --build-arg=REPO_URL=$REPO_URL -t $IMAGE_NAME:${{ steps.api_version.outputs.API_VERSION }} -t $IMAGE_NAME:latest .
 
       - name: Push Docker Image
         if: github.ref == 'refs/heads/master'
