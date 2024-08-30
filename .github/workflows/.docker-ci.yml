@@ -43,11 +43,16 @@ jobs:
       - name: Build with Maven
         run: mvn package $MAVEN_CLI_OPTS -B -V -e -fae -Pprod -DskipTests
 
+      - name: Save commit hash
+        run: git rev-parse HEAD > target/commit-sha.txt
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
-          path: target/*.jar
+          path: |
+            target/*.jar
+            target/commit-sha.txt
 
   docker-build:
     runs-on: ubuntu-latest
@@ -83,7 +88,7 @@ jobs:
         env:
           REPO_URL: ${{ vars.REPO_URL }}
         run: |
-          docker build --build-arg=COMMIT=$(git rev-parse --short HEAD) --build-arg=REPO_URL=$REPO_URL -t $IMAGE_NAME:${{ steps.api_version.outputs.API_VERSION }} -t $IMAGE_NAME:latest .
+          docker build --build-arg=COMMIT=$(cat target/commit-sha.txt) --build-arg=REPO_URL=$REPO_URL -t $IMAGE_NAME:${{ steps.api_version.outputs.API_VERSION }} -t $IMAGE_NAME:latest .
 
       - name: Push Docker Image
         if: github.ref == 'refs/heads/master'
