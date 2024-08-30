@@ -78,7 +78,7 @@ public class FirebaseMessengerService {
     Student student = studentService.getStudent(loggedId);
     try {
       FirebaseMessaging.getInstance().subscribeToTopic(Arrays.asList(sub.getSubscriptionKey()), "s"+student.getId());
-      Optional<FirebaseSubscription> optional = firebaseSubscriptionRepository.findByTokenOrFingerprint(sub.getSubscriptionKey(), sub.getSubscriptionKey());
+      Optional<FirebaseSubscription> optional = firebaseSubscriptionRepository.findByTokenOrFingerprint(sub.getSubscriptionKey(), sub.getFingerprint());
       FirebaseSubscription subscription;
       if(optional.isPresent())
         subscription = optional.get();
@@ -90,9 +90,8 @@ public class FirebaseMessengerService {
       subscription.setOwner(student);
       
       firebaseSubscriptionRepository.save(subscription);
-      System.out.println("New sub added");
+      System.out.println("Subscription updated");
     } catch (FirebaseMessagingException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }

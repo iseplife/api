@@ -22,7 +22,6 @@ public class FirebaseMessengerController {
   @RolesAllowed({ Roles.STUDENT })
   public void registerPushService(@RequestBody RegisterPushServiceDTO register) {
     try {
-      //System.out.println("init sa mere");
       webpushService.registerWebPushService(register);
     }catch(Exception e) {
       e.printStackTrace();
