@@ -2,6 +2,8 @@ package com.iseplife.api.services;
 
 import com.google.common.collect.Sets;
 import com.iseplife.api.constants.FeedType;
+
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -173,7 +175,7 @@ public class StudentService {
   }
 
 
-  public StudentPictures updateOriginalPicture(Long studentId, MultipartFile image) {
+  public StudentPictures updateOriginalPicture(Long studentId, MultipartFile image) throws IOException {
     Student student = getStudent(studentId);
     String picture = student.getPicture();
 
@@ -205,7 +207,7 @@ public class StudentService {
       );
   }
 
-  public StudentPictures updateProfilePicture(Long studentId, MultipartFile image) {
+  public StudentPictures updateProfilePicture(Long studentId, MultipartFile image) throws IOException {
     Student student = getStudent(studentId);
     if (image == null) {
       fileHandler.delete(student.getPicture());
@@ -237,7 +239,7 @@ public class StudentService {
       );
   }
 
-  public String uploadOriginalPicture(String previousPicture, MultipartFile image) {
+  public String uploadOriginalPicture(String previousPicture, MultipartFile image) throws IOException {
     Map params = Map.of(
       "process", "compress",
       "sizes", StorageConfig.MEDIAS_CONF.get("user_original").sizes,
@@ -258,7 +260,7 @@ public class StudentService {
       );
   }
 
-  private String uploadPicture(String previousPicture, MultipartFile image) {
+  private String uploadPicture(String previousPicture, MultipartFile image) throws IOException {
     Map params = Map.of(
       "process", "compress",
       "sizes", StorageConfig.MEDIAS_CONF.get("user_avatar").sizes,

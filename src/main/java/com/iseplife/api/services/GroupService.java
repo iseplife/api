@@ -32,6 +32,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -139,7 +140,7 @@ public class GroupService {
     return groupRepository.save(group);
   }
 
-  public String updateCover(Long id, MultipartFile cover) {
+  public String updateCover(Long id, MultipartFile cover) throws IOException {
     Group group = getGroup(id);
     if (!SecurityService.hasRightOn(group))
       throw new HttpForbiddenException("insufficient_rights");

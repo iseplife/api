@@ -1,5 +1,6 @@
 package com.iseplife.api.controllers;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -92,7 +93,12 @@ public class StudentController {
   @PostMapping("/me/picture")
   @RolesAllowed({Roles.STUDENT})
   public StudentPictures updatePicture(@RequestBody MultipartFile file) {
-    return studentService.updateProfilePicture(SecurityService.getLoggedId(), file);
+    try {
+      return studentService.updateProfilePicture(SecurityService.getLoggedId(), file);
+    } catch (IOException e) {
+      e.printStackTrace();
+      throw new HttpBadRequestException("media_upload_failed", e);
+    }
   }
 
   @PostMapping("/me/last-explore")
@@ -175,21 +181,36 @@ public class StudentController {
   @PutMapping("/{id}/admin/picture")
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
   public StudentPictures updateAdminPicture(@PathVariable Long id, @RequestBody MultipartFile file) {
-    return studentService.updateProfilePicture(id, file);
+    try {
+      return studentService.updateProfilePicture(id, file);
+    } catch (IOException e) {
+      e.printStackTrace();
+      throw new HttpBadRequestException("media_upload_failed", e);
+    }
   }
 
 
   @DeleteMapping("/{id}/admin/picture/custom")
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
   public StudentPictures deleteCustomPicture(@PathVariable Long id) {
-    return studentService.updateProfilePicture(id, null);
+    try {
+      return studentService.updateProfilePicture(id, null);
+    } catch (IOException e) {
+      e.printStackTrace();
+      throw new HttpBadRequestException("media_upload_failed", e);
+    }
   }
 
 
   @PutMapping("/{id}/admin/picture/original")
   @RolesAllowed({Roles.ADMIN, Roles.USER_MANAGER})
   public StudentPictures updateOriginalPicture(@PathVariable Long id, @RequestBody MultipartFile file) {
-    return studentService.updateOriginalPicture(id, file);
+    try {
+      return studentService.updateOriginalPicture(id, file);
+    } catch (IOException e) {
+      e.printStackTrace();
+      throw new HttpBadRequestException("media_upload_failed", e);
+    }
   }
 
   @PostMapping("/import")

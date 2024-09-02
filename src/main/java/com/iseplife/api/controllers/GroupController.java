@@ -14,6 +14,7 @@ import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dto.media.view.MediaNameView;
 import com.iseplife.api.entity.group.Group;
 import com.iseplife.api.entity.group.GroupMember;
+import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.services.FeedService;
 import com.iseplife.api.services.GroupService;
 import com.iseplife.api.services.SubscriptionService;
@@ -25,6 +26,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.security.RolesAllowed;
+
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -79,7 +82,12 @@ public class GroupController {
   @PutMapping("/{id}/cover")
   @RolesAllowed({Roles.STUDENT})
   public MediaNameView updateCover(@PathVariable Long id, @RequestParam(value = "file", required = false) MultipartFile file) {
-    return MediaFactory.toNameView(groupService.updateCover(id, file));
+    try {
+      return MediaFactory.toNameView(groupService.updateCover(id, file));
+    } catch (IOException e) {
+      e.printStackTrace();
+      throw new HttpBadRequestException("media_upload_failed", e);
+    }
   }
 
   @GetMapping("/{id}/member")

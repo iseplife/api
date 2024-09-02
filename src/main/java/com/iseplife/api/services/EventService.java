@@ -1,5 +1,6 @@
 package com.iseplife.api.services;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -169,7 +170,12 @@ public class EventService {
     if (event.getCover() != null)
       fileHandler.delete(event.getCover());
 
-    event.setCover(fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("feed_cover").path, false, params));
+    try {
+      event.setCover(fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("feed_cover").path, false, params));
+    } catch (IOException e) {
+      e.printStackTrace();
+      throw new HttpBadRequestException("media_upload_failed", e);
+    }
     eventRepository.save(event);
 
     return event.getCover();

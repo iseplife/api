@@ -1,5 +1,6 @@
 package com.iseplife.api.services;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -135,7 +136,12 @@ public class ClubService {
       "process", "resize",
       "sizes", StorageConfig.MEDIAS_CONF.get("club_avatar").sizes
     );
-    club.setLogoUrl(fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("club_avatar").path, false, params));
+    try {
+      club.setLogoUrl(fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("club_avatar").path, false, params));
+    } catch (IOException e) {
+      e.printStackTrace();
+      throw new HttpBadRequestException("media_upload_failed", e);
+    }
     clubRepository.save(club);
     return club.getLogoUrl();
   }
@@ -156,7 +162,12 @@ public class ClubService {
         "process", "compress",
         "sizes", StorageConfig.MEDIAS_CONF.get("club_cover").sizes
       );
-      club.setCoverUrl(fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("club_cover").path, false, params));
+      try {
+        club.setCoverUrl(fileHandler.upload(file, StorageConfig.MEDIAS_CONF.get("club_cover").path, false, params));
+      } catch (IOException e) {
+        e.printStackTrace();
+        throw new HttpBadRequestException("media_upload_failed", e);
+      }
     }
 
     clubRepository.save(club);
