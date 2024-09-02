@@ -79,7 +79,7 @@ public class FirebaseMessengerService {
     Student student = studentService.getStudent(loggedId);
     try {
       FirebaseMessaging.getInstance().subscribeToTopic(Arrays.asList(sub.getSubscriptionKey()), "s"+student.getId());
-      Optional<FirebaseSubscription> optional = firebaseSubscriptionRepository.findFirstByOrderByLastUpdateByTokenOrFingerprint(sub.getSubscriptionKey(), sub.getFingerprint());
+      Optional<FirebaseSubscription> optional = firebaseSubscriptionRepository.findFirstByTokenOrFingerprintOrderByLastUpdate(sub.getSubscriptionKey(), sub.getFingerprint());
       FirebaseSubscription subscription;
       if(optional.isPresent())
         subscription = optional.get();
