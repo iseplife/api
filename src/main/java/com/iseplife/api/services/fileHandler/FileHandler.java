@@ -39,7 +39,6 @@ public abstract class FileHandler {
     try {
       tempFile = Files.createTempFile(null, file.getOriginalFilename()).toFile();
       file.transferTo(tempFile);
-
     } catch (IOException e) {
       LOG.error("could not save file", e);
       throw new FileException("could not create file: ", e);

@@ -32,7 +32,12 @@ public class AmazonHandler extends FileHandler {
 
   @Override
   public String upload(MultipartFile file, String path, Boolean pathContainName, Map metadata) {
-    return upload(convertToFile(file), path, pathContainName, metadata);
+    var tmpFile = convertToFile(file);
+    try {
+      return upload(tmpFile, path, pathContainName, metadata);
+    } finally {
+      tmpFile.delete();
+    }
   }
 
   @Override
