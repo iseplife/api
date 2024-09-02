@@ -14,7 +14,7 @@ import com.iseplife.api.entity.user.Student;
 
 @Repository
 public interface FirebaseSubscriptionRepository extends CrudRepository<FirebaseSubscription, Long> {
-  Optional<FirebaseSubscription> findByTokenOrFingerprint(String token, String fingerprint);
+  Optional<FirebaseSubscription> findFirstByOrderByLastUpdateByTokenOrFingerprint(String token, String fingerprint);
   
   @Transactional
   @Modifying
