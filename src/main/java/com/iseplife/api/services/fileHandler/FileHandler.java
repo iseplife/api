@@ -25,7 +25,7 @@ public abstract class FileHandler {
   @Value("${storage.bucket}")
   protected String bucket;
 
-  public abstract String upload(MultipartFile file, String path, Boolean pathContainName, Map metadata);
+  public abstract String upload(MultipartFile file, String path, Boolean pathContainName, Map metadata) throws IOException;
 
   public abstract String upload(File file, String path, Boolean pathContainName, Map metadata);
   

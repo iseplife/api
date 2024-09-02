@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -31,13 +32,8 @@ public class AmazonHandler extends FileHandler {
   }
 
   @Override
-  public String upload(MultipartFile file, String path, Boolean pathContainName, Map metadata) {
-    var tmpFile = convertToFile(file);
-    try {
-      return upload(tmpFile, path, pathContainName, metadata);
-    } finally {
-      tmpFile.delete();
-    }
+  public String upload(MultipartFile file, String path, Boolean pathContainName, Map metadata) throws IOException {
+      return upload(file.getInputStream(), path, pathContainName, metadata);
   }
 
   @Override

@@ -4,6 +4,7 @@ import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.dao.media.MediaFactory;
 import com.iseplife.api.dto.media.view.MediaView;
 import com.iseplife.api.entity.post.embed.media.Matched;
+import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.services.MediaService;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.security.RolesAllowed;
+
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -32,7 +35,12 @@ public class MediaController {
     @RequestParam(defaultValue = "document") String type,
     @RequestParam("file") MultipartFile file
   ){
-    return factory.toBasicView(mediaService.createMedia(file, club, gallery, nsfw, color, ratio, type));
+    try {
+      return factory.toBasicView(mediaService.createMedia(file, club, gallery, nsfw, color, ratio, type));
+    } catch (IOException e) {
+      e.printStackTrace();
+      throw new HttpBadRequestException("media_upload_failed", e);
+    }
   }
 
   @PutMapping("/{id}/nsfw")

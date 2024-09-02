@@ -141,7 +141,7 @@ public class MediaService {
     return false;
   }
 
-  public Media createMedia(MultipartFile file, Long club, Boolean gallery, Boolean nsfw, String averageColor, Float ratio, String type) {
+  public Media createMedia(MultipartFile file, Long club, Boolean gallery, Boolean nsfw, String averageColor, Float ratio, String type) throws IOException {
     Author author = club > 0 ?
       clubService.getClub(club) :
       studentService.getStudent(SecurityService.getLoggedId());
