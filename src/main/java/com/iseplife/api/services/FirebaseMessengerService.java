@@ -96,6 +96,7 @@ public class FirebaseMessengerService {
       subscription.setFingerprint(sub.getFingerprint());
       subscription.setToken(sub.getSubscriptionKey());
       subscription.setOwner(student);
+      subscription.setLastUpdate(new Date());
       
       firebaseSubscriptionRepository.save(subscription);
       System.out.println("Subscription updated");
