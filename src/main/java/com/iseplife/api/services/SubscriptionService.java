@@ -28,6 +28,7 @@ public class SubscriptionService {
   @Lazy final private GroupService groupService;
   @Lazy final private WSPostService postService;
   final private SubscriptionRepository subscriptionRepository;
+  final private FirebaseMessengerService firebaseMessengerService;
 
   public Boolean isSubscribed(Subscribable sub){
     return isSubscribed(sub.getId(), SecurityService.getLoggedId());
@@ -62,6 +63,21 @@ public class SubscriptionService {
   public List<Long> getSubscribedFeeds(Long studentId) {
     return subscriptionRepository.findFeedsByListenerId(studentId);
   }
+
+  public void subscribeOrUpdateSub(String type, Long id, boolean extensive) {
+    Subscription sub = getSubscription(id);
+    if(sub != null) {
+      if(sub.isExtensive() != extensive) {
+        sub.setExtensive(extensive);
+        updateSubscription(sub);
+      }
+      return;
+    }
+
+    Subscribable subbing = getSubscribable(type, id);
+    subscribe(subbing, studentService.getStudent(SecurityService.getLoggedId()), extensive);
+  }
+
   public void subscribe(Subscribable subable, Student student, boolean extensive) {
     if(subscriptionRepository.existsBySubscribedAndListener_Id(subable, student.getId()))
       throw new HttpBadRequestException("already_subscribed");
@@ -72,7 +88,7 @@ public class SubscriptionService {
     sub.setSubscribedFeed(subable.getFeed());
     sub.setExtensive(extensive);
 
-    subscriptionRepository.save(sub);
+    updateSubscription(sub);
     
     postService.addStudentToFeed(student.getId(), subable.getFeed().getId());
   }
@@ -82,9 +98,16 @@ public class SubscriptionService {
   public void unsubscribe(Long id, Long studentId) {
     postService.removeStudentFromFeed(studentId, subscriptionRepository.findFeedBySubscribedIdAndListenerId(id, studentId));
     subscriptionRepository.deleteBySubscribedIdAndListenerId(id, studentId);
+
+    firebaseMessengerService.unsubFromTopic(studentService.getStudent(studentId), id);
   }
 
   public void updateSubscription(Subscription sub) {
+    if(sub.isExtensive()) {
+      firebaseMessengerService.subToTopic(sub.getListener(), sub.getSubscribedFeed());
+    } else {
+      firebaseMessengerService.unsubFromTopic(sub.getListener(), sub.getSubscribedFeed());
+    }
     subscriptionRepository.save(sub);
   }
 

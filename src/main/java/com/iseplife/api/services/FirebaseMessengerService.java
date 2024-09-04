@@ -31,12 +31,12 @@ import com.google.firebase.messaging.AndroidNotification;
 import com.google.firebase.messaging.AndroidNotification.Priority;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
-import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.MulticastMessage;
 import com.google.firebase.messaging.Notification;
 import com.iseplife.api.constants.Language;
 import com.iseplife.api.dao.firebase.FirebaseSubscriptionRepository;
 import com.iseplife.api.dto.webpush.RegisterPushServiceDTO;
+import com.iseplife.api.entity.feed.Feed;
 import com.iseplife.api.entity.subscription.FirebaseSubscription;
 import com.iseplife.api.entity.subscription.Subscription;
 import com.iseplife.api.entity.user.Student;
@@ -85,6 +85,13 @@ public class FirebaseMessengerService {
         subscription = optional.get();
       else 
         subscription = new FirebaseSubscription();
+
+        
+      if(!sub.getSubscriptionKey().equals(subscription.getToken()))
+        for(Subscription s : student.getSubscriptions()){
+          System.out.println("Subbed new key of "+student.getName()+" to topic "+s.getSubscribedFeed().getId());
+          subToTopic(sub.getSubscriptionKey(), s.getSubscribedFeed());
+        }
       
       subscription.setFingerprint(sub.getFingerprint());
       subscription.setToken(sub.getSubscriptionKey());
@@ -97,6 +104,9 @@ public class FirebaseMessengerService {
     }
   }
 
+  private List<String> getAllTokens(Student student) {
+    return student.getFirebaseSubscriptions().stream().map(s -> s.getToken()).collect(Collectors.toList());
+  }
   private List<String> getTokens(Student student) {
     var subs = student.getFirebaseSubscriptions();
 
@@ -115,6 +125,32 @@ public class FirebaseMessengerService {
         :
           subs
       ).stream().map(s -> s.getToken()).collect(Collectors.toList());
+  }
+
+  public void subToTopic(Student student, Feed feed) {
+    try {
+      FirebaseMessaging.getInstance().subscribeToTopic(getAllTokens(student), "f"+feed.getId());
+    } catch (FirebaseMessagingException e) {
+      e.printStackTrace();
+    }
+  }
+  public void subToTopic(String token, Feed feed) {
+    try {
+      FirebaseMessaging.getInstance().subscribeToTopic(List.of(token), "f"+feed.getId());
+    } catch (FirebaseMessagingException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void unsubFromTopic(Student student, Feed feed) {
+    unsubFromTopic(student, feed.getId());
+  }
+  public void unsubFromTopic(Student student, Long feedid) {
+    try {
+      FirebaseMessaging.getInstance().unsubscribeFromTopic(getAllTokens(student), "f"+feedid);
+    } catch (FirebaseMessagingException e) {
+      e.printStackTrace();
+    }
   }
 
   public void sendNotificationToAll(Iterable<Student> subs, com.iseplife.api.entity.subscription.Notification notification) {

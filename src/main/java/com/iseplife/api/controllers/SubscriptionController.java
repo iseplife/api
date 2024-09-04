@@ -27,18 +27,7 @@ public class SubscriptionController {
     if(SecurityService.getLoggedId() == id)
       throw new HttpForbiddenException("cant_sub_self");
     
-    Subscription sub = subscriptionService.getSubscription(id);
-    if(sub != null) {
-      if(sub.isExtensive() != body.isExtensive()) {
-        sub.setExtensive(body.isExtensive());
-        subscriptionService.updateSubscription(sub);
-      }
-      return;
-    }
-
-    Subscribable subbing = subscriptionService.getSubscribable(type, id);
-
-    subscriptionService.subscribe(subbing, body.isExtensive());
+    subscriptionService.subscribeOrUpdateSub(type, id, body.isExtensive());
   }
 
   @DeleteMapping("/{id}")
