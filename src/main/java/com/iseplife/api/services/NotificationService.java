@@ -79,8 +79,13 @@ public class NotificationService {
           notif = notificationRepository.save(notif);
 
           wsNotifService.broadcastNotification(getUnwatchedNotificationProjection(notif.getId()), notified);
-          if(pushNotification)
-            webPushService.sendNotificationToAll(subs.stream().map(sub -> sub.getListener()).collect(Collectors.toList()), notif);
+          if(pushNotification) {
+            if(studentValidator != null) {
+              webPushService.sendNotificationToTopic(subable.getFeed(), notif);
+            } else {
+              webPushService.sendNotificationToAll(subs.stream().map(sub -> sub.getListener()).collect(Collectors.toList()), notif);
+            }
+          }
         }
       }
     }, 1000 * 60);

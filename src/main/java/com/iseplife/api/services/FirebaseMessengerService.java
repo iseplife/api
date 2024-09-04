@@ -31,6 +31,7 @@ import com.google.firebase.messaging.AndroidNotification;
 import com.google.firebase.messaging.AndroidNotification.Priority;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
+import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.MulticastMessage;
 import com.google.firebase.messaging.Notification;
 import com.iseplife.api.constants.Language;
@@ -198,6 +199,35 @@ public class FirebaseMessengerService {
     
     System.out.println("Notification sent to "+sent+" users");
     
+  }
+  
+  public void sendNotificationToTopic(Feed feed, com.iseplife.api.entity.subscription.Notification notification) {
+    String image = mediaPath(notification.getIcon(), "300x300");
+    int sent = 0;
+    String body = translationService.getTranslation(notification.getType(), notification.getInformations(), Language.FR);
+    var message = Message.builder().setTopic("f"+feed.getId()).setNotification(
+      Notification.builder()
+        .setBody(body)
+        .setImage(image)
+        .setTitle("iseplife")
+        .build()
+      ).setAndroidConfig(AndroidConfig.builder().setNotification(
+        AndroidNotification.builder()
+          .setPriority(Priority.HIGH)
+          .setBody(body)
+          .setImage(image)
+          .setTitle("iseplife")
+          .build()
+      ).build())
+      .putData("link", notification.getLink())
+    .build();
+    
+    try {
+      FirebaseMessaging.getInstance().send(message);
+    } catch (FirebaseMessagingException e) {
+      e.printStackTrace();
+    }
+    System.out.println("Notification sent to topic f"+feed.getId());
   }
   private String mediaPath(String fullPath, String size) {
     if (fullPath != null) {
