@@ -131,7 +131,10 @@ public class FirebaseMessengerService {
 
   public void subToTopic(Student student, Feed feed) {
     try {
-      FirebaseMessaging.getInstance().subscribeToTopic(getAllTokens(student), "f"+feed.getId());
+      var tokens = getAllTokens(student);
+      if(tokens.size() == 0)
+        return;
+      FirebaseMessaging.getInstance().subscribeToTopic(tokens, "f"+feed.getId());
     } catch (FirebaseMessagingException e) {
       e.printStackTrace();
     }
@@ -149,7 +152,10 @@ public class FirebaseMessengerService {
   }
   public void unsubFromTopic(Student student, Long feedid) {
     try {
-      FirebaseMessaging.getInstance().unsubscribeFromTopic(getAllTokens(student), "f"+feedid);
+      var tokens = getAllTokens(student);
+      if(tokens.size() == 0)
+        return;
+      FirebaseMessaging.getInstance().unsubscribeFromTopic(tokens, "f"+feedid);
     } catch (FirebaseMessagingException e) {
       e.printStackTrace();
     }
