@@ -88,8 +88,8 @@ public class AuthController {
     if (student.isArchived())
       throw new HttpUnauthorizedException("authentification_failed");
 
+    student = studentService.hydrateStudent(student, user);
     if (student.getLastConnection() == null) {
-      student = studentService.hydrateStudent(student, user);
       LOG.info("First connection for user {}, hydrating account", student.getId());
     }
 

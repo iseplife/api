@@ -121,11 +121,12 @@ public class StudentService {
     student = studentRepository.save(student);
 
     boolean wasInPromo = groupService.isInPromoGroup(student);
-    System.out.println("Was "+student.getFirstName()+" in promo "+student.getPromo()+"'s group ? "+wasInPromo);
     if(!wasInPromo)
       groupService.addToPromoGroup(student);
 
     groupService.addToNeurchiIfNotPresent(student);
+
+    System.out.println("User "+student.getName()+" ("+student.getId()+") hydrated");
 
     return student;
   }
