@@ -2,6 +2,8 @@ package com.iseplife.api.entity.subscription;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Index;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -25,7 +27,10 @@ import lombok.Setter;
 
 @Entity
 @Getter @Setter @NoArgsConstructor
-public class Subscription {
+@Table(indexes = {
+  @Index(name = "unique_listener_subscribed_feed", columnList = "listener_id, subscribed_feed_id", unique = true)
+})
+public class Subscription { 
 
   @Id
   @GeneratedValue
