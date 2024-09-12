@@ -107,7 +107,12 @@ public class FirebaseMessengerService {
   }
 
   private List<String> getAllTokens(Student student) {
-    return student.getFirebaseSubscriptions().stream().map(s -> s.getToken()).collect(Collectors.toList());
+    if(student == null)
+      return new ArrayList<>();
+    var subs = student.getFirebaseSubscriptions();
+    if(subs == null || subs.size() == 0)
+      return new ArrayList<>();
+    return subs.stream().map(s -> s.getToken()).collect(Collectors.toList());
   }
   private List<String> getTokens(Student student) {
     var subs = student.getFirebaseSubscriptions();
