@@ -150,8 +150,6 @@ public class ThreadService {
     if(post == null) {
       System.out.println("liked not post");
     }
-    if(post != null)
-      System.out.println("Post "+post.getId()+" liked with "+thread.getLikes().size()+" "+post.getNotified()+" "+(post.getFeed().getLastNotification() == null || System.currentTimeMillis() - post.getFeed().getLastNotification().getTime() > 1000 * 60 * 60)+" "+(System.currentTimeMillis()-post.getFeed().getLastNotification().getTime())+" "+(System.currentTimeMillis() - post.getPublicationDate().getTime()));
     if(post != null && !post.getNotified() &&
         thread.getLikes().size() > 10 &&
         (post.getFeed().getLastNotification() == null || System.currentTimeMillis() - post.getFeed().getLastNotification().getTime() > 1000 * 60 * 60) && // 1 par heure
