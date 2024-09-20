@@ -5,7 +5,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
 
@@ -20,10 +21,8 @@ import com.iseplife.api.dao.wei.map.WeiMapEntityRepository;
 import com.iseplife.api.dao.wei.map.WeiMapStudentLocationRepository;
 import com.iseplife.api.dao.wei.map.projection.WeiMapStudentLocationProjection;
 import com.iseplife.api.dao.wei.room.WeiRoomMemberRepository;
-import com.iseplife.api.dao.wei.room.projection.WeiAvailableRoomProjection;
 import com.iseplife.api.dto.wei.map.WeiMapPositionDTO;
 import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.entity.wei.WeiRoomMember;
 import com.iseplife.api.entity.wei.map.WeiMapEntity;
 import com.iseplife.api.entity.wei.map.WeiMapStudentLocation;
 import com.iseplife.api.services.SecurityService;
@@ -701,7 +700,19 @@ public class WeiMapController {
   @GetMapping("/friends")
   @RolesAllowed({ Roles.STUDENT })
   public List<WeiMapStudentLocationProjection> getFriends() {
-    return locationRepository.findFollowed(SecurityService.getLoggedId());
+    var followed = locationRepository.findFollowed(SecurityService.getLoggedId());
+    var room = memberRepository.findByStudentId(SecurityService.getLoggedId());
+    if(room.isEmpty()) {
+      return followed;
+    }
+    var roomates = locationRepository.findRoomates(SecurityService.getLoggedId(), room.get().getRoom().getId());
+    followed.addAll(roomates);
+
+    //deduplicate by student id
+    return followed.stream()
+      .collect(Collectors.toMap(loc -> loc.getStudent().getId(), Function.identity(), (a, b) -> a))
+      .values().stream()
+      .collect(Collectors.toList());
   }
 
   @GetMapping("/activated")
@@ -712,7 +723,7 @@ public class WeiMapController {
   @GetMapping("/background")
   @RolesAllowed({ Roles.STUDENT })
   public JSONObject getBackground() {
-    return new JSONObject(Map.of("color", "#99B68C"/*"#99B68C"*/, "assetUrl", "/img/wei/map/bg.svg"));
+    return new JSONObject(Map.of("color", "#99B68C"/*"#99B68C"*/, "assetUrl", "/img/wei/map/bg2024.svg"));
   }
 
 }
