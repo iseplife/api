@@ -46,6 +46,14 @@ public class WeiMapController {
   private static Map<Integer, Double[]> map = new HashMap<>();
   private static Map<Long, Integer> studentMap = new HashMap<>();
   static {
+    map.put(220, new Double[]{45.10942020444704,1.961723440325366});
+    map.put(221, new Double[]{45.10943233098201,1.9615193079520854});
+    map.put(185, new Double[]{45.1092101728651,1.960968490811572});
+    map.put(186, new Double[]{45.108979768700706,1.9606963143138647});
+    map.put(187, new Double[]{45.10890700949089,1.9608664246249319});
+    map.put(188, new Double[]{45.10911316058536,1.9611896342159594});
+    map.put(189, new Double[]{45.10907678098045,1.9613087114337064});
+    map.put(190, new Double[]{45.10887062988599,1.9610705569982123});
     map.put(192, new Double[]{45.10862555262539,1.9618226146678661});
     map.put(193, new Double[]{45.10855279341558,1.9620607691033602});
     map.put(215, new Double[]{45.10826175657635,1.964051059742846});
