@@ -21,7 +21,7 @@ public interface WeiMapStudentLocationRepository extends CrudRepository<WeiMapSt
   @Query("select l from WeiMapStudentLocation l inner join Subscription s on s.listener = l.student and s.listener.id != :studentId and s.subscribed.id = :studentId")
   List<WeiMapStudentLocationProjection> findFollowed(Long studentId);
 
-  @Query("select l from WeiMapStudentLocation l inner join WeiRoomMember wrm on wrm.student = l.student and wrm.room.id = :roomId and l.student.id != :studentId")
+  @Query("select l from WeiMapStudentLocation l inner join WeiRoomMember wrm on wrm.student = l.student WHERE wrm.room.id = :roomId and l.student.id != :studentId")
   List<WeiMapStudentLocationProjection> findRoomates(Long studentId, String roomId);
   
   @Transactional
