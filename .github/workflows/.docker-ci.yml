@@ -84,7 +84,8 @@ jobs:
         env:
           REPO_URL: ${{ vars.REPO_URL }}
         run: |
-          docker build --build-arg=COMMIT=${{ github.sha }} --build-arg=REPO_URL=$REPO_URL -t $IMAGE_NAME:${{ steps.api_version.outputs.API_VERSION }} -t $IMAGE_NAME:latest .
+        
+          docker build --build-arg DD_GIT_REPOSITORY_URL=$REPO_URL --build-arg DD_GIT_COMMIT_SHA=${{ github.sha }} -t $IMAGE_NAME:${{ steps.api_version.outputs.API_VERSION }} -t $IMAGE_NAME:latest .
 
       - name: Push Docker Image
         if: github.ref == 'refs/heads/master'
