@@ -117,8 +117,6 @@ public CASUserDTO identifyToCASSSO(String ticket, String service) {
     .flatMap(clientResponse -> clientResponse.bodyToMono(String.class))
     .block();
 
-    System.out.println(resp);
-
     try {
       var db = dbf.newDocumentBuilder();
       var doc = db.parse(new ByteArrayInputStream(resp.getBytes()));
