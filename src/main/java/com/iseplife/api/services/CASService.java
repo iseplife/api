@@ -129,6 +129,7 @@ public CASUserDTO identifyToCASSSO(String ticket, String service) {
         .mail(doc.getElementsByTagName("cas:mail").item(0).getTextContent())
         .login(doc.getElementsByTagName("cas:login").item(0).getTextContent())
         .titre(doc.getElementsByTagName("cas:titre").item(0).getTextContent())
+        .build();
     }catch(Exception exception) {
       System.out.println("Error: " + exception.getMessage());
       throw new HttpUnauthorizedException("authentication_failed");
