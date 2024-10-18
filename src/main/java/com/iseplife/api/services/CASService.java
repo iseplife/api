@@ -18,7 +18,16 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientException;
 import reactor.core.publisher.Mono;
 
+import java.beans.XMLDecoder;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Map;
+
 import javax.annotation.PostConstruct;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 @Service
 @RequiredArgsConstructor
@@ -27,10 +36,13 @@ public class CASService {
   final private Logger LOG = LoggerFactory.getLogger(CASService.class);
   final private static String ISEP_CAS_URL = "https://portail-ovh.isep.fr/";
 
+  private DocumentBuilderFactory dbf;
   private WebClient client;
 
   @PostConstruct
-  public void initializeCASClient() {
+  public void initializeCASClient() throws ParserConfigurationException {
+    dbf = DocumentBuilderFactory.newInstance();
+    dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
     client = WebClient.builder()
       .baseUrl(ISEP_CAS_URL)
       .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
@@ -88,5 +100,51 @@ public class CASService {
       .cookie(cookie.getName(), cookie.getValue())
       .retrieve()
       .bodyToMono(CASUserDTO.class);
+  }
+
+public CASUserDTO identifyToCASSSO(String ticket, String service) {
+  // MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+  // form.add("user", username);
+  // form.add("password", password);
+
+  String resp = client.get()
+    .uri(uriBuilder -> uriBuilder
+      .path("/cas/p3/serviceValidate")
+      .queryParam("service", "{service}")
+      .queryParam("ticket", "{ticket}")
+      .build(service, ticket))
+    .exchange()
+    .flatMap(clientResponse -> clientResponse.bodyToMono(String.class))
+    .block();
+
+    System.out.println(resp);
+
+    try {
+      var db = dbf.newDocumentBuilder();
+      var doc = db.parse(new ByteArrayInputStream(resp.getBytes()));
+      return CASUserDTO.builder()
+        .numero(Long.valueOf(doc.getElementsByTagName("cas:numero").item(0).getTextContent()))
+        .nom(doc.getElementsByTagName("cas:nom").item(0).getTextContent())
+        .prenom(doc.getElementsByTagName("cas:prenom").item(0).getTextContent())
+        .mail(doc.getElementsByTagName("cas:mail").item(0).getTextContent())
+        .login(doc.getElementsByTagName("cas:login").item(0).getTextContent())
+        .titre(doc.getElementsByTagName("cas:titre").item(0).getTextContent())
+    }catch(Exception exception) {
+      System.out.println("Error: " + exception.getMessage());
+      throw new HttpUnauthorizedException("authentication_failed");
+    }
+
+  // if(auth["cas:serviceResponse"]){
+  //   const response = auth["cas:serviceResponse"]["cas:authenticationSuccess"]?.["cas:attributes"]
+  //   const message = {
+  //     type: "ISEP_JWT",
+  //     result: "error",
+  //   }
+  //   if(response) {
+  //     console.log(ticket, response["cas:login"])
+  //     const jwt = sign(response, process.env.JWT_SECRET)
+  //     message.result = jwt;
+  //   }
+
   }
 }

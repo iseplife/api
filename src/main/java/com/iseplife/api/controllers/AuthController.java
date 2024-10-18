@@ -1,6 +1,7 @@
 package com.iseplife.api.controllers;
 
 import com.iseplife.api.conf.jwt.JwtAuthRequest;
+import com.iseplife.api.conf.jwt.JwtAuthSSORequest;
 import com.iseplife.api.conf.jwt.TokenSet;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dto.ISEPCAS.CASUserDTO;
@@ -22,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 
@@ -44,6 +44,53 @@ public class AuthController {
   @Value("${cors.insecure}")
   boolean corsInsecure;
 
+  @PostMapping("sso")
+  public TokenSet ssoLogin(@RequestBody JwtAuthSSORequest authRequest) {
+    CASUserDTO user = casService.identifyToCASSSO(authRequest.getTicket(), authRequest.getService());
+
+    Student student;
+    try {
+      student = studentService.getStudent(user.getNumero());
+    } catch (HttpNotFoundException e) {
+      if (autoGeneration) {
+        String[] split = user.getTitre().split("-");
+        LOG.info("User {} {} not found but pass authentication, creating account {}", user.getPrenom(), user.getNom(), user.getTitre());
+        Integer promo = null;
+        for(int i = split.length - 1;i != 0;i--) {
+          try {
+            promo = Integer.valueOf(split[i]);
+          }catch(Exception err) { }
+        }
+        if(promo == null)
+          throw new HttpUnauthorizedException("error_moodle_acc");
+        student = studentService.createStudent(
+          StudentDTO.builder()
+            .id(user.getNumero())
+            .firstName(user.getPrenom())
+            .lastName(user.getNom())
+            .mail(user.getMail())
+            .promo(promo)
+            .roles(Collections.singletonList(Roles.STUDENT))
+            .build()
+        );
+
+        return securityService.logUser(student);
+      } else {
+        throw new HttpUnauthorizedException("authentification_failed");
+      }
+    }
+    System.out.println(student.getName()+" logging in with SSO");
+
+    if (student.isArchived())
+      throw new HttpUnauthorizedException("authentification_failed");
+
+    student = studentService.hydrateStudent(student, user);
+    if (student.getLastConnection() == null) {
+      LOG.info("First connection for user {}, hydrating account", student.getId());
+    }
+
+    return securityService.logUser(student);
+  }
   @PostMapping
   public TokenSet getToken(@RequestBody JwtAuthRequest authRequest) {
     if (
