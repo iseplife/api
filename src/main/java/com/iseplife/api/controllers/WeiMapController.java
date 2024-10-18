@@ -154,7 +154,7 @@ public class WeiMapController {
   @GetMapping("/activated")
   @RolesAllowed({ Roles.STUDENT })
   public JSONObject activated() {
-    return new JSONObject(Map.of("enabled", false, "snapmap", false, "enabled2024", true, "snapmap2024", true));
+    return new JSONObject(Map.of("enabled", false, "snapmap", false, "enabled2024", false, "snapmap2024", false));
   }
   @GetMapping("/background")
   @RolesAllowed({ Roles.STUDENT })
