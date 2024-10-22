@@ -95,7 +95,7 @@ public class AuthController {
   public TokenSet getToken(@RequestBody JwtAuthRequest authRequest) {
     if (
       passwordEnable &&
-        authRequest.getUsername().equals("admin") &&
+        authRequest.getUsername().equalsIgnoreCase("admin") &&
         authRequest.getPassword().equals(defaultPassword)
     ) return securityService.logUser(studentService.getStudent(1L));
 
