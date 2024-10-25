@@ -54,9 +54,9 @@ public class JwtTokenUtil {
   private int tokenDuration;
   @Value("${jwt.refresh-token-duration}")
   private int refreshTokenDuration;
-  
+
   Algorithm standardAlgorithm, refreshAlgorithm;
-  
+
   @PostConstruct
   private void init() {
     standardAlgorithm = Algorithm.HMAC256(secret);
@@ -111,6 +111,10 @@ public class JwtTokenUtil {
       DecodedJWT decodedJWT = JWT.decode(token);
       Long id = decodedJWT.getClaim(CLAIM_USER_ID).asLong();
       Student student = studentService.getStudent(id);
+
+      if(student.isArchived()) {
+        throw new HttpBadRequestException("user_archived");
+      }
 
       JWTVerifier verifier = JWT.require(refreshAlgorithm)
         .withIssuer(issuer)
