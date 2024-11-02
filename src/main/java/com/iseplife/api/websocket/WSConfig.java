@@ -22,10 +22,10 @@ public class WSConfig implements WebSocketConfigurer {
 
   @Value("${cors.allowed-origin}")
   private String allowedOrigins;
-  
+
   @Override
   public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-    registry.addHandler(handler, "/ws").setAllowedOrigins(allowedOrigins.replaceAll("'", "").split(","));
+    registry.addHandler(handler, "/ws").setAllowedOriginPatterns(allowedOrigins.replaceAll("'", "").split(","));
   }
 
 }
