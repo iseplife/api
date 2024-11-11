@@ -1,9 +1,21 @@
 package com.iseplife.api;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
 import com.iseplife.api.constants.FeedType;
 import com.iseplife.api.constants.GroupType;
-import com.iseplife.api.constants.NotificationType;
-import com.iseplife.api.dao.club.ClubRepository;
+import com.iseplife.api.constants.Roles;
 import com.iseplife.api.dao.group.GroupMemberRepository;
 import com.iseplife.api.dao.group.GroupRepository;
 import com.iseplife.api.dao.post.PostRepository;
@@ -12,31 +24,18 @@ import com.iseplife.api.dao.student.StudentRepository;
 import com.iseplife.api.dao.subscription.NotificationRepository;
 import com.iseplife.api.dao.subscription.SubscriptionRepository;
 import com.iseplife.api.dao.wei.room.WeiRoomRepository;
-import com.iseplife.api.dto.group.GroupMemberDTO;
-import com.iseplife.api.entity.group.GroupMember;
-import com.iseplife.api.entity.post.Post;
-import com.iseplife.api.entity.subscription.Notification;
-import com.iseplife.api.entity.subscription.Subscribable;
-import com.iseplife.api.entity.subscription.Subscription;
-import com.iseplife.api.entity.group.Group;
-import com.iseplife.api.entity.club.Club;
+import com.iseplife.api.dto.club.ClubAdminDTO;
 import com.iseplife.api.entity.feed.Feed;
+import com.iseplife.api.entity.group.Group;
+import com.iseplife.api.entity.group.GroupMember;
 import com.iseplife.api.entity.user.Role;
 import com.iseplife.api.entity.user.Student;
-import com.iseplife.api.entity.wei.WeiRoom;
-import com.iseplife.api.entity.wei.WeiRoomMember;
+import com.iseplife.api.services.ClubService;
 import com.iseplife.api.services.GroupService;
 import com.iseplife.api.services.NotificationService;
 import com.iseplife.api.services.SubscriptionService;
-import com.iseplife.api.constants.Roles;
-import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Field;
-import java.util.*;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -49,14 +48,14 @@ class DatabaseSeeder {
   final private NotificationService notificationService;
   final private NotificationRepository notificationRepository;
   final private GroupService groupService;
-  final private ClubRepository clubRepository;
+  final private ClubService clubService;
   final private GroupMemberRepository groupMemberRepository;
   final private SubscriptionRepository subscriptionRepository;
   final private PostRepository postRepository;
   final private Logger LOG = LoggerFactory.getLogger(DatabaseSeeder.class);
 
   void seedDatabase() {
-    
+
     /*Club c = clubRepository.findById(136037L).get();
     Club c2 = clubRepository.findById(135989L).get();
     System.out.println("start");
@@ -107,8 +106,8 @@ class DatabaseSeeder {
       () -> postRepository.existsById(post.getId())
     );
     System.out.println("finished");*/
-    
-    
+
+
     if (isDatabaseSeeded()) {
       if (LOG.isDebugEnabled()) {
         LOG.debug("Database is already seeded. Exiting seeder.");
@@ -149,6 +148,7 @@ class DatabaseSeeder {
     student.setLastName("ZIDANE");
     student.setPromo(1998);
     student.setBirthDate(new Date());
+    student.setDidFirstFollow(true);
 
     student.setFeed(new Feed(student.getName(), FeedType.STUDENT));
 
@@ -156,9 +156,9 @@ class DatabaseSeeder {
     Role roleAdmin = roleRepository.findByRole(Roles.ADMIN);
     student.setRoles(Set.of(roleAdmin, roleStudent));
 
-    studentRepository.save(student);
+    student = studentRepository.save(student);
 
-    subscriptionService.subscribe(student, false);
+    subscriptionService.subscribe(student, student, false);
 
     /* Create default group and add super admin as member */
     List<Group> groups = new ArrayList<>();
@@ -190,5 +190,16 @@ class DatabaseSeeder {
     }
 
     groupRepository.saveAll(groups);
+
+    for(int i = 0; i < 5; i++) {
+      clubService.createClub(
+        ClubAdminDTO.builder()
+        .admins(Arrays.asList(student.getId()))
+        .creation(new Date())
+        .description("Club de test " + i)
+        .name("Club de test " + i)
+        .build()
+      );
+    }
   }
 }

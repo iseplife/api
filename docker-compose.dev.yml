@@ -1,0 +1,15 @@
+services:
+  db-iseplife:
+    image: postgres:16
+    container_name: pg-iseplife
+    restart: always
+    ports:
+      - 3333:5432
+    environment:
+      POSTGRES_PASSWORD: db_password
+      POSTGRES_USER: iseplife_dev
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+volumes:
+  postgres:
