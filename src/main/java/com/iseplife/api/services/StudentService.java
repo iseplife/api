@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.iseplife.api.conf.StorageConfig;
 import com.iseplife.api.conf.jwt.TokenPayload;
 import com.iseplife.api.constants.ClubRole;
+import com.iseplife.api.constants.FamilyType;
 import com.iseplife.api.constants.Language;
 import com.iseplife.api.dao.club.ClubRepository;
 import com.iseplife.api.dao.group.GroupRepository;
@@ -138,6 +139,8 @@ public class StudentService {
     studentRepository.save(student);
   }
 
+  private static FamilyType[] FAMILIES = {FamilyType.BLUE_LION, FamilyType.GREEN_GORILLA, FamilyType.RED_FOX, FamilyType.YELLOW_EAGLE};
+
   public Student createStudent(StudentDTO dto) {
     if (studentRepository.existsById(dto.getId())){
       Optional<Student> student= studentRepository.findById(dto.getId());
@@ -159,6 +162,9 @@ public class StudentService {
       }
 
       student.setFeed(new Feed(student.getName(), FeedType.STUDENT));
+
+      // random select
+      student.setFamily(FAMILIES[(int) (Math.random() * FAMILIES.length)]);
 
       student = studentRepository.save(student);
       subscriptionService.subscribe(student, student, false);
