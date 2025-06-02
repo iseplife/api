@@ -11,4 +11,4 @@ ADD https://dtdg.co/latest-java-tracer dd-java-agent.jar
 ENV DD_GIT_REPOSITORY_URL=${DD_GIT_REPOSITORY_URL} 
 ENV DD_GIT_COMMIT_SHA=${DD_GIT_COMMIT_SHA}
 
-ENTRYPOINT java -javaagent:/dd-java-agent.jar -Ddd.logs.injection=true -Ddd.service=api -Ddd.env=prod -Djava.security.egd=file:/dev/./urandom -jar /iseplife-api.jar
+ENTRYPOINT java -javaagent:/dd-java-agent.jar -Ddd.logs.injection=true -Ddd.profiling.enabled -Ddd.service=api -Ddd.env=prod -Djava.security.egd=file:/dev/./urandom -jar /iseplife-api.jar
