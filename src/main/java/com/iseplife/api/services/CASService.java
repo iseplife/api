@@ -121,8 +121,8 @@ public CASUserDTO identifyToCASSSO(String ticket, String service) {
       var db = dbf.newDocumentBuilder();
       var doc = db.parse(new ByteArrayInputStream(resp.getBytes()));
 
-      System.out.println(doc)
-      System.out.println(doc.getElementsByTagName("cas:prenom").item(0).getTextContent() + " connected using SSO")
+      System.out.println(doc);
+      System.out.println(doc.getElementsByTagName("cas:prenom").item(0).getTextContent() + " connected using SSO");
       return CASUserDTO.builder()
         .numero(Long.valueOf(doc.getElementsByTagName("cas:numero").item(0).getTextContent()))
         .nom(doc.getElementsByTagName("cas:nom").item(0).getTextContent())
