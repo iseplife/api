@@ -16,11 +16,14 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientException;
+import org.xml.sax.InputSource;
 import reactor.core.publisher.Mono;
 
 import java.beans.XMLDecoder;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -118,11 +121,12 @@ public CASUserDTO identifyToCASSSO(String ticket, String service) {
     .block();
 
     try {
+      Reader reader = new InputStreamReader(new ByteArrayInputStream(resp.getBytes()),"UTF-8");
+      InputSource is = new InputSource(reader);
+      is.setEncoding("UTF-8");
       var db = dbf.newDocumentBuilder();
-      var doc = db.parse(new ByteArrayInputStream(resp.getBytes()));
+      var doc = db.parse(is);
 
-      System.out.println(doc);
-      System.out.println(doc.getElementsByTagName("cas:prenom").item(0).getTextContent() + " connected using SSO");
       return CASUserDTO.builder()
         .numero(Long.valueOf(doc.getElementsByTagName("cas:numero").item(0).getTextContent()))
         .nom(doc.getElementsByTagName("cas:nom").item(0).getTextContent())
