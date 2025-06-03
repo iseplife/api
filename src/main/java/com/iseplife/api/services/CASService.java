@@ -24,6 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -121,7 +122,7 @@ public CASUserDTO identifyToCASSSO(String ticket, String service) {
     .block();
 
     try {
-      Reader reader = new InputStreamReader(new ByteArrayInputStream(resp.getBytes()),"UTF-8");
+      Reader reader = new InputStreamReader(new ByteArrayInputStream(resp.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8);
       InputSource is = new InputSource(reader);
       is.setEncoding("UTF-8");
       var db = dbf.newDocumentBuilder();
