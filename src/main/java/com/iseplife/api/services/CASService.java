@@ -121,9 +121,10 @@ public CASUserDTO identifyToCASSSO(String ticket, String service) {
     .flatMap(clientResponse -> clientResponse.bodyToMono(String.class))
     .block();
 
+    System.out.println("Response: "+resp);
+
     try {
-      Reader reader = new InputStreamReader(new ByteArrayInputStream(resp.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8);
-      InputSource is = new InputSource(reader);
+      InputSource is = new InputSource(new StringReader(resp));
       is.setEncoding("UTF-8");
       var db = dbf.newDocumentBuilder();
       var doc = db.parse(is);
