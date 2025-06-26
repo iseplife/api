@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -360,5 +361,10 @@ public class StudentService {
 
   public void updateLastExplore(Date date) {
     studentRepository.updateLastExplore(SecurityService.getLoggedId(), date);
+  }
+  
+  public void updatePassword(Long studentId, String password) {
+    String bcryptHashString = BCrypt.hashpw(password, BCrypt.gensalt());
+    studentRepository.updatePassword(studentId, bcryptHashString);
   }
 }

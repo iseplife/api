@@ -93,6 +93,9 @@ public class Student implements UserDetails, Feedable, Author, Subscribable {
 
   @ManyToMany(mappedBy = "students", fetch = FetchType.LAZY)
   private List<Notification> notifications;
+  
+
+  private String password;
 
   @Override
   public String getName() {
@@ -119,7 +122,7 @@ public class Student implements UserDetails, Feedable, Author, Subscribable {
 
   @Override
   public String getPassword() {
-    return null;
+    return password;
   }
 
   @Override

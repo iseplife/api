@@ -79,6 +79,11 @@ public interface StudentRepository extends CrudRepository<Student, Long> {
   @Modifying
   @Query("update Student s set s.lastExploreWatch = :date where s.id = :loggedUser")
   void updateLastExplore(Long loggedUser, Date date);
+
+  @Transactional
+  @Modifying
+  @Query("update Student s set s.password = :password where s.id = :loggedUser")
+  void updatePassword(Long loggedUser, String password);
   
   @Query(
     "select " +
