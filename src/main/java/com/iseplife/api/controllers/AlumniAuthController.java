@@ -39,10 +39,14 @@ public class AlumniAuthController {
   @PostMapping("login")
   public TokenSet login(@RequestBody AlumniLoginDTO body) {
     Student student = studentService.getStudent(body.getStudentId());
-    if(body.getPassword() == null || body.getPassword().length() == 0)
+    if(student.getPassword() == null || student.getPassword().length() == 0) {
+      System.out.println("User "+body.getStudentId()+" has no password set");
       throw new HttpUnauthorizedException("authentification_failed");
-    if(!BCrypt.checkpw(body.getPassword(), student.getPassword()))
+    }
+    if(!BCrypt.checkpw(body.getPassword(), student.getPassword())) {
+      System.out.println("User "+body.getStudentId()+" logged in with wrong password");
       throw new HttpUnauthorizedException("authentification_failed");
+    }
     
     System.out.println(student.getName()+" logging in with Alumni Auth");
   
