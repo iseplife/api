@@ -87,6 +87,7 @@ public class StudentFactory {
     LoggedStudentPreview selfPreview = mapper.map(student, LoggedStudentPreview.class);
     selfPreview.setUnwatchedNotifications(count.getUnwatched());
     selfPreview.setTotalNotifications(count.getCount());
+    selfPreview.setPasswordSetup(student.getPassword() != null && student.getPassword().length() > 0);
 
     return selfPreview;
   }

@@ -12,4 +12,5 @@ public class LoggedStudentPreview extends StudentPreview {
   protected Long totalNotifications;
   protected Boolean didFirstFollow;
   protected Date lastExploreWatch;
+  protected Boolean passwordSetup;
 }
