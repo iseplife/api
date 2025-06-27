@@ -34,6 +34,8 @@ public class AlumniAuthController {
       throw new HttpBadRequestException("Password is not long enough");
     }
     studentService.updatePassword(SecurityService.getLoggedId(), body.getPassword());
+    
+    System.out.println("User "+SecurityService.getLoggedId()+" updated its alumni password.");
   }
 
   @PostMapping("login")
