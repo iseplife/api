@@ -16,6 +16,7 @@ import java.util.Optional;
 
 import javax.imageio.ImageIO;
 
+import com.iseplife.api.constants.MediaStatus;
 import org.apache.tomcat.util.buf.HexUtils;
 import org.jsoup.Connection.Method;
 import org.jsoup.Jsoup;
@@ -352,4 +353,9 @@ public class MediaService {
     richLinkRepository.delete(embed);
   }
 
+  public void updateMediaProcessingStatus(Long id, MediaStatus status) {
+    if(!mediaRepository.existsById(id))
+      throw new HttpNotFoundException("media_not_found");
+    mediaRepository.updateStatusById(id, status);
+  }
 }

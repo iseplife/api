@@ -1,6 +1,7 @@
 package com.iseplife.api.controllers;
 
 import com.iseplife.api.conf.jwt.TokenPayload;
+import com.iseplife.api.constants.MediaStatus;
 import com.iseplife.api.dao.media.MediaFactory;
 import com.iseplife.api.dto.media.view.MediaView;
 import com.iseplife.api.entity.post.embed.media.Matched;
@@ -8,6 +9,7 @@ import com.iseplife.api.exceptions.http.HttpBadRequestException;
 import com.iseplife.api.constants.Roles;
 import com.iseplife.api.services.MediaService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +25,9 @@ import java.util.List;
 public class MediaController {
   final private MediaService mediaService;
   final private MediaFactory factory;
+
+  @Value("${aws-lambda.secret-token}")
+  final private String SECRET_TOKEN;
 
   @PostMapping
   @RolesAllowed({Roles.STUDENT})
@@ -65,5 +70,16 @@ public class MediaController {
                                   @PathVariable Long student,
                                   @AuthenticationPrincipal TokenPayload auth) {
     mediaService.untagStudentInImage(id, student, auth);
+  }
+
+  @PostMapping("/image/{id}/set-state/{status}")
+  public void updateImageProcessingStatus(@PathVariable Long id, @PathVariable MediaStatus status, @RequestParam(defaultValue = "0") String secret_token){
+    if(!SECRET_TOKEN.equals(secret_token))
+      throw new HttpBadRequestException("invalid_secret_token");
+
+    if(status == null)
+      throw new HttpBadRequestException("invalid_media_status");
+
+    mediaService.updateMediaProcessingStatus(id, status);
   }
 }
