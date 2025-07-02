@@ -73,7 +73,7 @@ public class MediaController {
   }
 
   @PostMapping("/image/{id}/set-state/{status}")
-  public void updateImageProcessingStatus(@PathVariable Long id, @PathVariable MediaStatus status, @RequestParam(defaultValue = "0") String secret_token){
+  public void updateImageProcessingStatus(@PathVariable Long id, @PathVariable MediaStatus status, @RequestParam() String secret_token){
     if(!SECRET_TOKEN.equals(secret_token))
       throw new HttpBadRequestException("invalid_secret_token");
 
