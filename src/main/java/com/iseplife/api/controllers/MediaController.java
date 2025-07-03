@@ -26,7 +26,7 @@ public class MediaController {
   final private MediaService mediaService;
   final private MediaFactory factory;
 
-  @Value("${aws-lambda.secret-token}")
+  @Value("${aws_lambda.secret}")
   private String SECRET_TOKEN;
 
   @PostMapping

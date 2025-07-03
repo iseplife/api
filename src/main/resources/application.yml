@@ -54,5 +54,5 @@ auth:
   password-root: ${ROOT_PASS:password}
   auto-generation: ${AUTO_GEN:true}
 
-aws-lambda:
-  secret-token: ${AWS_LAMBDA_SECRET_TOKEN:unset}
+aws_lambda:
+  secret: ${AWS_LAMBDA_SECRET_TOKEN:unset}
