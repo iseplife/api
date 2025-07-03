@@ -72,13 +72,10 @@ public class MediaController {
     mediaService.untagStudentInImage(id, student, auth);
   }
 
-  @PostMapping("/lambda/{name}/set-state/{status}")
-  public void updateImageProcessingStatus(@PathVariable String name, @PathVariable MediaStatus status, @RequestParam() String secret_token){
-    if(!SECRET_TOKEN.equals(secret_token)) {
-      System.out.println("Refused '"+secret_token+"' secret token. Should be '"+SECRET_TOKEN+"'.");
+  @PostMapping("/lambda/set-state/{status}")
+  public void updateImageProcessingStatus(@PathVariable MediaStatus status, @RequestParam String name, @RequestParam() String secret_token){
+    if(!SECRET_TOKEN.equals(secret_token))
       throw new HttpBadRequestException("invalid_secret_token");
-    }
-
     if(status == null)
       throw new HttpBadRequestException("invalid_media_status");
 
