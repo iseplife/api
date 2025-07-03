@@ -353,9 +353,9 @@ public class MediaService {
     richLinkRepository.delete(embed);
   }
 
-  public void updateMediaProcessingStatus(Long id, MediaStatus status) {
-    if(!mediaRepository.existsById(id))
+  public void updateMediaProcessingStatus(String name, MediaStatus status) {
+    if(!mediaRepository.existsByName(name))
       throw new HttpNotFoundException("media_not_found");
-    mediaRepository.updateStatusById(id, status);
+    mediaRepository.updateStatusByName(name, status);
   }
 }

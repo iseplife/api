@@ -17,8 +17,10 @@ public interface MediaRepository extends CrudRepository<Media, Long> {
 
   Page<Media> findAllByMediaTypeInOrderByCreationDesc(Collection<String> mediaType, Pageable pageable);
 
+  boolean existsByName(String name);
+
   @Transactional
   @Modifying
-  @Query("update Media m set m.status = ?2 where m.id = ?1")
-  void updateStatusById(Long id, MediaStatus status);
+  @Query("update Media m set m.status = ?2 where m.name = ?1")
+  void updateStatusByName(String name, MediaStatus status);
 }
