@@ -55,4 +55,4 @@ auth:
   auto-generation: ${AUTO_GEN:true}
 
 aws-lambda:
-  secret-token: ${AWS_LAMBDA_SECRET_TOKEN:}
+  secret-token: ${AWS_LAMBDA_SECRET_TOKEN:unset}
