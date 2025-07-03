@@ -27,7 +27,7 @@ public class MediaController {
   final private MediaFactory factory;
 
   @Value("${aws-lambda.secret-token}")
-  final private String SECRET_TOKEN;
+  private String SECRET_TOKEN;
 
   @PostMapping
   @RolesAllowed({Roles.STUDENT})
