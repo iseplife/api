@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.bind.annotation.PostMapping;
 
 /**
  * Created by Guillaume on 06/08/2017.
@@ -41,6 +42,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
       .antMatchers("/health/**").permitAll()
       .antMatchers("/dd/").permitAll()
       .antMatchers("/webpush/register/validate").permitAll()
+      .antMatchers("/media/lambda/**").permitAll()
+
 
       .anyRequest().authenticated();
 
