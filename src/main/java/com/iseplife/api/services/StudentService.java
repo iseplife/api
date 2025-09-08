@@ -118,7 +118,11 @@ public class StudentService {
     }
     if(promo == null)
       throw new HttpUnauthorizedException("error_moodle_acc");
-    student.setPromo(Integer.valueOf(promo));
+
+    // fix the new horrendous promo id (2425 > 2025)
+    promo = 2000 + promo % 100;
+
+    student.setPromo(promo);
 
     student = studentRepository.save(student);
 

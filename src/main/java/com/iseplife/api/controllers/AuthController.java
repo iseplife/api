@@ -63,6 +63,10 @@ public class AuthController {
         }
         if(promo == null)
           throw new HttpUnauthorizedException("error_moodle_acc");
+
+        // fix the new horrendous promo id (2425 > 2025)
+        promo = 2000 + promo % 100;
+        
         student = studentService.createStudent(
           StudentDTO.builder()
             .id(user.getNumero())
@@ -115,6 +119,10 @@ public class AuthController {
         }
         if(promo == null)
           throw new HttpUnauthorizedException("error_moodle_acc");
+
+        // fix the new horrendous promo id (2425 > 2025)
+        promo = 2000 + promo % 100;
+
         student = studentService.createStudent(
           StudentDTO.builder()
             .id(user.getNumero())
