@@ -122,7 +122,7 @@ public CASUserDTO identifyToCASSSO(String ticket, String service) {
     .flatMap(clientResponse -> clientResponse.bodyToMono(String.class))
     .block();
 
-    System.out.println("Response: "+resp);
+    System.out.println("Response ("+service+"): "+resp);
 
     try {
       InputSource is = new InputSource(new StringReader(resp));
@@ -130,8 +130,16 @@ public CASUserDTO identifyToCASSSO(String ticket, String service) {
       var db = dbf.newDocumentBuilder();
       var doc = db.parse(is);
 
+      var numero = doc.getElementsByTagName("cas:numero").item(0).getTextContent();
+      Long numeroLong = null;
+      try {
+        numeroLong = Long.valueOf(numero);
+      }catch(Exception exception) {
+        numeroLong = Long.valueOf(numero.replaceAll("[^0-9]", ""));
+        System.out.println("Weird numero "+numeroLong+" for "+numero);
+      }
       return CASUserDTO.builder()
-        .numero(Long.valueOf(doc.getElementsByTagName("cas:numero").item(0).getTextContent()))
+        .numero(numeroLong)
         .nom(doc.getElementsByTagName("cas:nom").item(0).getTextContent())
         .prenom(doc.getElementsByTagName("cas:prenom").item(0).getTextContent())
         .mail(doc.getElementsByTagName("cas:mail").item(0).getTextContent())
@@ -140,6 +148,7 @@ public CASUserDTO identifyToCASSSO(String ticket, String service) {
         .build();
     }catch(Exception exception) {
       System.err.println("Error happened when reading auth xml : " + exception.getMessage());
+      exception.printStackTrace();
       throw new HttpUnauthorizedException("authentication_failed");
     }
 
