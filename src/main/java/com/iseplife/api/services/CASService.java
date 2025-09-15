@@ -135,8 +135,13 @@ public CASUserDTO identifyToCASSSO(String ticket, String service) {
       try {
         numeroLong = Long.valueOf(numero);
       }catch(Exception exception) {
+        System.out.println("Weird numero "+numero);
         numeroLong = Long.valueOf(numero.replaceAll("[^0-9]", ""));
-        System.out.println("Weird numero "+numeroLong+" for "+numero);
+        System.out.println("Found "+numeroLong+" for "+numero);
+      }
+      if (numeroLong == null || numeroLong == 0) {
+        System.out.println("Numero is null or 0, returning null for "+numero);
+        throw new HttpUnauthorizedException("parsing_failed");
       }
       return CASUserDTO.builder()
         .numero(numeroLong)
