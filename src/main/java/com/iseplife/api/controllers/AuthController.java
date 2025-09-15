@@ -61,12 +61,15 @@ public class AuthController {
             promo = Integer.valueOf(split[i]);
           }catch(Exception err) { }
         }
-        if(promo == null)
-          throw new HttpUnauthorizedException("error_moodle_acc");
+        if(promo == null) {
+          LOG.info("User {} {} not found but pass authentication, creating account {}", user.getPrenom(), user.getNom(), user.getTitre());
+          promo = 2030;
+          // throw new HttpUnauthorizedException("error_moodle_acc");
+        }
 
         // fix the new horrendous promo id (2425 > 2025)
         promo = 2000 + promo % 100;
-        
+
         student = studentService.createStudent(
           StudentDTO.builder()
             .id(user.getNumero())
@@ -159,7 +162,7 @@ public class AuthController {
       expiredCookie.setSecure(true);
     expiredCookie.setHttpOnly(true);
     expiredCookie.setPath("/auth/refresh");
-  
+
     response.addCookie(expiredCookie);
   }
 
@@ -167,7 +170,7 @@ public class AuthController {
   public TokenSet getRefreshedTokens(@CookieValue(value = "refresh-token", defaultValue = "") String refreshToken, @RequestBody RefreshAppDTO dto) {
     if (refreshToken.equals("") && (dto.getRefreshToken() == null || dto.getRefreshToken().equals("")))
       throw new HttpUnauthorizedException("refresh_token_expired");
-    
+
     return securityService.refreshUserToken(dto.getRefreshToken() != null && !dto.getRefreshToken().equals("") ? dto.getRefreshToken() : refreshToken);
   }
 
