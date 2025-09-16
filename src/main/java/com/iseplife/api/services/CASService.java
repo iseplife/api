@@ -2,6 +2,7 @@ package com.iseplife.api.services;
 
 import com.iseplife.api.dto.ISEPCAS.CASAuthentificationDTO;
 import com.iseplife.api.dto.ISEPCAS.CASUserDTO;
+import com.iseplife.api.dto.ISEPCAS.CASUserJson;
 import com.iseplife.api.exceptions.http.HttpInternalServerErrorException;
 import com.iseplife.api.exceptions.http.HttpUnauthorizedException;
 import com.iseplife.api.exceptions.CASServiceException;
@@ -81,7 +82,7 @@ public class CASService {
               );
             }
 
-            return accessUser(CASCookie);
+            return Mono.just(accessUser(CASCookie));
           })
         )
         .block();
@@ -98,13 +99,34 @@ public class CASService {
     }
   }
 
-  public Mono<CASUserDTO> accessUser(ResponseCookie cookie) {
-    return client.post()
+  public CASUserDTO accessUser(ResponseCookie cookie) {
+    var user = client.post()
       .uri("/session/my/global")
       .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
       .cookie(cookie.getName(), cookie.getValue())
       .retrieve()
-      .bodyToMono(CASUserDTO.class);
+      .bodyToMono(CASUserJson.class).block();
+    Long numeroLong = null;
+    var numero = user.getNumero();
+    try {
+      numeroLong = Long.valueOf(numero);
+    }catch(Exception exception) {
+      System.out.println("Weird numero "+numero);
+      numeroLong = Long.valueOf(numero.replaceAll("[^0-9]", ""));
+      System.out.println("Found "+numeroLong+" for "+numero);
+    }
+    if (numeroLong == null || numeroLong == 0) {
+      System.out.println("Numero is null or 0, returning null for "+numero);
+      throw new HttpUnauthorizedException("parsing_failed");
+    }
+    return CASUserDTO.builder()
+      .numero(numeroLong)
+      .nom(user.getNom())
+      .prenom(user.getPrenom())
+      .mail(user.getMail())
+      .login(user.getLogin())
+      .titre(user.getTitre())
+      .build();
   }
 
 public CASUserDTO identifyToCASSSO(String ticket, String service) {
